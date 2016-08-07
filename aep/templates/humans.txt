@@ -1,0 +1,15 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Shane Dicks -- Developer
+
+# THANKS
+
+    Thanks to Erin Landry and Joey Lehrman, who have embraced my vision for an Adult Ed program run from the web. 
+
+# TECHNOLOGY COLOPHON
+    Django
+    HTML5 Boilerplate
+    Twitter Bootstrap
