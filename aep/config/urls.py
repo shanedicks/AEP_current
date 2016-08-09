@@ -9,10 +9,10 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
 
     # Django Admin Stuff
-    url(r'^admin/', include('admin.site.urls'),
+    url(r'^admin/', admin.site.urls),
 
     # Other Stuff
-    url(r'^people/', include('people.urls'))
+    # url(r'^people/', include('people.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -4,6 +4,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.crypto import get_random_string
 
 
+def make_AEP_ID():
+    return get_random_string(length=8, allowed_chars='0123456789')
+
+
+def make_slug():
+    return get_random_string(length=5)
+
+
 class Profile(models.Model):
 
     phone = models.CharField(max_length=20, blank=True)
@@ -16,16 +24,13 @@ class Profile(models.Model):
     emergency_contact = models.CharField(max_length=60, blank=True)
     ec_phone = models.CharField(max_length=20, blank=True)
     ec_email = models.EmailField(max_length=40, blank=True)
+    slug = models.CharField(unique=True, default=make_slug)
 
     class Meta:
         abstract = True
 
     def __str__(self):
         return self.user.get_full_name()
-
-
-def make_AEP_ID():
-    return get_random_string(length=8, allowed_chars='0123456789')
 
 
 class Student(Profile):
@@ -45,4 +50,4 @@ class Staff(Profile):
         settings.AUTH_USER_MODEL,
         verbose_name=_("user"))
 
-    bio = models.TextField(blank=True)
+    bio = models.TextField(blank=True, max_length=4000)
