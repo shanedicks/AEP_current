@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # Other Stuff
-    # url(r'^people/', include('people.urls')),
+    url(r'^people/', include('people.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
