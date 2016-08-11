@@ -1,12 +1,12 @@
 from django.conf.urls import url
-from . import views
+from .views import StudentDetailView, StudentListView, StaffDetailView, StaffListView
 
 student_patterns = [
-    url(r'^$', student_list)
+    url(r'^$', StudentListView.as_view(), name='student_list')
 ]
 
 staff_patterns = [
-    url(r'^$', staff_list)
+    url(r'^$', StaffListView.as_view(), name='staff_list')
 ]
 
 urlpatterns = [
