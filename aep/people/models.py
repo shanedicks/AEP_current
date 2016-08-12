@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.crypto import get_random_string
 
@@ -24,7 +25,7 @@ class Profile(models.Model):
     emergency_contact = models.CharField(max_length=60, blank=True)
     ec_phone = models.CharField(max_length=20, blank=True)
     ec_email = models.EmailField(max_length=40, blank=True)
-    slug = models.CharField(unique=True, default=make_slug, max_length=5)
+    alias = models.CharField(unique=True, default=make_slug, max_length=5)
 
     class Meta:
         abstract = True
@@ -43,6 +44,9 @@ class Student(Profile):
     WRU_ID = models.IntegerField(null=True, blank=True)
     AEP_ID = models.IntegerField(unique=True, default=make_AEP_ID)
 
+    def get_absolute_url(self):
+        return reverse('student detail', kwargs={'alias': self.alias})
+
 
 class Staff(Profile):
 
@@ -51,3 +55,6 @@ class Staff(Profile):
         verbose_name=_("user"))
 
     bio = models.TextField(blank=True, max_length=4000)
+
+    def get_absolute_url(self):
+        return reverse('staff detail', kwargs={'alias': self.alias})
