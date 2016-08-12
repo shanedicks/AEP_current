@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
 
     # Django Admin Stuff
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', include(admin.site.urls)),
 
     # Other Stuff
     url(r'^people/', include('people.urls')),
