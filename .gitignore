@@ -1,6 +1,8 @@
 db.sqlite3
 __pycache__
+*.py[cod]
 *.sublime-workspace
 .coverage 
 htmlcov/ 
+.DS_Store
 

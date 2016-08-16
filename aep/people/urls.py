@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.views.generic import TemplateView
 from . import views
 
 single_student_patterns = [
@@ -22,6 +23,7 @@ staff_patterns = [
 ]
 
 urlpatterns = [
+    url(r'^$', TemplateView.as_view(template_name='people/home.html'), name='people home'),
     url(r'^students/', include(student_patterns)),
     url(r'^staff/', include(staff_patterns)),
 ]
