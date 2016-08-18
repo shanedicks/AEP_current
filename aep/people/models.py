@@ -25,7 +25,7 @@ class Profile(models.Model):
     emergency_contact = models.CharField(max_length=60, blank=True)
     ec_phone = models.CharField(max_length=20, blank=True)
     ec_email = models.EmailField(max_length=40, blank=True)
-    alias = models.CharField(unique=True, default=make_slug, max_length=5)
+    slug = models.CharField(unique=True, default=make_slug, max_length=5)
 
     class Meta:
         abstract = True
@@ -58,3 +58,6 @@ class Staff(Profile):
 
     def get_absolute_url(self):
         return reverse('staff detail', kwargs={'alias': self.alias})
+
+    class Meta:
+        verbose_name_plural = "staff"

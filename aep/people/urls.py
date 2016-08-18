@@ -9,7 +9,7 @@ single_student_patterns = [
 
 student_patterns = [
     url(r'^$', views.StudentListView.as_view(), name='student list'),
-    url(r'^(?P<alias>[a-zA-Z0-9]{5})/', include(single_student_patterns)),
+    url(r'^(?P<slug>[a-zA-Z0-9]{5})/', include(single_student_patterns)),
 ]
 
 single_staff_patterns = [
@@ -19,7 +19,7 @@ single_staff_patterns = [
 
 staff_patterns = [
     url(r'^$', views.StaffListView.as_view(), name='staff list'),
-    url(r'^$(?P<alias>[a-zA-Z0-9]{5})', include(single_staff_patterns)),
+    url(r'^(?P<slug>[a-zA-Z0-9]{5})', include(single_staff_patterns)),
 ]
 
 urlpatterns = [
