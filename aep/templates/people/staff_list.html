@@ -5,7 +5,6 @@
     <ul>
         {% for staff in object_list %}
             <li>{{ staff.user.get_full_name }}</li>
-            <li>{{ staff.slug }}</li>
         {% endfor %}
     </ul>
 {% endblock content %}
