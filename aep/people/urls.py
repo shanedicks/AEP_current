@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='people/home.html'), name='people home'),
     url(r'^students/', include(student_patterns)),
     url(r'^staff/', include(staff_patterns)),
+    url(r'^new/$', views.UserCreateView.as_view(), name='create user'),
 ]
