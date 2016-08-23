@@ -1,1 +1,9 @@
-create_student.html
+{% extends "base.html" %}
+
+{% block content %}
+<form action="/people/students/create_student/" method="post">
+    {% csrf_token %}
+    {{form}}
+    <input type="submit" value="Submit" />
+</form>
+{% endblock content %}

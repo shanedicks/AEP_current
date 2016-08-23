@@ -2,6 +2,7 @@ from django.views.generic import DetailView, ListView, UpdateView, CreateView
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Staff, Student
+from .forms import StaffForm, StudentForm
 
 
 class StudentDetailView(LoginRequiredMixin, DetailView):
@@ -22,7 +23,8 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
 class StudentCreateView(LoginRequiredMixin, CreateView):
 
     model = Student
-    template_name = 'create_student.html'
+    form_class = StudentForm
+    template_name = 'people/create_student.html'
 
 
 class StaffDetailView(LoginRequiredMixin, DetailView):
@@ -43,4 +45,5 @@ class StaffUpdateView(LoginRequiredMixin, UpdateView):
 class StaffCreateView(LoginRequiredMixin, CreateView):
 
     model = Staff
-    template_name = 'create_staff.html'
+    form_class = StaffForm
+    template_name = 'people/create_staff.html'
