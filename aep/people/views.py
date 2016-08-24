@@ -1,14 +1,13 @@
 from django.views.generic import DetailView, ListView, UpdateView, CreateView
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Staff, Student
-from .forms import StaffForm, StudentForm
+from .forms import StaffForm, StudentForm, UserForm
 
 
 class UserCreateView(CreateView):
     model = User
-    form_class = UserCreationForm
+    form_class = UserForm
     template_name = 'people/create_user.html'
 
 
