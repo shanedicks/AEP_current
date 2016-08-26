@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from .models import Student, Staff
 
@@ -7,6 +8,7 @@ class UserForm(ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email', 'username', 'password')
+        success_url = reverse_lazy('people home')
 
 # Fields for the people forms
 
