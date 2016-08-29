@@ -1,6 +1,9 @@
 from django.views.generic import DetailView, ListView, UpdateView, CreateView
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render 
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from .models import Staff, Student
 from .forms import StaffForm, StudentForm, UserForm
 
@@ -32,6 +35,25 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
     form_class = StudentForm
     template_name = 'people/create_student.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(StudentCreateView, self).get_context_data(**kwargs)
+        context['user_form'] = UserForm
+        context.update(kwargs)
+        return context
+
+
+#    def post(self, request, *args, **kwargs):
+#        user_form = UserForm(request.POST)
+#        student_form = StudentForm(request.POST)
+#        uf_valid = user_form.is_valid()
+#        sf_valid = student_form.is_valid()
+#        if uf_valid and sf_valid:
+#            user = user_form.save()
+#            student = student_form.save(commit=False)
+#            student.user = user
+#            student.save()
+#            return super(StudentCreateView, self).post(request, *args, **kwargs)
+
 
 class StaffDetailView(LoginRequiredMixin, DetailView):
 
@@ -53,3 +75,9 @@ class StaffCreateView(LoginRequiredMixin, CreateView):
     model = Staff
     form_class = StaffForm
     template_name = 'people/create_staff.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentCreateView, self).get_context_data(**kwargs)
+        context['user_form'] = UserForm
+        context.update(kwargs)
+        return context

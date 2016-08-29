@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, HiddenInput
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from .models import Student, Staff
@@ -12,7 +12,7 @@ class UserForm(ModelForm):
 
 # Fields for the people forms
 
-personal_fields = ('phone', 'alt_phone', 'dob')
+personal_fields = ('user', 'phone', 'alt_phone', 'dob')
 address_fields = ('street_address_1', 'street_address_2', 'city', 'state')
 emergency_contact_fields = ('emergency_contact', 'ec_phone', 'ec_email')
 
@@ -27,9 +27,11 @@ class StudentForm(ModelForm):
     class Meta:
         model = Student
         fields = people_fields + student_fields
+        widgets = {'user': HiddenInput}
 
 
 class StaffForm(ModelForm):
     class Meta:
         model = Staff
         fields = people_fields + staff_fields
+        widgets = {'user': HiddenInput}
