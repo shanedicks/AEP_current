@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render 
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse_lazy
 from .models import Staff, Student
 from .forms import StaffForm, StudentForm, UserForm
 
@@ -42,17 +42,20 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
-#    def post(self, request, *args, **kwargs):
-#        user_form = UserForm(request.POST)
-#        student_form = StudentForm(request.POST)
-#        uf_valid = user_form.is_valid()
-#        sf_valid = student_form.is_valid()
-#        if uf_valid and sf_valid:
-#            user = user_form.save()
-#            student = student_form.save(commit=False)
-#            student.user = user
-#            student.save()
-#            return super(StudentCreateView, self).post(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        user_form = UserForm(request.POST)
+        student_form = StudentForm(request.POST)
+        uf_valid = user_form.is_valid()
+        sf_valid = student_form.is_valid()
+        if uf_valid and sf_valid:
+            user = user_form.save()
+            student = student_form.save(commit=False)
+            student.user = user
+            student.save()
+            self.object = student
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data())
 
 
 class StaffDetailView(LoginRequiredMixin, DetailView):

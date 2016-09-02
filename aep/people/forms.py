@@ -28,6 +28,10 @@ class StudentForm(ModelForm):
         model = Student
         fields = people_fields + student_fields
         widgets = {'user': HiddenInput}
+    def __init__(self, *args, **kwargs):
+        super(StudentForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].required = False
 
 
 class StaffForm(ModelForm):
