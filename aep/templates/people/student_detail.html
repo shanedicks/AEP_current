@@ -2,5 +2,18 @@
 
 {% block content %}
     <h2>{{ student.user.get_full_name }}</h2>
-    <p>{{ student.WRU_ID }}</p>
+    <p>AEP ID: {{ student.AEP_ID }}
+    <p>WRU ID: {{ student.WRU_ID }}</p>
+    <p>Birthday: {{ student.dob }}
+    <h3>Student Contact Info</h3>
+    <p>Email: {{ student.user.email }}</p>
+    <p>Phone Number: {{ student.phone }}</p>
+    <p>Alternate: {{ student.alt_phone }}</p>
+    <p>Address: {{ student.street_address_1 }}{{ student.street_address_2 }}</p>
+    <p>City:{{ student.city }}
+    <h3>Emergency Contact Info</h3>
+    <p>Name: {{student.emergency_contact}}</p>
+    <p>Email: {{ student.ec_email }}
+    <p>Phone: {{ student.ec_phone }}
+
 {%endblock content %}

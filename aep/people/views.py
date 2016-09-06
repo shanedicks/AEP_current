@@ -11,6 +11,7 @@ from .forms import StaffForm, StudentForm, UserForm
 class UserCreateView(CreateView):
     model = User
     form_class = UserForm
+    success_url = reverse_lazy('people home')
     template_name = 'people/create_user.html'
 
 
@@ -37,8 +38,9 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(StudentCreateView, self).get_context_data(**kwargs)
-        context['user_form'] = UserForm
-        context.update(kwargs)
+        if 'user_form' not in context:
+            context['user_form'] = UserForm
+            context.update(kwargs)
         return context
 
 
@@ -55,7 +57,8 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
             self.object = student
             return HttpResponseRedirect(self.get_success_url())
         else:
-            return self.render_to_response(self.get_context_data())
+            self.object = None
+            return self.render_to_response(self.get_context_data(user_form=user_form))
 
 
 class StaffDetailView(LoginRequiredMixin, DetailView):
