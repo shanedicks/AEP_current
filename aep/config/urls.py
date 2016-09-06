@@ -10,6 +10,7 @@ urlpatterns = [
 
     # Django Admin Stuff
     url(r'^admin/', admin.site.urls),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
 
     # Other Stuff
     url(r'^people/', include('people.urls')),

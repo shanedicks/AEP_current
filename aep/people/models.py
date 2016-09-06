@@ -1,3 +1,4 @@
+from datetime import date
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -40,7 +41,7 @@ class Student(Profile):
         settings.AUTH_USER_MODEL,
         verbose_name=_("user"))
 
-    intake_date = models.DateField(null=True, blank=True)
+    intake_date = models.DateField(null=True, blank=True, default=date.today)
     WRU_ID = models.IntegerField(null=True, blank=True)
     AEP_ID = models.IntegerField(unique=True, default=make_AEP_ID)
 

@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Students</h2>
-    <ul>
+    <h1>Students</h1>
         {% for student in object_list %}
-            <li>{{ student.get_full_name }}{{ student.WRU_ID }}</li>
+            <p><a href="{{ student.get_absolute_url }}">{{ student.user.get_full_name }}</a> AEP ID: {{ student.AEP_ID }} WRU ID:{{ student.WRU_ID }}</p>
         {% endfor %}
-    </ul>
 {% endblock content %}

@@ -1,7 +1,6 @@
 from django.views.generic import DetailView, ListView, UpdateView, CreateView
-from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render 
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from .models import Staff, Student
@@ -9,7 +8,7 @@ from .forms import StaffForm, StudentForm, UserForm
 
 
 class UserCreateView(CreateView):
-    model = User
+    model = settings.AUTH_USER_MODEL
     form_class = UserForm
     success_url = reverse_lazy('people home')
     template_name = 'people/create_user.html'
@@ -42,7 +41,6 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
             context['user_form'] = UserForm
             context.update(kwargs)
         return context
-
 
     def post(self, request, *args, **kwargs):
         user_form = UserForm(request.POST)
