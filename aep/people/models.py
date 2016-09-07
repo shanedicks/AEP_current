@@ -45,6 +45,31 @@ class Student(Profile):
     WRU_ID = models.IntegerField(null=True, blank=True)
     AEP_ID = models.IntegerField(unique=True, default=make_AEP_ID)
 
+    US_citizen = models.BooleanField(default=False)
+
+    gender_choices = (
+        (None, 'Please Select'),
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+    gender = models.CharField(
+        max_length=1,
+        choices=gender_choices,
+        default='F')
+
+    marital_status_choices = (
+        (None, 'Please Select'),
+        ('S', 'Single'),
+        ('M', 'Married'),
+        ('D', 'Divorced'),
+        ('W', 'Widowed'),
+        ('O', 'Other')
+    )
+    marital_status = models.CharField(
+        max_length=1,
+        choices=marital_status_choices,
+        default='S')
+
     def get_absolute_url(self):
         return reverse('student detail', kwargs={'slug': self.slug})
 

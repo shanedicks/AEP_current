@@ -41,7 +41,7 @@ emergency_contact_fields = ('emergency_contact', 'ec_phone', 'ec_email')
 
 people_fields = personal_fields + address_fields + emergency_contact_fields
 
-student_fields = ('intake_date', 'WRU_ID')
+student_fields = ('US_citizen', 'gender', 'marital_status')
 
 staff_fields = ('bio',)
 
