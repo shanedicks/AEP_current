@@ -27,6 +27,8 @@ class StudentListView(LoginRequiredMixin, ListView):
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Student
+    form_class = StudentForm
+    template_name = "people/student_update.html"
 
 
 class StudentCreateView(LoginRequiredMixin, CreateView):
