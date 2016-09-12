@@ -66,7 +66,7 @@ class Student(Profile):
         default='S')
 
     def get_absolute_url(self):
-        return reverse('student detail', kwargs={'slug': self.slug})
+        return reverse('people:student detail', kwargs={'slug': self.slug})
 
 
 class Staff(Profile):
@@ -78,7 +78,7 @@ class Staff(Profile):
     bio = models.TextField(blank=True, max_length=4000)
 
     def get_absolute_url(self):
-        return reverse('staff detail', kwargs={'slug': self.slug})
+        return reverse('people:staff detail', kwargs={'slug': self.slug})
 
     class Meta:
         verbose_name_plural = 'staff'

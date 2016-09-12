@@ -2,6 +2,7 @@
 
 {% block content %}
     <h1>Students</h1>
+    	<p><a class="btn btn-default btn-sm" href="new/" role="button">New Student&raquo;</a></p>
         {% for student in object_list %}
             <p><a href="{{ student.get_absolute_url }}">{{ student.user.get_full_name }}</a> AEP ID: {{ student.AEP_ID }} WRU ID:{{ student.WRU_ID }}</p>
         {% endfor %}

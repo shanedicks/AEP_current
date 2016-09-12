@@ -42,7 +42,7 @@ class Section(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('class detail', kwargs={'slug': self.slug})
+        return reverse('sections:class detail', kwargs={'slug': self.slug})
 
 
 class Enrollment(models.Model):
