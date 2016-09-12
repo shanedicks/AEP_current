@@ -13,7 +13,8 @@ urlpatterns = [
     url(r'^accounts/', include('django.contrib.auth.urls')),
 
     # Other Stuff
-    url(r'^people/', include('people.urls')),
+    url(r'^', include('people.urls', namespace='people')),
+    url(r'^classes/', include('sections.urls', namespace='sections'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

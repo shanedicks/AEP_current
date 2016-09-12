@@ -18,6 +18,7 @@ def get_env_variable(var_name):
         error_msg = 'Set the {} environment variable'.format(var_name)
         raise ImproperlyConfigured(error_msg)
 
+
 SECRET_KEY = get_env_variable("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -42,7 +43,8 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    'people'
+    'people',
+    'sections'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

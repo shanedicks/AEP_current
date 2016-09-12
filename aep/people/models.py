@@ -3,15 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.utils.crypto import get_random_string
-
-
-def make_AEP_ID():
-    return get_random_string(length=8, allowed_chars='0123456789')
-
-
-def make_slug():
-    return get_random_string(length=5)
+from core.utils import make_slug, make_AEP_ID
 
 
 class Profile(models.Model):
@@ -37,6 +29,24 @@ class Profile(models.Model):
 
 class Student(Profile):
 
+    MALE = 'M'
+    FEMALE = 'F'
+    GENDER_CHOICES = (
+        (MALE, 'Male'),
+        (FEMALE, 'Female'),
+    )
+    SINGLE = 'S'
+    MARRIED = 'M'
+    DIVORCED = 'D'
+    WIDOWED = 'W'
+    OTHER = 'O'
+    MARITAL_STATUS_CHOICES = (
+        (SINGLE, 'Single'),
+        (MARRIED, 'Married'),
+        (DIVORCED, 'Divorced'),
+        (WIDOWED, 'Widowed'),
+        (OTHER, 'Other')
+    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=_("user"))
@@ -44,30 +54,15 @@ class Student(Profile):
     intake_date = models.DateField(null=True, blank=True, default=date.today)
     WRU_ID = models.IntegerField(null=True, blank=True)
     AEP_ID = models.IntegerField(unique=True, default=make_AEP_ID)
-
     US_citizen = models.BooleanField(default=False)
-
-    gender_choices = (
-        (None, 'Please Select'),
-        ('M', 'Male'),
-        ('F', 'Female'),
-    )
     gender = models.CharField(
         max_length=1,
-        choices=gender_choices,
+        choices=GENDER_CHOICES,
         default='F')
 
-    marital_status_choices = (
-        (None, 'Please Select'),
-        ('S', 'Single'),
-        ('M', 'Married'),
-        ('D', 'Divorced'),
-        ('W', 'Widowed'),
-        ('O', 'Other')
-    )
     marital_status = models.CharField(
         max_length=1,
-        choices=marital_status_choices,
+        choices=MARITAL_STATUS_CHOICES,
         default='S')
 
     def get_absolute_url(self):
@@ -86,4 +81,4 @@ class Staff(Profile):
         return reverse('staff detail', kwargs={'slug': self.slug})
 
     class Meta:
-        verbose_name_plural = "staff"
+        verbose_name_plural = 'staff'
