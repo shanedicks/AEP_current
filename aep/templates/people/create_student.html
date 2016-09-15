@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form class="form_group" action="/people/students/new/" method="post">
+<form class="form_group" method="post">
     {% csrf_token %}
     {{ user_form.as_ul }}
     {{ form.as_ul }}
