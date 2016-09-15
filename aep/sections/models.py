@@ -38,6 +38,10 @@ class Section(models.Model):
     sunday = models.BooleanField(default=False)
     slug = models.CharField(unique=True, max_length=5, default=make_slug)
 
+    def student_list(self):
+        students = self.students.all()
+        return students
+
     def __str__(self):
         return self.title
 
@@ -76,6 +80,14 @@ class Enrollment(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+    def student_name(self):
+        name = self.student.get_full_name
+        return name
+
+    def class_name(self):
+        name = self.section.title
+        return name
 
 
 class Attendance(models.Model):

@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>{{ section.title }}</h1>
-    <p></p>
+    <h3>{{ section.teacher.get_full_name }} | {{ section.start_time }}-{{section.end_time}}</h3>
+    {% for student in section.student_list %}
+    <p>{{ student.student.get_full_name }}</p>
+    {% endfor %}
+    <p><a class="btn btn-default" href="enroll-student/" role="button">Add Student &raquo;</a></p>
 {% endblock content %}
