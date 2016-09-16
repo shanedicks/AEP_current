@@ -38,9 +38,15 @@ class Section(models.Model):
     sunday = models.BooleanField(default=False)
     slug = models.CharField(unique=True, max_length=5, default=make_slug)
 
-    def student_list(self):
+    def get_all_students(self):
         students = self.students.all()
         return students
+
+    def get_active_students(self):
+        pass
+
+    def get_dropped_students(self):
+        pass
 
     def __str__(self):
         return self.title
@@ -88,6 +94,16 @@ class Enrollment(models.Model):
     def class_name(self):
         name = self.section.title
         return name
+
+    def times_attended(self):
+        pass
+
+    def times_absent(self):
+        pass
+
+    # Check attendance for attendance policy compliance - change enrollment status if needed
+    def enforce_attendance(self):
+        pass
 
 
 class Attendance(models.Model):

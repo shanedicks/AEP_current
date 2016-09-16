@@ -49,6 +49,7 @@ class Student(Profile):
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name='student',
         verbose_name=_("user"))
 
     intake_date = models.DateField(null=True, blank=True, default=date.today)
@@ -65,6 +66,18 @@ class Student(Profile):
         choices=MARITAL_STATUS_CHOICES,
         default='S')
 
+    def has_WRU_ID(self):
+        pass
+
+    def get_active_classes(self):
+        pass
+
+    def get_completed_classes(self):
+        pass
+
+    def get_all_classes(self):
+        pass
+
     def get_absolute_url(self):
         return reverse('people:student detail', kwargs={'slug': self.slug})
 
@@ -73,9 +86,16 @@ class Staff(Profile):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name='staff',
         verbose_name=_("user"))
 
     bio = models.TextField(blank=True, max_length=4000)
+
+    def get_active_classes(self):
+        pass
+
+    def get_all_courses(self):
+        pass
 
     def get_absolute_url(self):
         return reverse('people:staff detail', kwargs={'slug': self.slug})
