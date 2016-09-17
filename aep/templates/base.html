@@ -43,17 +43,25 @@
           </button>
           <a class="navbar-brand" href="/">Delgado Adult Education Program</a>
         </div>
+        {% if request.user.is_authenticated %}
+        <div class="navbar-right">
+            <p class="navbar-text">Logged in as: {{ request.user }}</p>
+            <a class="btn btn-success navbar-btn" href="accounts/logout" role="button">Logout</a>
+        </div>
+        {% else %}
         <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right" role="form">
+          <form action="accounts/login/" method="post" class="navbar-form navbar-right" role="form">
+          {% csrf_token %}
             <div class="form-group">
-              <input type="text" placeholder="Username" class="form-control">
+              <input type="text" name="username" placeholder="Username" class="form-control">
             </div>
             <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
+              <input type="password" name="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Sign in</button>
           </form>
         </div><!--/.navbar-collapse -->
+        {% endif %}
       </div>
     </nav>
     {% endblock navbar %}

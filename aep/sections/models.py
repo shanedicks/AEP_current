@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from core.utils import make_slug
+from people.models import Staff, Student
 
 
 class Semester(models.Model):
@@ -20,8 +21,8 @@ class Section(models.Model):
         blank=True
     )
     teacher = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='teacher_classes',
+        Staff,
+        related_name='classes',
         null=True,
         blank=True
     )
@@ -68,8 +69,8 @@ class Enrollment(models.Model):
         (COMPLETED, 'Completed'),
     )
     student = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='student_classes'
+        Student,
+        related_name='classes'
     )
     section = models.ForeignKey(
         Section,
@@ -83,6 +84,11 @@ class Enrollment(models.Model):
         max_length=1,
         choices=STATUS_CHOICES,
         default='A'
+    )
+    modified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='modified_enrollments',
+        null=True
     )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
