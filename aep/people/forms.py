@@ -37,7 +37,7 @@ class UserForm(ModelForm):
 
 personal_fields = ('phone', 'alt_phone', 'dob')
 address_fields = ('street_address_1', 'street_address_2', 'city', 'state')
-emergency_contact_fields = ('emergency_contact', 'ec_phone', 'ec_email')
+emergency_contact_fields = ('emergency_contact', 'ec_phone', 'ec_email',)
 
 people_fields = personal_fields + address_fields + emergency_contact_fields
 
@@ -49,7 +49,33 @@ staff_fields = ('bio',)
 class StudentForm(ModelForm):
     class Meta:
         model = Student
-        fields = people_fields + student_fields
+        fields = (
+            "dob",
+            "gender",
+            "marital_status",
+            "US_citizen",
+            "other_ID",
+            "prior_registration",
+            "phone",
+            "alt_phone",
+            "street_address_1",
+            "street_address_2",
+            "city",
+            "state",
+            "parish",
+            "zip_code",
+            "emergency_contact",
+            "ec_phone",
+            "ec_email",
+            "ec_relation",
+            "program",
+            "hispanic_latino",
+            "amer_indian",
+            "asian",
+            "black",
+            "white",
+            "pacific_islander"
+        )
 
 
 class StaffForm(ModelForm):

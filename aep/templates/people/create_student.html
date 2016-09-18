@@ -3,8 +3,8 @@
 {% block content %}
 <form class="form_group" method="post">
     {% csrf_token %}
-    {{ user_form.as_ul }}
-    {{ form.as_ul }}
+    {{ user_form.as_p }}
+    {{ form.as_p }}
     <button type="submit" class="btn btn-success">Create Student</button>
 </form>
 {% endblock content %}
