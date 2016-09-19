@@ -46,11 +46,11 @@
         {% if request.user.is_authenticated %}
         <div class="navbar-right">
             <p class="navbar-text">Logged in as: {{ request.user }}</p>
-            <a class="btn btn-success navbar-btn" href="accounts/logout" role="button">Logout</a>
+            <a class="btn btn-success navbar-btn" href="/accounts/logout" role="button">Logout</a>
         </div>
         {% else %}
         <div id="navbar" class="navbar-collapse collapse">
-          <form action="accounts/login/" method="post" class="navbar-form navbar-right" role="form">
+          <form action="/accounts/login/" method="post" class="navbar-form navbar-right" role="form">
           {% csrf_token %}
             <div class="form-group">
               <input type="text" name="username" placeholder="Username" class="form-control">
