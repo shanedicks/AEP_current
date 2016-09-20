@@ -388,7 +388,6 @@ class WIOA(models.Model):
         ("3", "Unknown"),
     )
     YES_NO = (
-        ("", "Please Select"),
         ("1", "Yes"),
         ("2", "No"),
     )
@@ -396,16 +395,15 @@ class WIOA(models.Model):
         ("1", "Yes, Local Formula"),
         ("2", "Yes, Statewide"),
         ("3", "Yes, Both Local and Statewide"),
+        ("4", "No"),
     )
     VOCATIONAL_REHAB_CHOICES = (
-        ("", "Please Select"),
         ("1", "Vocational Rehabilitation"),
         ("2", "Vocational Rehabilitation and Employment, Statewide"),
         ("3", "Both, VR and VR&E"),
         ("4", "No"),
     )
     SCHOOL_STATUS_CHOICES = (
-        ("", "Please Select"),
         ("1", "In-School, H.S. or less"),
         ("2", "In-School, Alternative School"),
         ("3", "In-School, Post H.S."),
@@ -414,6 +412,7 @@ class WIOA(models.Model):
         ("6", "Not attending school; within age of compulsory school attendance"),
     )
     TRAINING_TYPE_CHOICES = (
+
         ("1", "On the Job Training"),
         ("2", "Skill Upgrading"),
         ("3", "Entrepreneurial Training (non-WIOA Youth)"),
@@ -615,7 +614,7 @@ class WIOA(models.Model):
     )
     # Homeless Individual
     # A
-    lacks_adequate_reisdence = models.BooleanField(
+    lacks_adequate_residence = models.BooleanField(
         default=False,
     )
     # B
@@ -629,4 +628,47 @@ class WIOA(models.Model):
     # D
     runaway_youth = models.BooleanField(
         default=False,
-        )
+    )
+    # Adult
+    adult_one_stop = models.CharField(
+        max_length=1,
+        choices=ONE_STOP_CHOICES,
+        default="4"
+    )
+    # Youth
+    youth_one_stop = models.CharField(
+        max_length=1,
+        choices=ONE_STOP_CHOICES,
+        default="4"
+    )
+    # Vocational Rehab
+    voc_rehab = models.CharField(
+        max_length=1,
+        choices=VOCATIONAL_REHAB_CHOICES,
+        default="4"
+    )
+    #
+    wagner_peyser = models.CharField(
+        max_length=1,
+        choices=YES_NO_UNKNOWN,
+        default="3"
+    )
+    # School Status
+    school_status = models.CharField(
+        max_length=1,
+        choices=SCHOOL_STATUS_CHOICES,
+    )
+    recieved_training = models.CharField(
+        max_length=1,
+        choices=YES_NO,
+        default="2")
+    # Eligible Training Provider
+    etp_name = models.CharField(
+        max_length=30,
+        blank=True
+    )
+    etp_program = models.CharField(
+        max_length=2,
+        blank=True,
+        choices=PROGRAM_OF_STUDY_CHOICES,
+    )
