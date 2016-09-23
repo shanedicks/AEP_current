@@ -5,10 +5,13 @@ from sys import path
 
 ########## PATH CONFIGURATION
 
+# Absolute filesystem path to config directory
 CONFIG_ROOT = Path(__file__).ancestor(2)
 
+# Absolute filesystem path to project directory
 PROJECT_ROOT = CONFIG_ROOT.parent
 
+# Project added to python path
 path.append(CONFIG_ROOT)
 
 
@@ -79,22 +82,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': get_env_variable('DATABASE_NAME'),
-        'USER': get_env_variable('DATABASE_USER'),
-        'PASSWORD': get_env_variable('DATABASE_PASSWORD'),
-        'HOST': '',
-        'PORT': '',
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
