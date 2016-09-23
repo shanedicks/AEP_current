@@ -136,6 +136,8 @@ USE_TZ = True
 
 STATICFILES_DIRS = [PROJECT_ROOT.child("static"), ]
 
+STATIC_ROOT = PROJECT_ROOT.child("staticfiles")
+
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = PROJECT_ROOT.child("media")
