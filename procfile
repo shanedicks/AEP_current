@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 web: gunicorn config.wsgi
+=======
+web gunicorn config.wsgi
+>>>>>>> ce4c341c4bebe934dd746acbaea7026a76543067

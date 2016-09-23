@@ -1,16 +1,17 @@
 import os
 from django.core.exceptions import ImproperlyConfigured
 from unipath import Path
+from sys import path
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+########## PATH CONFIGURATION
 
-BASE_DIR = Path(__file__).ancestor(3)
+CONFIG_ROOT = Path(__file__).ancestor(2)
+
+PROJECT_ROOT = CONFIG_ROOT.parent
+
+path.append(CONFIG_ROOT)
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 def get_env_variable(var_name):
     try:
         return os.environ[var_name]
@@ -64,7 +65,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [(BASE_DIR.child("templates")), ],
+        'DIRS': [(PROJECT_ROOT.child("templates")), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -133,11 +134,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATICFILES_DIRS = [BASE_DIR.child("static"),]
+STATICFILES_DIRS = [PROJECT_ROOT.child("static"), ]
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = BASE_DIR.child("media")
+MEDIA_ROOT = PROJECT_ROOT.child("media")
 
 MEDIA_URL = '/media/'
 
