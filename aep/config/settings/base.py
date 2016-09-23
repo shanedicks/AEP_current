@@ -12,6 +12,7 @@ CONFIG_ROOT = Path(__file__).ancestor(2)
 PROJECT_ROOT = CONFIG_ROOT.parent
 
 # Project added to python path
+path.append(PROJECT_ROOT)
 path.append(CONFIG_ROOT)
 
 
