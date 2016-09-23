@@ -4,7 +4,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from .models import Staff, Student
-from .forms import StaffForm, StudentForm, UserForm
+from .forms import StaffForm, StudentForm, UserForm, WioaForm
 
 
 class UserCreateView(CreateView):
@@ -42,23 +42,33 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         if 'user_form' not in context:
             context['user_form'] = UserForm
             context.update(kwargs)
+        if 'wioa_form' not in context:
+            context['wioa_form'] = WioaForm
+            context.update(kwargs)
         return context
 
     def post(self, request, *args, **kwargs):
         user_form = UserForm(request.POST)
         student_form = StudentForm(request.POST)
+        wioa_form = WioaForm(request.POST)
         uf_valid = user_form.is_valid()
         sf_valid = student_form.is_valid()
-        if uf_valid and sf_valid:
+        wf_valid = wioa_form.is_valid()
+        if uf_valid and sf_valid and wf_valid:
             user = user_form.save()
             student = student_form.save(commit=False)
             student.user = user
             student.save()
+            wioa = wioa_form.save(commit=False)
+            wioa.student = student
+            wioa.save()
             self.object = student
             return HttpResponseRedirect(self.get_success_url())
         else:
             self.object = None
-            return self.render_to_response(self.get_context_data(user_form=user_form))
+            return self.render_to_response(
+                self.get_context_data(user_form=user_form, wioa_form=wioa_form)
+            )
 
 
 class StaffDetailView(LoginRequiredMixin, DetailView):

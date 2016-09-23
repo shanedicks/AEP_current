@@ -574,6 +574,7 @@ class WIOA(models.Model):
         default=False,
         verbose_name=_("Low Literacy")
     )
+
     # Tick Checkboxes
     # A
     recieves_public_assistance = models.BooleanField(
@@ -603,6 +604,7 @@ class WIOA(models.Model):
     youth_in_high_poverty_area = models.BooleanField(
         default=False,
     )
+
     # Ex Offender
     # A
     subject_of_criminal_justice = models.BooleanField(
@@ -612,6 +614,7 @@ class WIOA(models.Model):
     arrest_record_employment_barrier = models.BooleanField(
         default=False,
     )
+
     # Homeless Individual
     # A
     lacks_adequate_residence = models.BooleanField(
@@ -647,16 +650,17 @@ class WIOA(models.Model):
         choices=VOCATIONAL_REHAB_CHOICES,
         default="4"
     )
-    #
+    # Wagner Peyser Act
     wagner_peyser = models.CharField(
         max_length=1,
         choices=YES_NO_UNKNOWN,
         default="3"
     )
-    # School Status
+    # School Status at Participation
     school_status = models.CharField(
         max_length=1,
         choices=SCHOOL_STATUS_CHOICES,
+        blank=True
     )
     recieved_training = models.CharField(
         max_length=1,
@@ -671,4 +675,120 @@ class WIOA(models.Model):
         max_length=2,
         blank=True,
         choices=PROGRAM_OF_STUDY_CHOICES,
+    )
+    etp_CIP_Code = models.CharField(
+        max_length=20,
+        blank=True
+    )
+    training_type_1 = models.CharField(
+        max_length=2,
+        blank=True,
+        choices=TRAINING_TYPE_CHOICES
+    )
+    training_type_2 = models.CharField(
+        max_length=2,
+        blank=True,
+        choices=TRAINING_TYPE_CHOICES
+    )
+    training_type_3 = models.CharField(
+        max_length=2,
+        blank=True,
+        choices=TRAINING_TYPE_CHOICES
+    )
+    # Disability Details
+    # Disability
+
+    # ADHD
+    disability_12 = models.BooleanField(
+        default=False
+    )
+    # Autism
+    disability_13 = models.BooleanField(
+        default=False
+    )
+    # Deaf-blindness
+    disability_9 = models.BooleanField(
+        default=False
+    )
+    # Deafness
+    disability_3 = models.BooleanField(
+        default=False
+    )
+    # Emotional Disturbance
+    disability_6 = models.BooleanField(
+        default=False
+    )
+    # Had an IEP in K-12
+    disability_15 = models.BooleanField(
+        default=False
+    )
+    # Hard of Hearing
+    disability_2 = models.BooleanField(
+        default=False
+    )
+    # Intellectual Disability
+    disability_1 = models.BooleanField(
+        default=False
+    )
+    # Multiple Disabilities
+    disability_10 = models.BooleanField(
+        default=False
+    )
+    # Orthopedic Impairment
+    disability_7 = models.BooleanField(
+        default=False
+    )
+    # Other Health Impairment
+    disability_8 = models.BooleanField(
+        default=False
+    )
+    # Specific Learning Disability
+    disability_11 = models.BooleanField(
+        default=False
+    )
+    # Speech or Language Impairment
+    disability_4 = models.BooleanField(
+        default=False
+    )
+    # Traumatic Brain Injury
+    disability_14 = models.BooleanField(
+        default=False
+    )
+    # Visual Impairment
+    disability_5 = models.BooleanField(
+        default=False
+    )
+
+    # Learning Disabled
+
+    # Dyscalculia
+    dislearning_4 = models.BooleanField(
+        default=False
+    )
+    # Dysgraphia
+    dislearning_3 = models.BooleanField(
+        default=False
+    )
+    # Dyslexia
+    dislearning_2 = models.BooleanField(
+        default=False
+    )
+    # Relatied to Neurological Impairments
+    dislearning_1 = models.BooleanField(
+        default=False
+    )
+    highest_level_completed = models.CharField(
+        max_length=2,
+        choices=HIGHEST_COMPLETED_CHOICES,
+        default="1",
+    )
+    highet_level_at_entry = models.CharField(
+        max_length=2,
+        choices=COMPLETED_AT_ENTRY_CHOICES,
+        default="1"
+    )
+    school_location = models.CharField(
+        max_length=1,
+        choices=SCHOOL_LOCATION_CHOICES,
+        default="1"
     )

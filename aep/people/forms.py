@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django.contrib.auth.models import User
-from .models import Student, Staff
+from .models import Student, Staff, WIOA
 
 
 def make_username(first_name, last_name):
@@ -77,6 +77,10 @@ class StudentForm(ModelForm):
             "pacific_islander"
         )
 
+class WioaForm(ModelForm):
+    class Meta:
+        model = WIOA
+        fields = "__all__"
 
 class StaffForm(ModelForm):
     class Meta:

@@ -5,6 +5,7 @@
     {% csrf_token %}
     {{ user_form.as_p }}
     {{ form.as_p }}
+    {{ wioa_form.as_p }}
     <button type="submit" class="btn btn-success">Create Student</button>
 </form>
 {% endblock content %}
