@@ -12,7 +12,7 @@ CONFIG_ROOT = Path(__file__).ancestor(2)
 PROJECT_ROOT = CONFIG_ROOT.parent
 
 # Project added to python path
-path.append(PROJECT_ROOT)
+
 path.append(CONFIG_ROOT)
 
 
@@ -56,6 +56,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -127,6 +128,8 @@ STATICFILES_DIRS = [PROJECT_ROOT.child("static"), ]
 STATIC_ROOT = PROJECT_ROOT.child("staticfiles")
 
 STATIC_URL = '/static/'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_ROOT = PROJECT_ROOT.child("media")
 
