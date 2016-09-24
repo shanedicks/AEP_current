@@ -1,1 +1,1 @@
-web: python aep.manage.py runserver
+web: gunicorn config.wsgi
