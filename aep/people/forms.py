@@ -1,7 +1,22 @@
-from core.forms import NoColonModelForm
 from django.contrib.auth.models import User
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column
+from crispy_forms.bootstrap import PrependedText
+from core.forms import NoColonModelForm
 from .models import Student, Staff, WIOA
 
+
+# Fields for the people forms
+
+personal_fields = ('phone', 'alt_phone', 'dob')
+address_fields = ('street_address_1', 'street_address_2', 'city', 'state')
+emergency_contact_fields = ('emergency_contact', 'ec_phone', 'ec_email',)
+
+people_fields = personal_fields + address_fields + emergency_contact_fields
+
+student_fields = ('US_citizen', 'gender', 'marital_status')
+
+staff_fields = ('bio',)
 
 def make_username(first_name, last_name):
     if len(last_name) < 5:
@@ -36,18 +51,18 @@ class UserForm(NoColonModelForm):
         user.save()
         return user
 
-
-# Fields for the people forms
-
-personal_fields = ('phone', 'alt_phone', 'dob')
-address_fields = ('street_address_1', 'street_address_2', 'city', 'state')
-emergency_contact_fields = ('emergency_contact', 'ec_phone', 'ec_email',)
-
-people_fields = personal_fields + address_fields + emergency_contact_fields
-
-student_fields = ('US_citizen', 'gender', 'marital_status')
-
-staff_fields = ('bio',)
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset(
+                'User Info',
+                'first_name',
+                'last_name',
+                'email'
+            )
+        )
 
 
 class StudentForm(NoColonModelForm):
@@ -75,6 +90,41 @@ class StudentForm(NoColonModelForm):
             "ec_email",
             "ec_relation",
         )
+
+    def __init__(self, *args, **kwargs):
+        super(StudentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Personal Info',
+                'dob',
+                'gender',
+                'marital_status',
+                'other_ID',
+                'US_citizen',
+            ),
+            Fieldset(
+                'Contact Info',
+                'phone',
+                'alt_phone',
+                'street_address_1', 
+                'street_address_2', 
+                'city',
+                'state',
+                'zip_code',
+                'parish'
+            ),
+            Fieldset(
+                'Emergency Contact Info',
+                'emergency_contact',
+                'ec_phone',
+                'ec_email',
+                'ec_relation'
+            )
+        )
+
 
 class WioaForm(NoColonModelForm):
 

@@ -4,10 +4,8 @@
 {% block content %}
 <form method="post">
     {% csrf_token %}
-        <h2>Name</h2>
-        {{ user_form|crispy }}
-        <h2>Contact</h2>
-        {{ form|crispy }}
+        {% crispy user_form %}
+        {% crispy form %}
         <h2>Reporting Data</h2>
         {{ wioa_form|crispy }}
     <button type="submit" class="btn btn-success">Create Student</button>
