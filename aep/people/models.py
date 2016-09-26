@@ -267,30 +267,6 @@ class Student(Profile):
         default=False,
         verbose_name=_("US Citizen")
     )
-    hispanic_latino = models.BooleanField(
-        default=False,
-        verbose_name=_("Hispanic/Latino"),
-    )
-    amer_indian = models.BooleanField(
-        default=False,
-        verbose_name=_("American Indian or Alaska Native")
-    )
-    asian = models.BooleanField(
-        default=False,
-        verbose_name=_("Asian")
-    )
-    black = models.BooleanField(
-        default=False,
-        verbose_name=_("Black or African American")
-    )
-    white = models.BooleanField(
-        default=False,
-        verbose_name=_("White")
-    )
-    pacific_islander = models.BooleanField(
-        default=False,
-        verbose_name=_("Native Hawaiian or Pacific Islander")
-    )
     prior_registration = models.BooleanField(
         default=False,
         verbose_name=_("Have you registered for this program before?")
@@ -487,6 +463,30 @@ class WIOA(models.Model):
         Student,
         models.CASCADE,
         related_name='WIOA'
+    )
+    hispanic_latino = models.BooleanField(
+        default=False,
+        verbose_name=_("Hispanic/Latino"),
+    )
+    amer_indian = models.BooleanField(
+        default=False,
+        verbose_name=_("American Indian or Alaska Native")
+    )
+    asian = models.BooleanField(
+        default=False,
+        verbose_name=_("Asian")
+    )
+    black = models.BooleanField(
+        default=False,
+        verbose_name=_("Black or African American")
+    )
+    white = models.BooleanField(
+        default=False,
+        verbose_name=_("White")
+    )
+    pacific_islander = models.BooleanField(
+        default=False,
+        verbose_name=_("Native Hawaiian or Pacific Islander")
     )
     current_employment_status = models.CharField(
         max_length=2,
@@ -699,83 +699,102 @@ class WIOA(models.Model):
     # Disability
 
     # ADHD
-    disability_12 = models.BooleanField(
-        default=False
+    adhd = models.BooleanField(
+        default=False,
+        verbose_name=_("ADHD")
     )
     # Autism
-    disability_13 = models.BooleanField(
-        default=False
+    autism = models.BooleanField(
+        default=False,
+        verbose_name=_("Autism")
     )
     # Deaf-blindness
-    disability_9 = models.BooleanField(
-        default=False
+    deaf_blind = models.BooleanField(
+        default=False,
+        verbose_name=_("Deaf-blindness")
     )
     # Deafness
-    disability_3 = models.BooleanField(
-        default=False
+    deaf = models.BooleanField(
+        default=False,
+        verbose_name=_("Deafness")
     )
     # Emotional Disturbance
-    disability_6 = models.BooleanField(
-        default=False
+    emotional_disturbance = models.BooleanField(
+        default=False,
+        verbose_name=_("Emotional Disturbance")
     )
     # Had an IEP in K-12
-    disability_15 = models.BooleanField(
-        default=False
+    k12_iep = models.BooleanField(
+        default=False,
+        verbose_name=_("Had an IEP in K-12")
     )
     # Hard of Hearing
-    disability_2 = models.BooleanField(
-        default=False
+    hard_of_hearing = models.BooleanField(
+        default=False,
+        verbose_name=_("Hard of Hearing")
     )
     # Intellectual Disability
-    disability_1 = models.BooleanField(
-        default=False
+    intellectual_disability = models.BooleanField(
+        default=False,
+        verbose_name=_("Intellectual Disability")
     )
     # Multiple Disabilities
-    disability_10 = models.BooleanField(
-        default=False
+    multiple_disabilities = models.BooleanField(
+        default=False,
+        verbose_name=_("Multiple Disabilities")
     )
     # Orthopedic Impairment
-    disability_7 = models.BooleanField(
-        default=False
+    orthopedic_impairment = models.BooleanField(
+        default=False,
+        verbose_name=_("Orthopedic Impairment")
     )
     # Other Health Impairment
-    disability_8 = models.BooleanField(
-        default=False
+    other_health_impairment = models.BooleanField(
+        default=False,
+        verbose_name=_("Other Health Impairment")
     )
     # Specific Learning Disability
-    disability_11 = models.BooleanField(
-        default=False
+    learning_disability = models.BooleanField(
+        default=False,
+        verbose_name=_("Specific Learning Disability")
     )
     # Speech or Language Impairment
-    disability_4 = models.BooleanField(
-        default=False
+    speech_or_lang_impairment = models.BooleanField(
+        default=False,
+        verbose_name=_("Speech or Language Impairment")
     )
     # Traumatic Brain Injury
-    disability_14 = models.BooleanField(
-        default=False
+    traumatic_brain_injury = models.BooleanField(
+        default=False,
+        verbose_name=_("Traumatic Brain Injury")
     )
     # Visual Impairment
-    disability_5 = models.BooleanField(
-        default=False
+    visual_impairment = models.BooleanField(
+        default=False,
+        verbose_name=_("Visual Impairment")
     )
 
     # Learning Disabled
 
     # Dyscalculia
-    dislearning_4 = models.BooleanField(
-        default=False
+    dyscalculia = models.BooleanField(
+        default=False,
+        verbose_name=_("Dyscalculia")
     )
     # Dysgraphia
-    dislearning_3 = models.BooleanField(
-        default=False
+    dysgraphia = models.BooleanField(
+        default=False,
+        verbose_name=_("Dysgraphia")
     )
     # Dyslexia
-    dislearning_2 = models.BooleanField(
-        default=False
+    dyslexia = models.BooleanField(
+        default=False,
+        verbose_name=_("Dyslexia")
     )
-    # Relatied to Neurological Impairments
-    dislearning_1 = models.BooleanField(
-        default=False
+    # Related to Neurological Impairments
+    neurological_impairments = models.BooleanField(
+        default=False,
+        verbose_name=_("Related to Neurological Impairments")
     )
     highest_level_completed = models.CharField(
         max_length=2,

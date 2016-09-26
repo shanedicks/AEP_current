@@ -12,8 +12,7 @@ CONFIG_ROOT = Path(__file__).ancestor(2)
 PROJECT_ROOT = CONFIG_ROOT.parent
 
 # Project added to python path
-
-path.append(CONFIG_ROOT)
+path.append(PROJECT_ROOT)
 
 
 def get_env_variable(var_name):
@@ -45,11 +44,12 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    'crispy_forms',
 ]
 
 LOCAL_APPS = [
     'people',
-    'sections'
+    'sections',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -136,3 +136,7 @@ MEDIA_ROOT = PROJECT_ROOT.child("media")
 MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = '/'
+
+# django-crispy-forms template-pack setting
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

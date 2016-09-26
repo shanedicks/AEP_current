@@ -1,11 +1,15 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-<form class="form_group" method="post">
+<form method="post">
     {% csrf_token %}
-    {{ user_form.as_p }}
-    {{ form.as_p }}
-    {{ wioa_form.as_p }}
+        <h2>Name</h2>
+        {{ user_form|crispy }}
+        <h2>Contact</h2>
+        {{ form|crispy }}
+        <h2>Reporting Data</h2>
+        {{ wioa_form|crispy }}
     <button type="submit" class="btn btn-success">Create Student</button>
 </form>
 {% endblock content %}

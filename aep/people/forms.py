@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from core.forms import NoColonModelForm
 from django.contrib.auth.models import User
 from .models import Student, Staff, WIOA
 
@@ -19,11 +19,15 @@ def make_username(first_name, last_name):
         x += 1
 
 
-class UserForm(ModelForm):
+class UserForm(NoColonModelForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email')
+        fields = (
+            'first_name',
+            'last_name',
+            'email'
+        )
 
     def save(self):
         user = super(UserForm, self).save(commit=False)
@@ -46,7 +50,8 @@ student_fields = ('US_citizen', 'gender', 'marital_status')
 staff_fields = ('bio',)
 
 
-class StudentForm(ModelForm):
+class StudentForm(NoColonModelForm):
+
     class Meta:
         model = Student
         fields = (
@@ -55,6 +60,7 @@ class StudentForm(ModelForm):
             "marital_status",
             "US_citizen",
             "other_ID",
+            "program",
             "prior_registration",
             "phone",
             "alt_phone",
@@ -68,21 +74,87 @@ class StudentForm(ModelForm):
             "ec_phone",
             "ec_email",
             "ec_relation",
-            "program",
+        )
+
+class WioaForm(NoColonModelForm):
+
+    class Meta:
+        model = WIOA
+        fields = (
             "hispanic_latino",
             "amer_indian",
             "asian",
             "black",
             "white",
-            "pacific_islander"
+            "pacific_islander",
+            "current_employment_status",
+            "employer",
+            "occupation",
+            "migrant_seasonal_status",
+            "long_term_unemployed",
+            "single_parent",
+            "public_assistance",
+            "rural_area",
+            "displaced_homemaker",
+            "dislocated_worker",
+            "cult_barriers_hind_emp",
+            "in_foster_care",
+            "aged_out_foster_care",
+            "exhaust_tanf",
+            "disability_status",
+            "job_corps",
+            "youth_build",
+            "low_income",
+            "recieves_public_assistance",
+            "low_family_income",
+            "free_lunch_youth",
+            "state_payed_foster",
+            "disabled_in_poverty",
+            "homeless",
+            "youth_in_high_poverty_area",
+            "subject_of_criminal_justice",
+            "arrest_record_employment_barrier",
+            "lacks_adequate_residence",
+            "irregular_sleep_accomodation",
+            "migratory_child",
+            "runaway_youth",
+            "adult_one_stop",
+            "youth_one_stop",
+            "voc_rehab",
+            "wagner_peyser",
+            "school_status",
+            "recieved_training",
+            "etp_name",
+            "etp_program",
+            "etp_CIP_Code",
+            "training_type_1",
+            "training_type_2",
+            "training_type_3",
+            "adhd",
+            "autism",
+            "deaf_blind",
+            "deaf",
+            "emotional_disturbance",
+            "k12_iep",
+            "hard_of_hearing",
+            "intellectual_disability",
+            "multiple_disabilities",
+            "orthopedic_impairment",
+            "other_health_impairment",
+            "learning_disability",
+            "speech_or_lang_impairment",
+            "traumatic_brain_injury",
+            "visual_impairment",
+            "dyscalculia",
+            "dysgraphia",
+            "dyslexia",
+            "neurological_impairments",
+            "highest_level_completed",
+            "highet_level_at_entry",
+            "school_location",
         )
 
-class WioaForm(ModelForm):
-    class Meta:
-        model = WIOA
-        fields = "__all__"
-
-class StaffForm(ModelForm):
+class StaffForm(NoColonModelForm):
     class Meta:
         model = Staff
         fields = people_fields + staff_fields
