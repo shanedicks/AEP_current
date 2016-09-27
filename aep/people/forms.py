@@ -155,6 +155,7 @@ class WioaForm(NoColonModelForm):
             "job_corps",
             "youth_build",
             "low_income",
+            "low_literacy",
             "recieves_public_assistance",
             "low_family_income",
             "free_lunch_youth",
