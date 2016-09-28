@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column
+from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML
 from crispy_forms.bootstrap import PrependedText
 from core.forms import NoColonModelForm
 from .models import Student, Staff, WIOA
@@ -58,7 +58,8 @@ class UserForm(NoColonModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 'User Info',
-                'first_name',
+                Field('first_name', required=True),
+                HTML('<p> Just some shit to see if this works</p>'),
                 'last_name',
                 'email'
             )
