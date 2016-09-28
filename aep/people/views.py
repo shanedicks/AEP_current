@@ -1,8 +1,8 @@
-from django.views.generic import DetailView, ListView, UpdateView, CreateView
+from django.views.generic import DetailView, ListView, UpdateView, CreateView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from .models import Staff, Student
 from .forms import StaffForm, StudentForm, UserForm, WioaForm
 
@@ -36,6 +36,7 @@ class StudentCreateView(CreateView):
     model = Student
     form_class = StudentForm
     template_name = 'people/create_student.html'
+    success_url = reverse_lazy('people:student created')
 
     def get_context_data(self, **kwargs):
         context = super(StudentCreateView, self).get_context_data(**kwargs)
@@ -69,6 +70,11 @@ class StudentCreateView(CreateView):
             return self.render_to_response(
                 self.get_context_data(user_form=user_form, wioa_form=wioa_form)
             )
+
+
+class StudentCreateSuccessView(TemplateView):
+
+    template_name = 'people/student_create_success.html'
 
 
 class StaffDetailView(LoginRequiredMixin, DetailView):

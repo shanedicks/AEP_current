@@ -10,6 +10,7 @@ single_student_patterns = [
 student_patterns = [
     url(r'^$', views.StudentListView.as_view(), name='student list'),
     url(r'^new/$', views.StudentCreateView.as_view(), name='create student'),
+    url(r'^success/$', views.StudentCreateSuccessView.as_view(), name='student created'),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/', include(single_student_patterns)),
 ]
 
