@@ -109,9 +109,13 @@ class StudentForm(ModelForm):
                 Row(
                     Field(
                         'dob',
+                        placeholder="MM/DD/YYYY",
+                        wrapper_class="col-md-4"
+                    ),
+                    Field(
                         'gender',
                         'marital_status',
-                        wrapper_class="col-md-4"
+                        wrapper_class="col-md-4",
                     ),
                 ),
                 'other_ID',
@@ -122,17 +126,24 @@ class StudentForm(ModelForm):
                 Row(
                     Field(
                         'phone',
-                        'alt_phone',
                         wrapper_class="col-md-6",
                         required=True
                     ),
+                    Field(
+                        'alt_phone',
+                        wrapper_class="col-md-6"
+                    )
                 ),
                 Row(
                     Field(
                         'street_address_1',
-                        'street_address_2',
                         wrapper_class="col-md-6",
-                        required=True),
+                        required=True
+                    ),
+                    Field(
+                        'street_address_2',
+                        wrapper_class="col-md-6"
+                    )
                 ),
                 Row(
                     Field(
@@ -314,7 +325,7 @@ class WioaForm(NoColonModelForm):
             Fieldset(
                 "Disability Disclosure",
                 Field("disability_status", type="hidden"),
-                HTML('<h4>Physical Disabilities</h4>'),
+                HTML('<h5>Physical Disabilities</h5>'),
                 Row(
                     Column(
                         "adhd",
@@ -341,23 +352,17 @@ class WioaForm(NoColonModelForm):
                         css_class="col-md-4",
                     )
                 ),
-                HTML('<h4>Learning Disabilities</h4>'),
+                HTML('<h5>Learning Disabilities</h5>'),
                 Row(
                     Column(
                         "dyscalculia",
-                        css_class="col-md-3",
-                    ),
-                    Column(
                         "dysgraphia",
-                        css_class="col-md-3",
+                        css_class="col-md-4",
                     ),
                     Column(
                         "dyslexia",
-                        css_class="col-md-3",
-                    ),
-                    Column(
                         "neurological_impairments",
-                        css_class="col-md-3",
+                        css_class="col-md-4",
                     ),
                 ),
             ),
