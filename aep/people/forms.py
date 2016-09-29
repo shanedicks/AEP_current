@@ -44,6 +44,10 @@ class UserForm(ModelForm):
             'last_name',
             'email'
         )
+        labels = {
+            'first_name': "First Name (primer y segundo nombre)",
+            'last_name': "Last Name (primer y segundo apellido)"
+        }
 
     def save(self):
         user = super(UserForm, self).save(commit=False)
@@ -56,12 +60,17 @@ class UserForm(ModelForm):
         super(UserForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+        self.helper.help_text_inline = True
         self.helper.layout = Layout(
             Fieldset(
                 'User Info',
                 Row(
                     Field(
                         'first_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
                         'last_name',
                         wrapper_class="col-md-6",
                         required=True
@@ -183,7 +192,6 @@ class WioaForm(NoColonModelForm):
             "migrant_seasonal_status",
             "long_term_unemployed",
             "single_parent",
-            "public_assistance",
             "rural_area",
             "displaced_homemaker",
             "dislocated_worker",
@@ -191,17 +199,12 @@ class WioaForm(NoColonModelForm):
             "in_foster_care",
             "aged_out_foster_care",
             "exhaust_tanf",
-            "disability_status",
             "job_corps",
             "youth_build",
-            "low_income",
-            "low_literacy",
             "recieves_public_assistance",
             "low_family_income",
-            "free_lunch_youth",
             "state_payed_foster",
             "disabled_in_poverty",
-            "homeless",
             "youth_in_high_poverty_area",
             "subject_of_criminal_justice",
             "arrest_record_employment_barrier",
@@ -246,6 +249,12 @@ class WioaForm(NoColonModelForm):
             "country",
             "native_language"
         )
+        labels = {
+            "recieves_public_assistance": "Please check this box if any of the following are true.",
+            "state_payed_foster": "Are you in state-payed foster care?",
+            "subject_of_criminal_justice": "Have you ever been involved in the criminal justice system for committing a status offense or delinquent act?",
+            "arrest_record_employment_barrier": "Do you need help overcoming employment barriers due to criminal record?"
+        }
 
     def __init__(self, *args, **kwargs):
         super(WioaForm, self).__init__(*args, **kwargs)
@@ -279,20 +288,23 @@ class WioaForm(NoColonModelForm):
             ),
             Fieldset(
                 "Services/Training",
-                "adult_one_stop",
-                "youth_one_stop",
+                Field(
+                    "adult_one_stop",
+                    "youth_one_stop",
+                    "voc_rehab",
+                    "wagner_peyser",
+                    "recieved_training",
+                    "etp_name",
+                    "etp_program",
+                    "etp_CIP_Code",
+                    "training_type_1",
+                    "training_type_2",
+                    "training_type_3",
+                    type="hidden"
+                ),
                 "job_corps",
                 "youth_build",
-                "voc_rehab",
-                "wagner_peyser",
                 "school_status",
-                "recieved_training",
-                "etp_name",
-                "etp_program",
-                "etp_CIP_Code",
-                "training_type_1",
-                "training_type_2",
-                "training_type_3",
             ),
             Fieldset(
                 'Race/Ethnicity/Language',
@@ -324,8 +336,6 @@ class WioaForm(NoColonModelForm):
             ),
             Fieldset(
                 "Disability Disclosure",
-                Field("disability_status", type="hidden"),
-                HTML('<h5>Physical Disabilities</h5>'),
                 Row(
                     Column(
                         "adhd",
@@ -352,7 +362,9 @@ class WioaForm(NoColonModelForm):
                         css_class="col-md-4",
                     )
                 ),
-                HTML('<h5>Learning Disabilities</h5>'),
+                HTML(
+                    '<h5>Learning Disabilities</h5>'
+                ),
                 Row(
                     Column(
                         "dyscalculia",
@@ -363,34 +375,65 @@ class WioaForm(NoColonModelForm):
                         "dyslexia",
                         "neurological_impairments",
                         css_class="col-md-4",
-                    ),
-                ),
+                    )
+                )
             ),
             Fieldset(
                 "Additional Details",
-                "single_parent",
-                "public_assistance",
-                "rural_area",
-                "displaced_homemaker",
-                "dislocated_worker",
-                "cult_barriers_hind_emp",
-                "in_foster_care",
-                "aged_out_foster_care",
-                "exhaust_tanf",
-                "low_income",
-                "low_literacy",
+                Row(
+                    Column(
+                    "single_parent",
+                    "rural_area",
+                    "displaced_homemaker",
+                    "dislocated_worker",
+                    "state_payed_foster",
+                    css_class="col-md-4"
+                    ),
+                    Column(
+                    "cult_barriers_hind_emp",
+                    "in_foster_care",
+                    "aged_out_foster_care",
+                    "exhaust_tanf",
+                    css_class="col-md-4"
+                    ),
+                ),
                 "recieves_public_assistance",
-                "low_family_income",
-                "free_lunch_youth",
-                "state_payed_foster",
-                "disabled_in_poverty",
-                "homeless",
-                "youth_in_high_poverty_area",
-                "subject_of_criminal_justice",
-                "arrest_record_employment_barrier",
-                "lacks_adequate_residence",
-                "irregular_sleep_accomodation",
-            ),
+                Row(
+                    Column(
+                        HTML(
+                            """<p>(i) SNAP or Louisiana Purchase Card </p>
+                            <p>(ii) TANF Assistance</p>
+                            <p>(iii) SSI Assistance</p>"""
+                        ),
+                        css_class="col-md-4"
+                    ),
+                    Column(
+                        HTML(
+                            """ <p>(iv) State or local income-based public assistance (Louisiana Medicaid, Section 8 Housing, Kinship Care, Child Care Assisstance, LSU Hospital Free Care, Free Dental Program)</p>"""
+                        ),
+                        css_class="col-md-4"
+                    ),
+                ),
+                Field(
+                    "low_family_income",
+                    HTML("""<table class="table table-condensed"><tr><th>Individual</th><th>Family of 2</th>
+                        <th>Family of 3</th><th>Family of 4</th><th>Family of 5</th><th>Family of 6</th>
+                        <th>Family of 7</th><th>Family of 8</th></tr><tr></tr><td>$11,880</td><td>$16,020</td><td>$20,300</td>
+                        <td>$25,062</td><td>$29,579</td><td>$34,595</td><td>$36,730</td><td>$40,890</td></table>"""
+                    ),
+                    Field(
+                        "disabled_in_poverty",
+                        "youth_in_high_poverty_area",
+                        type="hidden"
+                    ),
+                    "subject_of_criminal_justice",
+                    "arrest_record_employment_barrier",
+                    "lacks_adequate_residence",
+                    "irregular_sleep_accomodation",
+                    "migratory_child",
+                    "runaway_youth"
+                )
+            )
         )
 
 

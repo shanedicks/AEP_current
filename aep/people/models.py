@@ -478,18 +478,18 @@ class WIOA(models.Model):
     native_language = models.CharField(
         max_length=20,
         blank=True,
-        verbose_name=_("Native Language")
+        verbose_name=_("Native Language - if not English")
     )
     country = models.CharField(
         max_length=20,
         blank=True,
-        verbose_name=_("Country of Highest Education")
+        verbose_name=_("Country of Origin - if not US")
     )
     current_employment_status = models.CharField(
         max_length=2,
         choices=EMPLOYMENT_STATUS_CHOICES,
         default="2",
-        verbose_name=_("Current Employment Status")
+        verbose_name=_("What is your current employment status")
     )
     employer = models.CharField(
         max_length=25,
@@ -514,75 +514,63 @@ class WIOA(models.Model):
     )
     single_parent = models.BooleanField(
         default=False,
-        verbose_name=_("Single Parent")
-    )
-    public_assistance = models.BooleanField(
-        default=False,
-        verbose_name=_("Public Assistance")
+        verbose_name=_("Are you a single parent?")
     )
     rural_area = models.BooleanField(
         default=False,
-        verbose_name=_("Rural Area")
+        verbose_name=_("Do you live in a rural area?")
     )
     displaced_homemaker = models.BooleanField(
         default=False,
-        verbose_name=_("Displaced Homemaker")
+        verbose_name=_("Are you a displaced homemaker?")
     )
     dislocated_worker = models.BooleanField(
         default=False,
-        verbose_name=_("Dislocated Worker")
+        verbose_name=_("Are you a dislocated worker?")
     )
     cult_barriers_hind_emp = models.BooleanField(
         default=False,
-        verbose_name=_("Cultural Barriers Hindering Employment")
+        verbose_name=_(
+            "Are there cultural barriers hindering your employment?"
+        )
     )
     in_foster_care = models.BooleanField(
         default=False,
-        verbose_name=_("In Foster Care")
+        verbose_name=_("Are you currently in foster care?")
     )
     aged_out_foster_care = models.BooleanField(
         default=False,
-        verbose_name=_("Aged out of Foster Care")
+        verbose_name=_(
+            "Have you aged out of foster care?"
+        )
     )
     exhaust_tanf = models.BooleanField(
         default=False,
-        verbose_name=_("Exhausting TANF Within 2 Years")
-    )
-    disability_status = models.CharField(
-        max_length=1,
-        choices=YES_NO_UNKNOWN,
-        blank=True
+        verbose_name=_(
+            "Are you recieving TANF assistance that ends within 2 years?"
+        )
     )
     job_corps = models.CharField(
         max_length=1,
         choices=YES_NO_UNKNOWN,
-        blank=True
+        blank=True,
+        verbose_name=_("Are you in Job Corps?")
     )
     youth_build = models.CharField(
         max_length=1,
         choices=YES_NO_UNKNOWN,
-        blank=True
-    )
-    low_income = models.BooleanField(
-        default=False,
-        verbose_name=_("Low Income")
-    )
-    low_literacy = models.BooleanField(
-        default=False,
-        verbose_name=_("Low Literacy")
+        blank=True,
+        verbose_name=_("Are you in a Youth Build program?")
     )
 
     # Tick Checkboxes
     # A
     recieves_public_assistance = models.BooleanField(
         default=False,
+        verbose_name=_("Do you recieve public assistance?")
     )
     # B
     low_family_income = models.BooleanField(
-        default=False,
-    )
-    # C
-    free_lunch_youth = models.BooleanField(
         default=False,
     )
     # D
@@ -591,10 +579,6 @@ class WIOA(models.Model):
     )
     # E
     disabled_in_poverty = models.BooleanField(
-        default=False,
-    )
-    # F
-    homeless = models.BooleanField(
         default=False,
     )
     # G
