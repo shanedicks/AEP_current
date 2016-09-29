@@ -71,7 +71,6 @@ class Profile(models.Model):
     )
     phone = models.CharField(
         max_length=20,
-        blank=True,
         verbose_name=_("Phone Number"),
     )
     alt_phone = models.CharField(
@@ -81,23 +80,22 @@ class Profile(models.Model):
     )
     street_address_1 = models.CharField(
         max_length=60,
-        blank=True,
         verbose_name=_("Street Address 1"),
     )
     street_address_2 = models.CharField(
         max_length=60,
         blank=True,
         verbose_name=("Street Address 2"))
-    city = models.CharField(max_length=30, blank=True)
+    city = models.CharField(
+        max_length=30,
+    )
     state = models.CharField(
         max_length=2,
-        blank=True,
         choices=STATE_CHOICES,
         default="LA"
     )
     zip_code = models.CharField(
         max_length=10,
-        blank=True,
         verbose_name=_("Zip Code")
     )
     dob = models.DateField(
@@ -106,24 +104,23 @@ class Profile(models.Model):
     emergency_contact = models.CharField(
         max_length=60,
         blank=True,
-        verbose_name=_("Emergency Contact")
+        verbose_name=_("Emergency Contact Full Name")
     )
     ec_phone = models.CharField(
         max_length=20,
         blank=True,
-        verbose_name=_("EC Phone Number")
+        verbose_name=_("Their Phone Number")
     )
     ec_email = models.EmailField(
         max_length=40,
         blank=True,
-        verbose_name=_("EC Email Address")
+        verbose_name=_("Their Email Address")
     )
     ec_relation = models.CharField(
         max_length=1,
         choices=EC_RELATIONS_CHOICES,
         default='O',
-        blank=True,
-        verbose_name=_("EC Relationship")
+        verbose_name=_("Their Relationship to You")
     )
     # make_slug here creates a 5 character string for use in absolute urls
     slug = models.CharField(
@@ -269,7 +266,8 @@ class Student(Profile):
     )
     prior_registration = models.BooleanField(
         default=False,
-        verbose_name=_("Have you registered for this program before?")
+        verbose_name=_("Returning Student"),
+        help_text=_("Have you registered with this program in the past?")
     )
     program = models.CharField(
         max_length=1,
@@ -291,16 +289,6 @@ class Student(Profile):
         choices=MARITAL_STATUS_CHOICES,
         default='S',
         verbose_name=_('Marital Status')
-    )
-    native_language = models.CharField(
-        max_length=20,
-        blank=True,
-        verbose_name=_("Native Language")
-    )
-    country = models.CharField(
-        max_length=20,
-        blank=True,
-        verbose_name=_("Country of Highest Education")
     )
 
     def has_WRU_ID(self):
@@ -388,7 +376,6 @@ class WIOA(models.Model):
         ("6", "Not attending school; within age of compulsory school attendance"),
     )
     TRAINING_TYPE_CHOICES = (
-
         ("1", "On the Job Training"),
         ("2", "Skill Upgrading"),
         ("3", "Entrepreneurial Training (non-WIOA Youth)"),
@@ -488,6 +475,16 @@ class WIOA(models.Model):
         default=False,
         verbose_name=_("Native Hawaiian or Pacific Islander")
     )
+    native_language = models.CharField(
+        max_length=20,
+        blank=True,
+        verbose_name=_("Native Language")
+    )
+    country = models.CharField(
+        max_length=20,
+        blank=True,
+        verbose_name=_("Country of Highest Education")
+    )
     current_employment_status = models.CharField(
         max_length=2,
         choices=EMPLOYMENT_STATUS_CHOICES,
@@ -502,7 +499,7 @@ class WIOA(models.Model):
     occupation = models.CharField(
         max_length=25,
         blank=True,
-        verbose_name=_("Employer")
+        verbose_name=_("Occupation")
     )
     migrant_seasonal_status = models.CharField(
         max_length=2,
