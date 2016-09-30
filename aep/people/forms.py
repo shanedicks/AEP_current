@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.forms import ModelForm
+from django.core.validators import RegexValidator
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML, Div
 from crispy_forms.bootstrap import PrependedText
@@ -14,9 +15,7 @@ address_fields = ('street_address_1', 'street_address_2', 'city', 'state')
 emergency_contact_fields = ('emergency_contact', 'ec_phone', 'ec_email',)
 
 people_fields = personal_fields + address_fields + emergency_contact_fields
-
 student_fields = ('US_citizen', 'gender', 'marital_status')
-
 staff_fields = ('bio',)
 
 def make_username(first_name, last_name):
@@ -33,6 +32,13 @@ def make_username(first_name, last_name):
             if User.objects.filter(username=new_name).count() == 0:
                 return new_name
         x += 1
+
+
+phone_validator = RegexValidator(
+    regex=r'^[2-9]\d{2}-\d{3}-\d{4}$',
+    message='Please enter a valid phone number',
+    code='invalid_phone'
+)
 
 
 class UserForm(ModelForm):
@@ -83,32 +89,10 @@ class UserForm(ModelForm):
 
 class StudentForm(ModelForm):
 
-    class Meta:
-        model = Student
-        fields = (
-            "dob",
-            "gender",
-            "marital_status",
-            "US_citizen",
-            "other_ID",
-            "program",
-            "prior_registration",
-            "phone",
-            "alt_phone",
-            "street_address_1",
-            "street_address_2",
-            "city",
-            "state",
-            "parish",
-            "zip_code",
-            "emergency_contact",
-            "ec_phone",
-            "ec_email",
-            "ec_relation",
-        )
-
     def __init__(self, *args, **kwargs):
         super(StudentForm, self).__init__(*args, **kwargs)
+        self.fields['phone'].validators.append(phone_validator)
+        self.fields['alt_phone'].validators.append(phone_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
@@ -135,6 +119,7 @@ class StudentForm(ModelForm):
                 Row(
                     Field(
                         'phone',
+                        placeholder="504-555-5555",
                         wrapper_class="col-md-6",
                         required=True
                     ),
@@ -174,87 +159,31 @@ class StudentForm(ModelForm):
             )
         )
 
+    class Meta:
+        model = Student
+        fields = (
+            "dob",
+            "gender",
+            "marital_status",
+            "US_citizen",
+            "other_ID",
+            "program",
+            "prior_registration",
+            "phone",
+            "alt_phone",
+            "street_address_1",
+            "street_address_2",
+            "city",
+            "state",
+            "parish",
+            "zip_code",
+            "emergency_contact",
+            "ec_phone",
+            "ec_email",
+            "ec_relation",
+        )
 
 class WioaForm(NoColonModelForm):
-
-    class Meta:
-        model = WIOA
-        fields = (
-            "hispanic_latino",
-            "amer_indian",
-            "asian",
-            "black",
-            "white",
-            "pacific_islander",
-            "current_employment_status",
-            "employer",
-            "occupation",
-            "migrant_seasonal_status",
-            "long_term_unemployed",
-            "single_parent",
-            "rural_area",
-            "displaced_homemaker",
-            "dislocated_worker",
-            "cult_barriers_hind_emp",
-            "in_foster_care",
-            "aged_out_foster_care",
-            "exhaust_tanf",
-            "job_corps",
-            "youth_build",
-            "recieves_public_assistance",
-            "low_family_income",
-            "state_payed_foster",
-            "disabled_in_poverty",
-            "youth_in_high_poverty_area",
-            "subject_of_criminal_justice",
-            "arrest_record_employment_barrier",
-            "lacks_adequate_residence",
-            "irregular_sleep_accomodation",
-            "migratory_child",
-            "runaway_youth",
-            "adult_one_stop",
-            "youth_one_stop",
-            "voc_rehab",
-            "wagner_peyser",
-            "school_status",
-            "recieved_training",
-            "etp_name",
-            "etp_program",
-            "etp_CIP_Code",
-            "training_type_1",
-            "training_type_2",
-            "training_type_3",
-            "adhd",
-            "autism",
-            "deaf_blind",
-            "deaf",
-            "emotional_disturbance",
-            "k12_iep",
-            "hard_of_hearing",
-            "intellectual_disability",
-            "multiple_disabilities",
-            "orthopedic_impairment",
-            "other_health_impairment",
-            "learning_disability",
-            "speech_or_lang_impairment",
-            "traumatic_brain_injury",
-            "visual_impairment",
-            "dyscalculia",
-            "dysgraphia",
-            "dyslexia",
-            "neurological_impairments",
-            "highest_level_completed",
-            "highet_level_at_entry",
-            "school_location",
-            "country",
-            "native_language"
-        )
-        labels = {
-            "recieves_public_assistance": "Please check this box if any of the following are true.",
-            "state_payed_foster": "Are you in state-payed foster care?",
-            "subject_of_criminal_justice": "Have you ever been involved in the criminal justice system for committing a status offense or delinquent act?",
-            "arrest_record_employment_barrier": "Do you need help overcoming employment barriers due to criminal record?"
-        }
 
     def __init__(self, *args, **kwargs):
         super(WioaForm, self).__init__(*args, **kwargs)
@@ -267,7 +196,6 @@ class WioaForm(NoColonModelForm):
                 Row(
                     Field(
                         "highest_level_completed",
-                        "highet_level_at_entry",
                         "school_location",
                         wrapper_class="col-md-4"
                     ),
@@ -435,6 +363,85 @@ class WioaForm(NoColonModelForm):
                 )
             )
         )
+
+    class Meta:
+        model = WIOA
+        fields = (
+            "hispanic_latino",
+            "amer_indian",
+            "asian",
+            "black",
+            "white",
+            "pacific_islander",
+            "current_employment_status",
+            "employer",
+            "occupation",
+            "migrant_seasonal_status",
+            "long_term_unemployed",
+            "single_parent",
+            "rural_area",
+            "displaced_homemaker",
+            "dislocated_worker",
+            "cult_barriers_hind_emp",
+            "in_foster_care",
+            "aged_out_foster_care",
+            "exhaust_tanf",
+            "job_corps",
+            "youth_build",
+            "recieves_public_assistance",
+            "low_family_income",
+            "state_payed_foster",
+            "disabled_in_poverty",
+            "youth_in_high_poverty_area",
+            "subject_of_criminal_justice",
+            "arrest_record_employment_barrier",
+            "lacks_adequate_residence",
+            "irregular_sleep_accomodation",
+            "migratory_child",
+            "runaway_youth",
+            "adult_one_stop",
+            "youth_one_stop",
+            "voc_rehab",
+            "wagner_peyser",
+            "school_status",
+            "recieved_training",
+            "etp_name",
+            "etp_program",
+            "etp_CIP_Code",
+            "training_type_1",
+            "training_type_2",
+            "training_type_3",
+            "adhd",
+            "autism",
+            "deaf_blind",
+            "deaf",
+            "emotional_disturbance",
+            "k12_iep",
+            "hard_of_hearing",
+            "intellectual_disability",
+            "multiple_disabilities",
+            "orthopedic_impairment",
+            "other_health_impairment",
+            "learning_disability",
+            "speech_or_lang_impairment",
+            "traumatic_brain_injury",
+            "visual_impairment",
+            "dyscalculia",
+            "dysgraphia",
+            "dyslexia",
+            "neurological_impairments",
+            "highest_level_completed",
+            "school_location",
+            "country",
+            "native_language"
+        )
+        labels = {
+            "recieves_public_assistance": "Please check this box if any of the following are true.",
+            "state_payed_foster": "Are you in state-payed foster care?",
+            "subject_of_criminal_justice": "Have you ever been involved in the criminal justice system for committing a status offense or delinquent act?",
+            "arrest_record_employment_barrier": "Do you need help overcoming employment barriers due to criminal record?"
+        }
+
 
 
 class StaffForm(NoColonModelForm):
