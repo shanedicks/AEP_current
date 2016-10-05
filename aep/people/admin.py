@@ -1,20 +1,36 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
 
 from import_export import resources
+from import_export.admin import ImportExportModelAdmin, ImportExportMixin
 from .models import Student, Staff, WIOA
 
 # Register your models here.
 admin.site.register(Staff)
-admin.site.register(WIOA)
 
 
-class UserInline(admin.TabularInline):
-    model = User
-    extra = 0
+class UserResource(resources.ModelResource):
+
+    class Meta:
+        model = User
 
 
-class StudentAdmin(admin.ModelAdmin):
+class StudentResource(resources.ModelResource):
+
+    class Meta:
+        model = Student
+
+
+class WIOAResource(resources.ModelResource):
+
+    class Meta:
+        model = WIOA
+
+
+class StudentAdmin(ImportExportModelAdmin):
+
+    resource_class = StudentResource
 
     list_display = ("__str__", "AEP_ID", "WRU_ID", "dob")
 
@@ -42,19 +58,43 @@ class StudentAdmin(admin.ModelAdmin):
 admin.site.register(Student, StudentAdmin)
 
 
-class UserResource(resources.ModelResource):
+class WIOAAdmin(ImportExportModelAdmin):
+    resource_class = WIOAResource
 
-    class Meta:
-        model = User
+    list_display = ("__str__", "get_AEP_ID", "get_WRU_ID")
+
+    search_fields = [
+        "student__user__first_name",
+        "student__user__last_name",
+        "student__AEP_ID",
+        "student__WRU_ID"
+    ]
+
+    def get_AEP_ID(self, obj):
+        return obj.student.AEP_ID
+    get_AEP_ID.admin_order_field = "AEP_ID"
+    get_AEP_ID.short_description = "AEP ID"
+
+    def get_WRU_ID(self, obj):
+        return obj.student.WRU_ID
+    get_WRU_ID.admin_order_field = "WRU_ID"
+    get_WRU_ID.short_description = "WRU ID"
 
 
-class StudentResource(resources.ModelResource):
-
-    class Meta:
-        model = Student
+admin.site.register(WIOA, WIOAAdmin)
 
 
-class WIOAResource(resources.ModelResource):
+class CustomUserAdmin(ImportExportMixin, UserAdmin):
+    resource_class = UserResource
 
-    class Meta:
-        model = WIOA
+    list_display = ("last_name", "first_name", "email", "username")
+
+    search_fields = [
+        "last_name",
+        "first_name",
+        "email"
+    ]
+
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)

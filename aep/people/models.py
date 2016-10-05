@@ -793,5 +793,8 @@ class WIOA(models.Model):
         default="1"
     )
 
+    def __str__(self):
+        return self.student.__str__()
+
     class Meta:
         verbose_name_plural = "WIOA records"
