@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 
-from .models import Student, Staff
+from import_export import resources
+from .models import Student, Staff, WIOA
 
 # Register your models here.
 admin.site.register(Staff)
+admin.site.register(WIOA)
 
 
 class UserInline(admin.TabularInline):
@@ -38,3 +40,21 @@ class StudentAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Student, StudentAdmin)
+
+
+class UserResource(resources.ModelResource):
+
+    class Meta:
+        model = User
+
+
+class StudentResource(resources.ModelResource):
+
+    class Meta:
+        model = Student
+
+
+class WIOAResource(resources.ModelResource):
+
+    class Meta:
+        model = WIOA

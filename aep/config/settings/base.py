@@ -45,6 +45,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'crispy_forms',
+    'import_export'
 ]
 
 LOCAL_APPS = [
@@ -140,3 +141,7 @@ LOGIN_REDIRECT_URL = '/'
 # django-crispy-forms template-pack setting
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# import_export settings
+
+IMPORT_EXPORT_USE_TRANSACTIONS = True

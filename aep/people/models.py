@@ -792,3 +792,6 @@ class WIOA(models.Model):
         choices=SCHOOL_LOCATION_CHOICES,
         default="1"
     )
+
+    class Meta:
+        verbose_name_plural = "WIOA records"
