@@ -54,7 +54,7 @@ class WIOAResource(resources.ModelResource):
             "student__user__first_name",
             "student__user__last_name",
             "student__user__email",
-            "student__AEP_ID"
+            "student__AEP_ID",
             "student__dob",
             "student__gender",
             "student__marital_status",
