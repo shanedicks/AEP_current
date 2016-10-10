@@ -3,13 +3,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from core.utils import make_slug
 from people.models import Staff, Student
-
-
-class Semester(models.Model):
-
-    title = models.CharField(max_length=20)
-    start_date = models.DateField()
-    end_date = models.DateField()
+from semesters.models import Semester
 
 
 class Section(models.Model):
