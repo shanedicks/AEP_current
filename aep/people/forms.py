@@ -156,6 +156,14 @@ class StudentForm(ModelForm):
                 'ec_phone',
                 'ec_email',
                 'ec_relation'
+            ),
+            Fieldset(
+                'What types of classes are you interested in taking with us?',
+                'ccr_app',
+                'esl_app',
+                'ace_app',
+                'e_learn_app',
+                'success_app'
             )
         )
 
@@ -167,7 +175,11 @@ class StudentForm(ModelForm):
             "marital_status",
             "US_citizen",
             "other_ID",
-            "program",
+            "ccr_app",
+            "esl_app",
+            "ace_app",
+            "e_learn_app",
+            "success_app",
             "prior_registration",
             "phone",
             "alt_phone",

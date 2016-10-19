@@ -274,6 +274,26 @@ class Student(Profile):
         choices=PROGRAM_CHOICES,
         default='C'
     )
+    ccr_app = models.BooleanField(
+        default=False,
+        verbose_name=_("College and Career Readiness")
+    )
+    esl_app = models.BooleanField(
+        default=False,
+        verbose_name=_("English Language Learning")
+    )
+    ace_app = models.BooleanField(
+        default=False,
+        verbose_name=_("ACE Program")
+    )
+    e_learn_app = models.BooleanField(
+        default=False,
+        verbose_name=_("Online Classes")
+    )
+    success_app = models.BooleanField(
+        default=False,
+        verbose_name=_("Success Classes")
+    )
     parish = models.CharField(
         max_length=2,
         choices=PARISH_CHOICES,
