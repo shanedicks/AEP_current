@@ -14,7 +14,8 @@ urlpatterns = [
 
     # Other Stuff
     url(r'^', include('people.urls', namespace='people')),
-    url(r'^classes/', include('sections.urls', namespace='sections'))
+    url(r'^classes/', include('sections.urls', namespace='sections')),
+    url(r'^semesters/', include('semesters.urls', namespace='semesters'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

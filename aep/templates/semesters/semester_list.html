@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Sessions</h1>
+    {% for semester in object_list %}
+        <h4><a href="{{ semester.get_absolute_url }}">{{ semester.title }}</a></h4><p>{{ semester.start_date }} - {{ semester.end_date }} </p>
+    {% endfor %}
+    
+{% endblock content %}
