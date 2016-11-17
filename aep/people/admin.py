@@ -14,6 +14,12 @@ class UserResource(resources.ModelResource):
 
     class Meta:
         model = User
+        fields = (
+            "id",
+            "first_name",
+            "last_name",
+            "email"
+        )
 
 
 class StudentResource(resources.ModelResource):
@@ -21,6 +27,7 @@ class StudentResource(resources.ModelResource):
     class Meta:
         model = Student
         fields = (
+            "id",
             "user__first_name",
             "user__last_name",
             "user__email",
@@ -53,6 +60,7 @@ class WIOAResource(resources.ModelResource):
     class Meta:
         model = WIOA
         fields = (
+            "id",
             "student__user__first_name",
             "student__user__last_name",
             "student__user__email",
