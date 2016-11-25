@@ -1,8 +1,10 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
+
 {% block content %}
     <form action="" method="post">
         {% csrf_token %}
-        {{ form.as_ul }}
+        {% crispy form %}
         <button type="submit" class="btn btn-success">Enroll</button>
     </form>
 {% endblock content %}

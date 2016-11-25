@@ -17,6 +17,7 @@ student_patterns = [
 single_staff_patterns = [
     url(r'^$', views.StaffDetailView.as_view(), name='staff detail'),
     url(r'^edit/$', views.StaffUpdateView.as_view(), name='edit staff'),
+    url(r'^home/$', views.StaffHomeView.as_view(), name='staff home'),
 ]
 
 staff_patterns = [

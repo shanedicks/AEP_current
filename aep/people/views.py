@@ -82,6 +82,12 @@ class StaffDetailView(LoginRequiredMixin, DetailView):
     model = Staff
 
 
+class StaffHomeView(LoginRequiredMixin, TemplateView):
+
+    model = Staff
+    template_name = 'people/staff_home.html'
+
+
 class StaffListView(LoginRequiredMixin, ListView):
 
     model = Staff
