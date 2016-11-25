@@ -45,7 +45,8 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'crispy_forms',
-    'import_export'
+    'import_export',
+    'rules'
 ]
 
 LOCAL_APPS = [
@@ -68,6 +69,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+AUTHENTICATION_BACKENDS = (
+    'rules.permissions.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 TEMPLATES = [
     {
