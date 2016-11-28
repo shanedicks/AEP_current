@@ -1,5 +1,6 @@
 from django.views.generic import DetailView, ListView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 from people.models import Student
 from .models import Section, Enrollment
 
@@ -61,3 +62,8 @@ class AddClassView(LoginRequiredMixin, CreateView):
         enrollment.creator = creator
         enrollment.save()
         return super(AddClassView, self).form_valid(form)
+
+    def get_success_url(self):
+        student = Student.objects.get(slug=self.kwargs['slug'])
+        url = student.get_absolute_url()
+        return url + "my-classes"

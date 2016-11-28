@@ -3,10 +3,10 @@ from . import views
 
 
 single_class_patterns = [
-    url(r'^(?P<slug>[a-zA-Z0-9]{5})/$',
+    url(r'^$',
         views.ClassDetailView.as_view(),
         name='class detail'),
-    url(r'^(?P<slug>[a-zA-Z0-9]{5})/add-student/$',
+    url(r'^add-student/$',
         views.AddStudentView.as_view(),
         name='add student'),
 ]

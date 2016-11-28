@@ -109,7 +109,9 @@ class Enrollment(models.Model):
         pass
 
     def __str__(self):
-        return self.student_name + self.class_name
+        name = self.student_name()
+        section = self.class_name()
+        return name + ": enrolled in " + section
 
 
 class Attendance(models.Model):
