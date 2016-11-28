@@ -4,7 +4,7 @@ from . import views
 single_student_patterns = [
     url(r'^$', views.StudentDetailView.as_view(), name='student detail'),
     url(r'^edit/$', views.StudentUpdateView.as_view(), name='edit student'),
-    url(r'^my_classes/', include('sections.urls'))
+    url(r'^', include('sections.urls'))
 ]
 
 student_patterns = [

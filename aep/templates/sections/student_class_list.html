@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Classes</h1>
+    {% for enrollment in object_list %}
+        <h4>{{ enrollment.section }} - {{ enrollment.section.teacher }}</h4>
+    {% endfor %}
+    
+{% endblock content %}

@@ -43,6 +43,9 @@ class Section(models.Model):
     def get_dropped_students(self):
         pass
 
+    def is_full(self):
+        pass
+
     def __str__(self):
         return self.title
 
@@ -88,7 +91,7 @@ class Enrollment(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     def student_name(self):
-        name = self.student.get_full_name
+        name = self.student.__str__()
         return name
 
     def class_name(self):
@@ -104,6 +107,9 @@ class Enrollment(models.Model):
     # Check attendance for attendance policy compliance - change enrollment status if needed
     def enforce_attendance(self):
         pass
+
+    def __str__(self):
+        return self.student_name + self.class_name
 
 
 class Attendance(models.Model):
