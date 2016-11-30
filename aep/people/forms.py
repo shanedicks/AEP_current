@@ -4,7 +4,6 @@ from django.core.validators import RegexValidator
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML, Div
 from crispy_forms.bootstrap import PrependedText
-from core.forms import NoColonModelForm
 from .models import Student, Staff, WIOA
 
 
@@ -17,6 +16,7 @@ emergency_contact_fields = ('emergency_contact', 'ec_phone', 'ec_email',)
 people_fields = personal_fields + address_fields + emergency_contact_fields
 student_fields = ('US_citizen', 'gender', 'marital_status')
 staff_fields = ('bio',)
+
 
 def make_username(first_name, last_name):
     if len(last_name) < 5:
@@ -64,6 +64,45 @@ class UserForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'User Info',
+                Row(
+                    Field(
+                        'first_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'last_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                ),
+                'email'
+            )
+        )
+
+
+class UserUpdateForm(ModelForm):
+
+    class Meta:
+        model = User
+        fields = (
+            'first_name',
+            'last_name',
+            'email'
+        )
+        labels = {
+            'first_name': "First Name (primer y segundo nombre)",
+            'last_name': "Last Name (primer y segundo apellido)"
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.help_text_inline = True
@@ -195,7 +234,8 @@ class StudentForm(ModelForm):
             "ec_relation",
         )
 
-class WioaForm(NoColonModelForm):
+
+class WioaForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(WioaForm, self).__init__(*args, **kwargs)
@@ -455,8 +495,7 @@ class WioaForm(NoColonModelForm):
         }
 
 
-
-class StaffForm(NoColonModelForm):
+class StaffForm(ModelForm):
     class Meta:
         model = Staff
         fields = people_fields + staff_fields
