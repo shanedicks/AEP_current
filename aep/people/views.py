@@ -22,6 +22,8 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 class StudentListView(LoginRequiredMixin, ListView):
 
     model = Student
+    context_object_name = 'students'
+    paginate_by = 15
 
 
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
