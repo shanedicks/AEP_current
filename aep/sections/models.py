@@ -65,20 +65,25 @@ class Section(models.Model):
     slug = models.CharField(unique=True, max_length=5, default=make_slug)
 
     def get_all_students(self):
-        students = self.students.all()
-        return students
+        return self.students.all()
 
-    def get_active_students(self):
-        pass
+    def get_active(self):
+        return self.students.filter(status='A')
 
-    def get_dropped_students(self):
-        pass
+    def get_dropped(self):
+        return self.students.filter(status='D')
+
+    def get_withdrawn(self):
+        return self.students.filter(status='W')
+
+    def open_seats(self):
+        return self.seats - self.students.count()
 
     def is_full(self):
-        pass
+        return self.seats < self.students.count()
 
     def __str__(self):
-        return self.title
+        return self.site + self.title
 
     def get_absolute_url(self):
         return reverse('sections:class detail', kwargs={'slug': self.slug})
