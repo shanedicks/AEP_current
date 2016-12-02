@@ -8,6 +8,26 @@ from semesters.models import Semester
 
 class Section(models.Model):
 
+    CITY_PARK = 'CP'
+    MID_CITY = 'MC'
+    WEST_BANK = 'WB'
+    JEFFERSON_PARISH = 'JP'
+    SIDNEY_COLLIER = 'SC'
+    SITE_CHOICES = (
+        (CITY_PARK, 'City Park'),
+        (MID_CITY, 'NOALC'),
+        (WEST_BANK, 'West Bank'),
+        (JEFFERSON_PARISH, 'Jefferson Parish'),
+        (SIDNEY_COLLIER, 'Sidney Collier')
+    )
+    ESL = 'ESL'
+    CCR = 'CCR'
+    TRANS = 'TRANS'
+    PROGRAM_CHOICES = (
+        (ESL, 'ESL'),
+        (CCR, 'CCR'),
+        (TRANS, 'Transitions')
+    )
     title = models.CharField(max_length=50)
     semester = models.ForeignKey(
         Semester,
@@ -17,6 +37,17 @@ class Section(models.Model):
     teacher = models.ForeignKey(
         Staff,
         related_name='classes',
+        null=True,
+        blank=True
+    )
+    site = models.CharField(
+        max_length=2,
+        choices=SITE_CHOICES,
+        blank=True,
+    )
+    program = models.CharField(
+        max_length=5,
+        choices=PROGRAM_CHOICES,
         null=True,
         blank=True
     )
@@ -112,6 +143,9 @@ class Enrollment(models.Model):
         name = self.student_name()
         section = self.class_name()
         return name + ": enrolled in " + section
+
+    class Meta:
+        unique_together = ('student', 'section')
 
 
 class Attendance(models.Model):
