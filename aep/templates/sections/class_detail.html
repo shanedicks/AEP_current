@@ -5,5 +5,5 @@
     {% for student in section.get_all_students %}
     <p><a href='{{ student.student.get_absolute_url }}'>{{ student.student }}</a></p>
     {% endfor %}
-    <p><a class="btn btn-default" href="add-student/" role="button">Add Student &raquo;</a></p>
+    <p><a class="btn btn-default btn-sm" href="add-student/" role="button">Add Student &raquo;</a></p>
 {% endblock content %}
