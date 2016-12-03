@@ -1,10 +1,14 @@
-from django.views.generic import DetailView, ListView, UpdateView, CreateView, TemplateView
+from django.views.generic import (
+    DetailView, ListView, UpdateView,
+    CreateView, TemplateView, FormView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from .models import Staff, Student
-from .forms import StaffForm, StudentForm, UserForm, UserUpdateForm, WioaForm
+from .forms import (
+    StaffForm, StudentForm, StudentSearchForm,
+    UserForm, UserUpdateForm, WioaForm)
 
 
 class UserCreateView(CreateView):
@@ -19,11 +23,28 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
     model = Student
 
 
-class StudentListView(LoginRequiredMixin, ListView):
+class StudentListView(LoginRequiredMixin, ListView, FormView):
 
-    model = Student
+    form_class = StudentSearchForm
+    queryset = Student.objects.all()
     context_object_name = 'students'
-    paginate_by = 15
+    paginate_by = 25
+
+    def get_form_kwargs(self):
+        return {
+            'initial': self.get_initial(),
+            'prefix': self.get_prefix(),
+            'data': self.request.GET or None
+        }
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        form = self.get_form(self.get_form_class())
+        if form.is_valid():
+            self.object_list = form.filter_queryset(request, self.object_list)
+        return self.render_to_response(
+            self.get_context_data(form=form, object_list=self.object_list)
+        )
 
 
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
@@ -40,8 +61,14 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        user_form = UserUpdateForm(request.POST, instance=self.get_object().user)
-        student_form = StudentForm(request.POST, instance=self.get_object())
+        user_form = UserUpdateForm(
+            request.POST,
+            instance=self.get_object().user
+        )
+        student_form = StudentForm(
+            request.POST,
+            instance=self.get_object()
+        )
         uf_valid = user_form.is_valid()
         sf_valid = student_form.is_valid()
         if uf_valid and sf_valid:

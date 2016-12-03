@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
-from django.forms import ModelForm
+from django.forms import Form, ModelForm, CharField
 from django.core.validators import RegexValidator
+from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML, Div
 from crispy_forms.bootstrap import PrependedText
@@ -85,6 +86,23 @@ class UserForm(ModelForm):
                 'email'
             )
         )
+
+
+class StudentSearchForm(Form):
+    f_name = CharField(label=_('First Name'), required=False)
+    l_name = CharField(label=_('Last Name'), required=False)
+
+    def filter_queryset(self, request, queryset):
+        qst = queryset
+        if self.cleaned_data['f_name']:
+            qst = qst.filter(
+                user__first_name__icontains=self.cleaned_data['f_name']
+            )
+        if self.cleaned_data['l_name']:
+            qst = qst.filter(
+                user__last_name__icontains=self.cleaned_data['l_name']
+            )
+        return qst
 
 
 class UserUpdateForm(ModelForm):
