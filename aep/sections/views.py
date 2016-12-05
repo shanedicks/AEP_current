@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.db import IntegrityError
 from people.models import Student
 from .models import Section, Enrollment
+from .forms import SectionFilterForm, ClassAddEnrollementForm
 
 
 class ClassListView(LoginRequiredMixin, ListView):
@@ -60,7 +61,39 @@ class AddClassView(LoginRequiredMixin, CreateView):
 
     model = Enrollment
     template_name = 'sections/enroll.html'
-    fields = ['section']
+    form_class = ClassAddEnrollementForm
+
+    def get_context_data(self, **kwargs):
+        context = super(AddClassView, self).get_context_data(**kwargs)
+        if 'filter_form' not in context:
+            context['filter_form'] = SectionFilterForm()
+            context.update(kwargs)
+        return context
+    '''
+    def get_form_kwargs(self):
+        kwargs = super(AddClassView, self).get_form_kwargs()
+        kwargs.update(self.request.GET)
+        return kwargs
+    '''
+
+    def get(self, request, *args, **kwargs):
+        site, program = request.GET['site'], request.GET['program']
+        self.object = None
+        form_class = self.get_form_class()
+        qst = Section.objects.all()
+        if site != '':
+            qst = qst.filter(site=site)
+        if program != '':
+            qst = qst.filter(program=program)
+        form_class.base_fields['section'].queryset = qst
+        form = self.get_form(form_class)
+        filter_form = SectionFilterForm(request.GET, None)
+        return self.render_to_response(
+            self.get_context_data(
+                form=form,
+                filter_form=filter_form
+            )
+        )
 
     def form_valid(self, form):
         enrollment = form.save(commit=False)

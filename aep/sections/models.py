@@ -83,7 +83,11 @@ class Section(models.Model):
         return self.seats < self.students.count()
 
     def __str__(self):
-        return self.site + self.title
+        p = str(self.program)
+        s = str(self.site)
+        t = str(self.title)
+        b = str(self.start_time)
+        return p + " " + s + " " + t + " " + b
 
     def get_absolute_url(self):
         return reverse('sections:class detail', kwargs={'slug': self.slug})
