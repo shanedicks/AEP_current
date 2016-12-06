@@ -77,7 +77,9 @@ class Section(models.Model):
         return self.students.filter(status='W')
 
     def open_seats(self):
-        return self.seats - self.students.count()
+        if self.seats:
+            return self.seats - self.students.count()
+        return None
 
     def is_full(self):
         return self.seats < self.students.count()

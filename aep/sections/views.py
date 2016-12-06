@@ -13,6 +13,11 @@ class ClassListView(LoginRequiredMixin, ListView):
     template_name = 'sections/class_list.html'
 
 
+class AddClassListView(ClassListView):
+
+    template_name = 'sections/add_class_list.html'
+
+
 class ClassDetailView(LoginRequiredMixin, DetailView):
 
     model = Section
