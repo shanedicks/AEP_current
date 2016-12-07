@@ -2,7 +2,7 @@ from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 from .models import Section, Enrollment, Attendance
 
-admin.site.register(Enrollment)
+
 admin.site.register(Attendance)
 
 
@@ -24,3 +24,18 @@ class SectionAdmin(ImportExportModelAdmin):
 
 
 admin.site.register(Section, SectionAdmin)
+
+
+class EnrollmentAdmin(ImportExportModelAdmin):
+
+    list_display = (
+        '__str__',
+        'section',
+        'student',
+        'creator',
+        'created',
+        'last_modified'
+    )
+
+
+admin.site.register(Enrollment, EnrollmentAdmin)

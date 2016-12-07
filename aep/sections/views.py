@@ -1,4 +1,4 @@
-from django.views.generic import DetailView, ListView, CreateView
+from django.views.generic import DetailView, ListView, CreateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.db import IntegrityError
@@ -11,6 +11,9 @@ class ClassListView(LoginRequiredMixin, ListView):
 
     model = Section
     template_name = 'sections/class_list.html'
+    paginate_by = 20
+
+    queryset = Section.objects.all().order_by('site', 'program', 'title')
 
 
 class AddClassListView(ClassListView):
@@ -28,6 +31,13 @@ class StudentClassListView(LoginRequiredMixin, ListView):
 
     model = Enrollment
     template_name = 'sections/student_class_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentClassListView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
 
     def get_queryset(self):
         if 'slug' in self.kwargs:
@@ -121,3 +131,20 @@ class AddClassView(LoginRequiredMixin, CreateView):
         student = Student.objects.get(slug=self.kwargs['slug'])
         url = student.get_absolute_url()
         return url + "my-classes"
+
+
+class EnrollmentView(LoginRequiredMixin, DetailView):
+
+    model = Enrollment
+
+
+class EnrollmentDeleteView(LoginRequiredMixin, DeleteView):
+
+    model = Enrollment
+
+    def get_success_url(self):
+        student = self.object.student
+        return reverse_lazy(
+            'people:student classes',
+            kwargs={'slug': student.slug}
+        )

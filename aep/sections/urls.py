@@ -27,10 +27,21 @@ student_patterns = [
         name='add section')
 ]
 
+enrollment_patterns = [
+    url(r'(?P<pk>[0-9]+)/$',
+        views.EnrollmentView.as_view(),
+        name='enrollment detail'),
+    url(r'(?P<pk>[0-9]+)/remove/$',
+        views.EnrollmentDeleteView.as_view(),
+        name='delete enrollment'),
+]
+
 urlpatterns = [
     url(r'^$',
         views.ClassListView.as_view(),
         name='class list'),
+    url(r'^enrollments/',
+        include(enrollment_patterns)),
     url(r'^teaching/',
         include(staff_patterns)),
     url(r'^my-classes/',

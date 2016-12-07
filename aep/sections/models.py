@@ -102,12 +102,13 @@ class Section(models.Model):
         return "".join(days)
 
     def __str__(self):
+        s = str(self.site)
         n = str(self.title)
         t = str(self.teacher)
         d = self.get_days_str()
         b = str(self.start_time)
-        items = [n, t, d, b]
-        return " ".join(items)
+        items = [s, n, t, d, b]
+        return "-".join(items)
 
     def get_absolute_url(self):
         return reverse('sections:class detail', kwargs={'slug': self.slug})
@@ -168,6 +169,9 @@ class Enrollment(models.Model):
     def enforce_attendance(self):
         pass
 
+    def get_absolute_url(self):
+        return reverse('sections:enrollment detail', kwargs={'pk': self.pk})
+
     def __str__(self):
         name = self.student_name()
         section = self.class_name()
@@ -193,7 +197,8 @@ class Attendance(models.Model):
     )
     attendance_type = models.CharField(
         max_length=1,
-        choices=TYPE_CHOICES
+        choices=TYPE_CHOICES,
+        default='C'
     )
     attendance_date = models.DateField()
     time_in = models.TimeField()

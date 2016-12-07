@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>My Classes</h1>
+    <h1>Classes for {{student}}</h1>
     {% for enrollment in object_list %}
         <h4>
-        	<a href="{{ enrollment.section.get_absolute_url }}">
+        	<a href="{{ enrollment.get_absolute_url }}">
         		{{ enrollment.section }}
         	</a>
         </h4>
