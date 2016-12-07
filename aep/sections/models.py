@@ -84,12 +84,30 @@ class Section(models.Model):
     def is_full(self):
         return self.seats < self.students.count()
 
+    def get_days_str(self):
+        days = []
+        day_map = [
+            ('monday', 'M'),
+            ('tuesday', 'T'),
+            ('wednesday', 'W'),
+            ('thursday', 'R'),
+            ('friday', 'F'),
+            ('saturday', 'Sa'),
+            ('sunday', 'Su')
+        ]
+        for day in day_map:
+            field = self._meta.get_field(day[0])
+            if getattr(self, field.name):
+                days.append(day[1])
+        return "".join(days)
+
     def __str__(self):
-        p = str(self.program)
-        s = str(self.site)
-        t = str(self.title)
+        n = str(self.title)
+        t = str(self.teacher)
+        d = self.get_days_str()
         b = str(self.start_time)
-        return p + " " + s + " " + t + " " + b
+        items = [n, t, d, b]
+        return " ".join(items)
 
     def get_absolute_url(self):
         return reverse('sections:class detail', kwargs={'slug': self.slug})

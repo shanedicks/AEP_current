@@ -5,11 +5,9 @@
     {% for enrollment in object_list %}
         <h4>
         	<a href="{{ enrollment.section.get_absolute_url }}">
-        		{{ enrollment.section }} - {{ enrollment.section.teacher }}
+        		{{ enrollment.section }}
         	</a>
         </h4>
     {% endfor %}
-    <p><a class="btn btn-default" href="add-class/" role="button">Add New Class &raquo;</a>
-    <p><a class="btn btn-default" href="add-section/" role="button">Alt Add New Class &raquo;</a>
-    
+    <p><a class="btn btn-default" href="add-class/" role="button">Add New Class &raquo;</a>  
 {% endblock content %}

@@ -20,10 +20,10 @@ student_patterns = [
         views.StudentClassListView.as_view(),
         name='student classes'),
     url(r'^add-class/$',
-        views.AddClassListView.as_view(),
+        views.AddClassView.as_view(),
         name='add class'),
     url(r'^add-section/$',
-        views.AddClassView.as_view(),
+        views.AddClassListView.as_view(),
         name='add section')
 ]
 
@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^$',
         views.ClassListView.as_view(),
         name='class list'),
-    url(r'^classes/',
+    url(r'^teaching/',
         include(staff_patterns)),
     url(r'^my-classes/',
         include(student_patterns)),
