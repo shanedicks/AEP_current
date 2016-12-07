@@ -1,14 +1,28 @@
 from django.forms import ModelForm, Form, ChoiceField
-from .models import Enrollment
+from .models import Enrollment, Section
 
 
 class StudentAddEnrolmentForm(ModelForm):
     class Meta:
         model = Enrollment
-        fields = ('student', 'status')
+        fields = ('student',)
 
 
-class ClassAddEnrollementForm(ModelForm):
+class ClassAddEnrollmentForm(ModelForm):
+
+    class Meta:
+        model = Enrollment
+        fields = ('section',)
+
+
+class ClassAddFromListEnrollForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ClassAddFromListEnrollForm, self).__init__(*args, **kwargs)
+        pk = kwargs.pop('pk', None)
+        if pk:
+            self.fields['section'].queryset = Section.Objects.filter(pk=pk)
+
     class Meta:
         model = Enrollment
         fields = ('section',)

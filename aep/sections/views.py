@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.db import IntegrityError
 from people.models import Student
 from .models import Section, Enrollment
-from .forms import SectionFilterForm, ClassAddEnrollementForm
+from .forms import SectionFilterForm, ClassAddEnrollmentForm, ClassAddFromListEnrollForm
 
 
 class ClassListView(LoginRequiredMixin, ListView):
@@ -66,7 +66,7 @@ class AddClassView(LoginRequiredMixin, CreateView):
 
     model = Enrollment
     template_name = 'sections/enroll.html'
-    form_class = ClassAddEnrollementForm
+    form_class = ClassAddEnrollmentForm
 
     def get_context_data(self, **kwargs):
         context = super(AddClassView, self).get_context_data(**kwargs)
@@ -74,12 +74,6 @@ class AddClassView(LoginRequiredMixin, CreateView):
             context['filter_form'] = SectionFilterForm()
             context.update(kwargs)
         return context
-    '''
-    def get_form_kwargs(self):
-        kwargs = super(AddClassView, self).get_form_kwargs()
-        kwargs.update(self.request.GET)
-        return kwargs
-    '''
 
     def get(self, request, *args, **kwargs):
         self.object = None
@@ -110,6 +104,45 @@ class AddClassView(LoginRequiredMixin, CreateView):
         try:
             enrollment.save()
             return super(AddClassView, self).form_valid(form)
+        except IntegrityError:
+            form.add_error(
+                'section',
+                'This student is already enrolled in the selected class'
+            )
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        student = Student.objects.get(slug=self.kwargs['slug'])
+        url = student.get_absolute_url()
+        return url + "my-classes"
+
+
+class AddClassFromListView(LoginRequiredMixin, CreateView):
+
+    model = Enrollment
+    template_name = 'sections/check_enroll.html'
+    form_class = ClassAddFromListEnrollForm
+
+    def get_context_data(self, **kwargs):
+        context = super(AddClassFromListView, self).get_context_data(**kwargs)
+        if 'section' not in context:
+            context['section'] = Section.objects.get(pk=self.kwargs['pk'])
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+        context.update(kwargs)
+        return context
+
+    def form_valid(self, form):
+        enrollment = form.save(commit=False)
+        section = Section.objects.get(pk=self.kwargs['pk'])
+        student = Student.objects.get(slug=self.kwargs['slug'])
+        creator = self.request.user
+        enrollment.section = section
+        enrollment.student = student
+        enrollment.creator = creator
+        try:
+            enrollment.save()
+            return super(AddClassFromListView, self).form_valid(form)
         except IntegrityError:
             form.add_error(
                 'section',

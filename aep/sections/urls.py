@@ -20,11 +20,14 @@ student_patterns = [
         views.StudentClassListView.as_view(),
         name='student classes'),
     url(r'^add-class/$',
-        views.AddClassListView.as_view(),
-        name='add class'),
-    url(r'^add-section/$',
         views.AddClassView.as_view(),
-        name='add section')
+        name='add class')
+   # url(r'^add-section/$',
+   #     views.AddClassListView.as_view(),
+   #     name='add section list'),
+   # url(r'^add-section/(?P<pk>[0-9]{2})/$',
+   #     views.AddClassFromListView.as_view(),
+   #     name='add-section')
 ]
 
 urlpatterns = [
