@@ -1,14 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>My Classes</h1>
+    <h1>Classes for {{student}}</h1>
     {% for enrollment in object_list %}
         <h4>
-        	<a href="{{ enrollment.section.get_absolute_url }}">
-        		{{ enrollment.section }} - {{ enrollment.section.teacher }}
+        	<a href="{{ enrollment.get_absolute_url }}">
+        		{{ enrollment.section }}
         	</a>
         </h4>
     {% endfor %}
+<<<<<<< HEAD
     <p><a class="btn btn-default" href="add-class/" role="button">Add New Class &raquo;</a>
     
+=======
+    <p><a class="btn btn-default" href="add-class/" role="button">Add New Class &raquo;</a>  
+>>>>>>> a64307f4214b5c87d0c4634600c2c747550ee8c5
 {% endblock content %}

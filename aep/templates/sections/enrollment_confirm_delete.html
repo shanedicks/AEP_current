@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+	<h3>WARNING</h3>
+	<p>Are you sure you want to remove {{ object.student }} from {{ object.section }}?</p>
+	<p>This will erase any record of their participation in {{object.section}}</p>
+	<form action='' method='post'>
+		{% csrf_token %}
+		<input type="submit" value="Confirm"/>
+	</form>
+{% endblock %}

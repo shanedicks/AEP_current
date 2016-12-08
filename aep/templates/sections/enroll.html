@@ -2,9 +2,39 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-	<div class="embed-responsive embed-responsive-16by9">
-	<iframe class="embed-responsive-item" src="https://docs.google.com/spreadsheets/d/1bbYN6a9v4H5loGRsluhIVEsjllDvH8EdWFNKDGjiJ_A/edit?usp=sharing" class="col-md-8"></iframe>
+
+    <table class="table">
+      <tr>
+        <td>
+        <form class="form-inline" action="" method="get">
+            {% for field in filter_form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-default btn-sm" value"filter">Filter Choices</button>
+        </form>
+        </td>
+        <td>
+        <form class="form-inline" action="" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.errors }}
+                    {{ field.label_tag }}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success" value="Submit">Enroll</button>
+        </form>
+        </td>
+      </tr>
+    </table>
+    <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item" src="https://docs.google.com/spreadsheets/d/1bbYN6a9v4H5loGRsluhIVEsjllDvH8EdWFNKDGjiJ_A/edit?usp=sharing" class="col-md-8"></iframe>
     </div>
+<<<<<<< HEAD
     <form class='form-inline' action="" method="get">
         {{ filter_form }}
         <button type="submit" class="btn btn-default">Filter Choices</button>
@@ -14,4 +44,6 @@
         {{ form }}
         <button type="submit" class="btn btn-success" value="submit">Enroll</button>
     </form>    
+=======
+>>>>>>> a64307f4214b5c87d0c4634600c2c747550ee8c5
 {% endblock content %}

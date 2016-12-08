@@ -21,6 +21,7 @@ student_patterns = [
         name='student classes'),
     url(r'^add-class/$',
         views.AddClassView.as_view(),
+<<<<<<< HEAD
         name='add class')
    # url(r'^add-section/$',
    #     views.AddClassListView.as_view(),
@@ -28,13 +29,30 @@ student_patterns = [
    # url(r'^add-section/(?P<pk>[0-9]{2})/$',
    #     views.AddClassFromListView.as_view(),
    #     name='add-section')
+=======
+        name='add class'),
+    url(r'^add-section/$',
+        views.AddClassListView.as_view(),
+        name='add section')
+>>>>>>> a64307f4214b5c87d0c4634600c2c747550ee8c5
+]
+
+enrollment_patterns = [
+    url(r'(?P<pk>[0-9]+)/$',
+        views.EnrollmentView.as_view(),
+        name='enrollment detail'),
+    url(r'(?P<pk>[0-9]+)/remove/$',
+        views.EnrollmentDeleteView.as_view(),
+        name='delete enrollment'),
 ]
 
 urlpatterns = [
     url(r'^$',
         views.ClassListView.as_view(),
         name='class list'),
-    url(r'^classes/',
+    url(r'^enrollments/',
+        include(enrollment_patterns)),
+    url(r'^teaching/',
         include(staff_patterns)),
     url(r'^my-classes/',
         include(student_patterns)),

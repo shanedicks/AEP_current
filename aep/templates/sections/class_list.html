@@ -4,19 +4,26 @@
     <h1>Classes</h1>
     <table class="table">
 	    <tr>
+	    	<th>Site</th>
 	    	<th>Class</th>
-	    	<th>Instructor</th>
-	    	<th>Time</th>
-	    	<th>Seats</th>
 	    	<th>Open Seats</th>
+	    	<th>Seats</th>
+	    	<th>Instructor</th>
+	    	<th>Days</th>
+	    	<th>Time</th>
 	    </tr>
+        {% if is_paginated %}
+            {% include 'pagination.html' %}
+        {% endif %}
 	    {% for section in object_list %}
-	    <tr>    
-	        <td><h4><a href="{{ section.get_absolute_url }}">{{ section.title }}</a></h4></td>
-	        <td>{{ section.teacher }}</td>
-	        <td>{{ section.start_time }} to {{ section.end_time }}</td>
-	        <td>{{ section.seats }}</td>
+	    <tr>
+	    	<td>{{ section.site }}</td>   
+	        <td><a href="{{ section.get_absolute_url }}">{{ section.title }}</a></td>
 	        <td>{{ section.open_seats }}</td>
+	        <td>{{ section.seats }}</td>	        
+	        <td>{{ section.teacher }}</td>
+	        <td>{{ section.get_days_str }}
+	        <td>{{ section.start_time }} to {{ section.end_time }}</td>
 	  	</tr>
     	{% endfor %}
     </table>
