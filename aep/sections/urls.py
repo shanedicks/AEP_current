@@ -28,6 +28,7 @@ student_patterns = [
    # url(r'^add-section/(?P<pk>[0-9]{2})/$',
    #     views.AddClassFromListView.as_view(),
    #     name='add-section')
+]
 
 enrollment_patterns = [
     url(r'(?P<pk>[0-9]+)/$',

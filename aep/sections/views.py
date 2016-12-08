@@ -127,7 +127,7 @@ class AddClassView(LoginRequiredMixin, CreateView):
         return url + "my-classes"
 
 
-<<<<<<< HEAD
+
 class AddClassFromListView(LoginRequiredMixin, CreateView):
 
     model = Enrollment
@@ -165,7 +165,7 @@ class AddClassFromListView(LoginRequiredMixin, CreateView):
         student = Student.objects.get(slug=self.kwargs['slug'])
         url = student.get_absolute_url()
         return url + "my-classes"
-=======
+
 class EnrollmentView(LoginRequiredMixin, DetailView):
 
     model = Enrollment
@@ -181,4 +181,3 @@ class EnrollmentDeleteView(LoginRequiredMixin, DeleteView):
             'people:student classes',
             kwargs={'slug': student.slug}
         )
->>>>>>> a64307f4214b5c87d0c4634600c2c747550ee8c5
