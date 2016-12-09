@@ -117,11 +117,13 @@ class Section(models.Model):
 class Enrollment(models.Model):
 
     ACTIVE = 'A'
-    WITHDRAWN = 'W'
+    WAITING = 'W'
+    WITHDRAWN = 'R'
     DROPPED = 'D'
     COMPLETED = 'C'
     STATUS_CHOICES = (
         (ACTIVE, 'Active'),
+        (WAITING, 'Waitlist'),
         (WITHDRAWN, 'Withdrawn'),
         (DROPPED, 'Dropped'),
         (COMPLETED, 'Completed'),
@@ -160,14 +162,16 @@ class Enrollment(models.Model):
         return name
 
     def times_attended(self):
-        pass
+        return self.attendance.filter(attendance_type='P').count()
 
     def times_absent(self):
-        pass
+        return self.attendance.filter(attendance_type='A').count()
 
     # Check attendance for attendance policy compliance - change enrollment status if needed
     def enforce_attendance(self):
-        pass
+        absences = self.times_absent()
+        if absences > 4:
+            self.status = 'D'
 
     def get_absolute_url(self):
         return reverse('sections:enrollment detail', kwargs={'pk': self.pk})
@@ -185,10 +189,12 @@ class Attendance(models.Model):
 
     PRESENT = 'P'
     ABSENT = 'A'
+    PENDING = 'X'
     CANCELLED = 'C'
     TYPE_CHOICES = (
         (PRESENT, 'Present'),
         (ABSENT, 'Absent'),
+        (PENDING, 'Pending'),
         (CANCELLED, 'Cancelled'),
     )
     enrollment = models.ForeignKey(
@@ -201,5 +207,7 @@ class Attendance(models.Model):
         default='C'
     )
     attendance_date = models.DateField()
-    time_in = models.TimeField()
-    time_out = models.TimeField()
+    time_in = models.TimeField(
+    )
+    time_out = models.TimeField(
+    )

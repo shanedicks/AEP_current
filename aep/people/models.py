@@ -312,16 +312,16 @@ class Student(Profile):
     )
 
     def has_WRU_ID(self):
-        pass
+        return self.WRU_ID != ''
 
-    def get_active_classes(self):
-        pass
+    def active_classes(self):
+        return self.classes.all().filter(status='A')
 
-    def get_completed_classes(self):
-        pass
+    def completed_classes(self):
+        return self.classes.all().filter(status='C')
 
-    def get_all_classes(self):
-        pass
+    def all_classes(self):
+        return self.classes.all()
 
     def get_absolute_url(self):
         return reverse('people:student detail', kwargs={'slug': self.slug})
@@ -470,6 +470,11 @@ class WIOA(models.Model):
         Student,
         models.CASCADE,
         related_name='WIOA'
+    )
+    SID = models.CharField(
+        max_length=11,
+        blank=True,
+        verbose_name="SSN"
     )
     hispanic_latino = models.BooleanField(
         default=False,

@@ -6,7 +6,11 @@ from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
+    url(r'^$',
+        TemplateView.as_view(
+            template_name='pages/home.html'
+        ),
+        name='home'),
 
     # Django Admin Stuff
     url(r'^admin/', admin.site.urls),
@@ -15,7 +19,10 @@ urlpatterns = [
     # Other Stuff
     url(r'^', include('people.urls', namespace='people')),
     url(r'^classes/', include('sections.urls', namespace='sections')),
-    #url(r'^semesters/', include('semesters.urls', namespace='semesters'))
+    url(r'^registration/$',
+        TemplateView.as_view(
+            template_name='pages/registration.html'),
+        name='registration')
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
