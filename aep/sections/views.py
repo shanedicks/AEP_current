@@ -85,23 +85,21 @@ class AddClassView(LoginRequiredMixin, CreateView):
             context.update(kwargs)
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super(AddClassView, self).get_form_kwargs()
+        if self.request.GET:
+            kwargs.update(self.request.GET)
+        return kwargs
+
     def get(self, request, *args, **kwargs):
         self.object = None
         form_class = self.get_form_class()
-        qst = Section.objects.all()
-        if 'site' in request.GET:
-            site, program = request.GET['site'], request.GET['program']
-            if site != '':
-                qst = qst.filter(site=site)
-            if program != '':
-                qst = qst.filter(program=program)
-        form_class.base_fields['section'].queryset = qst
         form = self.get_form(form_class)
         filter_form = SectionFilterForm(request.GET, None)
         return self.render_to_response(
             self.get_context_data(
-                form=form,
-                filter_form=filter_form
+                filter_form=filter_form,
+                form=form
             )
         )
 

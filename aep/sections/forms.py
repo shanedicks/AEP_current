@@ -10,6 +10,17 @@ class StudentAddEnrolmentForm(ModelForm):
 
 class ClassAddEnrollmentForm(ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        site = kwargs.pop('site', None)
+        program = kwargs.pop('program', None)
+        qst = Section.objects.all().order_by('site', 'title')
+        if site and site[0] != '':
+            qst = qst.filter(site=site[0])
+        if program and program[0] != '':
+            qst = qst.filter(program=program[0])
+        self.base_fields['section'].queryset = qst
+        super(ClassAddEnrollmentForm, self).__init__(*args, **kwargs)
+
     class Meta:
         model = Enrollment
         fields = ('section',)
@@ -18,9 +29,10 @@ class ClassAddEnrollmentForm(ModelForm):
 class ClassAddFromListEnrollForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(ClassAddFromListEnrollForm, self).__init__(*args, **kwargs)
         pk = kwargs.pop('pk', None)
+        super(ClassAddFromListEnrollForm, self).__init__(*args, **kwargs)
         if pk:
+            pk = pk[0]
             self.fields['section'].queryset = Section.Objects.filter(pk=pk)
 
     class Meta:
