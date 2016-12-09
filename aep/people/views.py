@@ -26,7 +26,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 class StudentListView(LoginRequiredMixin, ListView, FormView):
 
     form_class = StudentSearchForm
-    queryset = Student.objects.all()
+    queryset = Student.objects.all().order_by('user__last_name')
     context_object_name = 'students'
     paginate_by = 25
 
