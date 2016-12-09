@@ -45,6 +45,10 @@ class Section(models.Model):
         choices=SITE_CHOICES,
         blank=True,
     )
+    room = models.CharField(
+        max_length=20,
+        blank=True
+    )
     program = models.CharField(
         max_length=5,
         choices=PROGRAM_CHOICES,
