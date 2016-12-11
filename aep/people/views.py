@@ -18,6 +18,8 @@ class UserCreateView(CreateView):
     template_name = 'people/create_user.html'
 
 
+# <<<<< Student Views >>>>>
+
 class StudentDetailView(LoginRequiredMixin, DetailView):
 
     model = Student
@@ -129,6 +131,9 @@ class StudentCreateView(CreateView):
 class StudentCreateSuccessView(TemplateView):
 
     template_name = 'people/student_create_success.html'
+
+
+# <<<<< Staff Views >>>>>
 
 
 class StaffDetailView(LoginRequiredMixin, DetailView):

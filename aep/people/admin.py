@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
-from import_export import resources
+from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportMixin
 from .models import Student, Staff, WIOA
 
@@ -25,10 +25,17 @@ class UserResource(resources.ModelResource):
 
 class StudentResource(resources.ModelResource):
 
+    user = fields.Field(
+        column_name='user',
+        attribute='user',
+        widget=widgets.ForeignKeyWidget(User, 'username')
+    )
+
     class Meta:
         model = Student
         fields = (
             "id",
+            'user',
             "user__first_name",
             "user__last_name",
             "user__email",

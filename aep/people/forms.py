@@ -378,6 +378,7 @@ class WioaForm(ModelForm):
             ),
             Fieldset(
                 "Additional Details",
+                Field("SID"),
                 Row(
                     Column(
                     "single_parent",
@@ -503,13 +504,14 @@ class WioaForm(ModelForm):
             "highest_level_completed",
             "school_location",
             "country",
-            "native_language"
+            "native_language",
+            "SID"
         )
         labels = {
             "recieves_public_assistance": "Please check this box if any of the following are true.",
             "state_payed_foster": "Are you in state-payed foster care?",
             "subject_of_criminal_justice": "Have you ever been involved in the criminal justice system for committing a status offense or delinquent act?",
-            "arrest_record_employment_barrier": "Do you need help overcoming employment barriers due to criminal record?"
+            "arrest_record_employment_barrier": "Do you need help overcoming employment barriers due to criminal record?",
         }
 
 
