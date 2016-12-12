@@ -1,8 +1,21 @@
 from django.forms import ModelForm, Form, ChoiceField
+from django.db.models import Q
+from people.models import Student
 from .models import Enrollment, Section
 
 
 class StudentAddEnrolmentForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        f_name = kwargs.pop('f_name', None)
+        l_name = kwargs.pop('l_name', None)
+        qst = Student.objects.none()
+        if f_name or l_name:
+            qst = Student.objects.filter(
+                Q(user__first_name__icontains=f_name) | Q(user__first_name__icontains=f_name)
+            )
+        return qst
+
     class Meta:
         model = Enrollment
         fields = ('student',)
@@ -13,7 +26,7 @@ class ClassAddEnrollmentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         site = kwargs.pop('site', None)
         program = kwargs.pop('program', None)
-        qst = Section.objects.all().order_by('site', 'title')
+        qst = Section.objects.all().order_by('site', 'title', 'start_time')
         if site and site[0] != '':
             qst = qst.filter(site=site[0])
         if program and program[0] != '':
