@@ -40,6 +40,7 @@ class StudentResource(resources.ModelResource):
             "user__last_name",
             "user__email",
             "dob",
+            'intake_date',
             "AEP_ID",
             "WRU_ID",
             "gender",
