@@ -160,7 +160,8 @@ class StudentForm(ModelForm):
                     Field(
                         'dob',
                         placeholder="MM/DD/YYYY",
-                        wrapper_class="col-md-4"
+                        wrapper_class="col-md-4",
+                        data_mask="99/99/9999"
                     ),
                     Field(
                         'gender',
@@ -178,11 +179,14 @@ class StudentForm(ModelForm):
                         'phone',
                         placeholder="504-555-5555",
                         wrapper_class="col-md-6",
+                        data_mask="999-999-9999",
                         required=True
                     ),
                     Field(
                         'alt_phone',
-                        wrapper_class="col-md-6"
+                        wrapper_class="col-md-6",
+                        placeholder="504-555-5555",
+                        data_mask="999-999-9999",
                     )
                 ),
                 Row(
