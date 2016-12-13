@@ -3,8 +3,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.db import IntegrityError
 from people.models import Student
+from people.forms import StudentSearchForm
 from .models import Section, Enrollment
-from .forms import SectionFilterForm, ClassAddEnrollmentForm, ClassAddFromListEnrollForm
+from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
+                    ClassAddFromListEnrollForm, StudentAddEnrollmentForm)
 
 
 class ClassListView(LoginRequiredMixin, ListView):
@@ -49,7 +51,7 @@ class AddStudentView(LoginRequiredMixin, CreateView):
 
     model = Enrollment
     template_name = 'sections/enroll_student.html'
-    fields = ['student']
+    form_class = StudentAddEnrollmentForm
 
     def form_valid(self, form):
         enrollment = form.save(commit=False)
@@ -66,6 +68,12 @@ class AddStudentView(LoginRequiredMixin, CreateView):
                 'The selected student is already enrolled in this class'
             )
             return self.form_invalid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super(AddStudentView, self).get_form_kwargs()
+        if self.request.GET:
+            kwargs.update(self.request.GET)
+        return kwargs
 
     def get_success_url(self):
         url = self.object.section.get_absolute_url()

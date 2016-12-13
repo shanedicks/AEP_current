@@ -2,6 +2,14 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+	<form class='form-inline' method='get'>
+        <div class="form-group">
+            <label class="sr-only" for="id_name">Student Name</label>
+            <input class="form-control" id="id_name" name="name" type="text" placeholder="Student Name" />
+        </div>          
+    <button type="submit" class="btn btn-default btn-sm">Filter Students</button>
+    <a href="{% url 'people:student list' %}" class="btn btn-default btn-sm">Clear</a>
+    </form>
     <form action="" method="post">
         {% csrf_token %}
         {{ form.as_ul }}

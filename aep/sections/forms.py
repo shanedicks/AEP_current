@@ -4,17 +4,18 @@ from people.models import Student
 from .models import Enrollment, Section
 
 
-class StudentAddEnrolmentForm(ModelForm):
+class StudentAddEnrollmentForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
-        f_name = kwargs.pop('f_name', None)
-        l_name = kwargs.pop('l_name', None)
+        name = kwargs.pop('name', None)
         qst = Student.objects.none()
-        if f_name or l_name:
+        if name:
+            name = name[0]
             qst = Student.objects.filter(
-                Q(user__first_name__icontains=f_name) | Q(user__first_name__icontains=f_name)
+                Q(user__first_name__icontains=name) | Q(user__last_name__icontains=name)
             )
-        return qst
+        self.base_fields['student'].queryset = qst
+        super(StudentAddEnrollmentForm, self).__init__(*args, **kwargs)
 
     class Meta:
         model = Enrollment
