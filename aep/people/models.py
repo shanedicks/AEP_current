@@ -258,7 +258,12 @@ class Student(Profile):
     other_ID = models.CharField(
         max_length=20,
         blank=True,
-        verbose_name=_("Other ID, Passport #, Visa info, etc.")
+        verbose_name=_("State ID, Passport #, Visa info, etc.")
+    )
+    other_ID_name = models.CharField(
+        max_length=20,
+        blank=True,
+        verbose_name=_('What kind of ID is this?')
     )
     US_citizen = models.BooleanField(
         default=False,

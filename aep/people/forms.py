@@ -155,22 +155,13 @@ class StudentForm(ModelForm):
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
             Fieldset(
-                'Personal Info',
-                Row(
-                    Field(
-                        'dob',
-                        placeholder="MM/DD/YYYY",
-                        wrapper_class="col-md-4",
-                        data_mask="99/99/9999"
-                    ),
-                    Field(
-                        'gender',
-                        'marital_status',
-                        wrapper_class="col-md-4",
-                    ),
-                ),
-                'other_ID',
-                'US_citizen',
+                'What types of classes are you interested in taking with us?',
+                'ccr_app',
+                'esl_app',
+                'ace_app',
+                'e_learn_app',
+                'success_app',
+                'prior_registration'
             ),
             Fieldset(
                 'Contact Info',
@@ -219,13 +210,29 @@ class StudentForm(ModelForm):
                 'ec_relation'
             ),
             Fieldset(
-                'What types of classes are you interested in taking with us?',
-                'ccr_app',
-                'esl_app',
-                'ace_app',
-                'e_learn_app',
-                'success_app'
-            )
+                'Personal Info',
+                'US_citizen',
+                Row(
+                    Field(
+                        'dob',
+                        placeholder="MM/DD/YYYY",
+                        wrapper_class="col-md-4",
+                        data_mask="99/99/9999"
+                    ),
+                    Field(
+                        'gender',
+                        'marital_status',
+                        wrapper_class="col-md-4",
+                    ),
+                ),
+                Row(
+                    Field(
+                        'other_ID',
+                        'other_ID_name',
+                        wrapper_class="col-md-6"
+                    )
+                )
+            ),
         )
 
     class Meta:
@@ -236,6 +243,7 @@ class StudentForm(ModelForm):
             "marital_status",
             "US_citizen",
             "other_ID",
+            "other_ID_name",
             "ccr_app",
             "esl_app",
             "ace_app",
@@ -256,6 +264,10 @@ class StudentForm(ModelForm):
             "ec_relation",
         )
 
+        labels = {
+            'prior_registration': "State ID, Passport #, Visa info, etc"
+        }
+
 
 class WioaForm(ModelForm):
 
@@ -265,6 +277,7 @@ class WioaForm(ModelForm):
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
+            Field("SID"),
             Fieldset(
                 "Educational Details",
                 Row(
@@ -382,22 +395,21 @@ class WioaForm(ModelForm):
             ),
             Fieldset(
                 "Additional Details",
-                Field("SID"),
                 Row(
                     Column(
-                    "single_parent",
-                    "rural_area",
-                    "displaced_homemaker",
-                    "dislocated_worker",
-                    "state_payed_foster",
-                    css_class="col-md-4"
+                        "single_parent",
+                        "rural_area",
+                        "displaced_homemaker",
+                        "dislocated_worker",
+                        "state_payed_foster",
+                        css_class="col-md-4"
                     ),
                     Column(
-                    "cult_barriers_hind_emp",
-                    "in_foster_care",
-                    "aged_out_foster_care",
-                    "exhaust_tanf",
-                    css_class="col-md-4"
+                        "cult_barriers_hind_emp",
+                        "in_foster_care",
+                        "aged_out_foster_care",
+                        "exhaust_tanf",
+                        css_class="col-md-4"
                     ),
                 ),
                 "recieves_public_assistance",
