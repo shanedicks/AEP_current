@@ -154,14 +154,19 @@ class StudentForm(ModelForm):
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
+            'prior_registration',
             Fieldset(
                 'What types of classes are you interested in taking with us?',
-                'ccr_app',
-                'esl_app',
-                'ace_app',
-                'e_learn_app',
-                'success_app',
-                'prior_registration'
+                Column(
+                    'ccr_app',
+                    'esl_app',
+                    css_class="col-md-6"
+                ),
+                Column(
+                    'ace_app',
+                    'success_app',
+                    css_class="col-md-6"
+                ),
             ),
             Fieldset(
                 'Contact Info',
@@ -195,7 +200,12 @@ class StudentForm(ModelForm):
                     Field(
                         'city',
                         'state',
+                        wrapper_class="col-md-4",
+                        required=True
+                    ),
+                    Field(
                         'zip_code',
+                        data_mask="99999",
                         wrapper_class="col-md-4",
                         required=True
                     ),
@@ -205,9 +215,16 @@ class StudentForm(ModelForm):
             Fieldset(
                 'Emergency Contact Info',
                 'emergency_contact',
-                'ec_phone',
-                'ec_email',
-                'ec_relation'
+                Field(
+                    'ec_phone',
+                    data_mask="999-999-9999",
+                    wrapper_class="col-md-4"
+                ),
+                Field(
+                    'ec_email',
+                    'ec_relation',
+                    wrapper_class="col-md-4"
+                ),
             ),
             Fieldset(
                 'Personal Info',
@@ -247,7 +264,6 @@ class StudentForm(ModelForm):
             "ccr_app",
             "esl_app",
             "ace_app",
-            "e_learn_app",
             "success_app",
             "prior_registration",
             "phone",
@@ -265,7 +281,7 @@ class StudentForm(ModelForm):
         )
 
         labels = {
-            'prior_registration': "State ID, Passport #, Visa info, etc"
+            "US_citizen": "Check this box if you are a US citizen"
         }
 
 
@@ -277,7 +293,10 @@ class WioaForm(ModelForm):
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
-            Field("SID"),
+            Field(
+                "SID",
+                data_mask="999-99-9999"
+            ),
             Fieldset(
                 "Educational Details",
                 Row(
@@ -396,6 +415,9 @@ class WioaForm(ModelForm):
             Fieldset(
                 "Additional Details",
                 Row(
+                    HTML("""<div class="col-md-8"><p>This information is optional, however, sharing it with us can help us to better understand the needs of our student body and provide additional programming and services for all of our students.</p></div>"""),
+                ),
+                Row(
                     Column(
                         "single_parent",
                         "rural_area",
@@ -412,6 +434,7 @@ class WioaForm(ModelForm):
                         css_class="col-md-4"
                     ),
                 ),
+                HTML("""<hr>"""),
                 "recieves_public_assistance",
                 Row(
                     Column(
@@ -429,6 +452,7 @@ class WioaForm(ModelForm):
                         css_class="col-md-4"
                     ),
                 ),
+                HTML("""<hr>"""),
                 Field(
                     "low_family_income",
                     HTML("""<table class="table table-condensed"><tr><th>Individual</th><th>Family of 2</th>
@@ -441,6 +465,7 @@ class WioaForm(ModelForm):
                         "youth_in_high_poverty_area",
                         type="hidden"
                     ),
+                    HTML("""<hr>"""),
                     "subject_of_criminal_justice",
                     "arrest_record_employment_barrier",
                     "lacks_adequate_residence",
@@ -524,10 +549,11 @@ class WioaForm(ModelForm):
             "SID"
         )
         labels = {
-            "recieves_public_assistance": "Please check this box if any of the following are true.",
+            "recieves_public_assistance": "Please check this box if recieve assistance through any of the following programs.",
             "state_payed_foster": "Are you in state-payed foster care?",
             "subject_of_criminal_justice": "Have you ever been involved in the criminal justice system for committing a status offense or delinquent act?",
-            "arrest_record_employment_barrier": "Do you need help overcoming employment barriers due to criminal record?",
+            "arrest_record_employment_barrier": "Do you need help overcoming employment barriers due to a criminal record?",
+            "low_family_income": "Please check this box if you have low family income. See chart below for low income levels for families of various sizes"
         }
 
 
