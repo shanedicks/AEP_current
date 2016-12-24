@@ -70,6 +70,8 @@ class WIOAResource(resources.ModelResource):
         model = WIOA
         fields = (
             "id",
+            "student__user__id",
+            "student__id",
             "student__user__first_name",
             "student__user__last_name",
             "student__user__email",
@@ -165,6 +167,8 @@ class WIOAResource(resources.ModelResource):
             "country",
             "native_language"
         )
+
+        export_order = fields
 
 
 class StudentAdmin(ImportExportModelAdmin):
