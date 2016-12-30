@@ -1,13 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Classes for {{student}}</h1>
+    <h1>{{student}}'s Classes</h1>
+    <table class='table'>
+        <tr>
+            <th>Class Name</th>
+            <th>Teacher</th>
+            <th>Days</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
     {% for enrollment in object_list %}
-        <h4>
-        	<a href="{{ enrollment.get_absolute_url }}">
-        		{{ enrollment.section }}
-        	</a>
-        </h4>
+        <tr>
+        	<td><a href="{{ enrollment.get_absolute_url }}">{{ enrollment.section.title }}</a></td>
+            <td>{{ enrollment.section.teacher }}</td>
+            <td>{{ enrollment.section.get_days_str }}</td>
+            <td>{{ enrollment.section.start_time }}</td>
+            <td>{{ enrollment.section.end_time }}</td>
+            <td>{{ enrollment.section.semester.start_date }}</td>
+            <td>{{ enrollment.section.semester.end_date }}</td>
+        </tr>
     {% endfor %}
+    </table>
     <p><a class="btn btn-default" href="add-class/" role="button">Add New Class &raquo;</a>
 {% endblock %}

@@ -1,4 +1,5 @@
-from django.views.generic import DetailView, ListView, CreateView, DeleteView
+from django.views.generic import (DetailView, ListView, CreateView,
+                                  DeleteView, UpdateView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.db import IntegrityError
@@ -133,7 +134,6 @@ class AddClassView(LoginRequiredMixin, CreateView):
         return url + "my-classes"
 
 
-
 class AddClassFromListView(LoginRequiredMixin, CreateView):
 
     model = Enrollment
@@ -172,6 +172,7 @@ class AddClassFromListView(LoginRequiredMixin, CreateView):
         url = student.get_absolute_url()
         return url + "my-classes"
 
+
 class EnrollmentView(LoginRequiredMixin, DetailView):
 
     model = Enrollment
@@ -187,3 +188,14 @@ class EnrollmentDeleteView(LoginRequiredMixin, DeleteView):
             'people:student classes',
             kwargs={'slug': student.slug}
         )
+
+
+class AttendanceOverview(LoginRequiredMixin, DetailView):
+
+    model = Section
+    template_name = 'sections/attendance_overview.html'
+
+
+class DailyAttendanceView(LoginRequiredMixin, UpdateView):
+
+    pass

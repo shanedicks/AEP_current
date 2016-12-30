@@ -9,6 +9,9 @@ single_class_patterns = [
     url(r'^add-student/$',
         views.AddStudentView.as_view(),
         name='add student'),
+    url(r'^attendance/',
+        views.AttendanceOverview.as_view(),
+        name='attendance overview'),
 ]
 
 staff_patterns = [

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-    <h4>Student: {{ enrollment.student }}</h4>
-    <h4>Class: {{ enrollment.section }}</h4>
+    <h4>Student: <a href="{{ enrollment.student.get_absolute_url }}" >{{ enrollment.student }}</a></h4>
+    <h4>Class: <a href="{{ enrollment.section.get_absolute_url }}">{{ enrollment.section }}</a></h4>
     <h4>Status: {{ enrollment.get_status_display }}</h4>
     <h4>Enrolled: {{enrollment.created.date }}</h4>
     <h4>Enrolled by: {{enrollment.creator.get_full_name }}</h4>

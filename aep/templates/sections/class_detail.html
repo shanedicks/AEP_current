@@ -2,8 +2,22 @@
 {% block content %}
     <h1>{{ section.title }}</h1>
     <h3>{{ section.teacher }} | {{ section.start_time }}-{{section.end_time}}</h3>
-    {% for student in section.get_all_students %}
-    <p><a href='{{ student.student.get_absolute_url }}'>{{ student.student }}</a></p>
-    {% endfor %}
-    <p><a class="btn btn-default btn-sm" href="add-student/" role="button">Add Student &raquo;</a></p>
+    <table class="table">
+        <tr>
+            <th>Students</th>
+            <th>Enrollment Status</th>
+            <th># Attended</th>
+            <th># Absent</th>
+        </tr>
+        {% for student in section.get_all_students %}
+        <tr>
+            <td><a href='{{ student.student.get_absolute_url }}'>{{ student.student }}</a></td>
+            <td>{{ student.status }}</td>
+            <td>{{ student.times_attended }}</td>
+            <td>{{ student.times_absent }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a class="btn btn-default btn-sm" href="add-student/" role="button">Add Student &raquo;</a>
+    <a class="btn btn-default btn-sm" href="attendance/" role="button">Attendance &raquo;</a>
 {% endblock content %}

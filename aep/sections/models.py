@@ -1,3 +1,4 @@
+from datetime import date, datetime, timedelta as td
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -77,8 +78,16 @@ class Section(models.Model):
     def get_dropped(self):
         return self.students.filter(status='D')
 
-    def get_withdrawn(self):
+    def get_waiting(self):
         return self.students.filter(status='W')
+
+    def get_withdrawn(self):
+        return self.students.filter(status='R')
+
+    def begin(self):
+        for student in self.get_active():
+            student.activate()
+            student.save()
 
     def open_seats(self):
         if self.seats:
@@ -88,22 +97,42 @@ class Section(models.Model):
     def is_full(self):
         return self.seats < self.students.count()
 
-    def get_days_str(self):
+    def get_days(self):
         days = []
         day_map = [
-            ('monday', 'M'),
-            ('tuesday', 'T'),
-            ('wednesday', 'W'),
-            ('thursday', 'R'),
-            ('friday', 'F'),
-            ('saturday', 'Sa'),
-            ('sunday', 'Su')
+            ('monday', 'M', 0),
+            ('tuesday', 'T', 1),
+            ('wednesday', 'W', 2),
+            ('thursday', 'R', 3),
+            ('friday', 'F', 4),
+            ('saturday', 'Sa', 5),
+            ('sunday', 'Su', 6)
         ]
         for day in day_map:
             field = self._meta.get_field(day[0])
             if getattr(self, field.name):
-                days.append(day[1])
-        return "".join(days)
+                days.append(day)
+        return days
+
+    def get_days_str(self):
+        days = self.get_days()
+        days_str = []
+        for day in days:
+            field = self._meta.get_field(day[0])
+            if getattr(self, field.name):
+                days_str.append(day[1])
+        return "".join(days_str)
+
+    def get_class_dates(self):
+        weekdays = [i[2] for i in self.get_days()]
+        start, end = self.semester.start_date, self.semester.end_date
+        class_dates = []
+        date_range = end - start
+        for j in range(date_range.days + 1):
+            d = start + td(days=j)
+            if d.weekday() in weekdays:
+                class_dates.append(d)
+        return class_dates
 
     def __str__(self):
         s = str(self.site)
@@ -165,6 +194,18 @@ class Enrollment(models.Model):
         name = self.section.title
         return name
 
+    def activate(self):
+        if self.attendance.all().count() == 0:
+            dates = self.section.get_class_dates()
+            for day in dates:
+                a = Attendance.objects.create(
+                    enrollment=self,
+                    attendance_date=day,
+                    time_in=self.section.start_time,
+                    time_out=self.section.end_time
+                )
+                a.save()
+
     def times_attended(self):
         return self.attendance.filter(attendance_type='P').count()
 
@@ -172,7 +213,7 @@ class Enrollment(models.Model):
         return self.attendance.filter(attendance_type='A').count()
 
     # Check attendance for attendance policy compliance - change enrollment status if needed
-    def enforce_attendance(self):
+    def check_attendance(self):
         absences = self.times_absent()
         if absences > 4:
             self.status = 'D'
@@ -208,10 +249,19 @@ class Attendance(models.Model):
     attendance_type = models.CharField(
         max_length=1,
         choices=TYPE_CHOICES,
-        default='C'
+        default='X'
     )
     attendance_date = models.DateField()
     time_in = models.TimeField(
     )
     time_out = models.TimeField(
     )
+
+    def hours(self):
+        if self.attendance_type == 'P':
+            d1 = datetime.combine(self.attendance_date, self.time_in)
+            d2 = datetime.combine(self.attendance_date, self.time_out)
+            delta = d2 - d1
+            hours = delta.total_seconds() / 3600
+            return float("{0:.2f}".format(hours))
+        return 0
