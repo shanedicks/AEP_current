@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.db import IntegrityError
 from people.models import Student
 from people.forms import StudentSearchForm
-from .models import Section, Enrollment
+from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     ClassAddFromListEnrollForm, StudentAddEnrollmentForm)
 
@@ -196,6 +196,12 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
     template_name = 'sections/attendance_overview.html'
 
 
+class SingleAttendanceView(LoginRequiredMixin, UpdateView):
+
+    model = Attendance
+    fields = ('attendance_type', 'time_in', 'time_out')
+
+
 class DailyAttendanceView(LoginRequiredMixin, UpdateView):
 
-    pass
+    model = Attendance

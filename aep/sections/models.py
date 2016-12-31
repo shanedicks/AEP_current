@@ -265,3 +265,12 @@ class Attendance(models.Model):
             hours = delta.total_seconds() / 3600
             return float("{0:.2f}".format(hours))
         return 0
+
+    def get_absolute_url(self):
+        return reverse(
+            'sections:single attendance',
+            kwargs={
+                'slug': self.enrollment.section.slug,
+                'pk': self.pk
+            }
+        )
