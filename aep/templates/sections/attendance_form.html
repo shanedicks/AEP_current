@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2>Attendance for {{ attendance.enrollment.student }} on {{ attendance.attendance_date }}</h2>
+<form class="form_group" method="post">
+    {% crispy form %}
+    <button type="submit" class="btn btn-success">Update Attendance</button>
+</form>
+{% endblock content %}

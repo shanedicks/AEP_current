@@ -1,7 +1,9 @@
 from django.forms import ModelForm, Form, ChoiceField
 from django.db.models import Q
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field
 from people.models import Student
-from .models import Enrollment, Section
+from .models import Enrollment, Section, Attendance
 
 
 class StudentAddEnrollmentForm(ModelForm):
@@ -34,10 +36,6 @@ class ClassAddEnrollmentForm(ModelForm):
             qst = qst.filter(program=program[0])
         self.base_fields['section'].queryset = qst
         super(ClassAddEnrollmentForm, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = Enrollment
-        fields = ('section',)
 
 
 class ClassAddFromListEnrollForm(ModelForm):
@@ -76,3 +74,26 @@ class SectionFilterForm(Form):
         ),
         required=False
     )
+
+
+class SingleAttendanceForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(SingleAttendanceForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+            Field(
+                'attendance_type',
+                'time_in',
+                'time_out',
+                wrapper_class="col-md-4",
+                required=True
+            )
+
+        )
+
+    class Meta:
+        model = Attendance
+        fields = ('attendance_type', 'time_in', 'time_out')

@@ -212,6 +212,9 @@ class Enrollment(models.Model):
     def times_absent(self):
         return self.attendance.filter(attendance_type='A').count()
 
+    def get_attendance(self):
+        return self.attendance.order_by(attendance__attendance_date)
+
     # Check attendance for attendance policy compliance - change enrollment status if needed
     def check_attendance(self):
         absences = self.times_absent()
@@ -253,8 +256,10 @@ class Attendance(models.Model):
     )
     attendance_date = models.DateField()
     time_in = models.TimeField(
+        blank=True
     )
     time_out = models.TimeField(
+        blank=True
     )
 
     def hours(self):
@@ -274,3 +279,6 @@ class Attendance(models.Model):
                 'pk': self.pk
             }
         )
+
+    class Meta:
+        ordering = ['attendance_date',]

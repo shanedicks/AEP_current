@@ -7,7 +7,8 @@ from people.models import Student
 from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
-                    ClassAddFromListEnrollForm, StudentAddEnrollmentForm)
+                    ClassAddFromListEnrollForm, StudentAddEnrollmentForm,
+                    SingleAttendanceForm)
 
 
 class ClassListView(LoginRequiredMixin, ListView):
@@ -199,7 +200,14 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
 class SingleAttendanceView(LoginRequiredMixin, UpdateView):
 
     model = Attendance
-    fields = ('attendance_type', 'time_in', 'time_out')
+    form_class = SingleAttendanceForm
+
+    def get_success_url(self):
+        section = self.object.enrollment.section
+        return reverse_lazy(
+            'sections:attendance overview',
+            kwargs={'slug': section.slug}
+        )
 
 
 class DailyAttendanceView(LoginRequiredMixin, UpdateView):

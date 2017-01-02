@@ -15,7 +15,7 @@
             <tr>
                 <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                 {% for att in student.attendance.all %}
-                    <td><a href='{{ att.get_absolute_url }}'>{{att.attendance_type}}({{ att.hours }})</a>{{ att.attendance_date|date:"m-d" }}</td>
+                    <td><a href='{{ att.get_absolute_url }}'>{{att.attendance_type}}({{ att.hours }})</a></td>
                 {% endfor %}
             </tr>
         {% endfor %}
