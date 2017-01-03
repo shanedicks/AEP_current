@@ -6,9 +6,6 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportMixin
 from .models import Student, Staff, WIOA
 
-# Register your models here.
-admin.site.register(Staff)
-
 
 class UserResource(resources.ModelResource):
 
@@ -49,6 +46,38 @@ class StudentResource(resources.ModelResource):
             "other_ID",
             "program",
             "prior_registration",
+            "phone",
+            "alt_phone",
+            "street_address_1",
+            "street_address_2",
+            "city",
+            "state",
+            "parish",
+            "zip_code",
+            "emergency_contact",
+            "ec_phone",
+            "ec_email",
+            "ec_relation"
+        )
+
+
+class StaffResource(resources.ModelResource):
+
+    user = fields.Field(
+        column_name='user',
+        attribute='user',
+        widget=widgets.ForeignKeyWidget(User, 'username')
+    )
+
+    class Meta:
+        model = Staff
+        fields = (
+            "id",
+            'user',
+            "user__first_name",
+            "user__last_name",
+            "user__email",
+            "dob",
             "phone",
             "alt_phone",
             "street_address_1",
@@ -175,8 +204,7 @@ class StudentAdmin(ImportExportModelAdmin):
 
     resource_class = StudentResource
 
-    list_display = ("__str__", "AEP_ID", "WRU_ID", "dob")
-
+    list_display = ("__str__", "WRU_ID", "dob", "intake_date")
     search_fields = ["user__first_name", "user__last_name", 'WRU_ID']
 
     fields = [
@@ -199,6 +227,24 @@ class StudentAdmin(ImportExportModelAdmin):
 
 
 admin.site.register(Student, StudentAdmin)
+
+
+class StaffAdmin(ImportExportModelAdmin):
+    resource_class = StaffResource
+
+    list_display = ("__str__", "phone", "get_email")
+
+    search_fields = [
+        "user__first_name",
+        "user__last_name",
+    ]
+
+    def get_email(self, obj):
+        return obj.user.email
+    get_email.admin_order_field = "Email"
+    get_email.short_description = "Email"
+
+admin.site.register(Staff, StaffAdmin)
 
 
 class WIOAAdmin(ImportExportModelAdmin):
