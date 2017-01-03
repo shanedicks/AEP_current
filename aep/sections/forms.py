@@ -37,6 +37,10 @@ class ClassAddEnrollmentForm(ModelForm):
         self.base_fields['section'].queryset = qst
         super(ClassAddEnrollmentForm, self).__init__(*args, **kwargs)
 
+    class Meta:
+        model = Enrollment
+        fields = ('section',)
+
 
 class ClassAddFromListEnrollForm(ModelForm):
 
