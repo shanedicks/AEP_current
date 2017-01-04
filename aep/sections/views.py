@@ -46,7 +46,12 @@ class StudentClassListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         if 'slug' in self.kwargs:
             slug = self.kwargs['slug']
-            return Enrollment.objects.filter(student__slug=slug)
+            return Enrollment.objects.filter(student__slug=slug).order_by("section__tuesday", "section__start_time")
+
+
+class StudentScheduleView(StudentClassListView):
+
+    template_name = 'sections/student_schedule.html'
 
 
 class AddStudentView(LoginRequiredMixin, CreateView):

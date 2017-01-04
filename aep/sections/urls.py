@@ -28,6 +28,9 @@ student_patterns = [
     url(r'^$',
         views.StudentClassListView.as_view(),
         name='student classes'),
+    url(r'^print-schedule/$',
+        views.StudentScheduleView.as_view(),
+        name='print schedule'),
     url(r'^add-class/$',
         views.AddClassView.as_view(),
         name='add class')
