@@ -14,12 +14,18 @@ class Section(models.Model):
     WEST_BANK = 'WB'
     JEFFERSON_PARISH = 'JP'
     SIDNEY_COLLIER = 'SC'
+    HISPANIC_CHAMBER = 'HC'
+    WEST_BANK_LIB = 'WL'
+    JOB_1 = 'J1'
     SITE_CHOICES = (
         (CITY_PARK, 'City Park'),
         (MID_CITY, 'NOALC'),
         (WEST_BANK, 'West Bank'),
         (JEFFERSON_PARISH, 'Jefferson Parish'),
-        (SIDNEY_COLLIER, 'Sidney Collier')
+        (SIDNEY_COLLIER, 'Sidney Collier'),
+        (HISPANIC_CHAMBER, 'HCC'),
+        (WEST_BANK_LIB, 'West Bank Regional Library'),
+        (JOB_1, 'Job 1')
     )
     ESL = 'ESL'
     CCR = 'CCR'
