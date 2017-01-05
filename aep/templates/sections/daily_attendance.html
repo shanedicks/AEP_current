@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2>Attendance</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table>
+        {% for form in formset %}    
+        {{ form }}
+        {% endfor %}
+    </table>
+    <button type="submit" class="btn btn-success">Update Attendance</button>
+</form>
+{% endblock content %}

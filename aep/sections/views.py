@@ -8,7 +8,7 @@ from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     ClassAddFromListEnrollForm, StudentAddEnrollmentForm,
-                    SingleAttendanceForm)
+                    SingleAttendanceForm, AttendanceFormSet)
 
 
 class ClassListView(LoginRequiredMixin, ListView):
@@ -217,4 +217,12 @@ class SingleAttendanceView(LoginRequiredMixin, UpdateView):
 
 class DailyAttendanceView(LoginRequiredMixin, UpdateView):
 
-    model = Attendance
+    model = Section
+    form_class = SingleAttendanceForm
+    template_name = 'sections/daily_attendance.html'
+
+    def get_context_data(self, **kwargs):
+        self.object = Section.objects.get(slug=self.kwargs['slug'])
+        queryset = Attendance.objects.filter(enrollment__section=self.object, attendance_date=self.kwargs['attendance_date'])
+        formset = AttendanceFormSet(queryset=queryset)
+        return super(DailyAttendanceView, self).get_context_data(**kwargs)

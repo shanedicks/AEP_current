@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, ChoiceField
+from django.forms import ModelForm, Form, ChoiceField, modelformset_factory
 from django.db.models import Q
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
@@ -101,3 +101,6 @@ class SingleAttendanceForm(ModelForm):
     class Meta:
         model = Attendance
         fields = ('attendance_type', 'time_in', 'time_out')
+
+
+AttendanceFormSet = modelformset_factory(Attendance, form=SingleAttendanceForm)
