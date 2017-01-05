@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>Attendance Overview for {{ section.title }}</h1>
-    <a class="btn btn-default btn-sm" href="{{ section.get_absolute_url }}">Back to Class</a>
+    <a class="btn btn-default" href="{{ section.get_absolute_url }}">Back to Class</a>
     <h3>{{ section.teacher }} | {{section.get_days_str }} | {{ section.start_time }}-{{section.end_time}}</h3>
     <table class="table">
         <tr>
-            <th></th>
+            <th><h4>Active</h4></th>
             {% for day in days %}
             <th><a href="{{day|date:"Y-m-d"}}/">{{day|date:"M-d"}}</a></th>
             {% endfor %}
         </tr>
-        <tr><td><h4>Active</h4></td></tr>
         {% for student in active %}
             <tr>
                 <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
