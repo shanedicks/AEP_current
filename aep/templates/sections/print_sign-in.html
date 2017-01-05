@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>{{ section.title }} Sign In Sheet </h1>
+    <h3>{{ section.teacher }} | {{ section.start_time }}-{{section.end_time}}</h3>
+    <h3>{{ attendance_date }}</h3>
+    <table class="table table-bordered">
+        <tr>
+            <th class="col-md-2">Student</th>
+            <th class="col-md-6">Signature</th>
+            <th class="col-md-1">Time In</th>
+            <th class="col-md-1">Time Out</th>
+        </tr>
+        {% for student in section.get_active %}
+        <tr>
+            <td>{{ student.student }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

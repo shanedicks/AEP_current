@@ -3,6 +3,7 @@
 
 {% block content %}
 <h2>Attendance for {{ section.title }} on {{ attendance_date }}</h2>
+<a class="btn btn-default" href="print-sign-in/" role="button">Print Sign-in&raquo;</a>
 <form method="post">
     {% csrf_token %}
     {{ formset.management_form }}

@@ -33,6 +33,18 @@ class ClassDetailView(LoginRequiredMixin, DetailView):
     template_name = 'sections/class_detail.html'
 
 
+class PrintSignInView(LoginRequiredMixin, DetailView):
+
+    model = Section
+    template_name = 'sections/print_sign-in.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PrintSignInView, self).get_context_data(**kwargs)
+        if 'attendance_date' not in context:
+            context['attendance_date'] = self.kwargs['attendance_date']
+        return context
+
+
 class StudentClassListView(LoginRequiredMixin, ListView):
 
     model = Enrollment

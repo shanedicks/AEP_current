@@ -17,7 +17,10 @@ single_class_patterns = [
         name='single attendance'),
     url(r'^attendance/(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/$',
         views.DailyAttendanceView.as_view(),
-        name='daily attendance')
+        name='daily attendance'),
+    url(r'^attendance/(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/print-sign-in/$',
+        views.PrintSignInView.as_view(),
+        name='sign in'),
 ]
 
 staff_patterns = [
