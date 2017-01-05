@@ -11,6 +11,13 @@ class Semester(models.Model):
     def get_days(self):
         return self.days.all()
 
+    def get_sections(self):
+        return self.sections.all()
+
+    def begin(self):
+        for section in self.get_sections():
+            section.begin()
+
     def __str__(self):
         return self.title
 

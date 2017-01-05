@@ -331,6 +331,9 @@ class Student(Profile):
     def get_absolute_url(self):
         return reverse('people:student detail', kwargs={'slug': self.slug})
 
+    class Meta:
+        ordering = ["user__last_name", "user__first_name"]
+
 
 class Staff(Profile):
 

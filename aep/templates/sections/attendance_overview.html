@@ -6,12 +6,12 @@
     <table class="table">
         <tr>
             <th></th>
-            {% for day in section.get_class_dates %}
-            <th><a href="{{day|date:"Y-m-d"}}">{{day|date:"m-d"}}</a></th>
+            {% for day in days %}
+            <th><a href="{{day|date:"Y-m-d"}}/">{{day|date:"M-d"}}</a></th>
             {% endfor %}
         </tr>
         <tr><td><h4>Active</h4></td></tr>
-        {% for student in section.get_active %}
+        {% for student in active %}
             <tr>
                 <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                 {% for att in student.attendance.all %}
@@ -21,7 +21,7 @@
         {% endfor %}
         {% if section.get_dropped %}
         <tr><td><h4>Dropped</h4></td></tr>
-            {% for student in section.get_dropped %}
+            {% for student in dropped %}
                 <tr>
                     <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                     {% for att in student.attendance.all %}
@@ -31,8 +31,8 @@
             {% endfor %}
         {% endif %}
         {% if section.get_waiting %}
-        <tr><td><h4>Waiting</h4></td></tr>
-            {% for student in section.get_waiting %}
+        <tr><td><h4>Waitlist</h4></td></tr>
+            {% for student in waitlist %}
                 <tr>
                     <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                     {% for att in student.attendance.all %}

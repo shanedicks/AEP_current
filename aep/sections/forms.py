@@ -95,7 +95,6 @@ class SingleAttendanceForm(ModelForm):
                 wrapper_class="col-md-4",
                 required=True
             )
-
         )
 
     class Meta:
@@ -103,4 +102,4 @@ class SingleAttendanceForm(ModelForm):
         fields = ('attendance_type', 'time_in', 'time_out')
 
 
-AttendanceFormSet = modelformset_factory(Attendance, form=SingleAttendanceForm)
+AttendanceFormSet = modelformset_factory(Attendance, form=SingleAttendanceForm, extra=0)

@@ -2,13 +2,17 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<h2>Attendance</h2>
+<h2>Attendance for {{ section.title }} on {{ attendance_date }}</h2>
 <form method="post">
     {% csrf_token %}
     {{ formset.management_form }}
     <table>
-        {% for form in formset %}    
-        {{ form }}
+        {% for form in formset %}
+        <tr>
+        	{{ form.id }}
+	        <td>{{ form.instance.enrollment.student}}</td>
+	        <td>{% crispy form %}<td>
+	    </tr>
         {% endfor %}
     </table>
     <button type="submit" class="btn btn-success">Update Attendance</button>

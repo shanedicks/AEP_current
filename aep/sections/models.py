@@ -38,6 +38,7 @@ class Section(models.Model):
     title = models.CharField(max_length=50)
     semester = models.ForeignKey(
         Semester,
+        related_name='sections',
         null=True,
         blank=True
     )

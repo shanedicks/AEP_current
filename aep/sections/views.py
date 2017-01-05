@@ -1,6 +1,8 @@
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render_to_response
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.db import IntegrityError
 from people.models import Student
@@ -201,6 +203,31 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
     model = Section
     template_name = 'sections/attendance_overview.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(AttendanceOverview, self).get_context_data()
+        if 'days' not in context:
+            context['days'] = self.object.get_class_dates()
+        if 'active' not in context:
+            context['active'] = self.object.get_active(
+            ).order_by(
+                'student__user__last_name',
+                'student__user__first_name'
+            ).prefetch_related('attendance')
+        if 'dropped' not in context:
+            context['dropped'] = self.object.get_dropped(
+            ).order_by(
+                'student__user__last_name',
+                'student__user__first_name'
+            ).prefetch_related('attendance')
+        if 'waitlist' not in context:
+            context['waitlist'] = self.object.get_waiting(
+            ).order_by(
+                'student__user__last_name',
+                'student__user__first_name'
+            ).prefetch_related('attendance')
+        return context
+
+
 
 class SingleAttendanceView(LoginRequiredMixin, UpdateView):
 
@@ -221,8 +248,42 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
     form_class = SingleAttendanceForm
     template_name = 'sections/daily_attendance.html'
 
-    def get_context_data(self, **kwargs):
+    def get(self, request, *args, **kwargs):
         self.object = Section.objects.get(slug=self.kwargs['slug'])
-        queryset = Attendance.objects.filter(enrollment__section=self.object, attendance_date=self.kwargs['attendance_date'])
+        attendance_date = self.kwargs['attendance_date']
+        queryset = Attendance.objects.filter(
+            enrollment__section=self.object,
+            enrollment__status="A",
+            attendance_date=attendance_date
+        ).order_by(
+            "enrollment__student"
+        )
         formset = AttendanceFormSet(queryset=queryset)
-        return super(DailyAttendanceView, self).get_context_data(**kwargs)
+        return self.render_to_response(
+            self.get_context_data(
+                formset=formset,
+                section=self.object,
+                attendance_date=attendance_date
+            )
+        )
+
+    def post(self, request, *args, **kwargs):
+        self.object = Section.objects.get(slug=self.kwargs['slug'])
+        formset = AttendanceFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render_to_response(
+                self.get_context_data(formset=formset)
+            )
+
+    def get_success_url(self):
+        section = self.object
+        return reverse_lazy(
+            'sections:attendance overview',
+            kwargs={'slug': section.slug}
+        )
+
+
+
