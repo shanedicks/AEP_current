@@ -337,7 +337,7 @@ class Student(Profile):
 
 class Staff(Profile):
 
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         models.CASCADE,
         related_name='staff',

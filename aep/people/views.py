@@ -141,7 +141,7 @@ class StaffDetailView(LoginRequiredMixin, DetailView):
     model = Staff
 
 
-class StaffHomeView(LoginRequiredMixin, TemplateView):
+class StaffHomeView(LoginRequiredMixin, DetailView):
 
     model = Staff
     template_name = 'people/staff_home.html'

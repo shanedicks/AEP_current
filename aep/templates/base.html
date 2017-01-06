@@ -47,14 +47,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             {% if request.user.is_authenticated %}
-                <ul class="nav navbar-nav">
-                    <li><a href="{% url 'people:student list'%}">Students</a></li>
-                    <li><a href="{% url 'sections:class list'%}">Classes</a></li>
-                </ul>
-                <div class="navbar-right">
-                    <p class="navbar-text">Logged in as: {{ request.user }}</p>
-                    <a class="btn btn-success navbar-btn" href="/accounts/logout" role="button">Logout</a>
-                </div>
+                {% include 'components/user_nav.html' %}
             {% else %}
               <form action="/accounts/login/" method="post" class="navbar-form navbar-right" role="form">
                 {% csrf_token %}
@@ -66,8 +59,8 @@
                 </div>
                 <button type="submit" class="btn btn-success">Sign in</button>
               </form>
+            {% endif %}
         </div><!--/.navbar-collapse -->
-        {% endif %}
       </div> 
     </nav>
     {% endblock navbar %}
