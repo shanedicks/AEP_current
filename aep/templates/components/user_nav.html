@@ -4,17 +4,12 @@
         <li><a href="{% url 'people:student list'%}">Students</a></li>
         <li><a href="{% url 'sections:class list'%}">Classes</a></li>
     </ul>
-    <div class="navbar-right">
-        <p class="navbar-text">Logged in as: {{ request.user }}</p>
-        <a class="btn btn-success navbar-btn" href="/accounts/logout" role="button">Logout</a>
-    </div>
 {% else %}
     <ul class="nav navbar-nav">
         <li><a href="{% url 'people:student list'%}">Students</a></li>
         <li><a href="{% url 'sections:class list'%}">Classes</a></li>
     </ul>
-    <div class="navbar-right">
-        <p class="navbar-text">Logged in as: {{ request.user }}</p>
-        <a class="btn btn-success navbar-btn" href="/accounts/logout" role="button">Logout</a>
-    </div>
 {% endif %}
+    <div class="navbar-right">
+        <a class="btn btn-success navbar-btn btn-sm" href="/accounts/logout" role="button">Logout {{ request.user }}</a>
+    </div>
