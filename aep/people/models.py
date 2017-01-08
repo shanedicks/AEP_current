@@ -316,6 +316,9 @@ class Student(Profile):
         verbose_name=_('Marital Status')
     )
 
+    class Meta:
+        ordering = ["user__last_name", "user__first_name"]
+
     def has_WRU_ID(self):
         return self.WRU_ID != ''
 
@@ -331,9 +334,6 @@ class Student(Profile):
     def get_absolute_url(self):
         return reverse('people:student detail', kwargs={'slug': self.slug})
 
-    class Meta:
-        ordering = ["user__last_name", "user__first_name"]
-
 
 class Staff(Profile):
 
@@ -345,6 +345,9 @@ class Staff(Profile):
 
     bio = models.TextField(blank=True, max_length=4000)
 
+    class Meta:
+        verbose_name_plural = 'staff'
+
     def get_active_classes(self):
         pass
 
@@ -353,9 +356,6 @@ class Staff(Profile):
 
     def get_absolute_url(self):
         return reverse('people:staff detail', kwargs={'slug': self.slug})
-
-    class Meta:
-        verbose_name_plural = 'staff'
 
 
 class WIOA(models.Model):
@@ -826,8 +826,8 @@ class WIOA(models.Model):
         default="1"
     )
 
-    def __str__(self):
-        return self.student.__str__()
-
     class Meta:
         verbose_name_plural = "WIOA records"
+
+    def __str__(self):
+        return self.student.__str__()

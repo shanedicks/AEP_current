@@ -151,7 +151,7 @@ class Section(models.Model):
         d = self.get_days_str()
         b = str(self.start_time)
         items = [s, n, t, d, b]
-        return "-".join(items)
+        return "|".join(items)
 
     def get_absolute_url(self):
         return reverse('sections:class detail', kwargs={'slug': self.slug})
@@ -196,6 +196,9 @@ class Enrollment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ('student', 'section')
+
     def student_name(self):
         name = self.student.__str__()
         return name
@@ -239,9 +242,6 @@ class Enrollment(models.Model):
         section = self.class_name()
         return name + ": enrolled in " + section
 
-    class Meta:
-        unique_together = ('student', 'section')
-
 
 class Attendance(models.Model):
 
@@ -272,6 +272,9 @@ class Attendance(models.Model):
         blank=True
     )
 
+    class Meta:
+        ordering = ['attendance_date', ]
+
     def hours(self):
         if self.attendance_type == 'P':
             d1 = datetime.combine(self.attendance_date, self.time_in)
@@ -289,6 +292,3 @@ class Attendance(models.Model):
                 'pk': self.pk
             }
         )
-
-    class Meta:
-        ordering = ['attendance_date',]
