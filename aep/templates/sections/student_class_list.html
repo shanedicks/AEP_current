@@ -11,6 +11,7 @@
             <th>End Time</th>
             <th>Start Date</th>
             <th>End Date</th>
+            <th>Enrollment Status</th>
         </tr>
     {% for enrollment in object_list %}
         <tr>
@@ -21,6 +22,7 @@
             <td>{{ enrollment.section.end_time }}</td>
             <td>{{ enrollment.section.semester.start_date }}</td>
             <td>{{ enrollment.section.semester.end_date }}</td>
+            <td>{{ enrollment.get_status_display }}</td>
         </tr>
     {% endfor %}
     </table>

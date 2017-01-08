@@ -60,7 +60,12 @@ class StudentClassListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         if 'slug' in self.kwargs:
             slug = self.kwargs['slug']
-            return Enrollment.objects.filter(student__slug=slug).order_by("section__tuesday", "section__start_time")
+            return Enrollment.objects.filter(
+                student__slug=slug
+            ).order_by(
+                "section__tuesday",
+                "section__start_time"
+            ).prefetch_related()
 
 
 class StudentScheduleView(StudentClassListView):

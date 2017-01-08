@@ -102,7 +102,10 @@ class Section(models.Model):
         return None
 
     def is_full(self):
-        return self.seats < self.students.count()
+        return self.open_seats() < 1
+
+    def over_full(self):
+        return self.open_seats() < -4
 
     def get_days(self):
         days = []
