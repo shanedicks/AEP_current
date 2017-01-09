@@ -2,6 +2,22 @@ from django.conf.urls import url, include
 from . import views
 
 
+single_class_attendance_patterns = [
+    url(r'^$',
+        views.AttendanceOverview.as_view(),
+        name='attendance overview'),
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.SingleAttendanceView.as_view(),
+        name='single attendance'),
+    url(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/$',
+        views.DailyAttendanceView.as_view(),
+        name='daily attendance'),
+    url(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/print-sign-in/$',
+        views.PrintSignInView.as_view(),
+        name='sign in'),
+]
+
+
 single_class_patterns = [
     url(r'^$',
         views.ClassDetailView.as_view(),
@@ -9,18 +25,8 @@ single_class_patterns = [
     url(r'^add-student/$',
         views.AddStudentView.as_view(),
         name='add student'),
-    url(r'^attendance/$',
-        views.AttendanceOverview.as_view(),
-        name='attendance overview'),
-    url(r'^attendance/(?P<pk>[0-9]+)/$',
-        views.SingleAttendanceView.as_view(),
-        name='single attendance'),
-    url(r'^attendance/(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/$',
-        views.DailyAttendanceView.as_view(),
-        name='daily attendance'),
-    url(r'^attendance/(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/print-sign-in/$',
-        views.PrintSignInView.as_view(),
-        name='sign in'),
+    url(r'^attendance/',
+        include(single_class_attendance_patterns))
 ]
 
 staff_patterns = [

@@ -149,7 +149,7 @@ class Section(models.Model):
         n = str(self.title)
         t = str(self.teacher)
         d = self.get_days_str()
-        b = str(self.start_time)
+        b = self.start_time.strftime('%I:%M%p')
         items = [s, n, t, d, b]
         return "|".join(items)
 

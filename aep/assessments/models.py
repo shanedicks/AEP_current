@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 from people.models import Staff, Student
 
 
@@ -42,8 +43,16 @@ class TestEvent(models.Model):
         verbose_name_plural = "Test Events"
 
     def __str__(self):
-        title = [self.test, self.start.date, self.start.time]
-        return "|".join(title)
+        start_date = self.start.date().strftime("%a, %b %d")
+        start_time = self.start.time().strftime("%I:%M%p")
+        title = [self.test, start_date, start_time]
+        return " | ".join(title)
+
+    def get_absolute_url(self):
+        return reverse(
+            'assessments:test event detail',
+            kwargs={'pk': self.pk}
+        )
 
 
 class TestAppointment(models.Model):
@@ -63,7 +72,13 @@ class TestAppointment(models.Model):
         verbose_name_plural = "Testing Appointments"
 
     def __str__(self):
-        return self.student + " for " + self.appointment
+        return self.student.__str__() + " for " + self.event.__str__()
+
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:test appointment detail",
+            kwargs={'slug': self.student.slug}
+        )
 
 
 class TestHistory(models.Model):
@@ -91,7 +106,13 @@ class TestHistory(models.Model):
         verbose_name_plural = "Testing Histories"
 
     def __str__(self):
-        return "| ".join([self.student_wru, self.student])
+        return " | ".join([self.student.WRU_ID, self.student.__str__()])
+
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:student test history",
+            kwargs={'slug': self.student.slug}
+        )
 
 
 class Test(models.Model):
@@ -248,7 +269,18 @@ class Tabe(Test):
         verbose_name_plural = "TABE scores"
 
     def __str__(self):
-        return "|".join([self.student, 'TABE', self.test_date])
+        student = self.student.__str__()
+        date = str(self.test_date)
+        return " | ".join([student, 'TABE', date])
+
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:student tabe detail",
+            kwargs={
+                'slug': self.student.student.slug,
+                'pk': self.pk
+            }
+        )
 
 
 class Tabe_Loc(Test):
@@ -283,7 +315,9 @@ class Tabe_Loc(Test):
         verbose_name_plural = "TABE Locators"
 
     def __str__(self):
-        return "|".join([self.student, 'TABE Loc', self.test_date])
+        student = self.student.__str()
+        date = str(self.test_date)
+        return " | ".join([student, 'TABE Loc', date])
 
 
 class Clas_E(Test):
@@ -330,7 +364,18 @@ class Clas_E(Test):
         verbose_name_plural = "CLAS-E scores"
 
     def __str__(self):
-        return "|".join([self.student, 'CLAS-E', self.test_date])
+        student = self.student.__str()
+        date = str(self.test_date)
+        return " | ".join([student, 'CLAS-E', date])
+
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:student clas-e detail",
+            kwargs={
+                'slug': self.student.student.slug,
+                'pk': self.pk
+            }
+        )
 
 
 class Clas_E_Loc(Test):
@@ -345,7 +390,9 @@ class Clas_E_Loc(Test):
         verbose_name_plural = "CLAS-E Locators"
 
     def __str__(self):
-        return "|".join([self.student, 'CLAS-E Loc', self.test_date])
+        student = self.student.__str()
+        date = str(self.test_date)
+        return " | ".join([student, 'CLAS-E Loc', date])
 
 
 class HiSet_Practice(Test):
@@ -355,4 +402,15 @@ class HiSet_Practice(Test):
         verbose_name_plural = "HiSET Practice scores"
 
     def __str__(self):
-        return "|".join([self.student, 'HiSET Practice', self.test_date])
+        student = self.student.__str()
+        date = str(self.test_date)
+        return " | ".join([student, 'HiSET Practice', date])
+
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:student hiset practice detail",
+            kwargs={
+                'slug': self.student.student.slug,
+                'pk': self.pk
+            }
+        )

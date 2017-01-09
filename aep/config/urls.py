@@ -18,6 +18,7 @@ urlpatterns = [
 
     # Other Stuff
     url(r'^', include('people.urls', namespace='people')),
+    url(r'^testing/', include('assessments.urls', namespace='assessments')),
     url(r'^classes/', include('sections.urls', namespace='sections')),
     url(r'^registration/$',
         TemplateView.as_view(
