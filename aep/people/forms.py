@@ -91,6 +91,7 @@ class UserForm(ModelForm):
 class StudentSearchForm(Form):
     f_name = CharField(label=_('First Name'), required=False)
     l_name = CharField(label=_('Last Name'), required=False)
+    stu_id = CharField(label=_('Student ID'), required=False)
 
     def filter_queryset(self, request, queryset):
         qst = queryset
@@ -101,6 +102,10 @@ class StudentSearchForm(Form):
         if self.cleaned_data['l_name']:
             qst = qst.filter(
                 user__last_name__icontains=self.cleaned_data['l_name']
+            )
+        if self.cleaned_data['stu_id']:
+            qst = qst.filter(
+                WRU_ID__contains=self.cleaned_data['stu_id']
             )
         return qst
 

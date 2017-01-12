@@ -42,6 +42,12 @@ class PrintSignInView(LoginRequiredMixin, DetailView):
         context = super(PrintSignInView, self).get_context_data(**kwargs)
         if 'attendance_date' not in context:
             context['attendance_date'] = self.kwargs['attendance_date']
+        if 'active' not in context:
+            context['active'] = self.object.get_active(
+            ).order_by(
+                'student__user__last_name',
+                'student__user__first_name'
+            )
         return context
 
 
@@ -273,7 +279,8 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
             enrollment__status="A",
             attendance_date=attendance_date
         ).order_by(
-            "enrollment__student"
+            "enrollment__student__user__last_name",
+            "enrollment__student__user__first_name"
         )
         formset = AttendanceFormSet(queryset=queryset)
         return self.render_to_response(

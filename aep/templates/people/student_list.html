@@ -11,7 +11,11 @@
         <div class="form-group">
             <label class="sr-only" for="id_l_name">Last Name</label>
             <input class="form-control" id="id_l_name" name="l_name" type="text" placeholder="Last Name" />
-        </div>            
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="id_stu_id">Student Id</label>
+            <input class="form-control" id="id_stu_id" name="stu_id" type="text" placeholder="Student Id" />
+        </div>              
     <button type="submit" class="btn btn-default btn-sm">Filter Students</button>
     <a href="{% url 'people:student list' %}" class="btn btn-default btn-sm">Clear</a>
     </form>

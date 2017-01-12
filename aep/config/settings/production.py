@@ -9,5 +9,6 @@ DATABASES['default'] = dj_database_url.config(conn_max_age=500)
 ALLOWED_HOSTS = [
     'dccaep.herokuapp.com',
     'www.dccaep.org',
+    'dccaep.org',
     'dccaeptest.herokuapp.com'
 ]
