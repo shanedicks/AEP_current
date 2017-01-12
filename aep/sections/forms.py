@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, ChoiceField, modelformset_factory, ValidationError
+from django.forms import ModelForm, Form, ChoiceField, modelformset_factory, ValidationError, CharField
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
@@ -125,6 +125,18 @@ class SectionFilterForm(Form):
         self.helper.form_show_labels = False
         self.helper.disable_csrf = True
 
+
+class SectionSearchForm(Form):
+
+    c_name = CharField(label=_('Class Name'), required=False)
+
+    def filter_queryset(self, request, queryset):
+        qst = queryset
+        if self.cleaned_data['c_name']:
+            qst = qst.filter(
+                title__icontains=self.cleaned_data['c_name']
+            )
+        return qst
 
 class SingleAttendanceForm(ModelForm):
 

@@ -1,5 +1,5 @@
 from django.views.generic import (DetailView, ListView, CreateView,
-                                  DeleteView, UpdateView)
+                                  DeleteView, UpdateView, FormView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
@@ -10,16 +10,33 @@ from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     ClassAddFromListEnrollForm, StudentAddEnrollmentForm,
-                    SingleAttendanceForm, AttendanceFormSet)
+                    SingleAttendanceForm, AttendanceFormSet, SectionSearchForm)
 
 
-class ClassListView(LoginRequiredMixin, ListView):
+class ClassListView(LoginRequiredMixin, ListView, FormView):
 
+    form_class = SectionSearchForm
     model = Section
     template_name = 'sections/class_list.html'
     paginate_by = 20
 
     queryset = Section.objects.all().order_by('site', 'program', 'title')
+
+    def get_form_kwargs(self):
+        return {
+            'initial': self.get_initial(),
+            'prefix': self.get_prefix(),
+            'data': self.request.GET or None
+        }
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        form = self.get_form(self.get_form_class())
+        if form.is_valid():
+            self.object_list = form.filter_queryset(request, self.object_list)
+        return self.render_to_response(
+            self.get_context_data(form=form, object_list=self.object_list)
+        )
 
 
 class AddClassListView(ClassListView):

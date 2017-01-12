@@ -14,6 +14,14 @@ class Semester(models.Model):
     def get_sections(self):
         return self.sections.all()
 
+    def get_enrollments(self):
+        sections = self.sections.all()
+        students = []
+        for section in sections:
+            for student in section.students.all():
+                students.append(student)
+        return students
+
     def begin(self):
         for section in self.get_sections():
             section.begin()

@@ -54,6 +54,14 @@ class TestEvent(models.Model):
             kwargs={'pk': self.pk}
         )
 
+    def open_seats(self):
+        if self.seats:
+            return self.seats - self.students
+        return None
+
+    def is_full(self):
+        return self.open_seats < 1
+
 
 class TestAppointment(models.Model):
 
@@ -64,7 +72,7 @@ class TestAppointment(models.Model):
 
     event = models.ForeignKey(
         TestEvent,
-        related_name='testers'
+        related_name='students'
     )
 
     class Meta:
