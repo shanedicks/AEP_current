@@ -37,5 +37,11 @@ class EnrollmentAdmin(ImportExportModelAdmin):
         'last_modified'
     )
 
+    search_fields = [
+        "student__user__first_name",
+        "student__user__first_name",
+        "section__title"
+    ]
+
 
 admin.site.register(Enrollment, EnrollmentAdmin)

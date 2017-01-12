@@ -38,6 +38,10 @@ class TestEvent(models.Model):
 
     end = models.DateTimeField()
 
+    full = models.BooleanField(
+        default=False
+    )
+
     class Meta:
         verbose_name = "Test Event"
         verbose_name_plural = "Test Events"
@@ -56,11 +60,16 @@ class TestEvent(models.Model):
 
     def open_seats(self):
         if self.seats:
-            return self.seats - self.students
+            return self.seats - self.students.count()
         return None
 
-    def is_full(self):
-        return self.open_seats < 1
+    def check_full(self):
+        if self.open_seats() < 1:
+            self.full = True
+            self.save()
+        else:
+            self.full = False
+            self.save()
 
 
 class TestAppointment(models.Model):
@@ -87,6 +96,10 @@ class TestAppointment(models.Model):
             "assessments:test appointment detail",
             kwargs={'slug': self.student.slug}
         )
+
+    def save(self, *args, **kwargs):
+        self.event.check_full()
+        super(TestAppointment, self).save(*args, **kwargs)
 
 
 class TestHistory(models.Model):
