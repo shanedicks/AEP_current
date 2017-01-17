@@ -140,6 +140,9 @@ class AddClassView(LoginRequiredMixin, CreateView):
         if 'filter_form' not in context:
             context['filter_form'] = SectionFilterForm()
             context.update(kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
         return context
 
     def get_form_kwargs(self):

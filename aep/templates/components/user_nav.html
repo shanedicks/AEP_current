@@ -1,6 +1,7 @@
 {% if request.user.staff %}
     <ul class="nav navbar-nav">
         <li><a href="{% url 'people:staff home' request.user.staff.slug %}">Home</a></li>
+        <li><a href-"{% url 'people:staff list' %}">Staff</a></li>
         <li><a href="{% url 'people:student list'%}">Students</a></li>
         <li><a href="{% url 'sections:class list'%}">Classes</a></li>
     </ul>
