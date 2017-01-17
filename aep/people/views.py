@@ -217,6 +217,39 @@ class StaffListView(LoginRequiredMixin, ListView):
 class StaffUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Staff
+    template_name = 'people/staff_update.html'
+    form_class = StaffForm
+
+    def get_context_data(self, **kwargs):
+        context = super(StaffUpdateView, self).get_context_data(**kwargs)
+        if 'user_form' not in context:
+            context['user_form'] = UserUpdateForm(instance=self.object.user)
+            context.update(kwargs)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        user_form = UserUpdateForm(
+            request.POST,
+            instance=self.get_object().user
+        )
+        staff_form = StaffForm(
+            request.POST,
+            instance=self.get_object()
+        )
+        uf_valid = user_form.is_valid()
+        sf_valid = staff_form.is_valid()
+        if uf_valid and sf_valid:
+            user = user_form.save()
+            staff = staff_form.save(commit=False)
+            staff.user = user
+            staff.save()
+            self.object = staff
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            self.object = None
+            return self.render_to_response(
+                self.get_context_data(user_form=user_form)
+            )
 
 
 class StaffCreateView(LoginRequiredMixin, CreateView):

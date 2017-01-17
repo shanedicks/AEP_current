@@ -563,6 +563,89 @@ class WioaForm(ModelForm):
 
 
 class StaffForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(StaffForm, self).__init__(*args, **kwargs)
+        self.fields['phone'].validators.append(phone_validator)
+        self.fields['alt_phone'].validators.append(phone_validator)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            'dob',
+            Fieldset(
+                'Contact Info',
+                Row(
+                    Field(
+                        'phone',
+                        placeholder="504-555-5555",
+                        wrapper_class="col-md-6",
+                        data_mask="999-999-9999",
+                        required=True
+                    ),
+                    Field(
+                        'alt_phone',
+                        wrapper_class="col-md-6",
+                        placeholder="504-555-5555",
+                        data_mask="999-999-9999",
+                    )
+                ),
+                Row(
+                    Field(
+                        'street_address_1',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'street_address_2',
+                        wrapper_class="col-md-6"
+                    )
+                ),
+                Row(
+                    Field(
+                        'city',
+                        'state',
+                        wrapper_class="col-md-4",
+                        required=True
+                    ),
+                    Field(
+                        'zip_code',
+                        data_mask="99999",
+                        wrapper_class="col-md-4",
+                        required=True
+                    ),
+                ),
+            ),
+            Fieldset(
+                'Emergency Contact Info',
+                'emergency_contact',
+                Field(
+                    'ec_phone',
+                    data_mask="999-999-9999",
+                    wrapper_class="col-md-4"
+                ),
+                Field(
+                    'ec_email',
+                    'ec_relation',
+                    wrapper_class="col-md-4"
+                ),
+            ),
+            'bio',
+        )
+
     class Meta:
         model = Staff
-        fields = people_fields + staff_fields
+        fields = (
+            "dob",
+            "phone",
+            "alt_phone",
+            "street_address_1",
+            "street_address_2",
+            "city",
+            "state",
+            "zip_code",
+            "emergency_contact",
+            "ec_phone",
+            "ec_email",
+            "ec_relation",
+            "bio",
+        )

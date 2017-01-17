@@ -84,7 +84,6 @@ class StaffResource(resources.ModelResource):
             "street_address_2",
             "city",
             "state",
-            "parish",
             "zip_code",
             "emergency_contact",
             "ec_phone",

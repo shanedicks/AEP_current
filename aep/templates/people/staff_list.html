@@ -2,9 +2,17 @@
 
 {% block content %}
     <h2>Staff</h2>
-    <ul>
+    <table class="table">
+    	<tr>
+    		<th>Name</th>
+    		<th>Phone</th>
+    		<th>Email</th>
         {% for staff in object_list %}
-            <li><a href="{{ staff.get_absolute_url }}">{{ staff.user.get_full_name }}</a></li>
+        	<tr>
+	            <td><a href="{{ staff.get_absolute_url }}">{{ staff.user.get_full_name }}</a></td>
+	            <td>{{ staff.phone }}</td>
+	            <td>{{ staff.user.email }}</td>
+            </tr>
         {% endfor %}
-    </ul>
+    </table>
 {% endblock content %}
