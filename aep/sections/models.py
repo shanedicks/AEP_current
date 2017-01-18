@@ -121,31 +121,32 @@ class Section(models.Model):
             student.attendance_drop()
 
     def attendance_reminder(self):
-        today = datetime.today()
-        last_week = datetime.today() - td(days=7)
-        att = Attendance.objects.filter(
-            attendance_date__lt=today,
-            attendance_date__gte=last_week,
-            attendance_type='X',
-            enrollment__section=self,
-        ).count()
-        if att > 1:
-            send_mail(
-                "Delgado Adult Ed Attendance Reminder",
-                "Dear {teacher} \n"
-                "\n"
-                "Your attendance for {section} is incomplete.\n"
-                "By updating your attendance in a timely way, "
-                "we are able to ensure that students comply "
-                "with program attendance and testing policies.\n\n"
-                "Please update or check your attendance for accuracy as soon as possible.".format(
-                    section=self.title,
-                    teacher=self.teacher.user.first_name
-                ),
-                "dccaep@gmail.com",
-                [self.teacher.user.email],
-                fail_silently=False
-            )
+        if self.teacher.user.email:
+            today = datetime.today()
+            last_week = datetime.today() - td(days=7)
+            att = Attendance.objects.filter(
+                attendance_date__lt=today,
+                attendance_date__gte=last_week,
+                attendance_type='X',
+                enrollment__section=self,
+            ).count()
+            if att > 1:
+                send_mail(
+                    "Delgado Adult Ed Attendance Reminder",
+                    "Dear {teacher} \n"
+                    "\n"
+                    "Your attendance for {section} is incomplete.\n"
+                    "By updating your attendance in a timely way, "
+                    "we are able to ensure that students comply "
+                    "with program attendance and testing policies.\n\n"
+                    "Please update or check your attendance for accuracy as soon as possible.".format(
+                        section=self.title,
+                        teacher=self.teacher.user.first_name
+                    ),
+                    "dccaep@gmail.com",
+                    [self.teacher.user.email],
+                    fail_silently=False
+                )
 
     def get_days(self):
         days = []
