@@ -96,12 +96,16 @@ class Section(models.Model):
             student.activate()
             student.save()
 
+    # Drops active students with 2 absences and fills their spots with waitlisted students in enrollment order
     def waitlist_update(self):
         for student in self.get_active():
             student.waitlist_drop()
         for student in self.get_waiting():
             student.add_from_waitlist()
 
+    def enforce_attendance(self):
+        for student in self.get_active():
+            student.attendance_drop()
 
     def open_seats(self):
         if self.seats:
@@ -214,6 +218,16 @@ class Enrollment(models.Model):
         name = self.section.title
         return name
 
+    def times_attended(self):
+        return self.attendance.filter(attendance_type='P').count()
+
+    def times_absent(self):
+        return self.attendance.filter(attendance_type='A').count()
+
+    def get_attendance(self):
+        return self.attendance.order_by(attendance__attendance_date)
+
+    # Creates related attendance objects for student enrollment with correct dates and pending status
     def activate(self):
         if self.attendance.all().count() == 0:
             dates = self.section.get_class_dates()
@@ -226,6 +240,7 @@ class Enrollment(models.Model):
                 )
                 a.save()
 
+    # Drops students who have missed first two class periods
     def waitlist_drop(self):
         absent = self.times_absent()
         present = self.times_attended()
@@ -233,25 +248,18 @@ class Enrollment(models.Model):
             self.status = "D"
             self.save()
 
+    # Adds students to active roster if class space exists
     def add_from_waitlist(self):
         if not self.section.is_full():
             self.status = 'A'
             self.save()
-
-    def times_attended(self):
-        return self.attendance.filter(attendance_type='P').count()
-
-    def times_absent(self):
-        return self.attendance.filter(attendance_type='A').count()
-
-    def get_attendance(self):
-        return self.attendance.order_by(attendance__attendance_date)
 
     # Check attendance for attendance policy compliance - change enrollment status if needed
     def attendance_drop(self):
         absences = self.times_absent()
         if absences > 4:
             self.status = 'D'
+            self.save()
 
     def get_absolute_url(self):
         return reverse('sections:enrollment detail', kwargs={'pk': self.pk})

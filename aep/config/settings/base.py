@@ -120,7 +120,7 @@ SITE_ID = 1
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Chicago'
 
 TIME_INPUT_FORMATS = [
     '%I:%M %p',
