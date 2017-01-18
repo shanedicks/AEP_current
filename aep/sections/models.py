@@ -94,14 +94,14 @@ class Section(models.Model):
 
     def open_seats(self):
         if self.seats:
-            return self.seats - self.students.filter(status='A').count()
+            return self.seats - self.get_active().count()
         return None
 
     def is_full(self):
         return self.open_seats() < 1
 
     def over_full(self):
-        return self.students.filter(status='W').count() > 4
+        return self.get_wirthdrawn().count() > 4
 
     def begin(self):
         for student in self.get_active():
@@ -110,11 +110,39 @@ class Section(models.Model):
 
     # Drops active students with 2 absences and fills their spots with waitlisted students in enrollment order
     def waitlist_update(self):
+        dropped = []
+        added = []
         for student in self.get_active():
-            student.waitlist_drop()
+            if student.waitlist_drop():
+                dropped.append(str(student.student))
         for student in self.get_waiting():
-            student.add_from_waitlist()
+            if student.add_from_waitlist():
+                added.append(str(student.student))
         self.begin()
+        if len(dropped) > 0:
+            if self.teacher.user.email:
+                send_mail(
+                    "Delgado Adult Ed Dropped Student Notice {day}".format(day=datetime.today().date()),
+                    "Hi {teacher},\n"
+                    "In accordance with our attendance policy, "
+                    "we have dropped the following students:\n"
+                    "{drop}\n"
+                    "We have also added the following waitlisted "
+                    "students to your active roster:\n"
+                    "{add}\n"
+                    "All these students listed have been notified "
+                    "by email that their status has changed.\n"
+                    "Please understand that waitlisted students "
+                    "are not excused for days missed while on the waitlist. "
+                    "Consider calling these newly added students to be sure "
+                    "they are aware of the change. Thanks".format(
+                        teacher=self.teacher.user.first_name,
+                        drop=dropped,
+                        add=added),
+                    "dccaep@gmail.com",
+                    [self.teacher.user.email],
+                    fail_silently=False
+                )
 
     def enforce_attendance(self):
         for student in self.get_active():
@@ -132,8 +160,8 @@ class Section(models.Model):
             ).count()
             if att > 1:
                 send_mail(
-                    "Delgado Adult Ed Attendance Reminder",
-                    "Dear {teacher} \n"
+                    "Delgado Adult Ed Attendance Reminder {day}".format(day=datetime.today().date()),
+                    "Hi {teacher} \n"
                     "\n"
                     "Your attendance for {section} is incomplete.\n"
                     "By updating your attendance in a timely way, "
@@ -279,21 +307,43 @@ class Enrollment(models.Model):
             self.save()
             if self.student.user.email:
                 send_mail(
-                    "We're sorry, but you've been dropped",
-                    "According to our attendance policy, \
-                    students who miss the first two class periods \
-                    are dropped to make room for waitlisted students. \
-                    Please stop by our main office or call \
-                    504-671-5434 for more information",
+                    "We're sorry {student}, but you've been dropped from {section}".format(
+                        student=self.student.user.first_name,
+                        section=self.section.title),
+                    "According to our attendance policy, "
+                    "students who miss the first two class periods "
+                    "are dropped to make room for waitlisted students.\n"
+                    "Please stop by our main office or call "
+                    "504-671-5434 for more information.",
                     "dccaep@gmail.com",
                     [self.student.user.email],
                     fail_silently=False)
+            return True
+        return False
 
     # Adds students to active roster if class space exists
     def add_from_waitlist(self):
         if not self.section.is_full():
             self.status = 'A'
             self.save()
+            if self.student.user.email:
+                send_mail(
+                    "Good News! You've been added to {section}".format(
+                        section=self.section.title
+                    ),
+                    "Hi {student} \n"
+                    "Space has opened up in {section} and you have been added the roster.\n"
+                    "To keep your spot, please attend this class the next time it meets.\n"
+                    "If you are unsure when that is, "
+                    "stop by our main office or call 504-671-5434".format(
+                        student=self.student.user.first_name,
+                        section=self.section.title),
+                    "dccaep@gmail.com",
+                    [self.student.user.email],
+                    fail_silently=False
+                )
+            return True
+        return False
 
     # Check attendance for attendance policy compliance - change enrollment status if needed
     def attendance_drop(self):
