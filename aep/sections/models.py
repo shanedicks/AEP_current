@@ -86,7 +86,7 @@ class Section(models.Model):
         return self.students.filter(status='D')
 
     def get_waiting(self):
-        return self.students.filter(status='W')
+        return self.students.filter(status='W').order_by('created')
 
     def get_withdrawn(self):
         return self.students.filter(status='R')
@@ -96,16 +96,23 @@ class Section(models.Model):
             student.activate()
             student.save()
 
+    def waitlist_update(self):
+        for student in self.get_active():
+            student.waitlist_drop()
+        for student in self.get_waiting():
+            student.add_from_waitlist()
+
+
     def open_seats(self):
         if self.seats:
-            return self.seats - self.students.count()
+            return self.seats - self.students.filter(status='A').count()
         return None
 
     def is_full(self):
         return self.open_seats() < 1
 
     def over_full(self):
-        return self.open_seats() < -4
+        return self.students.filter(status='W').count() > 4
 
     def get_days(self):
         days = []
@@ -219,6 +226,18 @@ class Enrollment(models.Model):
                 )
                 a.save()
 
+    def waitlist_drop(self):
+        absent = self.times_absent()
+        present = self.times_attended()
+        if absent > 1 and present < 1:
+            self.status = "D"
+            self.save()
+
+    def add_from_waitlist(self):
+        if not self.section.is_full():
+            self.status = 'A'
+            self.save()
+
     def times_attended(self):
         return self.attendance.filter(attendance_type='P').count()
 
@@ -229,7 +248,7 @@ class Enrollment(models.Model):
         return self.attendance.order_by(attendance__attendance_date)
 
     # Check attendance for attendance policy compliance - change enrollment status if needed
-    def check_attendance(self):
+    def attendance_drop(self):
         absences = self.times_absent()
         if absences > 4:
             self.status = 'D'
