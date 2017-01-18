@@ -92,6 +92,17 @@ class Section(models.Model):
     def get_withdrawn(self):
         return self.students.filter(status='R')
 
+    def open_seats(self):
+        if self.seats:
+            return self.seats - self.students.filter(status='A').count()
+        return None
+
+    def is_full(self):
+        return self.open_seats() < 1
+
+    def over_full(self):
+        return self.students.filter(status='W').count() > 4
+
     def begin(self):
         for student in self.get_active():
             student.activate()
@@ -103,21 +114,38 @@ class Section(models.Model):
             student.waitlist_drop()
         for student in self.get_waiting():
             student.add_from_waitlist()
+        self.begin()
 
     def enforce_attendance(self):
         for student in self.get_active():
             student.attendance_drop()
 
-    def open_seats(self):
-        if self.seats:
-            return self.seats - self.students.filter(status='A').count()
-        return None
-
-    def is_full(self):
-        return self.open_seats() < 1
-
-    def over_full(self):
-        return self.students.filter(status='W').count() > 4
+    def attendance_reminder(self):
+        today = datetime.today()
+        last_week = datetime.today() - td(days=7)
+        att = Attendance.objects.filter(
+            attendance_date__lt=today,
+            attendance_date__gte=last_week,
+            attendance_type='X',
+            enrollment__section=self,
+        ).count()
+        if att > 1:
+            send_mail(
+                "Delgado Adult Ed Attendance Reminder",
+                "Dear {teacher} \n"
+                "\n"
+                "Your attendance for {section} is incomplete.\n"
+                "By updating your attendance in a timely way, "
+                "we are able to ensure that students comply "
+                "with program attendance and testing policies.\n\n"
+                "Please update or check your attendance for accuracy as soon as possible.".format(
+                    section=self.title,
+                    teacher=self.teacher.user.first_name
+                ),
+                "dccaep@gmail.com",
+                [self.teacher.user.email],
+                fail_silently=False
+            )
 
     def get_days(self):
         days = []
@@ -251,7 +279,11 @@ class Enrollment(models.Model):
             if self.student.user.email:
                 send_mail(
                     "We're sorry, but you've been dropped",
-                    "According to our attendance policy, students who miss the first two class periods are dropped to make room for waitlisted students. Please stop by our main office or call 504-671-5434 for more information",
+                    "According to our attendance policy, \
+                    students who miss the first two class periods \
+                    are dropped to make room for waitlisted students. \
+                    Please stop by our main office or call \
+                    504-671-5434 for more information",
                     "dccaep@gmail.com",
                     [self.student.user.email],
                     fail_silently=False)
@@ -327,3 +359,9 @@ class Attendance(models.Model):
                 'pk': self.pk
             }
         )
+
+    def __str__(self):
+        s = str(self.enrollment.student)
+        d = self.attendance_date.strftime('%Y-%m-%d')
+        t = self.get_attendance_type_display()
+        return " | ".join([d, s, t])

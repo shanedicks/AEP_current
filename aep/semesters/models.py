@@ -26,6 +26,10 @@ class Semester(models.Model):
         for section in self.get_sections():
             section.begin()
 
+    def attendance_reminder(self):
+        for section in self.get_sections():
+            section.attendance_reminder()
+
     def __str__(self):
         return self.title
 
