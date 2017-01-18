@@ -1,6 +1,7 @@
 from datetime import date, datetime, timedelta as td
 from django.db import models
 from django.conf import settings
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from core.utils import make_slug
 from people.models import Staff, Student
@@ -247,6 +248,13 @@ class Enrollment(models.Model):
         if absent > 1 and present < 1:
             self.status = "D"
             self.save()
+            if self.student.user.email:
+                send_mail(
+                    "We're sorry, but you've been dropped",
+                    "According to our attendance policy, students who miss the first two class periods are dropped to make room for waitlisted students. Please stop by our main office or call 504-671-5434 for more information",
+                    "dccaep@gmail.com",
+                    [self.student.user.email],
+                    fail_silently=False)
 
     # Adds students to active roster if class space exists
     def add_from_waitlist(self):
