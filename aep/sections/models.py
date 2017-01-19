@@ -101,7 +101,7 @@ class Section(models.Model):
         return self.open_seats() < 1
 
     def over_full(self):
-        return self.get_wirthdrawn().count() > 4
+        return self.get_withdrawn().count() > 4
 
     def begin(self):
         for student in self.get_active():
