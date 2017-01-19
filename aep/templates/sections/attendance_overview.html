@@ -7,14 +7,24 @@
         <tr>
             <th><h4>Active</h4></th>
             {% for day in days %}
-            <th><a href="{{day|date:"Y-m-d"}}/">{{day|date:"M-d"}}</a></th>
+            <th><a href="{{day|date:"Y-m-d"}}/">{{day|date:"M - d"}}</a></th>
             {% endfor %}
         </tr>
         {% for student in active %}
             <tr>
                 <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                 {% for att in student.attendance.all %}
-                    <td><a href='{{ att.get_absolute_url }}'>{{att.attendance_type}} ({{ att.hours }})</a></td>
+                    <td>
+                        <a href='{{ att.get_absolute_url }}'>
+                        {% if att.attendance_type == "X" %}
+                            -
+                        {% elif att.attendance_type == 'C' %}
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                        {% else %}
+                            {{ att.hours }} 
+                        {% endif %}
+                        </a>
+                    </td>
                 {% endfor %}
             </tr>
         {% endfor %}
@@ -24,7 +34,16 @@
                 <tr>
                     <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                     {% for att in student.attendance.all %}
-                        <td>{{att.attendance_type}} ({{ att.hours }})</td>
+                        <td>
+                            {% if att.attendance_type == "X" %}
+                                -
+                            {% elif att.attendance_type == 'C' %}
+                                <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                            {% else %}
+                                {{ att.hours }} 
+                            }
+                            {% endif %}
+                        </td>
                     {% endfor %}
                 </tr>
             {% endfor %}
@@ -35,7 +54,15 @@
                 <tr>
                     <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                     {% for att in student.attendance.all %}
-                        <td>{{att.attendance_type}} ({{ att.hours }})</td>
+                        <td>
+                            {% if att.attendance_type == "X" %}
+                                -
+                            {% elif att.attendance_type == 'C' %}
+                                C
+                            {% else %}
+                                {{ att.hours }} 
+                            {% endif %}
+                        </td>
                     {% endfor %}
                 </tr>
             {% endfor %}
