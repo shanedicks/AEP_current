@@ -14,7 +14,7 @@
             <tr>
                 <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                 {% for att in student.attendance.all %}
-                    <td><a href='{{ att.get_absolute_url }}'>{{att.attendance_type}}({{ att.hours }})</a></td>
+                    <td><a href='{{ att.get_absolute_url }}'>{{att.attendance_type}} ({{ att.hours }})</a></td>
                 {% endfor %}
             </tr>
         {% endfor %}
@@ -24,7 +24,7 @@
                 <tr>
                     <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                     {% for att in student.attendance.all %}
-                        <td>{{att.attendance_type}}({{ att.hours }})</td>
+                        <td>{{att.attendance_type}} ({{ att.hours }})</td>
                     {% endfor %}
                 </tr>
             {% endfor %}
@@ -35,7 +35,7 @@
                 <tr>
                     <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                     {% for att in student.attendance.all %}
-                        <td>{{att.attendance_type}}({{ att.hours }})</td>
+                        <td>{{att.attendance_type}} ({{ att.hours }})</td>
                     {% endfor %}
                 </tr>
             {% endfor %}

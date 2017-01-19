@@ -125,7 +125,7 @@ class Section(models.Model):
                     "Delgado Adult Ed Dropped Student Notice {day}".format(day=datetime.today().date()),
                     "Hi {teacher},\n"
                     "In accordance with our attendance policy, "
-                    "we have dropped the following students:\n"
+                    "we have dropped the following students from {section}:\n"
                     "{drop}\n"
                     "We have also added the following waitlisted "
                     "students to your active roster:\n"
@@ -136,6 +136,7 @@ class Section(models.Model):
                     "are not excused for days missed while on the waitlist. "
                     "Consider calling these newly added students to be sure "
                     "they are aware of the change. Thanks".format(
+                        section=self.title,
                         teacher=self.teacher.user.first_name,
                         drop=dropped,
                         add=added),

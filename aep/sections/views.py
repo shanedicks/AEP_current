@@ -49,6 +49,16 @@ class ClassDetailView(LoginRequiredMixin, DetailView):
     model = Section
     template_name = 'sections/class_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(ClassDetailView, self).get_context_data(**kwargs)
+        if 'students' not in context:
+            context['students'] = self.object.get_all_students(
+            ).order_by(
+                'student__user__last_name',
+                'student__user__first_name'
+            )
+        return context
+
 
 class PrintSignInView(LoginRequiredMixin, DetailView):
 
