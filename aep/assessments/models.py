@@ -126,6 +126,12 @@ class TestHistory(models.Model):
         verbose_name = "Test History"
         verbose_name_plural = "Testing Histories"
 
+    def update_last(self, test):
+        if test.test_date > last_test:
+            self.last_test = test.test_date
+            self.save()
+
+
     def __str__(self):
         return " | ".join([self.student.WRU_ID, self.student.__str__()])
 
@@ -153,6 +159,11 @@ class Test(models.Model):
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        self.student.update_last()
+        super(Test, self).save(*args, **kwargs)
+
 
 
 class Tabe(Test):

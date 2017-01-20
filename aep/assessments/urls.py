@@ -30,9 +30,12 @@ single_student_assessment_patterns = [
 ]
 
 urlpatterns = [
-    url(r'(?P<slug>[a-zA-Z0-9]{5})/',
-        include(single_student_assessment_patterns)),
+    url(r'^events/$',
+        views.TestEventListView.as_view(),
+        name="test event list"),
     url(r'^events/(?P<pk>[0-9]+)/$',
         views.TestEventDetailView.as_view(),
-        name="test event detail")
+        name="test event detail"),
+    url(r'(?P<slug>[a-zA-Z0-9]{5})/',
+        include(single_student_assessment_patterns)),
 ]
