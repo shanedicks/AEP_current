@@ -158,6 +158,7 @@ class Section(models.Model):
                 attendance_date__gte=last_week,
                 attendance_type='X',
                 enrollment__section=self,
+                enrollment__status='A'
             ).count()
             if att > 1:
                 send_mail(
