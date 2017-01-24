@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-	<h1>Test History</h1>
-	<h2>{{ student }}</h2>
-	
+	<h1>Test History for {{student}}</h1>
+    <h3>Last Test: {{ history.last_test }}</h3> 
+    <h3>Test Assignment: {{ history.test_assignment }}</h3>
 {% endblock %}

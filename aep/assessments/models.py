@@ -1,6 +1,8 @@
+from datetime import date, timedelta
 from django.db import models
 from django.core.urlresolvers import reverse
 from people.models import Staff, Student
+from sections.models import Attendance
 
 
 class TestEvent(models.Model):
@@ -109,27 +111,45 @@ class TestHistory(models.Model):
         related_name="tests"
     )
 
-    current_pretest = models.BooleanField(
-        default=False
-    )
-
     last_test = models.DateField(
         blank=True,
         null=True
     )
 
-    hours = models.PositiveSmallIntegerField(
-        default=0
+    test_assignment = models.CharField(
+        max_length=10,
+        blank=True
     )
 
     class Meta:
         verbose_name = "Test History"
         verbose_name_plural = "Testing Histories"
 
-    def update_last(self, test):
-        if test.test_date > last_test:
+    def has_pretest(self):
+        return self.last_test > date.today() - timedelta(days=150)
+
+    def update_status(self, test):
+        if not self.last_test:
             self.last_test = test.test_date
-            self.save()
+            self.test_assignment = test.assign()
+        else: 
+            if self.last_test < test.test_date:
+                self.last_test = test.test_date
+                self.test_assignment = test.assign()
+        self.save()
+
+    def active_hours(self):
+        attendance_set = Attendance.objects.filter(
+            enrollment__student=self.student,
+            attendance_date__gte=self.last_test,
+            attendance_type='P'
+        )
+
+        total_hours = 0
+
+        for attendance in attendance_set:
+            total_hours += attendance.hours()
+        return total_hours
 
 
     def __str__(self):
@@ -161,9 +181,8 @@ class Test(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        self.student.update_last()
+        self.student.update_status(self)
         super(Test, self).save(*args, **kwargs)
-
 
 
 class Tabe(Test):
@@ -300,6 +319,29 @@ class Tabe(Test):
         verbose_name = "TABE"
         verbose_name_plural = "TABE scores"
 
+    @staticmethod
+    def get_level(score):
+        if 6.0 > score >= 4.0:
+            level = "M"
+        elif 9.0 > score >= 6.0:
+            level = "D"
+        elif score > 9.0:
+            level = "A"
+        else:
+            level = "E"
+        return level
+
+    def assign(self):
+        if self.NINE:
+            form = "10"
+        else:
+            form = "9"
+        r_level = self.get_level(self.read_ge)
+        m_level = self.get_level(self.total_math_ge)
+        l_level = self.get_level(self.lang_ge)
+
+        return " ".join([form, r_level, m_level, l_level])
+
     def __str__(self):
         student = self.student.__str__()
         date = str(self.test_date)
@@ -345,6 +387,9 @@ class Tabe_Loc(Test):
     class Meta:
         verbose_name = "TABE Locator"
         verbose_name_plural = "TABE Locators"
+
+    def assign():
+        pass
 
     def __str__(self):
         student = self.student.__str()
@@ -395,6 +440,21 @@ class Clas_E(Test):
         verbose_name = "CLAS-E"
         verbose_name_plural = "CLAS-E scores"
 
+    def assign(self):
+        if self.A:
+            form = 'B'
+        else:
+            form = 'A'
+        if self.read_ss < 401:
+            level = "1"
+        elif self.read_ss < 451:
+            level = "2"
+        elif self.read_ss < 491:
+            level = "3"
+        else:
+            level = "4"
+        return " ".join([level, form])
+
     def __str__(self):
         student = self.student.__str()
         date = str(self.test_date)
@@ -420,6 +480,9 @@ class Clas_E_Loc(Test):
     class Meta:
         verbose_name = "CLAS-E Locator"
         verbose_name_plural = "CLAS-E Locators"
+
+    def assign():
+        pass
 
     def __str__(self):
         student = self.student.__str()
