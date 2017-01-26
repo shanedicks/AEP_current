@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+{% load staticfiles %}
+    <p></p>
+    <img src="{% static 'logo.png' %}" alt="Logo">
+    <h1>Official Attendance Record for {{student}}</h1>
+    {% for enrollment in object_list %}
+        <table class="table">
+            <tr>
+                <th></th>
+                {% for day in enrollment.section.get_class_dates %}
+                <th>{{day|date:"M - d"}}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td><h4>{{ enrollment.section.title }}<h4></td>
+                {% for att in enrollment.attendance.all %}
+                    <td>
+                        {% if att.attendance_type == "X" %}
+                            -
+                        {% elif att.attendance_type == 'C' %}
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                        {% else %}
+                            {{ att.hours }} 
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        </table>
+    {% endfor %}    
+    </table>
+{% endblock %}

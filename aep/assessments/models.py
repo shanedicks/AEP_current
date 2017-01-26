@@ -172,7 +172,6 @@ class Test(models.Model):
     student_wru = models.CharField(
         blank=True,
         max_length=8,
-        unique=True
     )
 
     test_date = models.DateField()
@@ -321,7 +320,9 @@ class Tabe(Test):
 
     @staticmethod
     def get_level(score):
-        if 6.0 > score >= 4.0:
+        if score is None:
+            level = "-"
+        elif 6.0 > score >= 4.0:
             level = "M"
         elif 9.0 > score >= 6.0:
             level = "D"

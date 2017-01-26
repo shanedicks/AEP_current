@@ -98,12 +98,16 @@ class StudentClassListView(LoginRequiredMixin, ListView):
             ).order_by(
                 "section__tuesday",
                 "section__start_time"
-            ).prefetch_related()
+            ).prefetch_related('attendance')
 
 
 class StudentScheduleView(StudentClassListView):
 
     template_name = 'sections/student_schedule.html'
+
+class StudentAttendanceView(StudentClassListView):
+
+    template_name = 'sections/student_attendance.html'
 
 
 class AddStudentView(LoginRequiredMixin, CreateView):

@@ -70,6 +70,9 @@ urlpatterns = [
         include(staff_patterns)),
     url(r'^my-classes/',
         include(student_patterns)),
+    url(r'^attendance/$',
+        views.StudentAttendanceView.as_view(),
+        name='student attendance'),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/',
         include(single_class_patterns))
 ]
