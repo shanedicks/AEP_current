@@ -6,6 +6,7 @@
         <tr>
             <th>Students</th>
             <th>Phone</th>
+            <th>Email</th>
             <th>Enrollment Status</th>
             <th># Attended</th>
             <th># Absent</th>
@@ -13,7 +14,8 @@
         {% for student in students %}
         <tr>
             <td><a href='{{ student.student.get_absolute_url }}'>{{ student.student }}</a></td>
-            <td>{{ student.student.phone }}
+            <td>{{ student.student.phone }}</td>
+            <td>{{ student.student.user.email }}</td>
             <td>{{ student.get_status_display }}</td>
             <td>{{ student.times_attended }}</td>
             <td>{{ student.times_absent }}</td>
