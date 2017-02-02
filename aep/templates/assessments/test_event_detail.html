@@ -1,10 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>{{ event }}</h1>
-<h3>Proctor: {{event.proctor}}<h3>
+<h3>Proctor: {{event.proctor}}</h3>
 <table class="table">
 	<tr>
-		<th></th>
+		<th>Student</th>
+		<th>ID</th>
+		<th>Phone</th>
+		<th>Email</th>
+		<th>Assignment</th>
 	</tr>
+{% for student in event.students.all %}
+	<tr>
+		<td>{{ student.student }}</td>
+		<td>{{ student.student.WRU_ID }}</td>
+		<td>{{ student.student.phone }}</td>
+		<td>{{ student.student.email }}
+		<td>{{ student.student.tests.test_assignment }}
+	</tr>
+{% endfor %}
 </table>
 {% endblock %}
