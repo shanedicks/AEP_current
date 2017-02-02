@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
-from assessments.forms import PretestSignupForm
+from assessments.forms import PretestSignupForm, LocatorSignupForm
 from .models import Staff, Student
 from .forms import (
     StaffForm, StudentForm, StudentSearchForm,
@@ -147,6 +147,9 @@ class NewStudentRegistrationView(CreateView):
         if 'wioa_form' not in context:
             context['wioa_form'] = WioaForm
             context.update(kwargs)
+        if 'locator_form' not in context:
+            context['locator_form'] = LocatorSignupForm
+            context.update(kwargs)
         if 'pretest_form' not in context:
             context['pretest_form'] = PretestSignupForm
             context.update(kwargs)
@@ -157,20 +160,25 @@ class NewStudentRegistrationView(CreateView):
         student_form = StudentForm(request.POST)
         wioa_form = WioaForm(request.POST)
         pretest_form = PretestSignupForm(request.POST)
+        locator_form = LocatorSignupForm(request.post)
         uf_valid = user_form.is_valid()
         sf_valid = student_form.is_valid()
         wf_valid = wioa_form.is_valid()
         p_valid = pretest_form.is_valid()
-        if uf_valid and sf_valid and wf_valid and p_valid:
+        l_valid = locator_form.is_valid()
+        if uf_valid and sf_valid and wf_valid and p_valid and l_valid:
             user = user_form.save()
             student = student_form.save(commit=False)
             student.user = user
             student.save()
             wioa = wioa_form.save(commit=False)
             wioa.student = student
+            locator = locator_form.save(commit=False)
+            locator.student = student
             pretest = pretest_form.save(commit=False)
             pretest.student = student
             wioa.save()
+            locator.save()
             pretest.save()
             self.object = student
             return HttpResponseRedirect(self.get_success_url())
@@ -180,6 +188,7 @@ class NewStudentRegistrationView(CreateView):
                 self.get_context_data(
                     user_form=user_form,
                     wioa_form=wioa_form,
+                    locator_form=locator_form,
                     pretest_form=pretest_form
                 )
             )

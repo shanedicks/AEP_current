@@ -1,4 +1,5 @@
 import datetime
+from django.db.models import Q
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
@@ -12,20 +13,13 @@ class TestAppointmentForm(ModelForm):
         fields = ('student', 'event')
 
 
-class PretestSignupForm(ModelForm):
+class TestSignupForm(ModelForm):
     class Meta:
         model = TestAppointment
         fields = ('event',)
 
     def __init__(self, *args, **kwargs):
-        limit = datetime.datetime.today() + datetime.timedelta(days=3) # we only want test events at least 3 days away
-        events = TestEvent.objects.filter(
-            start__date__gte=limit
-        ).exclude(
-            full=True
-        ).order_by('start')
-        self.base_fields['event'].queryset = events
-        super(PretestSignupForm, self).__init__(*args, **kwargs)
+        super(TestSignupForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.help_text_inline = False
@@ -33,6 +27,46 @@ class PretestSignupForm(ModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 'Testing Group',
+                'event'
+            )
+        )
+
+
+class PretestSignupForm(TestSignupForm):
+
+    def __init__(self, *args, **kwargs):
+        limit = datetime.datetime.today() + datetime.timedelta(days=2) # we only want test events at least 3 days away
+        events = TestEvent.objects.filter(
+            Q(test='TABE') | Q(test='CLAS-E'),
+            start__date__gte=limit
+        ).exclude(
+            full=True
+        ).order_by('start')
+        self.base_fields['event'].queryset = events
+        super(PretestSignupForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            Fieldset(
+                'Pre-Test Group',
+                'event'
+            )
+        )
+
+
+class LocatorSignupForm(TestSignupForm):
+
+    def __init__(self, *args, **kwargs):
+        limit = datetime.datetime.today() + datetime.timedelta(days=2) # we only want test events at least 3 days away
+        events = TestEvent.objects.filter(
+            Q(test='TABE Locator') | Q(test='CLAS-E Locator'),
+            start__date__gte=limit
+        ).exclude(
+            full=True
+        ).order_by('start')
+        self.base_fields['event'].queryset = events
+        super(LocatorSignupForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            Fieldset(
+                'Orientation/Locator Group',
                 'event'
             )
         )
