@@ -30,6 +30,9 @@ single_student_assessment_patterns = [
 ]
 
 urlpatterns = [
+    url(r'^$',
+        views.TestingHomeView.as_view(),
+        name="testing home"),
     url(r'^events/$',
         views.TestEventListView.as_view(),
         name="test event list"),

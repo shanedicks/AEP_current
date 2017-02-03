@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 	<h1>Test Events</h1>
+	<h3>Upcoming Test Events</h3>
+	{% if upcoming %}
 	<table class="table">
 		<tr>
 			<th>Test</th>
@@ -11,7 +13,7 @@
 			<th>Start Time</th>
 			<th>End Time</th>
 		</tr>
-	{% for event in object_list %}
+	{% for event in upcoming %}
 		<tr>
 			<td><a href="{% url 'assessments:test event detail' pk=event.pk %}">{{event.get_test_display}}</a></td>
 			<td>{{event.proctor}}</td>
@@ -23,4 +25,34 @@
 		</tr>
 	{% endfor %}
 	</table>
+	{% else %}
+	<p>There are no Upcoming Test Events</p>
+	{% endif %}
+	<h3>Past Test Events</h3>
+	{% if past %}
+	<table class="table">
+		<tr>
+			<th>Test</th>
+			<th>Proctor</th>
+			<th>Open Seats</th>
+			<th>Seats</th>
+			<th>Date</th>
+			<th>Start Time</th>
+			<th>End Time</th>
+		</tr>
+	{% for event in past %}
+		<tr>
+			<td><a href="{% url 'assessments:test event detail' pk=event.pk %}">{{event.get_test_display}}</a></td>
+			<td>{{event.proctor}}</td>
+			<td>{{event.open_seats}}</td>
+			<td>{{event.seats}}</td>
+			<td>{{event.start.date}}</td>
+			<td>{{event.start.time}}</td>
+			<td>{{event.end.time}}</td>
+		</tr>
+	{% endfor %}
+	</table>
+	{% else %}
+	<p>There are no Past Test Events</p>
+	{% endif %}
 {% endblock %}

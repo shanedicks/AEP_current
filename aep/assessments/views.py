@@ -1,11 +1,16 @@
+from datetime import datetime
 from django.views.generic import (DetailView, ListView, CreateView,
-                                  DeleteView, UpdateView)
+                                  DeleteView, UpdateView, TemplateView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render_to_response
 from people.models import Student
 from .models import (TestEvent, TestAppointment, TestHistory,
                      Tabe, Clas_E, HiSet_Practice)
 
+
+class TestingHomeView(LoginRequiredMixin, TemplateView):
+
+    template_name = 'assessments/testing_home.html'
 
 class TestEventDetailView(LoginRequiredMixin, DetailView):
 
@@ -18,6 +23,23 @@ class TestEventListView(LoginRequiredMixin, ListView):
 
     model = TestEvent
     template_name = "assessments/test_event_list.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(
+            TestEventListView,
+            self
+        ).get_context_data(*args, **kwargs)
+        if 'upcoming' not in context:
+            context['upcoming'] = TestEvent.objects.filter(
+                start__gte=datetime.today()
+            )
+            context.update(kwargs)
+        if 'past' not in context:
+            context['past'] = TestEvent.objects.filter(
+                start__lt=datetime.today()
+            )
+            context.update(kwargs)
+        return context
 
 
 class TestAppointmentDetailView(LoginRequiredMixin, DetailView):

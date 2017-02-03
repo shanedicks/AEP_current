@@ -29,7 +29,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 class StudentListView(LoginRequiredMixin, ListView, FormView):
 
     form_class = StudentSearchForm
-    queryset = Student.objects.all().order_by('user__last_name')
+    queryset = Student.objects.all().order_by('user__last_name', 'user__first_name')
     context_object_name = 'students'
     paginate_by = 25
 
