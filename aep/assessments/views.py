@@ -19,6 +19,7 @@ class TestEventListView(LoginRequiredMixin, ListView):
     model = TestEvent
     template_name = "assessments/test_event_list.html"
 
+
 class TestAppointmentDetailView(LoginRequiredMixin, DetailView):
 
     model = TestAppointment
