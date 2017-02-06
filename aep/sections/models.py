@@ -350,7 +350,8 @@ class Enrollment(models.Model):
     # Check attendance for attendance policy compliance - change enrollment status if needed
     def attendance_drop(self):
         absences = self.times_absent()
-        if absences > 4:
+        policy = self.section.semester.allowed_absences
+        if absences > policy:
             self.status = 'D'
             self.save()
             if self.student.user.email:
@@ -358,10 +359,10 @@ class Enrollment(models.Model):
                     "We're sorry {student}, but you've been dropped from {section}".format(
                         student=self.student.user.first_name,
                         section=self.section.title),
-                    "According to our attendance policy, "
-                    "students who miss five class periods "
-                    "are dropped from the class. "
-                    "You're still in our program, you're just not in this class.\n"
+                    "According to our program's attendance policy, "
+                    "students who miss a class more than 4 times "
+                    "will be dropped from that class. "
+                    "You're still part of our program, you're just dropped from this class.\n"
                     "Please stop by our main office or call "
                     "504-671-5434 for more information.",
                     "dccaep@gmail.com",

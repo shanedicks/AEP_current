@@ -8,6 +8,8 @@ class Semester(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
 
+    allowed_absences = models.SmallIntegerField(default=4)
+
     def get_days(self):
         return self.days.all()
 
@@ -29,6 +31,10 @@ class Semester(models.Model):
     def attendance_reminder(self):
         for section in self.get_sections():
             section.attendance_reminder()
+
+    def enforce_attendance(self):
+        for section in self.get_sections():
+            section.enforce_attendance()
 
     def __str__(self):
         return self.title
