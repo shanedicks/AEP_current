@@ -159,14 +159,14 @@ class NewStudentRegistrationView(CreateView):
         user_form = UserForm(request.POST)
         student_form = StudentForm(request.POST)
         wioa_form = WioaForm(request.POST)
+        locator_form = LocatorSignupForm(request.POST)
         pretest_form = PretestSignupForm(request.POST)
-        locator_form = LocatorSignupForm(request.post)
         uf_valid = user_form.is_valid()
         sf_valid = student_form.is_valid()
         wf_valid = wioa_form.is_valid()
-        p_valid = pretest_form.is_valid()
         l_valid = locator_form.is_valid()
-        if uf_valid and sf_valid and wf_valid and p_valid and l_valid:
+        p_valid = pretest_form.is_valid()
+        if uf_valid and sf_valid and wf_valid and l_valid and p_valid:
             user = user_form.save()
             student = student_form.save(commit=False)
             student.user = user

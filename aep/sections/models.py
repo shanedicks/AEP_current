@@ -353,6 +353,20 @@ class Enrollment(models.Model):
         if absences > 4:
             self.status = 'D'
             self.save()
+            if self.student.user.email:
+                send_mail(
+                    "We're sorry {student}, but you've been dropped from {section}".format(
+                        student=self.student.user.first_name,
+                        section=self.section.title),
+                    "According to our attendance policy, "
+                    "students who miss five class periods "
+                    "are dropped from the class. "
+                    "You're still in our program, you're just not in this class.\n"
+                    "Please stop by our main office or call "
+                    "504-671-5434 for more information.",
+                    "dccaep@gmail.com",
+                    [self.student.user.email],
+                    fail_silently=False)
 
     def get_absolute_url(self):
         return reverse('sections:enrollment detail', kwargs={'pk': self.pk})

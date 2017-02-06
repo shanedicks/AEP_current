@@ -34,7 +34,10 @@ class TestSignupForm(ModelForm):
 
 class PretestSignupForm(TestSignupForm):
 
+    prefix = 'pretest'
+
     def __init__(self, *args, **kwargs):
+        super(PretestSignupForm, self).__init__(*args, **kwargs)
         limit = datetime.datetime.today() + datetime.timedelta(days=2) # we only want test events at least 3 days away
         events = TestEvent.objects.filter(
             Q(test='TABE') | Q(test='CLAS-E'),
@@ -42,8 +45,7 @@ class PretestSignupForm(TestSignupForm):
         ).exclude(
             full=True
         ).order_by('start')
-        self.base_fields['event'].queryset = events
-        super(PretestSignupForm, self).__init__(*args, **kwargs)
+        self.fields['event'].queryset = events
         self.helper.layout = Layout(
             Fieldset(
                 'Pre-Test Group',
@@ -54,7 +56,10 @@ class PretestSignupForm(TestSignupForm):
 
 class LocatorSignupForm(TestSignupForm):
 
+    prefix = 'locator'
+
     def __init__(self, *args, **kwargs):
+        super(LocatorSignupForm, self).__init__(*args, **kwargs)
         limit = datetime.datetime.today() + datetime.timedelta(days=2) # we only want test events at least 3 days away
         events = TestEvent.objects.filter(
             Q(test='TABE Locator') | Q(test='CLAS-E Locator'),
@@ -62,8 +67,7 @@ class LocatorSignupForm(TestSignupForm):
         ).exclude(
             full=True
         ).order_by('start')
-        self.base_fields['event'].queryset = events
-        super(LocatorSignupForm, self).__init__(*args, **kwargs)
+        self.fields['event'].queryset = events
         self.helper.layout = Layout(
             Fieldset(
                 'Orientation/Locator Group',
