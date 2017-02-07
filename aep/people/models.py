@@ -831,3 +831,33 @@ class WIOA(models.Model):
 
     def __str__(self):
         return self.student.__str__()
+
+
+class CollegeInterest(models.Model):
+
+    YES_NO_CONFUSED = (
+        ('Y', 'Yes'),
+        ('N', 'No'),
+        ('C', "I don't know")
+    )
+
+    GED_HISET_CHOICES = (
+        ('1', 'Yes, high school diploma'),
+        ('2', 'Yes, high school equivalency'),
+        ('3', 'No')
+    )
+
+    ged_hiset = models.CharField(
+        max_length=1,
+        choices=GED_HISET_CHOICES,
+        verbose_name=_('Do you have a High School equivalency?')
+    )
+
+    nslds_notes = models.CharField(
+        max_length=200,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name_plural = "College Interest Records"
+

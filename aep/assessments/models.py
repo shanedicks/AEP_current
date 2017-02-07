@@ -482,8 +482,16 @@ class Clas_E_Loc(Test):
         verbose_name = "CLAS-E Locator"
         verbose_name_plural = "CLAS-E Locators"
 
-    def assign():
-        pass
+    def assign(self):
+        if self.read > 12:
+            assignment = "4"
+        elif self.read > 9:
+            assignment = "3"
+        elif self.read > 6:
+            assignment = "2"
+        else:
+            assignment = "1"
+        return assignment
 
     def __str__(self):
         student = self.student.__str()
