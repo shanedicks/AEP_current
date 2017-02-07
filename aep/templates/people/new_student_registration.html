@@ -7,7 +7,11 @@
             {% crispy user_form %}
             {% crispy form %}
             {% crispy wioa_form %}
-            {% crispy locator_form %}
+            <h3>Orientation and Pre-Test Signup</h3>
+            <p class="lead">Please select an orientation and testing appointment and write these appointments down.</p>
+            <p class="lead">You must attend orientation in order to attend testing.</p>  
+            <p class="lead">If you miss an appointment, please contact us at 504-671-5434 to reschedule.</p>
+            {% crispy locator_form %}  
             {% crispy pretest_form %}
         <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Register</button>
     </form>
