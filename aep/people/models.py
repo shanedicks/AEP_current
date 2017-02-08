@@ -835,7 +835,7 @@ class WIOA(models.Model):
 
 class CollegeInterest(models.Model):
 
-    YES_NO_CONFUSED = (
+    YES_NO_MAYBE = (
         ('Y', 'Yes'),
         ('N', 'No'),
         ('C', "I don't know")
@@ -847,14 +847,135 @@ class CollegeInterest(models.Model):
         ('3', 'No')
     )
 
+    DEFAULT = 'D'
+    REPAYMENT = 'R'
+    PAID = 'P'
+    OTHER = 'O'
+    UNKNOWN = 'U'
+    AID_STATUS_CHOICES = (
+        (DEFAULT, 'Default'),
+        (REPAYMENT, 'Repayment'),
+        (PAID, 'Paid in full'),
+        (UNKNOWN, "I don't know"),
+        (OTHER, 'Other')
+    )
+
+    FULL_TIME = 'F'
+    PART_TIME = 'P'
+    LOOKING = 'L'
+    NOT_LOOKING = 'N'
+    EMPLOYMENT_STATUS_CHOICES = (
+        (FULL_TIME, "Yes, I’m employed full-time (more than 30 hours per week)."),
+        (PART_TIME, "Yes, I’m employed part-time (less than 30 hours per week)."),
+        (LOOKING, "No, but I’m looking for work."),
+        (NOT_LOOKING, "No, and I’m not looking for work right now.")
+
+    )
+
     ged_hiset = models.CharField(
         max_length=1,
         choices=GED_HISET_CHOICES,
         verbose_name=_('Do you have a High School equivalency?')
     )
 
+    current_adult_ed = models.BooleanField(
+        default=True
+    )
+
+    adult_ed_location = models.CharField(
+        max_length=50,
+        blank=True
+    )
+
+    bpcc = models.BooleanField(default=False)
+
+    brcc = models.BooleanField(default=False)
+
+    ctcc = models.BooleanField(default=False)
+
+    dcc = models.BooleanField(default=False)
+
+    ldcc = models.BooleanField(default=False)
+
+    ftcc = models.BooleanField(default=False)
+
+    ntcc = models.BooleanField(default=False)
+
+    ncc = models.BooleanField(default=False)
+
+    nltc = models.BooleanField(default=False)
+
+    rpcc = models.BooleanField(default=False)
+
+    scl = models.BooleanField(default=False)
+
+    slcc = models.BooleanField(default=False)
+
+    sowela = models.BooleanField(default=False)
+
+    lola = models.CharField(
+        max_length=15,
+        blank=True
+    )
+
+    other_college = models.BooleanField(default=False)
+
+    other_college_location = models.CharField(
+        max_length=30,
+        blank=True
+    )
+
+    other_college_name = models.CharField(
+        max_length=50,
+        blank=True
+    )
+
+    prev_balance = models.CharField(
+        max_length=1,
+        choices=YES_NO_MAYBE,
+    )
+
+    financial_aid = models.CharField(
+        max_length=1,
+        choices=YES_NO_MAYBE
+    )
+
+    aid_status = models.CharField(
+        max_length=1,
+        choices=AID_STATUS_CHOICES
+    )
+
     nslds_notes = models.CharField(
         max_length=200,
+        blank=True
+    )
+
+    fafsa1617 = models.BooleanField(default=False)
+    fafsa1718 = models.BooleanField(default=False)
+    fafsa1819 = models.BooleanField(default=False)
+
+    delgado_classes = models.CharField(
+        max_length=400,
+        blank=True
+    )
+
+    employment_status = models.CharField(
+        max_length=1,
+        choices=EMPLOYMENT_STATUS_CHOICES
+    )
+
+    work_schedule = models.CharField(
+        max_length=400,
+        blank=True
+    )
+
+    carrer_goals = models.CharField(
+        max_length=2000,
+        blank=True
+    )
+
+    notes = models.CharField(
+        max_length=2000,
         blank=True
     )
 
