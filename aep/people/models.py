@@ -981,4 +981,3 @@ class CollegeInterest(models.Model):
 
     class Meta:
         verbose_name_plural = "College Interest Records"
-
