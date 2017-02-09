@@ -1,4 +1,5 @@
 from django.contrib import admin
+from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from .models import Section, Enrollment, Attendance
 
@@ -27,7 +28,23 @@ class SectionAdmin(ImportExportModelAdmin):
 admin.site.register(Section, SectionAdmin)
 
 
+class EnrollmentResource(resources.ModelResource):
+
+    class Meta:
+        model = Enrollment
+        fields = (
+            "section__WRU_ID",
+            "section__title",
+            "student__WRU_ID",
+            "student__user__last_name",
+            "student__user__first_name",
+            "created"
+        )
+
+
 class EnrollmentAdmin(ImportExportModelAdmin):
+
+    resource_class = EnrollmentResource
 
     list_display = (
         '__str__',
