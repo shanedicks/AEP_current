@@ -10,6 +10,7 @@ class SectionAdmin(ImportExportModelAdmin):
 
     list_display = (
         "title",
+        "WRU_ID",
         "program",
         "site",
         "teacher",
