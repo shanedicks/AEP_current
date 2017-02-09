@@ -343,6 +343,8 @@ class Staff(Profile):
         related_name='staff',
         verbose_name=_("user"))
 
+    wru = models.CharField(blank=True, max_length=5)
+
     bio = models.TextField(blank=True, max_length=4000)
 
     class Meta:
