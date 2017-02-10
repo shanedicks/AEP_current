@@ -1,10 +1,7 @@
 from django.contrib import admin
 from import_export import resources
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from .models import Section, Enrollment, Attendance
-
-
-admin.site.register(Attendance)
 
 
 class SectionAdmin(ImportExportModelAdmin):
@@ -67,3 +64,44 @@ class EnrollmentAdmin(ImportExportModelAdmin):
 
 
 admin.site.register(Enrollment, EnrollmentAdmin)
+
+class AttendanceResource(resources.ModelResource):
+
+    class Meta:
+        model = Attendance
+        fields = (
+            "enrollment__student__WRU_ID",
+            "enrollment__student__user__last_name",
+            "enrollment__student__user__first_name",
+            "enrollment__section__WRU_ID",
+            "attendance_type",
+            "attendance_date",
+            "time_in",
+            "time_out",
+        )
+
+class AttendanceAdmin(ImportExportActionModelAdmin):
+
+    resource_class = AttendanceResource
+
+    list_display = (
+        '__str__',
+        'attendance_date',
+        'attendance_type',
+    )
+
+    search_fields = (
+        'enrollment__student__user__first_name',
+        'enrollment__student__user__last_name',
+        'enrollment__section__title',
+        'attendance_date',
+    )
+
+    fields = (
+        'attendance_type',
+        'attendance_date',
+        'time_in',
+        'time_out'
+    )
+
+admin.site.register(Attendance, AttendanceAdmin)
