@@ -7,7 +7,7 @@
         <tr>
             <th><h4>Active</h4></th>
             {% for day in days %}
-            <th><a href="{{day|date:"Y-m-d"}}/">{{day|date:"M - d"}}</a></th>
+            <th><a href="{% url 'sections:daily attendance' slug=section.slug attendance_date=day|date:"Y-m-d" %}">{{day|date:"M - d"}}</a></th>
             {% endfor %}
         </tr>
         {% for student in active %}

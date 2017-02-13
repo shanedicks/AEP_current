@@ -22,6 +22,6 @@
         </tr>
         {% endfor %}
     </table>
-    <a class="btn btn-default btn-sm" href="add-student/" role="button">Add Student &raquo;</a>
-    <a class="btn btn-default btn-sm" href="attendance/" role="button">Attendance &raquo;</a>
+    <a class="btn btn-default btn-sm" href="{% url 'sections:add student' slug=section.slug %}" role="button">Add Student &raquo;</a>
+    <a class="btn btn-default btn-sm" href="{% url 'sections:attendance overview' slug=section.slug %}" role="button">Attendance &raquo;</a>
 {% endblock content %}

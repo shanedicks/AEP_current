@@ -17,8 +17,8 @@
 
     <p>
         <a class="btn btn-default" href="{% url 'people:edit student' slug=student.slug %}" role="button">Edit Student</a>
-        <a class="btn btn-default" href="my-classes/" role="button">Student Classes</a>
-        <a class="btn btn-default" href="attendance/" role="button">Student Attendance</a>
+        <a class="btn btn-default" href="{% url 'people:student classes' slug=student.slug %}" role="button">Student Classes</a>
+        <a class="btn btn-default" href="{% url 'people:student attendance' slug=student.slug %}" role="button">Student Attendance</a>
     </p>
 
 {%endblock content %}

@@ -26,6 +26,6 @@
         </tr>
     {% endfor %}
     </table>
-    <p><a class="btn btn-default" href="add-class/" role="button">Add New Class &raquo;</a>
-    <a class="btn btn-default" href="print-schedule/" role="button">Print Schedule &raquo;</a>
+    <p><a class="btn btn-default" href="{% url 'people:add class' slug=student.slug %}" role="button">Add New Class &raquo;</a>
+    <a class="btn btn-default" href="{%url 'people:print schedule' slug=student.slug %}" role="button">Print Schedule &raquo;</a>
 {% endblock %}
