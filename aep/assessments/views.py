@@ -1,11 +1,15 @@
 from datetime import datetime
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.urls import reverse
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView, TemplateView)
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render_to_response
+
 from people.models import Student
 from .models import (TestEvent, TestAppointment, TestHistory,
                      Tabe, Clas_E, HiSet_Practice)
+from .forms import TestSignupForm
 
 
 class TestingHomeView(LoginRequiredMixin, TemplateView):
@@ -42,6 +46,31 @@ class TestEventListView(LoginRequiredMixin, ListView):
         return context
 
 
+class TestingSignupView(LoginRequiredMixin, CreateView):
+
+    model = TestAppointment
+    form_class = TestSignupForm
+    template_name = 'assessments/test_signup.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            TestingSignupView,
+            self
+        ).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def form_valid(self, form):
+        student = Student.objects.get(slug=self.kwargs['slug'])
+        appt = form.save(commit=False)
+        appt.student = student
+        appt.save()
+        return super(TestingSignupView, self).form_valid(form)
+
+
 class TestAppointmentDetailView(LoginRequiredMixin, DetailView):
 
     model = TestAppointment
@@ -65,10 +94,14 @@ class StudentTestHistoryView(LoginRequiredMixin, DetailView):
             StudentTestHistoryView,
             self
         ).get_context_data(**kwargs)
-        if 'student' not in context:
-            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+
+        if 'appts' not in context:
+            context['appts'] = TestAppointment.objects.filter(
+                student__slug=self.kwargs['slug']
+            ).order_by('event__start')
             context.update(kwargs)
         return context
+
 
 
 class StudentTestListView(LoginRequiredMixin, ListView):

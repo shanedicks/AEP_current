@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h1>Testing Signup for {{ student }}</h1>
+<form class="form_group" method="post">
+    {% crispy form %}
+    <button type="submit" class="btn btn-success">Signup</button>
+</form>
+{% endblock content %}

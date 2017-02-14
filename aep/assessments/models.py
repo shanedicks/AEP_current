@@ -96,7 +96,7 @@ class TestAppointment(models.Model):
     def get_absolute_url(self):
         return reverse(
             "assessments:test appointment detail",
-            kwargs={'slug': self.student.slug}
+            kwargs={'pk': self.pk}
         )
 
     def save(self, *args, **kwargs):

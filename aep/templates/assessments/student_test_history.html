@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-	<h1>Test History for {{student}}</h1>
+	<h1>Test History for {{ history.student }}</h1>
     <h3>Last Test: {{ history.last_test }}</h3> 
     <h3>Test Assignment: {{ history.test_assignment }}</h3>
+
+    <h3>Testing Appointments</h3>
+    <a class="btn btn-default" href="{% url 'assessments:test signup' slug=history.student.slug %}" role="button">Testing Signup</a>
+    {% for appt in appts %}
+    	<p><a href="{% url 'assessments:test appointment detail' pk=appt.pk %}">{{ appt }}</a></p>
+    {% endfor %}
+
 {% endblock %}

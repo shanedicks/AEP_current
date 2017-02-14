@@ -8,6 +8,7 @@ from django.contrib.auth.admin import UserAdmin
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
 from .models import Student, Staff, WIOA
+from assessments.models import TestHistory
 
 
 class UserResource(resources.ModelResource):
@@ -227,6 +228,15 @@ class StudentAdmin(ImportExportActionModelAdmin):
         "city",
         "state",
     ]
+
+    actions = ['testify']
+
+    def testify(self, request, queryset):
+        for obj in queryset:
+            if TestHistory.objects.filter(student=obj).exists():
+                continue
+            else:
+                TestHistory.objects.create(student=obj)
 
 
 admin.site.register(Student, StudentAdmin)
