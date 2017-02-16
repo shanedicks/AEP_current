@@ -3,7 +3,7 @@ from django.views.generic import (
     CreateView, TemplateView, FormView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy, reverse
 from assessments.forms import PretestSignupForm, LocatorSignupForm
 from .models import Staff, Student, CollegeInterest
@@ -240,7 +240,10 @@ class CollegeInterestDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def get(self, request, *args, **kwargs):
-        self.object = CollegeInterest.objects.get(student__slug=kwargs['slug'])
+        try:
+            self.object = CollegeInterest.objects.get(student__slug=kwargs['slug'])
+        except CollegeInterest.DoesNotExist:
+            raise Http404('No College Interest Form has been completed for this student')
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 

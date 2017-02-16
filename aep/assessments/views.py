@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.urls import reverse
 from django.views.generic import (DetailView, ListView, CreateView,
@@ -85,7 +85,10 @@ class StudentTestHistoryView(LoginRequiredMixin, DetailView):
     context_object_name = 'history'
 
     def get(self, request, *args, **kwargs):
-        self.object = TestHistory.objects.get(student__slug=kwargs['slug'])
+        try:
+            self.object = TestHistory.objects.get(student__slug=kwargs['slug'])
+        except TestHistory.DoesNotExist:
+            raise Http404('Student has no Test History, please ask a site leader to "Testify" them.')
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 
