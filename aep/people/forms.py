@@ -5,18 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML, Div
 from crispy_forms.bootstrap import PrependedText
-from .models import Student, Staff, WIOA
-
-
-# Fields for the people forms
-
-personal_fields = ('phone', 'alt_phone', 'dob')
-address_fields = ('street_address_1', 'street_address_2', 'city', 'state')
-emergency_contact_fields = ('emergency_contact', 'ec_phone', 'ec_email',)
-
-people_fields = personal_fields + address_fields + emergency_contact_fields
-student_fields = ('US_citizen', 'gender', 'marital_status')
-staff_fields = ('bio',)
+from .models import Student, Staff, WIOA, CollegeInterest
 
 
 def make_username(first_name, last_name):
@@ -40,6 +29,159 @@ phone_validator = RegexValidator(
     message='Please enter a valid phone number',
     code='invalid_phone'
 )
+
+
+class StudentSearchForm(Form):
+    f_name = CharField(label=_('First Name'), required=False)
+    l_name = CharField(label=_('Last Name'), required=False)
+    stu_id = CharField(label=_('Student ID'), required=False)
+
+    def filter_queryset(self, request, queryset):
+        qst = queryset
+        if self.cleaned_data['f_name']:
+            qst = qst.filter(
+                user__first_name__icontains=self.cleaned_data['f_name']
+            )
+        if self.cleaned_data['l_name']:
+            qst = qst.filter(
+                user__last_name__icontains=self.cleaned_data['l_name']
+            )
+        if self.cleaned_data['stu_id']:
+            qst = qst.filter(
+                WRU_ID__contains=self.cleaned_data['stu_id']
+            )
+        return qst
+
+
+class CollegeInterestForm(ModelForm):
+
+    class Meta:
+        model = CollegeInterest
+        fields = (
+            'ged_hiset',
+            'current_adult_ed',
+            'adult_ed_location',
+            'bpcc',
+            'brcc',
+            'ctcc',
+            'dcc',
+            'ldcc',
+            'ftcc',
+            'ntcc',
+            'ncc',
+            'nltc',
+            'rpcc',
+            'scl',
+            'slcc',
+            'sowela',
+            'lola',
+            'other_college',
+            'other_college_name',
+            'other_college_location',
+            'prev_balance',
+            'financial_aid',
+            'aid_status',
+            'nslds_notes',
+            'fafsa1617',
+            'fafsa1718',
+            'fafsa1819',
+            'delgado_classes',
+            'workforce_training',
+            'workforce_training_desc',
+            'serv_safe',
+            'nccer',
+            'ic3',
+            'first_aid',
+            'cpr',
+            'employment_status',
+            'work_schedule',
+            'career_goals',
+            'notes'
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(CollegeInterestForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset(
+                'Adult Ed Information',
+                'ged_hiset',
+                'current_adult_ed',
+                'adult_ed_location',
+            ),
+            Fieldset(
+                'Prior College History',
+                'other_college',
+                'other_college_location',
+                'other_college_name',
+            ),
+            Fieldset(
+                'Have you ever taken for-credit classes'
+                ' at any of these LCTCS colleges?',
+                Row(
+                    Column(
+                        'bpcc',
+                        'brcc',
+                        'ctcc',
+                        'dcc',
+                        'ldcc',
+                        css_class='col-md-4'
+                    ),
+                    Column(
+                        'ftcc',
+                        'ntcc',
+                        'ncc',
+                        'nltc',
+                        css_class='col-md-4'
+                    ),
+                    Column(
+                        'rpcc',
+                        'scl',
+                        'slcc',
+                        'sowela',
+                        css_class='col-md-4'
+                    )
+                ),
+                'lola',
+            ),
+            Fieldset(
+                'Financial Aid Information',
+                'prev_balance',
+                'financial_aid',
+                'aid_status',
+                'nslds_notes',
+            ),
+            Fieldset(
+                'Please indicate which FAFSAs you have completed.',
+                'fafsa1617',
+                'fafsa1718',
+                'fafsa1819',
+            ),
+            Fieldset(
+                'Prior Coursework',
+                'delgado_classes',
+                'workforce_training',
+                'workforce_training_desc'
+            ),
+            Fieldset(
+                'Have you ever earned any industry-based certifications?',
+                'serv_safe',
+                'nccer',
+                'ic3',
+                'first_aid',
+                'cpr',
+            ),
+            Fieldset(
+                'Employment Details',
+                'employment_status',
+                'work_schedule',
+            ),
+            Field(
+                'career_goals',
+                'notes'
+            ),
+        )
 
 
 class UserForm(ModelForm):
@@ -86,28 +228,6 @@ class UserForm(ModelForm):
                 'email'
             )
         )
-
-
-class StudentSearchForm(Form):
-    f_name = CharField(label=_('First Name'), required=False)
-    l_name = CharField(label=_('Last Name'), required=False)
-    stu_id = CharField(label=_('Student ID'), required=False)
-
-    def filter_queryset(self, request, queryset):
-        qst = queryset
-        if self.cleaned_data['f_name']:
-            qst = qst.filter(
-                user__first_name__icontains=self.cleaned_data['f_name']
-            )
-        if self.cleaned_data['l_name']:
-            qst = qst.filter(
-                user__last_name__icontains=self.cleaned_data['l_name']
-            )
-        if self.cleaned_data['stu_id']:
-            qst = qst.filter(
-                WRU_ID__contains=self.cleaned_data['stu_id']
-            )
-        return qst
 
 
 class UserUpdateForm(ModelForm):
@@ -420,7 +540,12 @@ class WioaForm(ModelForm):
             Fieldset(
                 "Additional Details",
                 Row(
-                    HTML("""<div class="col-md-8"><p>This information is optional, however, sharing it with us can help us to better understand the needs of our student body and provide additional programming and services for all of our students.</p></div>"""),
+                    HTML("""<div class="col-md-8"><p>This information is
+                         optional, however, sharing it with us can help
+                         us to better understand the needs of our
+                         student body and provide additional
+                         programming and services for all of
+                         our students.</p></div>"""),
                 ),
                 Row(
                     Column(
@@ -452,7 +577,10 @@ class WioaForm(ModelForm):
                     ),
                     Column(
                         HTML(
-                            """ <p>(iv) State or local income-based public assistance (Louisiana Medicaid, Section 8 Housing, Kinship Care, Child Care Assisstance, LSU Hospital Free Care, Free Dental Program)</p>"""
+                            """<p>(iv) State or local income-based public
+                             assistance (Louisiana Medicaid, Section 8 Housing,
+                             Kinship Care, Child Care Assisstance,
+                             LSU Hospital Free Care, Free Dental Program)</p>"""
                         ),
                         css_class="col-md-4"
                     ),
@@ -460,11 +588,19 @@ class WioaForm(ModelForm):
                 HTML("""<hr>"""),
                 Field(
                     "low_family_income",
-                    HTML("""<table class="table table-condensed"><tr><th>Individual</th><th>Family of 2</th>
-                        <th>Family of 3</th><th>Family of 4</th><th>Family of 5</th><th>Family of 6</th>
-                        <th>Family of 7</th><th>Family of 8</th></tr><tr></tr><td>$11,880</td><td>$16,020</td><td>$20,300</td>
-                        <td>$25,062</td><td>$29,579</td><td>$34,595</td><td>$36,730</td><td>$40,890</td></table>"""
-                    ),
+                    HTML("""<table class="table table-condensed">
+                        <tr>
+                        <th>Individual</th><th>Family of 2</th>
+                        <th>Family of 3</th><th>Family of 4</th>
+                        <th>Family of 5</th><th>Family of 6</th>
+                        <th>Family of 7</th><th>Family of 8</th>
+                        </tr>
+                        <tr>
+                        <td>$11,880</td><td>$16,020</td><td>$20,300</td>
+                        <td>$25,062</td><td>$29,579</td><td>$34,595</td>
+                        <td>$36,730</td><td>$40,890</td>
+                        </tr></table>"""
+                         ),
                     Field(
                         "disabled_in_poverty",
                         "youth_in_high_poverty_area",

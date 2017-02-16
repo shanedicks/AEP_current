@@ -874,106 +874,224 @@ class CollegeInterest(models.Model):
 
     )
 
+    student = models.OneToOneField(
+        Student,
+        models.CASCADE,
+        related_name='college_interest'
+    )
+
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='college_interest_records'
+    )
+
     ged_hiset = models.CharField(
         max_length=1,
         choices=GED_HISET_CHOICES,
-        verbose_name=_('Do you have a High School equivalency?')
+        verbose_name=_('Do you have your high school diploma or high school equivalency (GED/HiSET)?')
     )
 
     current_adult_ed = models.BooleanField(
-        default=True
+        default=True,
+        verbose_name=_('Check this box if you are currently attending adult education classes')
     )
 
     adult_ed_location = models.CharField(
         max_length=50,
-        blank=True
+        blank=True,
+        verbose_name=_('Where?')
     )
 
-    bpcc = models.BooleanField(default=False)
+    bpcc = models.BooleanField(
+        default=False,
+        verbose_name=_('Bossier Parish Community College (BPCC)')
+    )
 
-    brcc = models.BooleanField(default=False)
+    brcc = models.BooleanField(
+        default=False,
+        verbose_name=_('Baton Rouge Community College (BRCC)')
+    )
 
-    ctcc = models.BooleanField(default=False)
+    ctcc = models.BooleanField(
+        default=False,
+        verbose_name=_('Central Louisiana Technical Community College (CTCC)')
+    )
 
-    dcc = models.BooleanField(default=False)
+    dcc = models.BooleanField(
+        default=False,
+        verbose_name=_('Delgado Community College')
+    )
 
-    ldcc = models.BooleanField(default=False)
+    ldcc = models.BooleanField(
+        default=False,
+        verbose_name=_('Louisiana Delta Community College')
+    )
 
-    ftcc = models.BooleanField(default=False)
+    ftcc = models.BooleanField(
+        default=False,
+        verbose_name=_('Fletcher Technical Community College')
+    )
 
-    ntcc = models.BooleanField(default=False)
+    ntcc = models.BooleanField(
+        default=False,
+        verbose_name=_('Northshore Technical Community College')
+    )
 
-    ncc = models.BooleanField(default=False)
+    ncc = models.BooleanField(
+        default=False,
+        verbose_name=_('Nunez Community College')
+    )
 
-    nltc = models.BooleanField(default=False)
+    nltc = models.BooleanField(
+        default=False,
+        verbose_name=_('Northwest Louisiana Technical College')
+    )
 
-    rpcc = models.BooleanField(default=False)
+    rpcc = models.BooleanField(
+        default=False,
+        verbose_name=_('River Parishes Community College (RPCC)')
+    )
 
-    scl = models.BooleanField(default=False)
+    scl = models.BooleanField(
+        default=False,
+        verbose_name=_('South Central Louisiana Technical College (SCL)')
+    )
 
-    slcc = models.BooleanField(default=False)
+    slcc = models.BooleanField(
+        default=False,
+        verbose_name=_('South Louisiana Community College')
+    )
 
-    sowela = models.BooleanField(default=False)
+    sowela = models.BooleanField(
+        default=False,
+        verbose_name=_('Southwest Louisiana Technical Community College (SOWELA)')
+    )
 
     lola = models.CharField(
         max_length=15,
-        blank=True
+        blank=True,
+        verbose_name=_('Do you know your LOLA number?')
     )
 
-    other_college = models.BooleanField(default=False)
+    other_college = models.BooleanField(
+        default=False,
+        verbose_name=_('Have you ever attended college before (anywhere)?')
+    )
 
     other_college_location = models.CharField(
         max_length=30,
-        blank=True
+        blank=True,
+        verbose_name=_('Where was that?')
     )
 
     other_college_name = models.CharField(
         max_length=50,
-        blank=True
+        blank=True,
+        verbose_name=_('Did you enroll under a different name than the one you gave us?')
     )
 
     prev_balance = models.CharField(
         max_length=1,
         choices=YES_NO_MAYBE,
+        blank=True,
+        verbose_name=_("If you've attended college before, do you owe a balance to that college?")
     )
 
     financial_aid = models.CharField(
         max_length=1,
-        choices=YES_NO_MAYBE
+        choices=YES_NO_MAYBE,
+        blank=True,
+        verbose_name=_('Have you ever used financial aid (student loans or grants) before?')
     )
 
     aid_status = models.CharField(
         max_length=1,
-        choices=AID_STATUS_CHOICES
+        choices=AID_STATUS_CHOICES,
+        blank=True,
+        verbose_name=_('If you have used financial aid before, what is your current financial aid status?')
     )
 
     nslds_notes = models.CharField(
         max_length=200,
-        blank=True
+        blank=True,
+        verbose_name=_('NLDS notes from ACE Staff:')
     )
 
-    fafsa1617 = models.BooleanField(default=False)
-    fafsa1718 = models.BooleanField(default=False)
-    fafsa1819 = models.BooleanField(default=False)
+    fafsa1617 = models.BooleanField(
+        default=False,
+        verbose_name='2016-2017'
+    )
+    fafsa1718 = models.BooleanField(
+        default=False,
+        verbose_name='2017-2018'
+    )
+    fafsa1819 = models.BooleanField(
+        default=False,
+        verbose_name='2018-2019'
+    )
 
     delgado_classes = models.CharField(
         max_length=400,
-        blank=True
+        blank=True,
+        verbose_name=_(
+            "If you've taken college classes at Delgado,"
+            " please list the classes you took and when,"
+            " to the best of your knowledge."
+            )
+    )
+
+    workforce_training = models.BooleanField(
+        default=False,
+        verbose_name=_('Have you ever take any workforce training classes?')
+    )
+
+    workforce_training_desc = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name=_('What kind of workforce training classes?')
+    )
+
+    serv_safe = models.BooleanField(
+        default=False,
+        verbose_name="ServSafe Manager's Level Certification"
+    )
+
+    nccer = models.BooleanField(
+        default=False,
+        verbose_name='NCCER Core Certification'
+    )
+
+    ic3 = models.BooleanField(
+        default=False,
+        verbose_name='Internet and Computing Core (IC3) Certification'
+    )
+
+    first_aid = models.BooleanField(
+        default=False,
+        verbose_name='First Aid'
+    )
+
+    cpr = models.BooleanField(
+        default=False,
+        verbose_name='CPR'
     )
 
     employment_status = models.CharField(
         max_length=1,
-        choices=EMPLOYMENT_STATUS_CHOICES
+        choices=EMPLOYMENT_STATUS_CHOICES,
+        verbose_name=_('Are you currently employed?')
     )
 
     work_schedule = models.CharField(
         max_length=400,
-        blank=True
+        blank=True,
+        verbose_name=_('What is your usual work schedule like?')
     )
 
-    carrer_goals = models.CharField(
+    career_goals = models.CharField(
         max_length=2000,
-        blank=True
+        blank=True,
+        verbose_name=_('What kind of career would you like to have when you finish school?')
     )
 
     notes = models.CharField(
@@ -983,3 +1101,9 @@ class CollegeInterest(models.Model):
 
     class Meta:
         verbose_name_plural = "College Interest Records"
+
+    def __str__(self):
+        return " | ".join([self.student.WRU_ID, self.student.__str__()])
+
+    def get_absolute_url(self):
+        return reverse('people:college interest detail', kwargs={'slug': self.student.slug})

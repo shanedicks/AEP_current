@@ -6,10 +6,10 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from assessments.forms import PretestSignupForm, LocatorSignupForm
-from .models import Staff, Student
+from .models import Staff, Student, CollegeInterest
 from .forms import (
     StaffForm, StudentForm, StudentSearchForm,
-    UserForm, UserUpdateForm, WioaForm)
+    UserForm, UserUpdateForm, WioaForm, CollegeInterestForm)
 
 
 class UserCreateView(CreateView):
@@ -202,6 +202,47 @@ class StudentCreateSuccessView(TemplateView):
 class RegistrationSuccessView(TemplateView):
 
     template_name = 'people/registration_success.html'
+
+
+class CollegeInterestFormView(LoginRequiredMixin, CreateView):
+
+    model = CollegeInterest
+    template_name = 'people/college_interest_form.html'
+    form_class = CollegeInterestForm
+
+    def get_context_data(self, **kwargs):
+        context = super(CollegeInterestFormView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def form_valid(self, form):
+        interest = form.save(commit=False)
+        student = Student.objects.get(slug=self.kwargs['slug'])
+        creator = self.request.user
+        interest.student = student
+        interest.creator = creator
+        interest.save()
+        return super(CollegeInterestFormView, self).form_valid(form)
+
+
+class CollegeInterestDetailView(LoginRequiredMixin, DetailView):
+
+    model = CollegeInterest
+    template_name = 'people/college_interest_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CollegeInterestDetailView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.object = CollegeInterest.objects.get(student__slug=kwargs['slug'])
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
 
 
 # <<<<< Staff Views >>>>>

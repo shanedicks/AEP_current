@@ -7,8 +7,11 @@ from django.contrib.auth.admin import UserAdmin
 
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
-from .models import Student, Staff, WIOA
+from .models import Student, Staff, WIOA, CollegeInterest
 from assessments.models import TestHistory
+
+
+admin.site.register(CollegeInterest)
 
 
 class UserResource(resources.ModelResource):
