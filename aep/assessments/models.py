@@ -180,8 +180,8 @@ class Test(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        self.student.update_status(self)
         super(Test, self).save(*args, **kwargs)
+        self.student.update_status(self)
 
 
 class Tabe(Test):
