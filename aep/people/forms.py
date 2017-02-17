@@ -205,6 +205,14 @@ class UserForm(ModelForm):
         user.save()
         return user
 
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name'].title()
+        return data
+
+    def clean_last_name(self):
+        data = self.cleaned_data['last_name'].title()
+        return data
+
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -270,6 +278,18 @@ class UserUpdateForm(ModelForm):
 
 
 class StudentForm(ModelForm):
+
+    def clean_street_address_1(self):
+        data = self.cleaned_data['street_address_1'].title()
+        return data
+
+    def clean_street_address_2(self):
+        data = self.cleaned_data['street_address_2'].title()
+        return data
+
+    def clean_emergency_contact(self):
+        data = self.cleaned_data['emergency_contact'].title()
+        return data
 
     def __init__(self, *args, **kwargs):
         super(StudentForm, self).__init__(*args, **kwargs)
