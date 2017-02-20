@@ -34,6 +34,11 @@ class TestEvent(models.Model):
         max_length=20
     )
 
+    title = models.CharField(
+        max_length=60,
+        blank=True
+    )
+
     seats = models.PositiveSmallIntegerField()
 
     start = models.DateTimeField()
@@ -49,10 +54,13 @@ class TestEvent(models.Model):
         verbose_name_plural = "Test Events"
 
     def __str__(self):
-        start_date = self.start.date().strftime("%a, %b %d")
-        start_time = self.start.time().strftime("%I:%M%p")
-        title = [self.test, start_date, start_time]
-        return " | ".join(title)
+        if self.title:
+            return self.title
+        else:
+            start_date = self.start.date().strftime("%a, %b %d")
+            start_time = self.start.time().strftime("%I:%M%p")
+            title = [self.test, start_date, start_time]
+            return " | ".join(title)
 
     def get_absolute_url(self):
         return reverse(
@@ -111,6 +119,11 @@ class TestHistory(models.Model):
         related_name="tests"
     )
 
+    student_wru = models.CharField(
+        max_length=8,
+        blank=True
+    )
+
     last_test = models.DateField(
         blank=True,
         null=True
@@ -167,11 +180,6 @@ class Test(models.Model):
     student = models.ForeignKey(
         TestHistory,
         related_name='%(class)s_tests'
-    )
-
-    student_wru = models.CharField(
-        blank=True,
-        max_length=8,
     )
 
     test_date = models.DateField()
@@ -389,11 +397,21 @@ class Tabe_Loc(Test):
         verbose_name = "TABE Locator"
         verbose_name_plural = "TABE Locators"
 
-    def assign():
-        pass
+    def assign(self):
+        if 9 > self.composite > 6:
+            assignment = "M"
+        elif 11 > self.composite > 8:
+            assignment = "D"
+        elif self.composite > 10:
+            assignment = "A"
+        elif self.composite < 7:
+            assignment = "E"
+        else:
+            assignment = "M"
+        return assignment
 
     def __str__(self):
-        student = self.student.__str()
+        student = self.student.__str__()
         date = str(self.test_date)
         return " | ".join([student, 'TABE Loc', date])
 
@@ -457,7 +475,7 @@ class Clas_E(Test):
         return " ".join([level, form])
 
     def __str__(self):
-        student = self.student.__str()
+        student = self.student.__str__()
         date = str(self.test_date)
         return " | ".join([student, 'CLAS-E', date])
 
@@ -494,7 +512,7 @@ class Clas_E_Loc(Test):
         return assignment
 
     def __str__(self):
-        student = self.student.__str()
+        student = self.student.__str__()
         date = str(self.test_date)
         return " | ".join([student, 'CLAS-E Loc', date])
 

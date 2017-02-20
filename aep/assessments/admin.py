@@ -3,21 +3,82 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from .models import *
 
-admin.site.register(TestEvent)
 admin.site.register(TestAppointment)
-admin.site.register(TestHistory)
-admin.site.register(Tabe_Loc)
-admin.site.register(Clas_E)
-admin.site.register(Clas_E_Loc)
 admin.site.register(HiSet_Practice)
 
 
-class TabeResource(resources.ModelResource):
+class TestEventAdmin(admin.ModelAdmin):
+
+    list_display = (
+        '__str__',
+        'test',
+        'proctor',
+        'seats',
+        'start',
+        'end',
+        'full'
+    )
+
+    search_fields = [
+        'title',
+        'test',
+        'proctor',
+        'start'
+    ]
+
+    fields = (
+        'title',
+        'test',
+        'proctor',
+        'seats',
+        'start',
+        'end',
+        'full'
+    )
+
+
+admin.site.register(TestEvent, TestEventAdmin)
+
+
+class TestHistoryAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'student',
+        'student_wru',
+        'last_test',
+    )
+
+    search_fields = [
+        'student__user__first_name',
+        'student__user__last_name',
+        'student_wru',
+        'last_test'
+    ]
+
+    fields = (
+        'student_wru',
+        'test_assignment'
+    )
+
+
+admin.site.register(TestHistory, TestHistoryAdmin)
+
+
+class TestResource(resources.ModelResource):
 
     student = fields.Field(
         column_name='student',
         attribute='student',
-        widget=widgets.ForeignKeyWidget(TestHistory, 'student')
+        widget=widgets.ForeignKeyWidget(TestHistory, 'student_wru')
+    )
+
+
+class TabeResource(TestResource):
+
+    student = fields.Field(
+        column_name='student',
+        attribute='student',
+        widget=widgets.ForeignKeyWidget(TestHistory, 'student_wru')
     )
 
     class Meta:
@@ -25,7 +86,6 @@ class TabeResource(resources.ModelResource):
         fields = (
             'id',
             'student',
-            'student_wru',
             'form',
             'test_date',
             'read_level',
@@ -35,7 +95,7 @@ class TabeResource(resources.ModelResource):
             'math_comp_ss',
             'app_math_ss',
             'lang_ss',
-            'total_math_ss'
+            'total_math_ss',
             'total_batt_ss',
             'read_ge',
             'math_comp_ge',
@@ -63,32 +123,155 @@ class TabeAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'student__user__first_name',
-        'student__user__last_name',
+        'student__student__user__first_name',
+        'student__student__user__last_name',
         'test_date'
     ]
 
     fields = [
+        'form',
+        'test_date',
+        'read_level',
+        'math_level',
+        'lang_level',
+        'read_ss',
+        'math_comp_ss',
+        'app_math_ss',
+        'lang_ss',
+        'total_math_ss',
+        'total_batt_ss',
+        'read_ge',
+        'math_comp_ge',
+        'app_math_ge',
+        'lang_ge',
+        'total_math_ge',
+        'total_batt_ge',
+        'read_nrs',
+        'math_nrs',
+        'lang_nrs',
+    ]
+
+
+admin.site.register(Tabe, TabeAdmin)
+
+class Clas_E_Resource(TestResource):
+
+    class Meta:
+        model = Tabe
+        fields = (
+            'id',
+            'student',
             'form',
             'test_date',
             'read_level',
-            'math_level',
-            'lang_level',
             'read_ss',
-            'math_comp_ss',
-            'app_math_ss',
-            'lang_ss',
-            'total_math_ss'
-            'total_batt_ss',
-            'read_ge',
-            'math_comp_ge',
-            'app_math_ge',
-            'lang_ge',
-            'total_math_ge',
-            'total_batt_ge',
             'read_nrs',
-            'math_nrs',
-            'lang_nrs',
+        )
+
+
+class Clas_E_Admin(ImportExportActionModelAdmin):
+
+    resource_class = Clas_E_Resource
+
+    list_display = (
+        'student',
+        'test_date',
+        'read_nrs'
+    )
+
+    search_fields = [
+        'student__student__user__first_name',
+        'student__student__user__last_name',
+        'test_date'
     ]
 
-admin.site.register(Tabe, TabeAdmin)
+    fields = (
+        'form',
+        'test_date',
+        'read_level',
+        'read_ss',
+        'read_nrs'
+    )
+
+
+admin.site.register(Clas_E, Clas_E_Admin)
+
+
+class Tabe_Loc_Resource(TestResource):
+
+    fields = (
+        'id',
+        'student',
+        'test_date',
+        'read',
+        'math_comp',
+        'app_math',
+        'lang',
+        'composite'
+    )
+
+
+class Tabe_Loc_Admin(ImportExportActionModelAdmin):
+
+    resource_class = Tabe_Loc_Resource
+
+    list_display = (
+        'student',
+        'test_date',
+        'read',
+        'math_comp',
+        'app_math',
+        'lang',
+        'composite'
+    )
+
+    search_fields = [
+        'student__student__user__first_name',
+        'student__student__user__last_name',
+        'test_date'
+    ]
+
+    fields = (
+        'test_date',
+        'read',
+        'math_comp',
+        'app_math',
+        'lang',
+        'composite'
+    )
+
+
+admin.site.register(Tabe_Loc, Tabe_Loc_Admin)
+
+class Clas_E_Loc_Resource(TestResource):
+
+    fields = (
+        'id',
+        'student',
+        'test_date',
+        'read'
+    )
+
+
+class Clas_E_Loc_Admin(ImportExportActionModelAdmin):
+
+    resource_class = Clas_E_Loc_Resource
+
+    list_display = [
+        'student',
+        'test_date',
+        'read'
+    ]
+
+    search_fields = [
+        'student__student__user__first_name',
+        'student__student__user__last_name',
+        'test_date'
+    ]
+
+    fields = (
+        'test_date',
+        'read'
+    )
+
+admin.site.register(Clas_E_Loc, Clas_E_Loc_Admin)

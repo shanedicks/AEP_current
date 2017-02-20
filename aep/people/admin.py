@@ -239,7 +239,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
             if TestHistory.objects.filter(student=obj).exists():
                 continue
             else:
-                TestHistory.objects.create(student=obj)
+                TestHistory.objects.create(student=obj, student_wru=obj.WRU_ID)
 
 
 admin.site.register(Student, StudentAdmin)
