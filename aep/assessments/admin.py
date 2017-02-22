@@ -157,7 +157,7 @@ admin.site.register(Tabe, TabeAdmin)
 class Clas_E_Resource(TestResource):
 
     class Meta:
-        model = Tabe
+        model = Clas_E
         fields = (
             'id',
             'student',
@@ -199,16 +199,18 @@ admin.site.register(Clas_E, Clas_E_Admin)
 
 class Tabe_Loc_Resource(TestResource):
 
-    fields = (
-        'id',
-        'student',
-        'test_date',
-        'read',
-        'math_comp',
-        'app_math',
-        'lang',
-        'composite'
-    )
+    class Meta:
+        model = Tabe_Loc
+        fields = (
+            'id',
+            'student',
+            'test_date',
+            'read',
+            'math_comp',
+            'app_math',
+            'lang',
+            'composite'
+        )
 
 
 class Tabe_Loc_Admin(ImportExportActionModelAdmin):
@@ -243,14 +245,17 @@ class Tabe_Loc_Admin(ImportExportActionModelAdmin):
 
 admin.site.register(Tabe_Loc, Tabe_Loc_Admin)
 
+
 class Clas_E_Loc_Resource(TestResource):
 
-    fields = (
-        'id',
-        'student',
-        'test_date',
-        'read'
-    )
+    class Meta:
+        model = Clas_E_Loc
+        fields = (
+            'id',
+            'student',
+            'test_date',
+            'read'
+        )
 
 
 class Clas_E_Loc_Admin(ImportExportActionModelAdmin):
