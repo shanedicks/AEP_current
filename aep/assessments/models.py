@@ -470,6 +470,8 @@ class Clas_E(Test):
             level = "2"
         elif self.read_ss < 491:
             level = "3"
+        elif self.read_level == "1":
+            level = "3"
         else:
             level = "4"
         return " ".join([level, form])
