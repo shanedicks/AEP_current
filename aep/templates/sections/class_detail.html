@@ -8,6 +8,7 @@
             <th>Phone</th>
             <th>Email</th>
             <th>Enrollment Status</th>
+            <th>Test Assignment</th>
             <th># Attended</th>
             <th># Absent</th>
         </tr>
@@ -17,6 +18,11 @@
             <td>{{ student.student.phone }}</td>
             <td>{{ student.student.user.email }}</td>
             <td>{{ student.get_status_display }}</td>
+            {% if student.status == 'A' %}
+            <td>{{ student.student.tests.test_assignment }}</td>
+            {% else %}
+            <td></td>
+            {% endif %}
             <td>{{ student.times_attended }}</td>
             <td>{{ student.times_absent }}</td>
         </tr>
