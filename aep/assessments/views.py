@@ -144,6 +144,10 @@ class StudentTabeListView(StudentTestListView):
     model = Tabe
     template_name = 'assessments/student_tabe_list.html'
 
+    def get_queryset(self, **kwargs):
+        qst = Tabe.objects.filter(student__student__slug=self.kwargs['slug'])
+        return qst
+
 
 class StudentTabeDetailView(StudentTestDetailView):
 
