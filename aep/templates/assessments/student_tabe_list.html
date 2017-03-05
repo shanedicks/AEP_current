@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>TABE Results for {{student}}</h1>
-
 {% for test in object_list %}
 	<div class="col-md-7">
 	<h4>{{ test.test_date|date:"m/d/y" }} -- {{test.form}} {{ test.read_level }} {{ test.math_level }} {{ test.lang_level }}</h4>
@@ -25,5 +24,4 @@
 	</table>
 	</div>
 {% endfor %}
-
 {% endblock %}

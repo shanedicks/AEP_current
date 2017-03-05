@@ -9,7 +9,7 @@ from django.views.generic import (DetailView, ListView, CreateView,
 from people.models import Student
 from .models import (TestEvent, TestAppointment, TestHistory,
                      Tabe, Clas_E, HiSet_Practice)
-from .forms import TestSignupForm
+from .forms import TestSignupForm, TabeForm, Clas_E_Form
 
 
 class TestingHomeView(LoginRequiredMixin, TemplateView):
@@ -97,7 +97,6 @@ class StudentTestHistoryView(LoginRequiredMixin, DetailView):
             StudentTestHistoryView,
             self
         ).get_context_data(**kwargs)
-
         if 'appts' not in context:
             context['appts'] = TestAppointment.objects.filter(
                 student__slug=self.kwargs['slug']
@@ -122,6 +121,11 @@ class StudentTestListView(LoginRequiredMixin, ListView):
             context.update(kwargs)
         return context
 
+    def get_queryset(self, **kwargs):
+        qst = self.model.objects.filter(
+            student__student__slug=self.kwargs['slug']
+        ).order_by('-test_date')
+        return qst
 
 class StudentTestDetailView(LoginRequiredMixin, DetailView):
 
@@ -139,14 +143,46 @@ class StudentTestDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
+class StudentTestAddView(LoginRequiredMixin, CreateView):
+
+    class Meta:
+        abstract = True
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            StudentTestAddView,
+            self
+        ).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def form_valid(self, form):
+        test = form.save(commit=False)
+        student = TestHistory.objects.get(student__slug=self.kwargs['slug'])
+        test.student = student
+        return super(StudentTestAddView, self).form_valid(form)
+
+
+
 class StudentTabeListView(StudentTestListView):
 
     model = Tabe
     template_name = 'assessments/student_tabe_list.html'
 
-    def get_queryset(self, **kwargs):
-        qst = Tabe.objects.filter(student__student__slug=self.kwargs['slug'])
-        return qst
+
+class StudentTabeAddView(StudentTestAddView):
+
+    model = Tabe
+    form_class = TabeForm
+    template_name = 'assessments/student_tabe_add.html'
+
+    def get_success_url(self):
+        return reverse(
+            "assessments:student tabe list",
+            kwargs={'slug': self.kwargs['slug']}
+        )
 
 
 class StudentTabeDetailView(StudentTestDetailView):
@@ -161,6 +197,19 @@ class StudentClasEListView(StudentTestListView):
     template_name = 'assessments/student_clas-e_list.html'
 
 
+class StudentClasEAddView(StudentTestAddView):
+
+    model = Clas_E
+    form_class = Clas_E_Form
+    template_name = 'assessments/student_clas-e_add.html'
+
+    def get_success_url(self):
+        return reverse(
+            "assessments:student clas-e list",
+            kwargs={'slug': self.kwargs['slug']}
+        )
+
+
 class StudentClasEDetailView(StudentTestDetailView):
 
     model = Clas_E
@@ -171,6 +220,12 @@ class StudentHisetPracticeListView(StudentTestListView):
 
     model = HiSet_Practice
     template_name = 'assessments/student_hiset_practice_list.html'
+
+
+class StudentHisetPracticeAddView(StudentTestAddView):
+
+    model = HiSet_Practice
+    template_name = 'assessments/student_hiset_practice_add.html'
 
 
 class StudentHisetPracticeDetailView(StudentTestDetailView):
