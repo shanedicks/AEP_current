@@ -11,7 +11,6 @@ from .models import Student, Staff, WIOA, CollegeInterest
 from assessments.models import TestHistory
 
 
-admin.site.register(CollegeInterest)
 
 
 class UserResource(resources.ModelResource):
@@ -677,3 +676,51 @@ class CustomUserAdmin(ImportExportMixin, UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
+
+
+class CollegeInterestAdmin(ImportExportActionModelAdmin):
+
+    fields = [
+        'ged_hiset',
+        'current_adult_ed',
+        'adult_ed_location',
+        'bpcc',
+        'brcc',
+        'ctcc',
+        'dcc',
+        'ldcc',
+        'ftcc',
+        'ntcc',
+        'ncc',
+        'nltc',
+        'rpcc',
+        'scl',
+        'slcc',
+        'sowela',
+        'lola',
+        'other_college',
+        'other_college_name',
+        'other_college_location',
+        'prev_balance',
+        'financial_aid',
+        'aid_status',
+        'nslds_notes',
+        'fafsa1617',
+        'fafsa1718',
+        'fafsa1819',
+        'delgado_classes',
+        'workforce_training',
+        'workforce_training_desc',
+        'serv_safe',
+        'nccer',
+        'ic3',
+        'first_aid',
+        'cpr',
+        'employment_status',
+        'work_schedule',
+        'career_goals',
+        'notes'
+    ]
+
+
+admin.site.register(CollegeInterest, CollegeInterestAdmin)
