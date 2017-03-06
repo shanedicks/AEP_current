@@ -65,8 +65,8 @@ class Section(models.Model):
         blank=True
     )
     seats = models.IntegerField(null=True, blank=True)
-    start_time = models.TimeField(null=True, blank=True)
-    end_time = models.TimeField(null=True, blank=True)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
     WRU_ID = models.IntegerField(null=True, blank=True)
     monday = models.BooleanField(default=False)
     tuesday = models.BooleanField(default=False)

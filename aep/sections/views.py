@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView, FormView)
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -20,7 +21,9 @@ class ClassListView(LoginRequiredMixin, ListView, FormView):
     template_name = 'sections/class_list.html'
     paginate_by = 20
 
-    queryset = Section.objects.all().order_by('site', 'program', 'title')
+    queryset = Section.objects.filter(
+        semester__end_date__gte=datetime.today().date()
+    ).order_by('site', 'program', 'title')
 
     def get_form_kwargs(self):
         return {

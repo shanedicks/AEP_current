@@ -32,7 +32,7 @@ single_hiset_practice_paterns = [
     url(r'^new/$',
         views.StudentHisetPracticeAddView.as_view(),
         name="student hiset practice add"),
-    url(r'^/(?P<pk>[0-9]+)$',
+    url(r'^(?P<pk>[0-9]+)$',
         views.StudentHisetPracticeDetailView.as_view(),
         name="student hiset practice detail"),
 ]
