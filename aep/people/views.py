@@ -266,6 +266,11 @@ class StaffListView(LoginRequiredMixin, ListView):
 
     model = Staff
 
+    queryset = Staff.objects.all().order_by(
+        'user__last_name',
+        'user__first_name'
+    )
+
 
 class StaffUpdateView(LoginRequiredMixin, UpdateView):
 
