@@ -148,7 +148,7 @@ class TestHistory(models.Model):
             self.last_test = test.test_date
             self.test_assignment = test.assign()
         else: 
-            if self.last_test < test.test_date:
+            if self.last_test <= test.test_date:
                 self.last_test = test.test_date
                 self.test_assignment = test.assign()
         self.save()
@@ -343,7 +343,7 @@ class Tabe(Test):
         return level
 
     def assign(self):
-        if self.NINE:
+        if self.form == "9":
             form = "10"
         else:
             form = "9"
@@ -462,7 +462,7 @@ class Clas_E(Test):
         verbose_name_plural = "CLAS-E scores"
 
     def assign(self):
-        if self.A:
+        if self.form == 'A':
             form = 'B'
         else:
             form = 'A'
