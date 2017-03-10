@@ -76,6 +76,28 @@ class LocatorSignupForm(TestSignupForm):
         )
 
 
+class OrientationSignupForm(TestSignupForm):
+
+    prefix = 'orientation'
+
+    def __init__(self, *args, **kwargs):
+        super(OrientationSignupForm, self).__init__(*args, **kwargs)
+        limit = datetime.datetime.today() + datetime.timedelta(days=2) # we only want test events at least 2 days away
+        events = TestEvent.objects.filter(
+            test='Orientation',
+            start__date__gte=limit
+        ).exclude(
+            full=True
+        ).order_by('start')
+        self.fields['event'].queryset = events
+        self.helper.layout = Layout(
+            Fieldset(
+                'Orientation Sign-up',
+                'event'
+            )
+        )
+
+
 class TabeForm(ModelForm):
 
     class Meta:

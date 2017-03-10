@@ -11,6 +11,7 @@ class TestEvent(models.Model):
     CLAS_E = 'CLAS-E'
     TABE_LOC = 'TABE Locator'
     CLAS_E_LOC = 'CLAS-E Locator'
+    ORIENTATION = 'Orientation'
     HISET_PRACTICE = 'HiSET Practice'
     EXIT_EXAM = 'Exit Exam'
     TEST_CHOICES = (
@@ -18,6 +19,7 @@ class TestEvent(models.Model):
         (TABE_LOC, 'TABE Locator'),
         (CLAS_E, 'CLAS-E Test'),
         (CLAS_E_LOC, 'CLAS-E Locator'),
+        (ORIENTATION, 'Orientation'),
         (HISET_PRACTICE, 'HiSET Practice'),
         (EXIT_EXAM, 'Exit Exam')
     )
