@@ -4,19 +4,20 @@
 <h3>Proctor: {{event.proctor}}</h3>
 <table class="table">
 	<tr>
-		<th>Student</th>
 		<th>ID</th>
+		<th>Student</th>
+		<th>Assignment</th>
 		<th>Phone</th>
 		<th>Email</th>
-		<th>Assignment</th>
 	</tr>
-{% for student in event.students.all %}
+{% for student in students %}
 	<tr>
-		<td>{{ student.student }}</td>
 		<td>{{ student.student.WRU_ID }}</td>
+		<td>{{ student.student }}</td>
+		<td>{{ student.student.tests.test_assignment }}
 		<td>{{ student.student.phone }}</td>
 		<td>{{ student.student.email }}
-		<td>{{ student.student.tests.test_assignment }}
+
 	</tr>
 {% endfor %}
 </table>

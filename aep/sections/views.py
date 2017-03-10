@@ -63,6 +63,19 @@ class ClassDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
+class ClassTestingPreview(ClassDetailView):
+
+    template_name = 'sections/class_testing_preview.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ClassTestingPreview, self).get_context_data(**kwargs)
+        context['students'] = self.object.get_active(
+        ).order_by(
+            'student__user__last_name',
+            'student__user__first_name'
+        )
+        return context
+
 class PrintSignInView(LoginRequiredMixin, DetailView):
 
     model = Section

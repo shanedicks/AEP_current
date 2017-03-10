@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.urls import reverse
 from django.views.generic import (DetailView, ListView, CreateView,
-                                  DeleteView, UpdateView, TemplateView)
+                                  TemplateView)
 
 from people.models import Student
 from .models import (TestEvent, TestAppointment, TestHistory,
@@ -16,11 +16,23 @@ class TestingHomeView(LoginRequiredMixin, TemplateView):
 
     template_name = 'assessments/testing_home.html'
 
+
 class TestEventDetailView(LoginRequiredMixin, DetailView):
 
     model = TestEvent
     template_name = 'assessments/test_event_detail.html'
     context_object_name = "event"
+
+    def get_context_data(self, **kwargs):
+        context = super(TestEventDetailView, self).get_context_data(**kwargs)
+        if 'students' not in context:
+            context['students'] = self.object.students.all(
+            ).order_by(
+                'student__user__last_name',
+                'student__user__first_name'
+            )
+            context.update(kwargs)
+        return context
 
 
 class TestEventListView(LoginRequiredMixin, ListView):

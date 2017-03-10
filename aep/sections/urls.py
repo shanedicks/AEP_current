@@ -26,7 +26,10 @@ single_class_patterns = [
         views.AddStudentView.as_view(),
         name='add student'),
     url(r'^attendance/',
-        include(single_class_attendance_patterns))
+        include(single_class_attendance_patterns)),
+    url(r'^testing-preview/$',
+        views.ClassTestingPreview.as_view(),
+        name='testing preview')
 ]
 
 staff_patterns = [
