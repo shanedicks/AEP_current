@@ -4,7 +4,35 @@ from import_export.admin import ImportExportModelAdmin, ImportExportActionModelA
 from .models import Section, Enrollment, Attendance
 
 
+class SectionResource(resources.ModelResource):
+
+    class Meta:
+        model = Section
+        fields = (
+            'id',
+            'title',
+            'semester',
+            'teacher',
+            'site',
+            'room',
+            'program',
+            'seats',
+            'start_time',
+            'end_time',
+            'WRU_ID',
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'sunday'
+        )
+
+
 class SectionAdmin(ImportExportModelAdmin):
+
+    resource_class = SectionResource
 
     list_display = (
         "title",
