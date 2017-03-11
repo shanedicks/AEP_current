@@ -10,7 +10,7 @@ class SectionResource(resources.ModelResource):
     teacher = fields.Field(
         column_name='teacher',
         attribute='teacher',
-        widget=widgets.ForeignKeyWidget(Staff, 'user__username')
+        widget=widgets.ForeignKeyWidget(Staff, 'user.username')
     )
 
     class Meta:
