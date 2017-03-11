@@ -3,7 +3,6 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from .models import *
 
-admin.site.register(TestAppointment)
 admin.site.register(HiSet_Practice)
 
 
@@ -38,6 +37,29 @@ class TestEventAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TestEvent, TestEventAdmin)
+
+
+class TestAppointmentAdmin(admin.ModelAdmin):
+
+    list_display = (
+        '__str__',
+    )
+
+    search_fields = [
+        'student__user__first_name',
+        'student__user__last_name',
+        'student__WRU_ID',
+        'event__start',
+        'event__test'
+
+    ]
+
+    fields = (
+        'event',
+    )
+
+
+admin.site.register(TestAppointment, TestAppointmentAdmin)
 
 
 class TestHistoryAdmin(admin.ModelAdmin):
