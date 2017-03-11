@@ -1,10 +1,17 @@
 from django.contrib import admin
-from import_export import resources
+from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
+from people.models import Staff
 from .models import Section, Enrollment, Attendance
 
 
 class SectionResource(resources.ModelResource):
+
+    teacher = fields.Field(
+        column_name='teacher',
+        attribute='teacher',
+        widget=widgets.ForeignKeyWidget(Staff, 'user__username')
+    )
 
     class Meta:
         model = Section
