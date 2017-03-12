@@ -1,3 +1,4 @@
+import datetime
 from django.forms import ModelForm, Form, ChoiceField, modelformset_factory, ValidationError, CharField
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -35,7 +36,10 @@ class ClassAddEnrollmentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         site = kwargs.pop('site', None)
         program = kwargs.pop('program', None)
-        qst = Section.objects.all().order_by('site', 'title', 'start_time')
+        limit = datetime.datetime.today() - datetime.timedelta(days=7)
+        qst = Section.objects.filter(
+            semester__start_date__gte=limit
+        ).order_by('site', 'title', 'start_time')
         if site and site[0] != '':
             qst = qst.filter(site=site[0])
         if program and program[0] != '':
