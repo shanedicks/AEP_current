@@ -50,7 +50,11 @@ class StudentResource(resources.ModelResource):
             "marital_status",
             "US_citizen",
             "other_ID",
-            "program",
+            "ccr_app",
+            "esl_app",
+            "e_learn_app",
+            "ace_app",
+            "success_app",
             "prior_registration",
             "phone",
             "alt_phone",
@@ -109,7 +113,6 @@ class WIOAResource(resources.ModelResource):
             "student__user__first_name",
             "student__user__last_name",
             "student__user__email",
-            "student__AEP_ID",
             "student__WRU_ID",
             "student__dob",
             "student__intake_date",
@@ -117,7 +120,6 @@ class WIOAResource(resources.ModelResource):
             "student__marital_status",
             "student__US_citizen",
             "student__other_ID",
-            "student__program",
             "student__ccr_app",
             "student__esl_app",
             "student__prior_registration",
@@ -210,13 +212,24 @@ class StudentAdmin(ImportExportActionModelAdmin):
 
     resource_class = StudentResource
 
-    list_display = ("__str__", "WRU_ID", "dob", "intake_date")
-    search_fields = ["user__first_name", "user__last_name", 'WRU_ID']
+    list_display = (
+        "__str__",
+        "WRU_ID",
+        "dob",
+        "intake_date",
+        'ccr_app',
+        'esl_app',
+        'ace_app',
+        'e_learn_app',
+        'success_app',
+    )
+
+    search_fields = ["user__first_name", "user__last_name", 'WRU_ID', 'intake_date']
 
     fields = [
         "user",
         ("WRU_ID",
-         "AEP_ID"),
+         'program'),
         "US_citizen",
         ("gender",
          "marital_status"),
@@ -382,30 +395,29 @@ def hl_tf(input):
         return "False"
 
 
-def primary_program(input):
-    programs = {
-        "C": "1",
-        "E": "7",
-        "D": "12",
-        "S": "14",
-        "A": "2"
-    }
-    return programs[input]
+def primary_program(student):
+    program = "1"
+    if student.esl_app:
+        program = '7'
+    elif student.e_learn_app:
+        program = '12'
+    elif student.ace_app:
+        program = '2'
+    elif student.success_app:
+        program = '14'
+    return program
 
 
-def secondary_program(input):
-    programs = {
-        "C": "8",
-        "E": "6",
-        "D": "",
-        "S": "",
-        "A": ""
-    }
-    return programs[input]
+def secondary_program(student):
+    if student.ccr_app:
+        program = '8'
+    if student.esl_app:
+        program = '6'
+    return program
 
 
-def esl(input):
-    if input == "E":
+def esl(student):
+    if student.esl_app:
         return "true"
     else:
         return "false"
@@ -426,13 +438,13 @@ def employment_status(input):
 class WIOAAdmin(ImportExportActionModelAdmin):
     resource_class = WIOAResource
 
-    list_display = ("__str__", "get_AEP_ID", "get_WRU_ID")
+    list_display = ("__str__", "get_WRU_ID")
 
     search_fields = [
         "student__user__first_name",
         "student__user__last_name",
-        "student__AEP_ID",
-        "student__WRU_ID"
+        "student__WRU_ID",
+        "student__intake_date"
     ]
 
     fields = (
@@ -589,10 +601,10 @@ class WIOAAdmin(ImportExportActionModelAdmin):
                 "Ethnicity_3": true_false(obj.black),
                 "Ethnicity_5": true_false(obj.white),
                 "Ethnicity_4": true_false(obj.pacific_islander),
-                "Program.ProgramTypeId": primary_program(obj.student.program),
+                "Program.ProgramTypeId": primary_program(obj.student),
                 "Program.StateKeyword": "",
-                "Program.SecondaryProgram1TypeId": secondary_program(obj.student.program),
-                "ESLStudent": esl(obj.student.program),
+                "Program.SecondaryProgram1TypeId": secondary_program(obj.student),
+                "ESLStudent": esl(obj.student),
                 "ESLStudent": "false",
                 "Program.Keyword": "",
                 "Program.SecondaryProgram2TypeId": "",
