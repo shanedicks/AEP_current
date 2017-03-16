@@ -349,6 +349,7 @@ class Staff(Profile):
 
     class Meta:
         verbose_name_plural = 'staff'
+        ordering = ["user__last_name", "user__first_name"]
 
     def get_active_classes(self):
         pass
