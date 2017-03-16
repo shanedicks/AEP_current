@@ -45,7 +45,8 @@ class SectionAdmin(ImportExportModelAdmin):
         "seats",
         "start_time",
         "end_time",
-        "__str__",
+        'semester'
+
     )
 
     search_fields = ["title", "program", 'site']
