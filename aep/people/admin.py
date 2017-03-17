@@ -409,6 +409,7 @@ def primary_program(student):
 
 
 def secondary_program(student):
+    program = ""
     if student.ccr_app:
         program = '8'
     if student.esl_app:
