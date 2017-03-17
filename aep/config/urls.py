@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
-from people.views import NewStudentRegistrationView, RegistrationSuccessView
+from people.views import NewStudentRegistrationView, RegistrationSuccessView, NewStudentSignupView
 
 urlpatterns = [
     url(r'^$',
@@ -26,7 +26,7 @@ urlpatterns = [
             template_name='pages/registration.html'),
         name='registration'),
     url(r'^registration/new/$',
-        NewStudentRegistrationView.as_view(),
+        NewStudentSignupView.as_view(),
         name="new student registration"),
     url(r'^registration/success/$',
         RegistrationSuccessView.as_view(),
