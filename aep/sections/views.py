@@ -104,6 +104,9 @@ class StudentClassListView(LoginRequiredMixin, ListView):
         if 'student' not in context:
             context['student'] = Student.objects.get(slug=self.kwargs['slug'])
             context.update(kwargs)
+        if 'today' not in context:
+            context['today'] = datetime.today().date()
+            context.update(kwargs)
         return context
 
     def get_queryset(self):
@@ -120,6 +123,7 @@ class StudentClassListView(LoginRequiredMixin, ListView):
 class StudentScheduleView(StudentClassListView):
 
     template_name = 'sections/student_schedule.html'
+
 
 class StudentAttendanceView(StudentClassListView):
 

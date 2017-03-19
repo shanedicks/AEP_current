@@ -323,10 +323,15 @@ class Student(Profile):
         return self.WRU_ID != ''
 
     def active_classes(self):
-        return self.classes.all().filter(status='A')
+        return self.classes.filter(status="A")
 
-    def completed_classes(self):
-        return self.classes.all().filter(status='C')
+    def current_classes(self):
+        today = date.today()
+        return self.classes.filter(section__semester__end_date__gte=today)
+
+    def past_classes(self):
+        today = date.today()
+        return self.classes.filter(section__semester__end_date__lt=today)
 
     def all_classes(self):
         return self.classes.all()
@@ -351,11 +356,13 @@ class Staff(Profile):
         verbose_name_plural = 'staff'
         ordering = ["user__last_name", "user__first_name"]
 
-    def get_active_classes(self):
-        pass
+    def current_classes(self):
+        today = date.today()
+        return self.classes.filter(semester__end_date__gte=today)
 
-    def get_all_courses(self):
-        pass
+    def past_classes(self):
+        today = date.today()
+        return self.classes.filter(semester__end_date__lt=today)
 
     def get_absolute_url(self):
         return reverse('people:staff detail', kwargs={'slug': self.slug})

@@ -14,7 +14,7 @@
             <th>Start Date</th>
             <th>End Date</th>
         </tr>
-    {% for enrollment in object_list %}
+    {% for enrollment in student.active_classes %}
         <tr>
         	<td><h4>{{ enrollment.section.title }}</h4></td>
             <td><h4>{{ enrollment.section.teacher }}</h4></td>
