@@ -260,7 +260,7 @@ admin.site.register(Student, StudentAdmin)
 class StaffAdmin(ImportExportActionModelAdmin):
     resource_class = StaffResource
 
-    list_display = ("__str__", "phone", "get_email")
+    list_display = ("user", "__str__", "wru", "phone", "get_email")
 
     search_fields = [
         "user__first_name",
