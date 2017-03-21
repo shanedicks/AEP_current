@@ -54,6 +54,9 @@ class TestEvent(models.Model):
     class Meta:
         verbose_name = "Test Event"
         verbose_name_plural = "Test Events"
+        ordering = [
+            '-start'
+        ]
 
     def __str__(self):
         if self.title:
