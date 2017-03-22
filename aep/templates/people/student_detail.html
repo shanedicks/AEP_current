@@ -3,6 +3,7 @@
 {% block content %}
     <h1>{{ student.user.get_full_name }}</h1>
     <p>WRU ID: {{ student.WRU_ID }}</p>
+    <p>Intake Date: {{ student.intake_date }}</p>
     <p>Birthday: {{ student.dob }}</p>
     <h3>Student Contact Info</h3>
     <p>Email: {{ student.user.email }}</p>

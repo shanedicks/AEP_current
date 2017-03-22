@@ -111,7 +111,8 @@ class StudentTestHistoryView(LoginRequiredMixin, DetailView):
         ).get_context_data(**kwargs)
         if 'appts' not in context:
             context['appts'] = TestAppointment.objects.filter(
-                student__slug=self.kwargs['slug']
+                student__slug=self.kwargs['slug'],
+                event__start__gte=datetime.today()
             ).order_by('event__start')
             context.update(kwargs)
         return context
