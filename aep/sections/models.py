@@ -140,7 +140,7 @@ class Section(models.Model):
                         teacher=self.teacher.user.first_name,
                         drop=dropped,
                         add=added),
-                    "attendance_robot@dccaep.org",
+                    "admin@dccaep.org",
                     [self.teacher.user.email],
                     fail_silently=False
                 )
