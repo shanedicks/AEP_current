@@ -45,6 +45,11 @@ class TestEvent(models.Model):
 
     start = models.DateTimeField()
 
+    room = models.CharField(
+        max_length=60,
+        blank=True
+    )
+
     end = models.DateTimeField()
 
     full = models.BooleanField(

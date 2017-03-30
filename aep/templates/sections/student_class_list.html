@@ -8,6 +8,7 @@
             <th>Class Name</th>
             <th>Teacher</th>
             <th>Days</th>
+            <th>Room</th>
             <th>Start Time</th>
             <th>End Time</th>
             <th>Start Date</th>
@@ -19,6 +20,7 @@
         	<td><a href="{{ enrollment.get_absolute_url }}">{{ enrollment.section.title }}</a></td>
             <td>{{ enrollment.section.teacher }}</td>
             <td>{{ enrollment.section.get_days_str }}</td>
+            <td>{{ enrollment.section.room }}</td>
             <td>{{ enrollment.section.start_time }}</td>
             <td>{{ enrollment.section.end_time }}</td>
             <td>{{ enrollment.section.semester.start_date }}</td>

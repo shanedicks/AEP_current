@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Test Appointment for {{appt.student}}</h1>
-
-<h3>{{appt.event.test}}<h3>
-<h4>{{appt.event.start}} - {{appt.event.end}}<h4>
+<h3>{{appt.event.title}}: {{appt.event.test}}<h3>
+    {%if appt.event.proctor is not None %}
+        <h4>Proctor: {{appt.event.proctor}} </h4>
+    {% endif %}
+    {% if appt.event.room != "" %}
+        <h4>Room: {{appt.event.room}}
+    {% endif %}</h4>
+<h4>{{appt.event.start}} - {{appt.event.end.time}}<h4>
 {% endblock %}

@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-    <h4>Student: <a href="{{ enrollment.student.get_absolute_url }}" >{{ enrollment.student }}</a></h4>
-    <h4>Class: <a href="{{ enrollment.section.get_absolute_url }}">{{ enrollment.section }}</a></h4>
+    <h1>Enrollment Details</h1>
+    <h3><a href="{{ enrollment.student.get_absolute_url }}" >{{ enrollment.student }}</a> enrolled in <a href="{{ enrollment.section.get_absolute_url }}">{{ enrollment.section.title }} {{enrollment.section.get_days_str}} {{ enrollment.section.start_time }} - {{enrollment.section.end_time}}</a></h3>
+    <h4>Room: {{enrollment.section.room}}</h4>
+    <h4>Class Begins: {{ enrollment.section.semester.start_date }}</h4>
     <h4>Status: {{ enrollment.get_status_display }}</h4>
     <h4>Enrolled: {{enrollment.created.date }}</h4>
     <h4>Enrolled by: {{enrollment.creator.get_full_name }}</h4>
