@@ -140,7 +140,7 @@ class Section(models.Model):
                         teacher=self.teacher.user.first_name,
                         drop=dropped,
                         add=added),
-                    "dccaep@gmail.com",
+                    "attendance_robot@dccaep.org",
                     [self.teacher.user.email],
                     fail_silently=False
                 )
@@ -173,7 +173,7 @@ class Section(models.Model):
                         section=self.title,
                         teacher=self.teacher.user.first_name
                     ),
-                    "dccaep@gmail.com",
+                    "admin@dccaep.org",
                     [self.teacher.user.email],
                     fail_silently=False
                 )
@@ -317,7 +317,7 @@ class Enrollment(models.Model):
                     "are dropped to make room for waitlisted students.\n"
                     "Please stop by our main office or call "
                     "504-671-5434 for more information.",
-                    "dccaep@gmail.com",
+                    "attendance_robot@dccaep.org",
                     [self.student.user.email],
                     fail_silently=False)
             return True
@@ -340,7 +340,7 @@ class Enrollment(models.Model):
                     "stop by our main office or call 504-671-5434".format(
                         student=self.student.user.first_name,
                         section=self.section.title),
-                    "dccaep@gmail.com",
+                    "class_roster_robot@dccaep.org",
                     [self.student.user.email],
                     fail_silently=False
                 )
@@ -365,7 +365,7 @@ class Enrollment(models.Model):
                     "You're still part of our program, you're just dropped from this class.\n"
                     "Please stop by our main office or call "
                     "504-671-5434 for more information.",
-                    "dccaep@gmail.com",
+                    "attendance_robot@dccaep.org",
                     [self.student.user.email],
                     fail_silently=False)
 

@@ -30,12 +30,11 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'dccaep@gmail.com'
-EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+MAILGUN_ACCESS_KEY = get_env_variable('MAILGUN_ACCESS_KEY')
+MAILGUN_SERVER_NAME = 'dccaep.org'
+
+DEFAULT_FROM_EMAIL = 'robot@dccaep.org'
 
 # Application definition
 

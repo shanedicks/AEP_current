@@ -32,6 +32,10 @@ class Semester(models.Model):
         for section in self.get_sections():
             section.attendance_reminder()
 
+    def waitlist(self):
+        for section in self.get_sections():
+            section.waitlist_update()
+
     def enforce_attendance(self):
         for section in self.get_sections():
             section.enforce_attendance()
