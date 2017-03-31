@@ -93,15 +93,18 @@ class Section(models.Model):
         return self.students.filter(status='R')
 
     def open_seats(self):
+        a = self.get_active().count()
+        w = self.get_waiting().count()
+        students = a + w
         if self.seats:
-            return self.seats - self.get_active().count()
+            return self.seats - students
         return None
 
     def is_full(self):
         return self.open_seats() < 1
 
     def over_full(self):
-        return self.get_withdrawn().count() > 4
+        return self.get_waiting().count() > 4
 
     def begin(self):
         for student in self.get_active():
