@@ -51,6 +51,16 @@ class SectionAdmin(ImportExportModelAdmin):
 
     search_fields = ["title", "program", 'site']
 
+    actions = ["begin", "enforce_attendance"]
+
+    def begin(self, request, queryset):
+        for obj in queryset:
+            obj.begin()
+
+    def enforce_attendance(self, request, queryset):
+        for obj in queryset:
+            obj.enforce_attendance()
+
 
 admin.site.register(Section, SectionAdmin)
 
@@ -91,6 +101,12 @@ class EnrollmentAdmin(ImportExportModelAdmin):
     fields = (
         'status',
     )
+
+    actions = ['activate']
+
+    def activate(self, request, queryset):
+        for obj in queryset:
+            self.activate()
 
 
 admin.site.register(Enrollment, EnrollmentAdmin)
