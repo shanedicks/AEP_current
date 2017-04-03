@@ -20,6 +20,11 @@ class TestSignupForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TestSignupForm, self).__init__(*args, **kwargs)
+        limit = datetime.datetime.today()
+        events = TestEvent.objects.filter(
+            start__date__gte=limit
+        ).order_by('start')
+        self.fields['event'].queryset = events
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.help_text_inline = False

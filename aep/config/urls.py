@@ -6,6 +6,9 @@ from django.views.generic import TemplateView
 from django.views import defaults as default_views
 from people.views import NewStudentRegistrationView, RegistrationSuccessView, NewStudentSignupView
 
+
+admin.site.site_header = 'Greenbean Administration'
+
 urlpatterns = [
     url(r'^$',
         TemplateView.as_view(
