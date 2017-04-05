@@ -142,6 +142,7 @@ class SectionSearchForm(Form):
             )
         return qst
 
+
 class SingleAttendanceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -162,6 +163,28 @@ class SingleAttendanceForm(ModelForm):
     class Meta:
         model = Attendance
         fields = ('attendance_type', 'time_in', 'time_out')
+
+
+class AdminAttendanceForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(AdminAttendanceForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+            Field(
+                'attendance_date',
+                'time_in',
+                'time_out',
+                wrapper_class="col-md-4",
+                required=True
+            )
+        )
+
+    class Meta:
+        model = Attendance
+        fields = ('attendance_date', 'time_in', 'time_out')
 
 
 AttendanceFormSet = modelformset_factory(Attendance, form=SingleAttendanceForm, extra=0)

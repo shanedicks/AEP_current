@@ -3,68 +3,10 @@
     <h1>Attendance Overview for {{ section.title }}</h1>
     <a class="btn btn-default" href="{{ section.get_absolute_url }}">Back to Class</a>
     <h3>{{ section.teacher }} | {{section.get_days_str }} | {{ section.start_time }}-{{section.end_time}}</h3>
-    <table class="table">
-        <tr>
-            <th><h4>Active</h4></th>
-            {% for day in days %}
-            <th><a href="{% url 'sections:daily attendance' slug=section.slug attendance_date=day|date:"Y-m-d" %}">{{day|date:"M - d"}}</a></th>
-            {% endfor %}
-        </tr>
-        {% for student in active %}
-            <tr>
-                <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
-                {% for att in student.attendance.all %}
-                    <td>
-                        <a href='{{ att.get_absolute_url }}'>
-                        {% if att.attendance_type == "X" %}
-                            -
-                        {% elif att.attendance_type == 'C' %}
-                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
-                        {% else %}
-                            {{ att.hours }} 
-                        {% endif %}
-                        </a>
-                    </td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        {% if section.get_dropped %}
-        <tr><td><h4>Dropped</h4></td></tr>
-            {% for student in dropped %}
-                <tr>
-                    <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
-                    {% for att in student.attendance.all %}
-                        <td>
-                            {% if att.attendance_type == "X" %}
-                                -
-                            {% elif att.attendance_type == 'C' %}
-                                <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
-                            {% else %}
-                                {{ att.hours }} 
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        {% endif %}
-        {% if section.get_waiting %}
-        <tr><td><h4>Waitlist</h4></td></tr>
-            {% for student in waitlist %}
-                <tr>
-                    <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
-                    {% for att in student.attendance.all %}
-                        <td>
-                            {% if att.attendance_type == "X" %}
-                                -
-                            {% elif att.attendance_type == 'C' %}
-                                <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
-                            {% else %}
-                                {{ att.hours }} 
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        {% endif %}
-    </table>
+    {% if section.program != 'ADMIN' %}
+        {% include 'sections/attendance_table.html' %}
+    {% else %}
+        {% include 'sections/attendance_summary.html' %}
+    {% endif %}
+
 {% endblock content %}

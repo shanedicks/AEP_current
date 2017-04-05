@@ -31,9 +31,13 @@ class Section(models.Model):
     ESL = 'ESL'
     CCR = 'CCR'
     TRANS = 'TRANS'
+    ADMIN = 'ADMIN'
+    ELEARN = 'ELRN'
     PROGRAM_CHOICES = (
         (ESL, 'ESL'),
         (CCR, 'CCR'),
+        (ADMIN, 'Admin'),
+        (ELEARN, 'eLearn'),
         (TRANS, 'Transitions')
     )
     title = models.CharField(max_length=50)
@@ -288,7 +292,13 @@ class Enrollment(models.Model):
         return self.attendance.filter(attendance_type='A').count()
 
     def get_attendance(self):
-        return self.attendance.order_by(attendance__attendance_date)
+        return self.attendance.order_by('attendance_date')
+
+    def total_hours(self):
+        hours = 0
+        for att in self.attendance.filter(attendance_type='P'):
+            hours += att.hours()
+        return hours
 
     # Creates related attendance objects for student enrollment with correct dates and pending status
     def activate(self):

@@ -11,7 +11,8 @@ from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     ClassAddFromListEnrollForm, StudentAddEnrollmentForm,
-                    SingleAttendanceForm, AttendanceFormSet, SectionSearchForm)
+                    SingleAttendanceForm, AttendanceFormSet, SectionSearchForm,
+                    AdminAttendanceForm)
 
 
 class ClassListView(LoginRequiredMixin, ListView, FormView):
@@ -115,6 +116,7 @@ class StudentClassListView(LoginRequiredMixin, ListView):
             return Enrollment.objects.filter(
                 student__slug=slug
             ).order_by(
+                "section__semester__start_date",
                 "section__tuesday",
                 "section__start_time"
             ).prefetch_related('attendance')
@@ -313,7 +315,6 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
         return context
 
 
-
 class SingleAttendanceView(LoginRequiredMixin, UpdateView):
 
     model = Attendance
@@ -321,6 +322,28 @@ class SingleAttendanceView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         section = self.object.enrollment.section
+        return reverse_lazy(
+            'sections:attendance overview',
+            kwargs={'slug': section.slug}
+        )
+
+
+class AdminAttendanceView(LoginRequiredMixin, CreateView):
+
+    model = Attendance
+    template_name = 'sections/attendance_form.html'
+    form_class = AdminAttendanceForm
+
+    def form_valid(self, form):
+        att = form.save(commit=False)
+        enrollment = Enrollment.objects.get(pk=self.kwargs['pk'])
+        att.attendance_type = 'P'
+        att.enrollment = enrollment
+        att.save()
+        return super(AdminAttendanceView, self).form_valid(form)
+
+    def get_success_url(self):
+        section = Enrollment.objects.get(pk=self.kwargs['pk']).section
         return reverse_lazy(
             'sections:attendance overview',
             kwargs={'slug': section.slug}

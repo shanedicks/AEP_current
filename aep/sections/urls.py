@@ -61,6 +61,9 @@ enrollment_patterns = [
     url(r'(?P<pk>[0-9]+)/remove/$',
         views.EnrollmentDeleteView.as_view(),
         name='delete enrollment'),
+    url(r'(?P<pk>[0-9]+)/att-add/$',
+        views.AdminAttendanceView.as_view(),
+        name='create admin attendance'),
 ]
 
 urlpatterns = [

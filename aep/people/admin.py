@@ -217,6 +217,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         "WRU_ID",
         "dob",
         "intake_date",
+        'program',
         'ccr_app',
         'esl_app',
         'ace_app',

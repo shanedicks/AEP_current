@@ -1,0 +1,16 @@
+<table class="table">
+    <tr>
+        <th><h4>Students</h4></th>
+        <th>Total Hours</th>
+        <th>Attended</th>
+        <th></th>
+    </tr>
+    {% for student in active %}
+        <tr>
+            <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
+            <td>{{ student.total_hours }}</td>
+            <td>{{ student.times_attended }}</td>
+            <td><a class="btn btn-default btn-xs" href="{% url 'sections:create admin attendance' pk=student.pk %}">Add Attendance</a></td>
+        </tr>
+    {% endfor %}
+</table>
