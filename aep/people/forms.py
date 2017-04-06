@@ -220,7 +220,7 @@ class UserForm(ModelForm):
         self.helper.help_text_inline = True
         self.helper.layout = Layout(
             Fieldset(
-                'User Info',
+                'User Information',
                 Row(
                     Field(
                         'first_name',
@@ -259,7 +259,7 @@ class UserUpdateForm(ModelForm):
         self.helper.help_text_inline = True
         self.helper.layout = Layout(
             Fieldset(
-                'User Info',
+                'User Information',
                 Row(
                     Field(
                         'first_name',
@@ -305,16 +305,18 @@ class StudentForm(ModelForm):
                 Column(
                     'ccr_app',
                     'esl_app',
+                    'ace_app',
                     css_class="col-md-6"
                 ),
                 Column(
-                    'ace_app',
                     'success_app',
+                    'e_learn_app',
+                    'accuplacer_app',
                     css_class="col-md-6"
                 ),
             ),
             Fieldset(
-                'Contact Info',
+                'Contact Information',
                 Row(
                     Field(
                         'phone',
@@ -358,7 +360,7 @@ class StudentForm(ModelForm):
                 'parish',
             ),
             Fieldset(
-                'Emergency Contact Info',
+                'Emergency Contact Information',
                 'emergency_contact',
                 Field(
                     'ec_phone',
@@ -372,7 +374,7 @@ class StudentForm(ModelForm):
                 ),
             ),
             Fieldset(
-                'Personal Info',
+                'Personal Information',
                 'US_citizen',
                 Row(
                     Field(
@@ -410,6 +412,8 @@ class StudentForm(ModelForm):
             "esl_app",
             "ace_app",
             "success_app",
+            'e_learn_app',
+            'accuplacer_app',
             "prior_registration",
             "phone",
             "alt_phone",
@@ -426,7 +430,22 @@ class StudentForm(ModelForm):
         )
 
         labels = {
-            "US_citizen": "Check this box if you are a US citizen"
+            "US_citizen": "Check this box if you are a US citizen",
+            "ccr_app": "College and Career Readiness (HiSET Prep)",
+            "esl_app": "English Language Learning",
+            "ace_app": "Accelerated Career Education Program",
+            "success_app": "Success Classes",
+            'e_learn_app': "Online Classes with eLearn",
+            'accuplacer_app': "Accuplacer Prep Classes",
+        }
+
+        help_texts = {
+            "ccr_app": "Reading, writing, and math skill building classes to help with college and career readiness goals as well as passing the HiSET.",
+            "esl_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
+            "ace_app": "Integrated education and training classes where students can earn industry credentials and college credit in career pathways: information technology, healthcare, construction trades, and culinary/hospitality.",
+            "success_app": "Classes designed to help students successfully navigate school and careers such as computer basics, job readiness, career exploration, college skills, and financial success.",
+            'e_learn_app': "Online courses to help with college and career readiness goals as well as passing the HiSET.",
+            'accuplacer_app': "Short preparation classes for the English and math accuplacer college placement tests. ",
         }
 
 
@@ -466,7 +485,7 @@ class WioaForm(ModelForm):
                 "long_term_unemployed",
             ),
             Fieldset(
-                "Services/Training",
+                "Services/Training Information",
                 Field(
                     "adult_one_stop",
                     "youth_one_stop",
@@ -486,7 +505,7 @@ class WioaForm(ModelForm):
                 "school_status",
             ),
             Fieldset(
-                'Race/Ethnicity/Language',
+                'Race/Ethnicity/Language Information',
                 Row(
                     Column(
                         "amer_indian",
@@ -710,11 +729,15 @@ class WioaForm(ModelForm):
             "SID"
         )
         labels = {
-            "recieves_public_assistance": "Please check this box if recieve assistance through any of the following programs.",
+            "recieves_public_assistance": "Please check this box if you receive assistance through any of the following programs.",
             "state_payed_foster": "Are you in state-payed foster care?",
             "subject_of_criminal_justice": "Have you ever been involved in the criminal justice system for committing a status offense or delinquent act?",
             "arrest_record_employment_barrier": "Do you need help overcoming employment barriers due to a criminal record?",
-            "low_family_income": "Please check this box if you have low family income. See chart below for low income levels for families of various sizes"
+            "low_family_income": "Please check this box if you have low family income. See chart below for low income levels for families of various sizes",
+            "lacks_adequate_residence": "Do you lack a fixed, regular, and adequate nighttime residence?",
+            "irregular_sleep_accomodation": "Do you have irregular sleep accommodations?",
+            "migratory_child": "Are you a migratory child?",
+            "runaway_youth": "Are you a runaway youth?"        
         }
 
 

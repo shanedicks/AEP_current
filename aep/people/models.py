@@ -61,7 +61,7 @@ class Profile(models.Model):
         ("WY", "Wyoming")
     )
     EC_RELATIONS_CHOICES = (
-        ("F", "Father"),
+        ("D", "Father"),
         ("M", "Mother"),
         ("S", "Spouse"),
         ("B", "Sibling"),
@@ -281,23 +281,35 @@ class Student(Profile):
     )
     ccr_app = models.BooleanField(
         default=False,
-        verbose_name=_("College and Career Readiness")
+        verbose_name=_("CCR")
     )
     esl_app = models.BooleanField(
         default=False,
-        verbose_name=_("English Language Learning")
+        verbose_name=_("ESL")
     )
     ace_app = models.BooleanField(
         default=False,
-        verbose_name=_("ACE Program")
+        verbose_name=_("ACE")
     )
     e_learn_app = models.BooleanField(
         default=False,
-        verbose_name=_("Online Classes")
+        verbose_name=_("ELearn")
     )
     success_app = models.BooleanField(
         default=False,
-        verbose_name=_("Success Classes")
+        verbose_name=_("Success")
+    )
+    eng_boot_app = models.BooleanField(
+        default=False,
+        verbose_name=_("Eng. Boot")
+    )
+    math_boot_app = models.BooleanField(
+        default=False,
+        verbose_name=_("Math Boot")
+    )
+    accuplacer_app = models.BooleanField(
+        default=False,
+        verbose_name=_("Accuplacer")
     )
     parish = models.CharField(
         max_length=2,

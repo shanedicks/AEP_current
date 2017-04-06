@@ -223,6 +223,16 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'ace_app',
         'e_learn_app',
         'success_app',
+        'accuplacer_app'
+    )
+
+    list_filter = (
+        'ccr_app',
+        'esl_app',
+        'ace_app',
+        'e_learn_app',
+        'success_app',
+        'accuplacer_app'
     )
 
     search_fields = ["user__first_name", "user__last_name", 'WRU_ID', 'intake_date']
