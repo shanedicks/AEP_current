@@ -106,7 +106,7 @@ class EnrollmentAdmin(ImportExportModelAdmin):
 
     def activate(self, request, queryset):
         for obj in queryset:
-            self.activate()
+            obj.activate()
 
 
 admin.site.register(Enrollment, EnrollmentAdmin)
