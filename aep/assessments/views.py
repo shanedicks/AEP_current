@@ -1,10 +1,11 @@
+import csv
 from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render_to_response
 from django.urls import reverse
 from django.views.generic import (DetailView, ListView, CreateView,
-                                  TemplateView)
+                                  TemplateView, View)
 
 from people.models import Student
 from .models import (TestEvent, TestAppointment, TestHistory,
@@ -33,6 +34,80 @@ class TestEventDetailView(LoginRequiredMixin, DetailView):
             )
             context.update(kwargs)
         return context
+
+
+class TestEventCSV(LoginRequiredMixin, View):
+
+    def get_student_data(self, event):
+        event = event
+        students = event.students.prefetch_related(
+            'student', 'student__user'
+        )
+        data = []
+        for student in students:
+            s = [
+                student.student.WRU_ID,
+                student.student.user.last_name,
+                student.student.user.first_name,
+                str(student.student.intake_date),
+                str(student.student.dob),
+                student.student.get_marital_status_display(),
+                student.student.get_gender_display(),
+                " ".join([
+                    student.student.street_address_1,
+                    student.student.street_address_2
+                ]),
+                student.student.city,
+                student.student.state,
+                student.student.zip_code,
+                student.student.get_parish_display(),
+                student.student.user.email,
+                student.student.phone,
+                student.student.alt_phone,
+                student.student.emergency_contact,
+                student.student.ec_phone
+            ]
+            data.append(s)
+        return data
+
+    def render_to_csv(self, data, headers, filename):
+        response = HttpResponse(content_type="text/csv")
+        cd = 'attachment; filename="{0}"'.format(filename)
+        response['Content-Disposition'] = cd
+        data = data
+
+        writer = csv.writer(response)
+        writer.writerow(headers)
+        for row in data:
+            writer.writerow(row)
+
+        return response
+
+    def get(self, request, *args, **kwargs):
+        event = TestEvent.objects.get(
+            pk=self.kwargs['pk'])
+        filename = "student_list.csv"
+        headers = [
+            "WRU Id",
+            "Last Name",
+            "First Name",
+            "Intake Date",
+            "DOB",
+            "Marital Status",
+            "Gender",
+            "Address",
+            "City",
+            "State",
+            "Zip",
+            "Parish",
+            "Email",
+            "Phone",
+            "Alt Phone",
+            "Emergency Contact",
+            "Emergency Contact Phone"
+        ]
+        data = self.get_student_data(event)
+        return self.render_to_csv(data=data, headers=headers, filename=filename)
 
 
 class TestEventListView(LoginRequiredMixin, ListView):

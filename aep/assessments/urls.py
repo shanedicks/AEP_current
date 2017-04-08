@@ -68,6 +68,9 @@ urlpatterns = [
     url(r'^events/(?P<pk>[0-9]+)/$',
         views.TestEventDetailView.as_view(),
         name="test event detail"),
+    url(r'^events/(?P<pk>[0-9]+)/csv$',
+        views.TestEventCSV.as_view(),
+        name="test event csv"),
     url(r'(?P<slug>[a-zA-Z0-9]{5})/',
         include(single_student_assessment_patterns)),
 ]
