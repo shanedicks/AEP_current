@@ -26,6 +26,9 @@ student_patterns = [
         views.StudentListView.as_view(),
         name='student list'
         ),
+    url(r'^csv/$',
+        views.StudentCSV.as_view(),
+        name='student list csv'),
     url(r'^new/$',
         views.StudentCreateView.as_view(),
         name='create student',

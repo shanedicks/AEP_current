@@ -116,7 +116,9 @@ class SectionFilterForm(Form):
             ('', 'Program'),
             ('ESL', 'ESL'),
             ('CCR', 'CCR'),
-            ('TRANS', 'Transitions')
+            ('TRANS', 'Transitions'),
+            ('ELRN', 'ELearn'),
+            ('ADMIN', 'Admin'),
         ),
         required=False
     )

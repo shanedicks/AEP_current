@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1>Student Lists</h1>
+    <div class="well">
+        <form class="form-inline" action="" method="post">
+            {% csrf_token %}
+            {% crispy form %}
+            <button type="submit" class="btn btn-default" value"filter">Export Students</button>
+        </form>
+        <p></p>
+    <p>This tool can export lists of students based on the classes in which they are currently active, so if a student has no active classes, they won't make the list.</p> 
+    <p>Choose a site to select only students active in classes at that site.</p> 
+    <p>Choose a program to select only students active in classes in that program.</p> 
+    <p>Leave both options blank to export all active students.</p>
+    </div>
+{% endblock content %}

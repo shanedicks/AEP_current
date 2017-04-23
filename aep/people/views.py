@@ -6,6 +6,8 @@ from django.conf import settings
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy, reverse
 from assessments.forms import PretestSignupForm, LocatorSignupForm, OrientationSignupForm
+from core.utils import render_to_csv
+from sections.forms import SectionFilterForm
 from .models import Staff, Student, CollegeInterest
 from .forms import (
     StaffForm, StudentForm, StudentSearchForm,
@@ -48,6 +50,80 @@ class StudentListView(LoginRequiredMixin, ListView, FormView):
         return self.render_to_response(
             self.get_context_data(form=form, object_list=self.object_list)
         )
+
+
+class StudentCSV(LoginRequiredMixin, FormView):
+
+    model = Student
+    form_class = SectionFilterForm
+    template_name = "people/student_csv.html"
+
+    def get_student_data(self, students):
+        data = []
+        headers = [
+            "WRU Id",
+            "Last Name",
+            "First Name",
+            "Intake Date",
+            "DOB",
+            "Marital Status",
+            "Gender",
+            "Address",
+            "City",
+            "State",
+            "Zip",
+            "Parish",
+            "Email",
+            "Phone",
+            "Alt Phone",
+            "Emergency Contact",
+            "Emergency Contact Phone"
+        ]
+        data.append(headers)
+        for student in students:
+            s = [
+                student.WRU_ID,
+                student.user.last_name,
+                student.user.first_name,
+                str(student.intake_date),
+                str(student.dob),
+                student.get_marital_status_display(),
+                student.get_gender_display(),
+                " ".join([
+                    student.street_address_1,
+                    student.street_address_2
+                ]),
+                student.city,
+                student.state,
+                student.zip_code,
+                student.get_parish_display(),
+                student.user.email,
+                student.phone,
+                student.alt_phone,
+                student.emergency_contact,
+                student.ec_phone
+            ]
+            data.append(s)
+        return data
+
+
+    def form_valid(self, form):
+        students = Student.objects.filter(classes__status="A")
+        filename = "student_list.csv"
+        if form.cleaned_data['site'] != "":
+            site = form.cleaned_data['site']
+            students = students.filter(classes__section__site=site)
+            filename = "_".join([site, filename])
+        if form.cleaned_data['program'] != "":
+            program = form.cleaned_data['program']
+            students = students.filter(classes__section__program=program)
+            filename = "_".join([program, filename])
+
+        students = students.distinct()
+        data = self.get_student_data(students)
+        return render_to_csv(data=data, filename=filename)
+
+
 
 
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
