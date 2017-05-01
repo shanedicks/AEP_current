@@ -5,7 +5,8 @@
 	{% if upcoming %}
 	<table class="table">
 		<tr>
-			<th>Test</th>
+			<th>Event</th>
+			<th>Type</th>
 			<th>Proctor</th>
 			<th>Open Seats</th>
 			<th>Seats</th>
@@ -15,7 +16,8 @@
 		</tr>
 	{% for event in upcoming %}
 		<tr>
-			<td><a href="{% url 'assessments:test event detail' pk=event.pk %}">{{event.get_test_display}}</a></td>
+			<td><a href="{% url 'assessments:test event detail' pk=event.pk %}">{{event.title}}</a></td>
+			<td>{{event.get_test_display}}</td>
 			<td>{{event.proctor}}</td>
 			<td>{{event.open_seats}}</td>
 			<td>{{event.seats}}</td>
@@ -32,7 +34,8 @@
 	{% if past %}
 	<table class="table">
 		<tr>
-			<th>Test</th>
+			<th>Event</th>
+			<th>Type</th>
 			<th>Proctor</th>
 			<th>Open Seats</th>
 			<th>Seats</th>
@@ -42,7 +45,8 @@
 		</tr>
 	{% for event in past %}
 		<tr>
-			<td><a href="{% url 'assessments:test event detail' pk=event.pk %}">{{event.get_test_display}}</a></td>
+			<td><a href="{% url 'assessments:test event detail' pk=event.pk %}">{{event.title}}</a></td>
+			<td>{{event.get_test_display}}</td>
 			<td>{{event.proctor}}</td>
 			<td>{{event.open_seats}}</td>
 			<td>{{event.seats}}</td>
