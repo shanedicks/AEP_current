@@ -22,9 +22,4 @@ class Migration(migrations.Migration):
             name='ec_relation',
             field=models.CharField(choices=[('D', 'Father'), ('M', 'Mother'), ('S', 'Spouse'), ('B', 'Sibling'), ('F', 'Friend'), ('G', 'Legal Guardian'), ('O', 'Other')], default='O', max_length=1, verbose_name='Their Relationship to You'),
         ),
-        migrations.AlterField(
-            model_name='wioa',
-            name='SID',
-            field=models.CharField(blank=True, max_length=11, unique=True, verbose_name='SSN'),
-        ),
     ]

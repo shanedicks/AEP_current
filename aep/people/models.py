@@ -505,7 +505,6 @@ class WIOA(models.Model):
         max_length=11,
         blank=True,
         verbose_name="SSN",
-        unique=True
     )
     hispanic_latino = models.BooleanField(
         default=False,
