@@ -10,6 +10,12 @@ class Semester(models.Model):
 
     allowed_absences = models.SmallIntegerField(default=4)
 
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('semesters:semester detail', kwargs={'pk': self.pk})
+
     def get_days(self):
         return self.days.all()
 
@@ -39,12 +45,6 @@ class Semester(models.Model):
     def enforce_attendance(self):
         for section in self.get_sections():
             section.enforce_attendance()
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('semesters:semester detail', kwargs={'pk': self.pk})
 
 
 class Day(models.Model):

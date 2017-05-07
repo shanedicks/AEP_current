@@ -331,6 +331,9 @@ class Student(Profile):
     class Meta:
         ordering = ["user__last_name", "user__first_name"]
 
+    def get_absolute_url(self):
+        return reverse('people:student detail', kwargs={'slug': self.slug})
+
     def has_WRU_ID(self):
         return self.WRU_ID != ''
 
@@ -347,9 +350,6 @@ class Student(Profile):
 
     def all_classes(self):
         return self.classes.all()
-
-    def get_absolute_url(self):
-        return reverse('people:student detail', kwargs={'slug': self.slug})
 
 
 class Staff(Profile):
@@ -368,6 +368,9 @@ class Staff(Profile):
         verbose_name_plural = 'staff'
         ordering = ["user__last_name", "user__first_name"]
 
+    def get_absolute_url(self):
+        return reverse('people:staff detail', kwargs={'slug': self.slug})
+
     def current_classes(self):
         today = date.today()
         return self.classes.filter(semester__end_date__gte=today)
@@ -375,9 +378,6 @@ class Staff(Profile):
     def past_classes(self):
         today = date.today()
         return self.classes.filter(semester__end_date__lt=today)
-
-    def get_absolute_url(self):
-        return reverse('people:staff detail', kwargs={'slug': self.slug})
 
 
 class WIOA(models.Model):
@@ -504,7 +504,8 @@ class WIOA(models.Model):
     SID = models.CharField(
         max_length=11,
         blank=True,
-        verbose_name="SSN"
+        verbose_name="SSN",
+        unique=True
     )
     hispanic_latino = models.BooleanField(
         default=False,

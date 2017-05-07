@@ -1,1 +1,11 @@
-student_hiset_practice_add.html
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h1>Add HiSET Practice Test Result for {{student}}</h1>
+<div class="well">
+    <form method="post">
+            {% crispy form %} 
+        <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Add</button>
+    </form>
+</div>
+{% endblock content %}

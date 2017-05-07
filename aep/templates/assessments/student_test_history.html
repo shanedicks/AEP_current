@@ -14,17 +14,56 @@
         {% endif %}
             <a class="btn btn-default" href="{% url 'assessments:test signup' slug=history.student.slug %}" role="button">Testing Signup</a>
         <h2>Prior Testing Info</h2>
+        <h4>NRS Reported Tests</h4>
         {% if history.last_test is None %}
             <p>{{history.student.user.first_name}} doesn't seem to have any tests on record</p>
         {% else %}
-            <h4>Date of Last Test: {{ history.last_test }}</h4>
-            {% if history.tabe_tests.all.count > 0 %}
-                <a class="btn btn-default" href="{% url 'assessments:student tabe list' slug=history.student.slug %}" role="button">TABE Tests</a>
-            {% endif %}
-            {% if history.clas_e_tests.all.count > 0 %}
-                <a class="btn btn-default" href="{% url 'assessments:student clas-e list' slug=history.student.slug %}" role="button">CLAS-E Tests</a>
-            {% endif %}
+            <h5>Last Tested: {{ history.last_test }}</h5>
         {%endif%}
+        <table class="table">
+            <tr>
+                <th><a href="{% url 'assessments:student tabe list' slug=history.student.slug %}">TABE</a></th>
+                <th>TABE Locator</th>
+                <th><a href="{% url 'assessments:student clas-e list' slug=history.student.slug %}">CLAS-E</th>
+                <th>CLAS-E Locator</th>
+                <th><a href="{% url 'assessments:student gain list' slug=history.student.slug %}">GAIN</a></th>
+            </tr>
+            <tr>
+                <td>
+                    {{ history.tabe_tests.all.count }}
+                </td>
+                <td>
+                    {{ history.tabe_loc_tests.all.count }}
+                </td>
+                <td>
+                    {{ history.clas_e_tests.all.count }}
+                </td>
+                <td>
+                    {{ history.clas_e_loc_tests.all.count }}
+                </td>
+                <td>                        
+                    {{ history.gain_tests.all.count }}
+                </td>
+            </tr>
+            <tr>
+                <td><a class="btn btn-default" href="{% url 'assessments:student tabe add' slug=history.student.slug %}" role="button">Add</a></td>
+                <td></td>
+                <td><a class="btn btn-default" href="{% url 'assessments:student clas-e add' slug=history.student.slug %}" role="button">Add</a></td>
+                <td></td>
+                <td><a class="btn btn-default" href="{% url 'assessments:student gain add' slug=history.student.slug %}" role="button">Add</a></td>
+            </tr>
+        </table>
+        <h4>Other Tests</h4>
+        <table class="table">
+            <tr>
+                <th><a href="{% url 'assessments:student hiset practice list' slug=history.student.slug %}">HiSET Practice</a></th>
+            </tr>
+            <tr>
+                <td>{{ history.hiset_practice_tests.all.count }}</td>
+            </tr>
+            <tr>
+                <td><a class="btn btn-default" href="{% url 'assessments:student hiset practice add' slug=history.student.slug %}" role="button">Add</a></td>
+            </tr>
+        </table>
     </div>
-
 {% endblock %}

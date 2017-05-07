@@ -81,6 +81,19 @@ class Section(models.Model):
     sunday = models.BooleanField(default=False)
     slug = models.CharField(unique=True, max_length=5, default=make_slug)
 
+
+    def __str__(self):
+        s = str(self.site)
+        n = str(self.title)
+        t = str(self.teacher)
+        d = self.get_days_str()
+        b = self.start_time.strftime('%I:%M%p')
+        items = [s, n, t, d, b]
+        return "|".join(items)
+
+    def get_absolute_url(self):
+        return reverse('sections:class detail', kwargs={'slug': self.slug})
+
     def get_all_students(self):
         return self.students.all()
 
@@ -222,18 +235,6 @@ class Section(models.Model):
                 class_dates.append(d)
         return class_dates
 
-    def __str__(self):
-        s = str(self.site)
-        n = str(self.title)
-        t = str(self.teacher)
-        d = self.get_days_str()
-        b = self.start_time.strftime('%I:%M%p')
-        items = [s, n, t, d, b]
-        return "|".join(items)
-
-    def get_absolute_url(self):
-        return reverse('sections:class detail', kwargs={'slug': self.slug})
-
 
 class Enrollment(models.Model):
 
@@ -276,6 +277,14 @@ class Enrollment(models.Model):
 
     class Meta:
         unique_together = ('student', 'section')
+
+    def __str__(self):
+        name = self.student_name()
+        section = self.class_name()
+        return name + ": enrolled in " + section
+
+    def get_absolute_url(self):
+        return reverse('sections:enrollment detail', kwargs={'pk': self.pk})
 
     def student_name(self):
         name = self.student.__str__()
@@ -382,14 +391,6 @@ class Enrollment(models.Model):
                     [self.student.user.email],
                     fail_silently=False)
 
-    def get_absolute_url(self):
-        return reverse('sections:enrollment detail', kwargs={'pk': self.pk})
-
-    def __str__(self):
-        name = self.student_name()
-        section = self.class_name()
-        return name + ": enrolled in " + section
-
 
 class Attendance(models.Model):
 
@@ -423,14 +424,11 @@ class Attendance(models.Model):
     class Meta:
         ordering = ['attendance_date', ]
 
-    def hours(self):
-        if self.attendance_type == 'P':
-            d1 = datetime.combine(self.attendance_date, self.time_in)
-            d2 = datetime.combine(self.attendance_date, self.time_out)
-            delta = d2 - d1
-            hours = delta.total_seconds() / 3600
-            return float("{0:.2f}".format(hours))
-        return 0
+    def __str__(self):
+        s = str(self.enrollment.student)
+        d = self.attendance_date.strftime('%Y-%m-%d')
+        t = self.get_attendance_type_display()
+        return " | ".join([d, s, t])
 
     def get_absolute_url(self):
         return reverse(
@@ -441,8 +439,11 @@ class Attendance(models.Model):
             }
         )
 
-    def __str__(self):
-        s = str(self.enrollment.student)
-        d = self.attendance_date.strftime('%Y-%m-%d')
-        t = self.get_attendance_type_display()
-        return " | ".join([d, s, t])
+    def hours(self):
+        if self.attendance_type == 'P':
+            d1 = datetime.combine(self.attendance_date, self.time_in)
+            d2 = datetime.combine(self.attendance_date, self.time_out)
+            delta = d2 - d1
+            hours = delta.total_seconds() / 3600
+            return float("{0:.2f}".format(hours))
+        return 0

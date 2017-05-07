@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError
 from django.http import Http404
 from django.urls import reverse
 from django.views.generic import (DetailView, ListView, CreateView,
@@ -7,8 +8,9 @@ from django.views.generic import (DetailView, ListView, CreateView,
 from core.utils import render_to_csv
 from people.models import Student
 from .models import (TestEvent, TestAppointment, TestHistory,
-                     Tabe, Clas_E, HiSet_Practice)
-from .forms import TestSignupForm, TabeForm, Clas_E_Form
+                     Tabe, Clas_E, HiSet_Practice, Gain)
+from .forms import (TestSignupForm, TabeForm, Clas_E_Form,
+                    GainForm, HiSet_Practice_Form)
 
 
 class TestingHomeView(LoginRequiredMixin, TemplateView):
@@ -139,8 +141,15 @@ class TestingSignupView(LoginRequiredMixin, CreateView):
         student = Student.objects.get(slug=self.kwargs['slug'])
         appt = form.save(commit=False)
         appt.student = student
-        appt.save()
-        return super(TestingSignupView, self).form_valid(form)
+        try:
+            appt.save()
+            return super(TestingSignupView, self).form_valid(form)
+        except IntegrityError:
+            form.add_error(
+                'student',
+                'This student is already signed up for the selected Test Event'
+            )
+            return self.form_invalid(form)
 
 
 class TestAppointmentDetailView(LoginRequiredMixin, DetailView):
@@ -176,7 +185,6 @@ class StudentTestHistoryView(LoginRequiredMixin, DetailView):
             ).order_by('event__start')
             context.update(kwargs)
         return context
-
 
 
 class StudentTestListView(LoginRequiredMixin, ListView):
@@ -253,7 +261,7 @@ class StudentTabeAddView(StudentTestAddView):
 
     def get_success_url(self):
         return reverse(
-            "assessments:student tabe list",
+            "assessments:student test history",
             kwargs={'slug': self.kwargs['slug']}
         )
 
@@ -278,7 +286,7 @@ class StudentClasEAddView(StudentTestAddView):
 
     def get_success_url(self):
         return reverse(
-            "assessments:student clas-e list",
+            "assessments:student test history",
             kwargs={'slug': self.kwargs['slug']}
         )
 
@@ -298,10 +306,42 @@ class StudentHisetPracticeListView(StudentTestListView):
 class StudentHisetPracticeAddView(StudentTestAddView):
 
     model = HiSet_Practice
+    form_class = HiSet_Practice_Form
     template_name = 'assessments/student_hiset_practice_add.html'
+
+    def get_success_url(self):
+        return reverse(
+            "assessments:student test history",
+            kwargs={'slug': self.kwargs['slug']}
+        )
 
 
 class StudentHisetPracticeDetailView(StudentTestDetailView):
 
     model = HiSet_Practice
     template_name = 'assessments/student_hiset_practice_detail.html'
+
+
+class StudentGainListView(StudentTestListView):
+
+    model = Gain
+    template_name = 'assessments/student_gain_list.html'
+
+
+class StudentGainAddView(StudentTestAddView):
+
+    model = Gain
+    form_class = GainForm
+    template_name = 'assessments/student_gain_add.html'
+
+    def get_success_url(self):
+        return reverse(
+            "assessments:student test history",
+            kwargs={'slug': self.kwargs['slug']}
+        )
+
+
+class StudentGainDetailView(StudentTestDetailView):
+
+    model = Gain
+    template_name = 'assessments/student_gain_detail.html'

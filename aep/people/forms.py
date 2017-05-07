@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.forms import Form, ModelForm, CharField
+from django.forms import Form, ModelForm, CharField, ValidationError
 from django.core.validators import RegexValidator
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
@@ -450,6 +450,12 @@ class StudentForm(ModelForm):
 
 
 class WioaForm(ModelForm):
+
+    def clean_SID(self):
+        data = self.cleaned_data['SID']
+        if WIOA.objects.filter(SID=data).count() > 0:
+            raise ValidationError("Sorry, we have this SSN in our records already. Please call 504-671-5434 to speak to a staff member.")
+        return data
 
     def __init__(self, *args, **kwargs):
         super(WioaForm, self).__init__(*args, **kwargs)

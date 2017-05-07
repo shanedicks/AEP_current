@@ -107,6 +107,7 @@ class TestAppointment(models.Model):
     class Meta:
         verbose_name = "Testing Appointment"
         verbose_name_plural = "Testing Appointments"
+        unique_together = ('student', 'event')
 
     def __str__(self):
         return self.student.__str__() + " for " + self.event.__str__()
@@ -148,6 +149,15 @@ class TestHistory(models.Model):
         verbose_name = "Test History"
         verbose_name_plural = "Testing Histories"
 
+    def __str__(self):
+        return " | ".join([self.student.WRU_ID, self.student.__str__()])
+
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:student test history",
+            kwargs={'slug': self.student.slug}
+        )
+
     def has_pretest(self):
         return self.last_test > date.today() - timedelta(days=150)
 
@@ -155,7 +165,7 @@ class TestHistory(models.Model):
         if not self.last_test:
             self.last_test = test.test_date
             self.test_assignment = test.assign()
-        else: 
+        else:
             if self.last_test <= test.test_date:
                 self.last_test = test.test_date
                 self.test_assignment = test.assign()
@@ -175,16 +185,6 @@ class TestHistory(models.Model):
         return total_hours
 
 
-    def __str__(self):
-        return " | ".join([self.student.WRU_ID, self.student.__str__()])
-
-    def get_absolute_url(self):
-        return reverse(
-            "assessments:student test history",
-            kwargs={'slug': self.student.slug}
-        )
-
-
 class Test(models.Model):
 
     student = models.ForeignKey(
@@ -197,12 +197,22 @@ class Test(models.Model):
     class Meta:
         abstract = True
 
+
+class NRSTest(Test):
+
+    reported = models.BooleanField(
+        default=False
+    )
+
+    class Meta:
+        abstract = True
+
     def save(self, *args, **kwargs):
         super(Test, self).save(*args, **kwargs)
         self.student.update_status(self)
 
 
-class Tabe(Test):
+class Tabe(NRSTest):
 
     NINE = '9'
     TEN = '10'
@@ -336,6 +346,20 @@ class Tabe(Test):
         verbose_name = "TABE"
         verbose_name_plural = "TABE scores"
 
+    def __str__(self):
+        student = self.student.__str__()
+        date = str(self.test_date)
+        return " | ".join([student, 'TABE', date])
+
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:student tabe detail",
+            kwargs={
+                'slug': self.student.student.slug,
+                'pk': self.pk
+            }
+        )
+
     @staticmethod
     def get_level(score):
         if score is None:
@@ -361,22 +385,8 @@ class Tabe(Test):
 
         return " ".join([form, r_level, m_level, l_level])
 
-    def __str__(self):
-        student = self.student.__str__()
-        date = str(self.test_date)
-        return " | ".join([student, 'TABE', date])
 
-    def get_absolute_url(self):
-        return reverse(
-            "assessments:student tabe detail",
-            kwargs={
-                'slug': self.student.student.slug,
-                'pk': self.pk
-            }
-        )
-
-
-class Tabe_Loc(Test):
+class Tabe_Loc(NRSTest):
 
     read = models.PositiveSmallIntegerField(
         blank=True,
@@ -407,6 +417,11 @@ class Tabe_Loc(Test):
         verbose_name = "TABE Locator"
         verbose_name_plural = "TABE Locators"
 
+    def __str__(self):
+        student = self.student.__str__()
+        date = str(self.test_date)
+        return " | ".join([student, 'TABE Loc', date])
+
     def assign(self):
         if 9 > self.composite > 6:
             assignment = "M"
@@ -420,13 +435,8 @@ class Tabe_Loc(Test):
             assignment = "M"
         return assignment
 
-    def __str__(self):
-        student = self.student.__str__()
-        date = str(self.test_date)
-        return " | ".join([student, 'TABE Loc', date])
 
-
-class Clas_E(Test):
+class Clas_E(NRSTest):
 
     A = "A"
     B = "B"
@@ -469,6 +479,20 @@ class Clas_E(Test):
         verbose_name = "CLAS-E"
         verbose_name_plural = "CLAS-E scores"
 
+    def __str__(self):
+        student = self.student.__str__()
+        date = str(self.test_date)
+        return " | ".join([student, 'CLAS-E', date])
+
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:student clas-e detail",
+            kwargs={
+                'slug': self.student.student.slug,
+                'pk': self.pk
+            }
+        )
+
     def assign(self):
         if self.form == 'A':
             form = 'B'
@@ -486,22 +510,8 @@ class Clas_E(Test):
             level = "4"
         return " ".join([level, form])
 
-    def __str__(self):
-        student = self.student.__str__()
-        date = str(self.test_date)
-        return " | ".join([student, 'CLAS-E', date])
 
-    def get_absolute_url(self):
-        return reverse(
-            "assessments:student clas-e detail",
-            kwargs={
-                'slug': self.student.student.slug,
-                'pk': self.pk
-            }
-        )
-
-
-class Clas_E_Loc(Test):
+class Clas_E_Loc(NRSTest):
 
     read = models.PositiveSmallIntegerField(
         blank=True,
@@ -511,6 +521,11 @@ class Clas_E_Loc(Test):
     class Meta:
         verbose_name = "CLAS-E Locator"
         verbose_name_plural = "CLAS-E Locators"
+
+    def __str__(self):
+        student = self.student.__str__()
+        date = str(self.test_date)
+        return " | ".join([student, 'CLAS-E Loc', date])
 
     def assign(self):
         if self.read > 12:
@@ -523,13 +538,114 @@ class Clas_E_Loc(Test):
             assignment = "1"
         return assignment
 
+
+class Gain(NRSTest):
+
+    A = 'A'
+    B = 'B'
+    FORM_CHOICES = (
+        (A, 'A'),
+        (B, 'B'),
+    )
+
+    MATH = 'Math'
+    ENGLISH = 'English'
+    SUBJECT_CHOICES = (
+        (MATH, 'Math'),
+        (ENGLISH, 'English')
+    )
+
+    ONE = "1"
+    TWO = "2"
+    THREE = "3"
+    FOUR = "4"
+    FIVE = "5"
+    SIX = "6"
+    NRS_CHOICES = (
+        (ONE, "1"),
+        (TWO, "2"),
+        (THREE, "3"),
+        (FOUR, "4"),
+        (FIVE, "5"),
+        (SIX, "6"),
+    )
+
+    form = models.CharField(
+        max_length=1,
+        choices=FORM_CHOICES
+    )
+
+    subject = models.CharField(
+        max_length=7,
+        choices=SUBJECT_CHOICES
+    )
+
+    scale_score = models.PositiveSmallIntegerField(
+    )
+
+    grade_eq = models.DecimalField(
+        max_digits=3,
+        decimal_places=1
+    )
+
+    nrs = models.CharField(
+        max_length=1,
+        choices=NRS_CHOICES
+    )
+
+    class Meta:
+        verbose_name = 'GAIN'
+        verbose_name_plural = "GAIN Scores"
+
     def __str__(self):
         student = self.student.__str__()
         date = str(self.test_date)
-        return " | ".join([student, 'CLAS-E Loc', date])
+        return " | ".join([student, 'GAIN', date])
+
+    def assign(self):
+        return "GAIN"
 
 
 class HiSet_Practice(Test):
+
+    MATH = 'Math'
+    READING = 'Reading'
+    SCIENCE = 'Science'
+    SOCIAL_STUDIES = 'Social Studies'
+    WRITING = 'Writing'
+    ESSAY = 'Essay'
+    SUBJECT_CHOICES = (
+        (MATH, 'Math'),
+        (READING, 'Reading'),
+        (SCIENCE, 'Science'),
+        (SOCIAL_STUDIES, 'Social Studies'),
+        (WRITING, 'Writing'),
+        (ESSAY, 'Essay'),
+    )
+
+    N = 'Not yet prepared'
+    S = 'Somewhat prepared'
+    P = 'Prepared'
+    W = 'Well Prepared'
+    GRADE_CHOICES = (
+        (N, 'Not yet prepared'),
+        (S, 'Somewhat prepared'),
+        (P, 'Prepared'),
+        (W, 'Well Prepared'),
+    )
+
+    subject = models.CharField(
+        max_length=14,
+        choices=SUBJECT_CHOICES
+    )
+
+    grade = models.CharField(
+        max_length=17,
+        choices=GRADE_CHOICES
+    )
+
+    score = models.PositiveSmallIntegerField(
+    )
 
     class Meta:
         verbose_name = "HiSET Practice"

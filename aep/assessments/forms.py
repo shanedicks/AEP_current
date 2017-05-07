@@ -4,7 +4,8 @@ from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset
-from .models import TestAppointment, TestEvent, Tabe, Clas_E
+from .models import (TestEvent, TestAppointment,
+                     Tabe, Clas_E, HiSet_Practice, Gain)
 
 
 class TestAppointmentForm(ModelForm):
@@ -124,10 +125,66 @@ class TabeForm(ModelForm):
             'app_math_ge',
             'lang_ge',
             'total_math_ge',
-            'total_batt_ss',
+            'total_batt_ge',
             'read_nrs',
             'math_nrs',
             'lang_nrs',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(TabeForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.layout = Layout(
+            Field(
+                'test_date',
+                placeholder="MM/DD/YYYY",
+                data_mask="99/99/9999"
+            ),
+            Fieldset(
+                'Form and Level Info',
+                Field(
+                    'form',
+                    'read_level',
+                    'math_level',
+                    'lang_level',
+                    wrapper_class='col-md-3'
+                ),
+            ),
+            Fieldset(
+                'Scale Score',
+                Field(
+                    'read_ss',
+                    'math_comp_ss',
+                    'app_math_ss',
+                    'lang_ss',
+                    'total_math_ss',
+                    'total_batt_ss',
+                    wrapper_class='col-md-2'
+                ),
+            ),
+            Fieldset(
+                'Grade Equivalency',
+                Field(
+                    'read_ge',
+                    'math_comp_ge',
+                    'app_math_ge',
+                    'lang_ge',
+                    'total_math_ge',
+                    'total_batt_ge',
+                    wrapper_class='col-md-4'
+                ),
+            ),
+            Fieldset(
+                'NRS Levels',
+                Field(
+                    'read_nrs',
+                    'math_nrs',
+                    'lang_nrs',
+                    wrapper_class='col-md-4'
+                )
+            )
         )
 
 
@@ -142,3 +199,93 @@ class Clas_E_Form(ModelForm):
             'read_ss',
             'read_nrs'
         )
+
+    def __init__(self, *args, **kwargs):
+        super(Clas_E_Form, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.layout = Layout(
+            Field(
+                'test_date',
+                placeholder="MM/DD/YYYY",
+                data_mask="99/99/9999"
+            ),
+            Field(
+                'form',
+                'read_level',
+                'read_ss',
+                'read_nrs',
+                wrapper_class='col-md-3'
+            )
+        )
+
+
+class GainForm(ModelForm):
+
+    class Meta:
+        model = Gain
+        fields = (
+            'test_date',
+            'form',
+            'subject',
+            'scale_score',
+            'nrs',
+            'grade_eq'
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(GainForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.layout = Layout(
+            Field(
+                'test_date',
+                placeholder="MM/DD/YYYY",
+                data_mask="99/99/9999"
+            ),
+            Field(
+                'form',
+                'subject',
+                wrapper_class='col-md-6'
+            ),
+            Field(
+                'scale_score',
+                'nrs',
+                'grade_eq',
+                wrapper_class='col-md-4'
+            ),
+        )
+
+
+class HiSet_Practice_Form(ModelForm):
+
+    class Meta:
+        model = HiSet_Practice
+        fields = (
+            'test_date',
+            'subject',
+            'score',
+            'grade'
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(HiSet_Practice_Form, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.layout = Layout(
+            Field(
+                'test_date',
+                placeholder="MM/DD/YYYY",
+                data_mask="99/99/9999"
+            ),
+            Field(
+                'subject',
+                'score',
+                'grade',
+                wrapper_class='col-md-4'
+            )
+        )
+

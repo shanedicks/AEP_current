@@ -3,8 +3,6 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from .models import *
 
-admin.site.register(HiSet_Practice)
-
 
 class TestEventAdmin(admin.ModelAdmin):
 
@@ -178,6 +176,7 @@ class TabeAdmin(ImportExportActionModelAdmin):
 
 admin.site.register(Tabe, TabeAdmin)
 
+
 class Clas_E_Resource(TestResource):
 
     class Meta:
@@ -303,4 +302,99 @@ class Clas_E_Loc_Admin(ImportExportActionModelAdmin):
         'read'
     )
 
+
 admin.site.register(Clas_E_Loc, Clas_E_Loc_Admin)
+
+
+class Gain_Resource(TestResource):
+
+    class Meta:
+        model = Gain
+        fields = (
+            'id',
+            'student',
+            'test_date',
+            'form',
+            'subject',
+            'grade_eq'
+            'scale_score',
+            'nrs',
+        )
+
+
+class Gain_Admin(ImportExportActionModelAdmin):
+
+    resource_class = Gain_Resource
+
+    list_display = (
+        'student',
+        'test_date',
+        'subject',
+        'form',
+        'scale_score',
+        'grade_eq',
+        'nrs'
+    )
+
+    search_fields = [
+        'student__student__user__first_name',
+        'student__student__user__last_name',
+        'test_date'
+    ]
+
+    fields = (
+        'test_date',
+        'form',
+        'subject',
+        'scale_score',
+        'grade_eq',
+        'nrs'
+    )
+
+
+admin.site.register(Gain, Gain_Admin)
+
+
+class Hiset_Practice_Resource(TestResource):
+
+    class Meta:
+        model = HiSet_Practice
+        fields = (
+            'id',
+            'student',
+            'test_date',
+            'subject',
+            'grade'
+            'scale',
+            'nrs',
+        )
+
+
+class Hiset_Practice_Admin(ImportExportActionModelAdmin):
+
+    resource_class = Hiset_Practice_Resource
+
+    list_display = (
+        'student',
+        'test_date',
+        'subject',
+        'score',
+        'grade',
+    )
+
+    search_fields = [
+        'student__student__user__first_name',
+        'student__student__user__last_name',
+        'test_date'
+    ]
+
+    fields = (
+        'test_date',
+        'subject',
+        'score',
+        'grade',
+
+    )
+
+
+admin.site.register(HiSet_Practice, Hiset_Practice_Admin)
