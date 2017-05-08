@@ -29,7 +29,7 @@ urlpatterns = [
             template_name='pages/registration.html'),
         name='registration'),
     url(r'^registration/new/$',
-        NewStudentSignupView.as_view(),
+        NewStudentRegistrationView.as_view(),
         name="new student registration"),
     url(r'^registration/success/$',
         RegistrationSuccessView.as_view(),
