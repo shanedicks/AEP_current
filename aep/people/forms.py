@@ -453,8 +453,9 @@ class WioaForm(ModelForm):
 
     def clean_SID(self):
         data = self.cleaned_data['SID']
-        if WIOA.objects.filter(SID=data).count() > 0:
-            raise ValidationError("Sorry, we have this SSN in our records already. Please call 504-671-5434 to speak to a staff member.")
+        if data != "":
+            if WIOA.objects.filter(SID=data).count() > 0:
+                raise ValidationError("Sorry, we have this SSN in our records already. Please call 504-671-5434 to speak to a staff member.")
         return data
 
     def __init__(self, *args, **kwargs):
