@@ -316,7 +316,7 @@ class Gain_Resource(TestResource):
             'test_date',
             'form',
             'subject',
-            'grade_eq'
+            'grade_eq',
             'scale_score',
             'nrs',
         )
@@ -366,7 +366,7 @@ class Hiset_Practice_Resource(TestResource):
             'subject',
             'test_version',
             'proctor',
-            'submitted_by',
+            'reported_by',
             'grade',
             'score',
             'nrs',
@@ -381,9 +381,10 @@ class Hiset_Practice_Admin(ImportExportActionModelAdmin):
         'student',
         'test_date',
         'subject',
-        'test_version',
         'score',
         'grade',
+        'test_version',
+        'reported_by'
     )
 
     search_fields = [

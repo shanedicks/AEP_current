@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ student.user.get_full_name }}</h1>
+    <h1>{{ student }}</h1>
     <p>WRU ID: {{ student.WRU_ID }}</p>
     <p>Intake Date: {{ student.intake_date }}</p>
     <p>Birthday: {{ student.dob }}</p>
@@ -15,12 +15,20 @@
     <p>Name: {{student.emergency_contact}}</p>
     <p>Email: {{ student.ec_email }}
     <p>Phone: {{ student.ec_phone }}
-
+    <h3>Student Testing Appointments</h3>
+        {% if appts %}
+        {% for appt in appts %}
+            <p><a href="{% url 'assessments:test appointment detail' pk=appt.pk %}">{{ appt.event.title }} - {{appt.event.start }}</a></p>
+        {% endfor %}
+        {% else %}
+            <p>There are no upcomming testing appointments for {{ student }}. Would you like to create one?</p>
+        {% endif %}    
     <p>
         <a class="btn btn-default" href="{% url 'people:edit student' slug=student.slug %}" role="button">Edit Student</a>
         <a class="btn btn-default" href="{% url 'people:student classes' slug=student.slug %}" role="button">Student Classes</a>
         <a class="btn btn-default" href="{% url 'people:student attendance' slug=student.slug %}" role="button">Student Attendance</a>
-        <a class="btn btn-default" href="{% url 'assessments:student test history' slug=student.slug %}" role="button">Student Testing</a>
+        <a class="btn btn-default" href="{% url 'assessments:student test history' slug=student.slug %}" role="button">Student Test History</a>
+        <a class="btn btn-default" href="{% url 'assessments:test signup' slug=student.slug %}" role="button">Testing Signup</a>
     </p>
 
 {%endblock content %}

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -334,8 +334,10 @@ class Student(Profile):
     def get_absolute_url(self):
         return reverse('people:student detail', kwargs={'slug': self.slug})
 
-    def has_WRU_ID(self):
-        return self.WRU_ID != ''
+    def future_appts(self):
+        return self.test_appointments.filter(
+            event__start__gte=datetime.today()
+        ).order_by('event__start')
 
     def active_classes(self):
         return self.classes.filter(status="A")

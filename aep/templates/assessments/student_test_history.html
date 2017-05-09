@@ -10,7 +10,7 @@
         	<p><a href="{% url 'assessments:test appointment detail' pk=appt.pk %}">{{ appt.event.title }} - {{appt.event.start }}</a></p>
         {% endfor %}
         {% else %}
-            <p>There are no upcomming testing appointments for {{ history.student }}. Would you like to create one?</p>
+            <p>There are no upcoming testing appointments for {{ history.student }}. Would you like to create one?</p>
         {% endif %}
             <a class="btn btn-default" href="{% url 'assessments:test signup' slug=history.student.slug %}" role="button">Testing Signup</a>
         <h2>Prior Testing Info</h2>
