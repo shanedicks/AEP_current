@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import (DetailView, ListView, CreateView,
                                   TemplateView, View)
@@ -308,6 +308,12 @@ class StudentHisetPracticeAddView(StudentTestAddView):
     model = HiSet_Practice
     form_class = HiSet_Practice_Form
     template_name = 'assessments/student_hiset_practice_add.html'
+
+    def form_valid(self, form):
+        test = form.save(commit=False)
+        submitter = self.request.user
+        test.reported_by = submitter
+        return super(StudentHisetPracticeAddView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse(

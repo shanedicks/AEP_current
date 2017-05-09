@@ -1,6 +1,7 @@
 from datetime import date, timedelta
-from django.db import models
+from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db import models
 from people.models import Staff, Student
 from sections.models import Attendance
 
@@ -189,7 +190,7 @@ class Test(models.Model):
 
     student = models.ForeignKey(
         TestHistory,
-        related_name='%(class)s_tests'
+        related_name="%(class)s_tests"
     )
 
     test_date = models.DateField()
@@ -634,6 +635,40 @@ class HiSet_Practice(Test):
         (W, 'Well Prepared'),
     )
 
+    FPT2 = 'FPT2'
+    FPT3 = 'FPT3'
+    PPT2 = 'PPT2'
+    PPT3 = 'PPT3'
+    PPT4 = 'PPT4'
+    PPT5 = 'PPT5'
+    OPT2 = 'OPT2'
+    OPT3 = 'OPT3'
+    FPT6A = 'FPT6A'
+    PPT6A = 'PPT6A'
+    OPT6A = 'OPT6A'
+
+    VERSION_CHOICES = (
+        (FPT2, 'Free Practice Test 2 (2015)'),
+        (FPT3, 'Free Practice Test 3 (2015)'),
+        (PPT2, 'Paid Practice Test 2 (2015)'),
+        (PPT3, 'Paid Practice Test 3 (2015)'),
+        (PPT4, 'Paid Practice Test 4 (2015)'),
+        (PPT5, 'Paid Practice Test 5 (2015)'),
+        (OPT2, 'Official Practice Test 2 (2015)'),
+        (OPT3, 'Official Practice Test 3 (2015)'),
+        (FPT6A, 'Free Practice Test 6A (2016)'),
+        (PPT6A, 'Paid Practice Test 6A (2016)'),
+        (OPT6A, 'Official Practice Test 6A (2016)'),
+    )
+
+    STAFF = 'Staff'
+    SELF = 'Self'
+
+    PROCTOR_CHOICES = (
+        (STAFF, 'Proctored by Staff Member'),
+        (SELF, 'Self-Administered'),
+    )
+
     subject = models.CharField(
         max_length=14,
         choices=SUBJECT_CHOICES
@@ -644,6 +679,23 @@ class HiSet_Practice(Test):
         choices=GRADE_CHOICES
     )
 
+    test_version = models.CharField(
+        max_length=5,
+        choices=VERSION_CHOICES,
+        blank=True
+    )
+
+    proctor = models.CharField(
+        max_length=5,
+        choices=PROCTOR_CHOICES,
+        default="Staff"
+    )
+
+    reported_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='hpt_submissions'
+    )
+
     score = models.PositiveSmallIntegerField(
     )
 
@@ -652,7 +704,7 @@ class HiSet_Practice(Test):
         verbose_name_plural = "HiSET Practice scores"
 
     def __str__(self):
-        student = self.student.__str()
+        student = self.student.__str__()
         date = str(self.test_date)
         return " | ".join([student, 'HiSET Practice', date])
 

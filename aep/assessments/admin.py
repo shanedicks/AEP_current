@@ -364,8 +364,11 @@ class Hiset_Practice_Resource(TestResource):
             'student',
             'test_date',
             'subject',
-            'grade'
-            'scale',
+            'test_version',
+            'proctor',
+            'submitted_by',
+            'grade',
+            'score',
             'nrs',
         )
 
@@ -378,6 +381,7 @@ class Hiset_Practice_Admin(ImportExportActionModelAdmin):
         'student',
         'test_date',
         'subject',
+        'test_version',
         'score',
         'grade',
     )
@@ -391,6 +395,8 @@ class Hiset_Practice_Admin(ImportExportActionModelAdmin):
     fields = (
         'test_date',
         'subject',
+        'test_version',
+        'proctor',
         'score',
         'grade',
 

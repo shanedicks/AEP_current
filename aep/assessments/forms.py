@@ -266,6 +266,8 @@ class HiSet_Practice_Form(ModelForm):
         fields = (
             'test_date',
             'subject',
+            'proctor',
+            'test_version',
             'score',
             'grade'
         )
@@ -282,10 +284,14 @@ class HiSet_Practice_Form(ModelForm):
                 data_mask="99/99/9999"
             ),
             Field(
+                'proctor',
+                'test_version',
+                wrapper_class='col-md-6'
+            ),
+            Field(
                 'subject',
                 'score',
                 'grade',
                 wrapper_class='col-md-4'
             )
         )
-
