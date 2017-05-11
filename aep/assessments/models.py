@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from django.conf import settings
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
 from people.models import Staff, Student
@@ -91,6 +92,41 @@ class TestEvent(models.Model):
         else:
             self.full = False
             self.save()
+
+    def orientation_reminder(self):
+        for student in self.students.all():
+            if student.student.user.email:
+                send_mail(
+                    subject="Thank you for registering for the Delgado "
+                    "Community College Adult Education Program!",
+                    message="",
+                    html_message="<p>Hi, {student}</p><p>You have selected "
+                    "to attend Orientation on {date:{dfmt}} at {time} "
+                    "at the City Park Campus (615 City Park Ave,"
+                    " New Orleans, LA 70119), though you can "
+                    "later choose to attend classes at other locations. "
+                    "For orientation and testing, please come to Building "
+                    "7, Room 170. Click <a href='http://www.dcc.edu/about/"
+                    "locations/city-park/cp-directions.aspx'>here</a>"
+                    " for directions and click <a href='http://www.dcc."
+                    "edu/documents/about/cp-campus-map.pdf'>here</a>"
+                    " for a map of the campus.</p>"
+                    "<br>"
+                    "<p><strong>Your attendance of this event is required"
+                    " to move forward in the registration process</strong>"
+                    ". Please call 504-671-5434 or email adulted@dcc.edu "
+                    "if you have any questions or need to reschedule.</p>"
+                    "<br><p>Thank you,</p>"
+                    "<p>The Adult Education Program</p>"
+                    "<p>Delgado Community College</p>".format(
+                        student=student.student.user.first_name,
+                        dfmt='%m-%d-%Y',
+                        date=self.start.date(),
+                        time=self.start.time()
+                    ),
+                    from_email="reminder@dccaep.org",
+                    recipient_list=[student.student.user.email],
+                )
 
 
 class TestAppointment(models.Model):

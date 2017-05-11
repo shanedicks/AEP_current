@@ -35,6 +35,12 @@ class TestEventAdmin(admin.ModelAdmin):
         'full'
     )
 
+    actions = ["orientation_reminder"]
+
+    def orientation_reminder(self, request, queryset):
+        for obj in queryset:
+            obj.orientation_reminder()
+
 
 admin.site.register(TestEvent, TestEventAdmin)
 
