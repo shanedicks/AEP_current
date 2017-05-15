@@ -38,7 +38,7 @@ class TestEventDetailView(LoginRequiredMixin, DetailView):
 
 class TestEventCSV(LoginRequiredMixin, View):
 
-    def get_student_data(students):
+    def get_student_data(self, students):
         data = []
         headers = [
             "WRU Id",
