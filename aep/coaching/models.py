@@ -36,9 +36,9 @@ class Profile(models.Model):
     AFTERNOON = 'Afternoon'
     EVENING = 'Evening'
     AVAILABILITY_CHOICES = (
-        (MORNING, 'Morning'),
-        (AFTERNOON, 'Afternoon'),
-        (EVENING, 'Early Evening'),
+        (MORNING, 'Morning (8am - 12am)'),
+        (AFTERNOON, 'Afternoon (12am - 4pm)'),
+        (EVENING, 'Early Evening (4pm - 8pm)'),
     )
 
     CARD = 'Yes Close and Card'
@@ -135,15 +135,15 @@ class Profile(models.Model):
     )
 
     device = models.CharField(
-        help_text='What device will you be using for online learning?'
+        verbose_name='What device will you be using for online learning?'
                   '(e.g Phone, Tablet, Computer, etc.)',
         max_length=50
     )
 
     contact_preference = models.CharField(
         choices=CONTACT_CHOICES,
-        help_text='How do you prefer to be contacted?',
-        max_length=1
+        verbose_name='How do you prefer to be contacted?',
+        max_length=12
     )
 
     other_contact = models.CharField(
@@ -154,18 +154,19 @@ class Profile(models.Model):
     availability = models.CharField(
         max_length=11,
         choices=AVAILABILITY_CHOICES,
-        help_text='What is your typical availability?'
-
+        verbose_name='What is your typical availability?',
+        blank=True
     )
 
     other_availability = models.CharField(
         max_length=40,
-        blank=True
+        blank=True,
     )
 
     library = models.CharField(
         choices=LIBRARY_CHOICES,
-        max_length=20
+        max_length=20,
+        verbose_name='Do you have access to a local library?'
     )
 
     instagram = models.CharField(
@@ -261,7 +262,7 @@ class Profile(models.Model):
     )
 
     best_classes = models.TextField(
-        verbose_name='What classes where you best at?'
+        verbose_name='What classes were you best at?'
     )
 
     worst_classes = models.TextField(
