@@ -24,7 +24,7 @@ class TestSignupForm(ModelForm):
         limit = datetime.datetime.today()
         events = TestEvent.objects.filter(
             start__date__gte=limit
-        ).order_by('start')
+        ).order_by('title')
         self.fields['event'].queryset = events
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -50,7 +50,7 @@ class PretestSignupForm(TestSignupForm):
             start__date__gte=limit
         ).exclude(
             full=True
-        ).order_by('start')
+        ).order_by('title')
         self.fields['event'].queryset = events
         self.helper.layout = Layout(
             Fieldset(
@@ -72,7 +72,7 @@ class LocatorSignupForm(TestSignupForm):
             start__date__gte=limit
         ).exclude(
             full=True
-        ).order_by('start')
+        ).order_by('title')
         self.fields['event'].queryset = events
         self.helper.layout = Layout(
             Fieldset(
@@ -94,7 +94,7 @@ class OrientationSignupForm(TestSignupForm):
             start__date__gte=limit
         ).exclude(
             full=True
-        ).order_by('start')
+        ).order_by('title')
         self.fields['event'].queryset = events
         self.helper.layout = Layout(
             Fieldset(

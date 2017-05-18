@@ -1,8 +1,9 @@
-from datetime import datetime
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
+from django.utils import timezone
 from django.views.generic import (DetailView, ListView, CreateView,
                                   TemplateView, View)
 from core.utils import render_to_csv
@@ -109,12 +110,12 @@ class TestEventListView(LoginRequiredMixin, ListView):
         ).get_context_data(*args, **kwargs)
         if 'upcoming' not in context:
             context['upcoming'] = TestEvent.objects.filter(
-                start__gte=datetime.today()
+                start__gte=timezone.now()
             )
             context.update(kwargs)
         if 'past' not in context:
             context['past'] = TestEvent.objects.filter(
-                start__lt=datetime.today()
+                start__lt=timezone.now()
             )
             context.update(kwargs)
         return context
@@ -125,7 +126,6 @@ class TestingSignupView(LoginRequiredMixin, CreateView):
     model = TestAppointment
     form_class = TestSignupForm
     template_name = 'assessments/test_signup.html'
-
 
     def get_context_data(self, **kwargs):
         context = super(
@@ -146,7 +146,7 @@ class TestingSignupView(LoginRequiredMixin, CreateView):
             return super(TestingSignupView, self).form_valid(form)
         except IntegrityError:
             form.add_error(
-                'student',
+                'event',
                 'This student is already signed up for the selected Test Event'
             )
             return self.form_invalid(form)
@@ -181,7 +181,7 @@ class StudentTestHistoryView(LoginRequiredMixin, DetailView):
         if 'appts' not in context:
             context['appts'] = TestAppointment.objects.filter(
                 student__slug=self.kwargs['slug'],
-                event__start__gte=datetime.today()
+                event__start__gte=timezone.now()
             ).order_by('event__start')
             context.update(kwargs)
         return context
@@ -207,6 +207,7 @@ class StudentTestListView(LoginRequiredMixin, ListView):
             student__student__slug=self.kwargs['slug']
         ).order_by('-test_date')
         return qst
+
 
 class StudentTestDetailView(LoginRequiredMixin, DetailView):
 
@@ -244,7 +245,6 @@ class StudentTestAddView(LoginRequiredMixin, CreateView):
         student = TestHistory.objects.get(student__slug=self.kwargs['slug'])
         test.student = student
         return super(StudentTestAddView, self).form_valid(form)
-
 
 
 class StudentTabeListView(StudentTestListView):
