@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^', include('people.urls', namespace='people')),
     url(r'^testing/', include('assessments.urls', namespace='assessments')),
     url(r'^classes/', include('sections.urls', namespace='sections')),
+    url(r'^coaching/', include('coaching.urls', namespace='coaching')),
     url(r'^registration/$',
         TemplateView.as_view(
             template_name='pages/registration.html'),
