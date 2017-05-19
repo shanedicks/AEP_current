@@ -2,19 +2,60 @@
 
 {% block content %}
     <h1>{{ student }}</h1>
-    <p>WRU ID: {{ student.WRU_ID }}</p>
-    <p>Intake Date: {{ student.intake_date }}</p>
-    <p>Birthday: {{ student.dob }}</p>
-    <h3>Student Contact Info</h3>
-    <p>Email: {{ student.user.email }}</p>
-    <p>Phone Number: {{ student.phone }}</p>
-    <p>Alternate: {{ student.alt_phone }}</p>
-    <p>Address: {{ student.street_address_1 }}{{ student.street_address_2 }}</p>
-    <p>City:{{ student.city }}
-    <h3>Emergency Contact Info</h3>
-    <p>Name: {{student.emergency_contact}}</p>
-    <p>Email: {{ student.ec_email }}
-    <p>Phone: {{ student.ec_phone }}
+    <table class='table'>
+      <tr>
+        <td>WRU ID</td>
+        <td>{{ student.WRU_ID }}</td>
+      </tr>
+      <tr>
+        <td>Intake Date</td>
+        <td>{{ student.intake_date }}</td>
+      </tr>
+      <tr>
+        <td>Birthday</td>
+        <td>{{ student.dob }}</td>
+      </tr>
+      <tr>
+        <td><h4>Student Contact Info</h4></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>{{ student.user.email }}</td>
+      </tr>
+      <tr>
+        <td>Phone Number</td>
+        <td>{{ student.phone }}</td>
+      </tr>
+      <tr>
+        <td>Alternate</td>
+        <td>{{ student.alt_phone }}</td>
+      </tr>
+      <tr>
+        <td>Address</td>
+        <td>{{ student.street_address_1 }}{{ student.street_address_2 }}</td>
+      </tr>
+      <tr>
+        <td>City</td>
+        <td>{{ student.city }}</td>
+      </tr>
+      <tr>
+        <td><h4>Emergency Contact Info</h4></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Name</td>
+        <td>{{student.emergency_contact}}</td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>{{ student.ec_email }}</td>
+      </tr>
+      <tr>
+        <td>Phone</td>
+        <td>{{ student.ec_phone }}</td>
+      </tr>
+    </table>
     <h3>Student Testing Appointments</h3>
         {% if student.future_appts %}
         {% for appt in student.future_appts %}

@@ -26,7 +26,7 @@ class ProfileCreateView(LoginRequiredMixin, CreateView):
         student = Student.objects.get(slug=self.kwargs['slug'])
         profile.student = student
         profile.save()
-        return super(ProfileDetailView, self).form_valid(form)
+        return super(ProfileCreateView, self).form_valid(form)
 
 
 
@@ -43,7 +43,7 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
-        context = super(ProfileCreateView, self).get_context_data(**kwargs)
+        context = super(ProfileDetailView, self).get_context_data(**kwargs)
         if 'student' not in context:
             context['student'] = Student.objects.get(slug=self.kwargs['slug'])
             context.update(kwargs)

@@ -10,9 +10,21 @@ from .models import Student, Staff, WIOA, CollegeInterest
 
 def make_username(first_name, last_name):
     if len(last_name) < 5:
-        name = "{0}{1}".format(first_name[0], last_name).lower()
+        name = "{0}{1}".format(
+            first_name[0],
+            last_name.replace(
+                ' ',
+                ''
+            ).replace("'", "")
+        ).lower()
     else:
-        name = "{0}{1}".format(first_name[0], last_name[:5]).lower()
+        name = "{0}{1}".format(
+            first_name[0],
+            last_name.replace(
+                ' ',
+                ''
+            ).replace("'", "")[:5]
+        ).lower()
     x = 0
     while True:
         if x == 0 and User.objects.filter(username=name).count() == 0:

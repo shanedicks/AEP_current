@@ -449,7 +449,7 @@ class StaffCreateView(LoginRequiredMixin, CreateView):
     template_name = 'people/create_staff.html'
 
     def get_context_data(self, **kwargs):
-        context = super(StudentCreateView, self).get_context_data(**kwargs)
+        context = super(StaffCreateView, self).get_context_data(**kwargs)
         context['user_form'] = UserForm
         context.update(kwargs)
         return context

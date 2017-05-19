@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ student }} Info</h1>
+    <table class='table'>
+        <td>Birthday</td> 
+        <td>{{ student.dob }}</td>
+      </tr>
+      <tr>
+        <td>WRU ID</td>
+        <td>{{ student.WRU_ID }}</td>
+      </tr>
+      <tr>
+        <td>Prefered Mode of Contact</td>
+        <td>{{ profile.contact_preference }}</td>
+      </tr>
+      <tr>
+        <td>Personal E-Mail</td>
+        <td>{{ student.user.email }}</td>
+      </tr>
+      <tr>
+        <td>Personal Cell </td>
+        <td>{{ student.phone }}</td>
+      </tr>
+      <tr>
+        <td>Device Used for Online Learning</td>
+        <td>{{ profile.device }}</td>
+      </tr>
+      <tr>
+        <td>Hours of Availability</td>
+        <td>{{ profile.get_availability_display }}</td>
+      </tr>
+      <tr>
+        <td>Optional Medical Information Question</td>
+        <td>{{ profile.conditions }}</td>
+      </tr>
+      <tr>
+        <td><h3>Academic History</h3></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Last Grade Completed</td>
+        <td>{{ profile.grade_level }}</td>
+      </tr>
+      <tr>
+        <td>Did you receive any special help</td>
+        <td>{{ profile.get_special_help_display }}</td>
+      </tr>
+      <tr>
+        <td>Entry GAIN Score</td>
+        <td>Obviously this isn't a GAIN Score</td>
+      </tr>
+      <tr>
+        <td>Program Completion Goal</td>
+        <td>{{ profile.completion_time }}</td>
+      </tr>
+    </table>
+{% endblock content %}
