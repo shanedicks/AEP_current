@@ -128,6 +128,13 @@ class Section(models.Model):
             student.activate()
             student.save()
 
+    def end(self):
+        for student in self.get_active():
+            if student.status == student.ACTIVE:
+                student.status = student.COMPLETED
+                student.save()
+
+
     # Drops active students with 2 absences and fills their spots with waitlisted students in enrollment order
     def waitlist_update(self):
         dropped = []
@@ -321,6 +328,7 @@ class Enrollment(models.Model):
                     time_out=self.section.end_time
                 )
                 a.save()
+
 
     # Drops students who have missed first two class periods
     def waitlist_drop(self):

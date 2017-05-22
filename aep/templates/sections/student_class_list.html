@@ -1,7 +1,18 @@
 {% extends "base.html" %}
-
 {% block content %}
+{% load rules %}
+{% test_rule 'can_enroll' student as can_enroll %}
+{% test_rule 'pretested' student as pretested %}
     <h1>{{student}}'s Classes {{today}}</h1>
+    {% if not can_enroll %}
+        {% if not pretested %}
+        <h2>No Valid Prestest!</h2>
+        <h4>This student will not be able to enroll until they take a pre-test</h4>
+        {% else %}
+        <h2>Post Test Needed!<h4>
+        <h4>This student hasn't post tested since completing a class which requires post-testing</h4>
+        {% endif %}
+    {% endif %}
     <h3>Current Classes</h3>
     <table class='table'>
         <tr>
@@ -54,7 +65,9 @@
         </tr>
     {% endfor %}    
     </table>
+    {% if can_enroll %}
     <p><a class="btn btn-default" href="{% url 'people:add class' slug=student.slug %}" role="button">Add New Class &raquo;</a>
+    {% endif %}
     <a class="btn btn-default" href="{%url 'people:print schedule' slug=student.slug %}" role="button">Print Schedule &raquo;</a>
     </p>
 {% endblock %}

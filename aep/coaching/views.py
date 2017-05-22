@@ -29,7 +29,6 @@ class ProfileCreateView(LoginRequiredMixin, CreateView):
         return super(ProfileCreateView, self).form_valid(form)
 
 
-
 class ProfileDetailView(LoginRequiredMixin, DetailView):
 
     model = Profile

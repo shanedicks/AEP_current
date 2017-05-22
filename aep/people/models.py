@@ -340,7 +340,19 @@ class Student(Profile):
         ).order_by('event__start')
 
     def active_classes(self):
-        return self.classes.filter(status="A")
+        return self.classes.filter(
+            status="A"
+        ).order_by('-section__semester__end_date')
+
+    def completed_classes(self):
+        return self.classes.filter(
+            status="C"
+        ).order_by('-section__semester__end_date')
+
+    def dropped_classes(self):
+        return self.classes.filter(
+            status="D"
+        ).order_by('-section__semester__end_date')
 
     def current_classes(self):
         today = date.today()

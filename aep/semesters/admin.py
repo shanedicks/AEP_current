@@ -18,6 +18,7 @@ class SemesterAdmin(admin.ModelAdmin):
     actions = [
         "attendance_reminder",
         "begin",
+        "end",
         "enforce_attendance",
         "waitlist"
     ]
@@ -29,6 +30,10 @@ class SemesterAdmin(admin.ModelAdmin):
     def begin(self, request, queryset):
         for obj in queryset:
             obj.begin()
+
+    def end(self, request, queryset):
+        for obj in queryset:
+            obj.end()
 
     def enforce_attendance(self, request, queryset):
         for obj in queryset:
