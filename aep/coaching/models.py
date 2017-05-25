@@ -311,7 +311,7 @@ class Profile(models.Model):
 
     def get_absolute_url(self):
         return reverse(
-            'coaching:profile detail', 
+            'coaching:profile detail',
             kwargs={'slug': self.student.slug}
         )
 
@@ -326,6 +326,22 @@ class Coaching(models.Model):
     coach = models.ForeignKey(
         Staff,
         related_name='coachees'
+    )
+
+    ELEARN = 'elearn'
+    ACE = 'ace'
+    OPEN = 'open'
+    COACHING_TYPE_CHOICES = (
+        (ELEARN, 'eLearn'),
+        (ACE, 'ACE'),
+        (OPEN, 'Open Coaching')
+    )
+
+    coaching_type = models.CharField(
+        max_length=6,
+        default='open',
+        choices=COACHING_TYPE_CHOICES,
+        help_text=_('Type of coaching (Choose One)')
     )
 
     active = models.BooleanField(
@@ -345,16 +361,29 @@ class Coaching(models.Model):
         auto_now=True
     )
 
+    def latest_note(self):
+        return self.notes.latest('meeting_date')
+
+    def get_absolute_url(self):
+        return reverse(
+            'coaching:coaching detail',
+            kwargs={'pk': self.pk}
+        )
+
 
 class MeetingNote(models.Model):
 
-    ELEARN = 'elearn'
-    ACE = 'ace'
-    OPEN = 'open'
+
+
+    ACADEMIC = 'Academic Planning'
+    PERSONAL = 'Personal'
+    COACHING_CHECK_IN = 'Coaching Check-in'
+    OTHER = 'Other'
     MEETING_TYPE_CHOICES = (
-        (ELEARN, 'eLearn'),
-        (ACE, 'ACE'),
-        (OPEN, 'Open Coaching')
+        (ACADEMIC, 'Academic Planning'),
+        (PERSONAL, 'Personal'),
+        (COACHING_CHECK_IN, 'Coaching Check-in'),
+        (OTHER, 'Other'),
     )
 
     coaching = models.ForeignKey(
@@ -363,7 +392,7 @@ class MeetingNote(models.Model):
     )
 
     meeting_type = models.CharField(
-        max_length=6,
+        max_length=17,
         choices=MEETING_TYPE_CHOICES,
         help_text=_('Type of coaching (Choose One)')
     )
@@ -389,6 +418,12 @@ class MeetingNote(models.Model):
         help_text=_('Other Notes')
     )
 
+    def get_absolute_url(self):
+        return reverse(
+            'coaching:meeting note detail',
+            kwargs={'pk': self.pk})
+
+
 
 class AceRecord(models.Model):
 
@@ -401,6 +436,15 @@ class AceRecord(models.Model):
         (SKILLED_CRAFTS, 'Skilled Crafts'),
         (IT, 'IT'),
         (HOSPITALITY, 'Culinary Arts / Hospitality')
+    )
+
+    HSE = 'HSE'
+    HSD = 'HSD'
+    NEITHER = 'Neither'
+    HSD_CHOICES = (
+        (HSE,'HSE'),
+        (HSD,'HSD'),
+        (NEITHER, 'Neither'),
     )
 
     student = models.OneToOneField(
@@ -428,10 +472,14 @@ class AceRecord(models.Model):
     )
 
     hsd = models.CharField(
-        max_length=1
+        max_length=7,
+        choices=HSD_CHOICES,
+        default='Neither'
     )
 
-    hsd_date = models.DateField()
+    hsd_date = models.DateField(
+        blank=True,
+        null=True)
 
     media_release = models.BooleanField(
         default=False

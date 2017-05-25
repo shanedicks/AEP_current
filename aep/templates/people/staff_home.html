@@ -2,50 +2,73 @@
 
 {% block content %}
     <h1>{{ staff }} Home</h1>
-    <h3>My Current Classes</h3>
-    <table class='table'>
+    {% if staff.classes.count > 0 %}
+        <h3>My Current Classes</h3>
+        <table class='table'>
+            <tr>
+                <th>Class Name</th>
+                <th>Students</th>
+                <th>Days</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+            </tr>
+        {% for section in staff.current_classes %}
+            <tr>
+                <td><a href="{{section.get_absolute_url}}">{{section.title}}</a></td>
+                <td>{{section.students.count}}</td>
+                <td>{{section.get_days_str}}</td>
+                <td>{{section.start_time}}</td>
+                <td>{{section.end_time}}</td>
+                <td>{{section.semester.start_date}}</td>
+                <td>{{section.semester.end_date}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <h3>My Past Classes</h3>
+        <table class='table'>
+            <tr>
+                <th>Class Name</th>
+                <th>Students</th>
+                <th>Days</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+            </tr>
+        {% for section in staff.past_classes %}
+            <tr>
+                <td><a href="{{section.get_absolute_url}}">{{section.title}}</a></td>
+                <td>{{section.students.count}}</td>
+                <td>{{section.get_days_str}}</td>
+                <td>{{section.start_time}}</td>
+                <td>{{section.end_time}}</td>
+                <td>{{section.semester.start_date}}</td>
+                <td>{{section.semester.end_date}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
+    {% if staff.coachees.count > 0 %}
+        <h3>My Coachees</h3>
+        <table class="table">
         <tr>
-            <th>Class Name</th>
-            <th>Students</th>
-            <th>Days</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-        </tr>
-    {% for section in staff.current_classes %}
+            <th>Student</th>
+            <th>Times Met</th>
+            <th>Last Meeting Date</th>
         <tr>
-            <td><a href="{{section.get_absolute_url}}">{{section.title}}</a></td>
-            <td>{{section.students.count}}</td>
-            <td>{{section.get_days_str}}</td>
-            <td>{{section.start_time}}</td>
-            <td>{{section.end_time}}</td>
-            <td>{{section.semester.start_date}}</td>
-            <td>{{section.semester.end_date}}</td>
-        </tr>
-    {% endfor %}
-    </table>
-    <h3>My Past Classes</h3>
-    <table class='table'>
+        {% for coachee in staff.coachees.all %}
         <tr>
-            <th>Class Name</th>
-            <th>Students</th>
-            <th>Days</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Start Date</th>
-            <th>End Date</th>
+            <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
+            <td>{{ coachee.notes.count }}</td>
+            {% if coachee.notes.count > 0 %}
+                <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
+            {% else %}
+                <td>Never</td>
+            {% endif %}
         </tr>
-    {% for section in staff.past_classes %}
-        <tr>
-            <td><a href="{{section.get_absolute_url}}">{{section.title}}</a></td>
-            <td>{{section.students.count}}</td>
-            <td>{{section.get_days_str}}</td>
-            <td>{{section.start_time}}</td>
-            <td>{{section.end_time}}</td>
-            <td>{{section.semester.start_date}}</td>
-            <td>{{section.semester.end_date}}</td>
-        </tr>
-    {% endfor %}
-    </table>
+        {% endfor %}
+    {% endif %}
+
 {%endblock content %}

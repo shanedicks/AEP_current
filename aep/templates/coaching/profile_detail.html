@@ -48,11 +48,27 @@
       </tr>
       <tr>
         <td>Entry GAIN Score</td>
-        <td>Obviously this isn't a GAIN Score</td>
+        <td>{{profile.student.tests.gain_tests.first}}</td>
       </tr>
       <tr>
         <td>Program Completion Goal</td>
         <td>{{ profile.completion_time }}</td>
+      </tr>
+      <tr>
+        <td><h3>Coaching Info</h3></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Personal Goal</td>
+        <td>{{ profile.personal_goal}}</td>
+      </tr>
+      <tr>
+        <td>Support me by...</td>
+        <td>{{ profile.frustrated }}</td>
+      </tr>
+      <tr>
+        <td>Additional Info</td>
+        <td>{{ profile.anything_else }}</td>
       </tr>
     </table>
 {% endblock content %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Meeting Note</h1>
+    <h4>Coachee / Coach</h4>
+        <p>{{ note.coaching.coachee }} / {{ note.coaching.coach }}</p> 
+    <h4>Date and Time</h4>
+        <p>{{ note.meeting_date }} from {{ note.start_time }} to {{ note.end_time }}</p>
+    <h4>{{ note.get_meeting_type_display }} meeting</h4>
+    <h4>Progress</h4>
+        <p>{{ note.progress }}</p>
+    <h4>Next Steps</h4>
+        <p>{{ note.next_steps }}</p>
+    <h4>Other Notes</h4>
+        <p>{{ note.notes }}</p>
+{% endblock %}

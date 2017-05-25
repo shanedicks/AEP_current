@@ -132,5 +132,60 @@ class ProfileForm(ModelForm):
             'personal_goal',
             'frustrated',
             'anything_else'
+        )
 
+
+class MeetingNoteForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(MeetingNoteForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'meeting_type',
+            Field(
+                'meeting_date',
+                placeholder="MM/DD/YYYY",
+                wrapper_class="col-md-4",
+                data_mask="99/99/9999"
+            ),
+            Field(
+                'start_time',
+                placeholder="HH:MM AM/PM",
+                wrapper_class="col-md-4",
+                data_mask="99:99 aa"
+            ),
+            Field(
+                'end_time',
+                placeholder="HH:MM AM/PM",
+                wrapper_class="col-md-4",
+                data_mask="99:99 aa"
+            )
+        )
+
+    class Meta:
+        model = MeetingNote
+        fields = (
+            'meeting_type',
+            'meeting_date',
+            'start_time',
+            'end_time',
+            'progress',
+            'next_steps',
+            'notes'
+        )
+
+
+class AssignCoach(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(AssignCoach, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = Coaching
+        fields = (
+            'coach',
+            'coaching_type'
         )

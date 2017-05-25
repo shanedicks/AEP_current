@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Coaching Record</h1>
+<h4>Coach: {{coaching.coach}}</h4>
+<h4>Coachee: <a href="{% url 'people:student detail' slug=coaching.coachee.slug %}">{{coaching.coachee }}</a></h4>
+<h4>Meeting Notes</h4>
+{% if coaching.notes.count > 0 %}
+    {% for note in coaching.notes.all %}
+        <p><a href="{%url 'coaching:meeting note detail' pk=note.pk %}">{{ note.meeting_date }}</a></p>
+    {% endfor %}
+{% else %}
+    <p>There are no meeting notes on record for this Coach and Student. Would you like to create one?</p>
+{% endif %}
+    <a class="btn btn-default" href="{% url 'coaching:meeting note create' pk=coaching.pk %}" role="button">Take Note</a>
+{% endblock content %}

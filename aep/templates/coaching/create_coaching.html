@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h1>Assign Coach for {{ student }}</h1>
+<div class="well">
+    <form method="post">
+        {% csrf_token %}
+            {% crispy form %}
+        <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Assign</button>
+    </form>
+</div>
+{% if student.coaches.count > 0 %}
+    <h4>Current Coaches</h4>
+    {% for coach in student.coaches.all %}
+        <p>{{ coach.coach }} - {{ coach.get_coaching_type_display }} - since {{ coach.start_date.date }}</p>
+    {% endfor %}
+{% endif %}
+{% endblock content %}
