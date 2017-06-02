@@ -393,14 +393,14 @@ def email_status(input):
 
 
 def true_false(input):
-    if input == "1":
+    if input is True:
         return "true"
     else:
         return "false"
 
 
 def hl_tf(input):
-    if input == "1":
+    if input is True:
         return "True"
     else:
         return "False"
