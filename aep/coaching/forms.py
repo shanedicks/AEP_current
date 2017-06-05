@@ -189,3 +189,24 @@ class AssignCoach(ModelForm):
             'coach',
             'coaching_type'
         )
+
+
+class AceRecordForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(AceRecordForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = AceRecord
+        fields = (
+            'lola',
+            'dcc_email',
+            'ace_pathway',
+            'program',
+            'hsd',
+            'hsd_date',
+            'media_release',
+            'third_party_release'
+        )

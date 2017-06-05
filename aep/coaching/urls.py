@@ -45,6 +45,15 @@ meetings_patterns = [
         name='meeting note update'),
 ]
 
+ace_patterns = [
+    url(r'^(?P<slug>[a-zA-Z0-9]{5})/$',
+        views.AceRecordDetailView.as_view(),
+        name='ace record detail'),
+    url(r'^(?P<slug>[a-zA-Z0-9]{5})/new/$',
+        views.AceRecordCreateView.as_view(),
+        name='ace record create')
+]
+
 urlpatterns = [
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/',
         include(single_student_patterns)),
@@ -52,4 +61,6 @@ urlpatterns = [
         include(coaches_patterns)),
     url(r'^meetings/',
         include(meetings_patterns)),
+    url(r'^ace/',
+        include(ace_patterns))
 ]

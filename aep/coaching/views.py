@@ -6,7 +6,7 @@ from django.views.generic import (
     CreateView, TemplateView, FormView)
 from people.models import Student
 from .models import Profile, Coaching, MeetingNote, AceRecord
-from .forms import ProfileForm, MeetingNoteForm, AssignCoach
+from .forms import ProfileForm, MeetingNoteForm, AssignCoach, AceRecordForm
 
 
 class ProfileCreateView(LoginRequiredMixin, CreateView):
@@ -117,8 +117,47 @@ class MeetingNoteUpdateView(LoginRequiredMixin, UpdateView):
 class AceRecordCreateView(LoginRequiredMixin, CreateView):
 
     model = AceRecord
+    form_class = AceRecordForm
+    template_name = 'coaching/create_ace_record.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(AceRecordCreateView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def form_valid(self, form):
+        ace = form.save(commit=False)
+        student = Student.objects.get(slug=self.kwargs['slug'])
+        ace.student = student
+        ace.save()
+        return super(AceRecordCreateView, self).form_valid(form)
 
 
 class AceRecordDetailView(LoginRequiredMixin, DetailView):
+
+    model = AceRecord
+    context_object_name = 'record'
+    template_name = 'coaching/ace_record_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = AceRecord.objects.get(student__slug=kwargs['slug'])
+        except AceRecord.DoesNotExist:
+            raise Http404('Student has no Ace Record, please create one.')
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+
+    def get_context_data(self, **kwargs):
+        context = super(AceRecordDetailView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+
+class AceRecordListVIew(LoginRequiredMixin, ListView):\
 
     model = AceRecord

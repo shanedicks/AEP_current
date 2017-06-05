@@ -442,8 +442,8 @@ class AceRecord(models.Model):
     HSD = 'HSD'
     NEITHER = 'Neither'
     HSD_CHOICES = (
-        (HSE,'HSE'),
-        (HSD,'HSD'),
+        (HSE, 'HSE'),
+        (HSD, 'HSD'),
         (NEITHER, 'Neither'),
     )
 
@@ -464,17 +464,20 @@ class AceRecord(models.Model):
 
     ace_pathway = models.CharField(
         max_length=15,
-        choices=PATHWAY_CHOICES
+        choices=PATHWAY_CHOICES,
+        blank=True
     )
 
     program = models.CharField(
-        max_length=1
+        max_length=40,
+        blank=True
     )
 
     hsd = models.CharField(
         max_length=7,
         choices=HSD_CHOICES,
-        default='Neither'
+        default='Neither',
+        blank=True
     )
 
     hsd_date = models.DateField(
@@ -486,5 +489,11 @@ class AceRecord(models.Model):
     )
 
     third_party_release = models.BooleanField(
-        default=True
+        default=False
     )
+
+    def get_absolute_url(self):
+        return reverse(
+            'coaching:ace record detail',
+            kwargs={'slug': self.student.slug}
+        )

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>ACE Record for {{student}}</h1>
+    <h4>LOLA Number</h4>
+        {% if record.lola != "" %}
+        <p>{{ record.lola }}</p>
+        {% else %}
+        <p>No LOLA number has been recorded for this student</p>
+        {% endif %}
+    <h4>Dcc Email</h4>
+        {% if record.dcc_email != "" %}
+        <p>{{record.dcc_email}}</p>
+        {% else %}
+        <p>No DCC email has been recorded for this student</p>
+        {% endif %}
+    <h4>ACE Pathway</h4>        
+        {% if record.ace_pathway != "" %}
+        <p>{{ record.ace_pathway }}</p>
+        {% else %}
+        <p>No ACE Pathway has been selected for this student</p>
+        {% endif %}
+    <h4>Program</h4>
+        {% if record.program != "" %}
+        <p>{{record.program }}</p>
+        {% else %}
+        <p>No Program has been recorded for this student</p>
+        {% endif %}
+    <h4>High School Diploma / Equivalency</h4>
+        <p>{{ record.get_hsd_display }} {% if record.hsd_date != None %} - {{ record.hsd_date }}{% endif %}</p>
+    <h4>Releases Granted</h4>
+        <p>Media: {{ record.media_release }}</p>
+        <p>Third Party: {{ record.third_party_release}}</p>
+{% endblock %}
