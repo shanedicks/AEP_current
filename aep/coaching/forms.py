@@ -201,6 +201,10 @@ class AceRecordForm(ModelForm):
     class Meta:
         model = AceRecord
         fields = (
+            'ace_status',
+            'status_updated',
+            'intake_semester',
+            'intake_year',
             'lola',
             'dcc_email',
             'ace_pathway',

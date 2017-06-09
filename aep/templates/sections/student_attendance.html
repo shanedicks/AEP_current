@@ -7,13 +7,13 @@
     {% for enrollment in object_list %}
         <table class="table">
             <tr>
-                <th></th>
+                <th><h4>{{ enrollment.section.title }}</h4></th>
                 {% for day in enrollment.section.get_class_dates %}
                 <th>{{day|date:"M - d"}}</th>
                 {% endfor %}
             </tr>
             <tr>
-                <td><h4>{{ enrollment.section.title }}<h4></td>
+                <td>{{ enrollment.section.semester.start_date|date:"m-d-y" }} to {{ enrollment.section.semester.end_date|date:"m-d-y" }}</td>
                 {% for att in enrollment.attendance.all %}
                     <td>
                         {% if att.attendance_type == "X" %}

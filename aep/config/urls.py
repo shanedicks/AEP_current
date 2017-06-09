@@ -4,7 +4,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
-from people.views import NewStudentRegistrationView, RegistrationSuccessView, NewStudentSignupView
 
 
 admin.site.site_header = 'Greenbean Administration'
@@ -25,16 +24,6 @@ urlpatterns = [
     url(r'^testing/', include('assessments.urls', namespace='assessments')),
     url(r'^classes/', include('sections.urls', namespace='sections')),
     url(r'^coaching/', include('coaching.urls', namespace='coaching')),
-    url(r'^registration/$',
-        TemplateView.as_view(
-            template_name='pages/registration.html'),
-        name='registration'),
-    url(r'^registration/new/$',
-        NewStudentRegistrationView.as_view(),
-        name="new student registration"),
-    url(r'^registration/success/$',
-        RegistrationSuccessView.as_view(),
-        name="registration success")
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

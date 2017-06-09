@@ -315,8 +315,24 @@ class Profile(models.Model):
             kwargs={'slug': self.student.slug}
         )
 
+    def __str__(self):
+        return "%s | %s - %s " % (
+            "Coaching Profile",
+            self.student.__str__(),
+            self.student.WRU_ID
+        )
+
 
 class Coaching(models.Model):
+
+    ELEARN = 'elearn'
+    ACE = 'ace'
+    OPEN = 'open'
+    COACHING_TYPE_CHOICES = (
+        (ELEARN, 'eLearn'),
+        (ACE, 'ACE'),
+        (OPEN, 'Open Coaching')
+    )
 
     coachee = models.ForeignKey(
         Student,
@@ -326,15 +342,6 @@ class Coaching(models.Model):
     coach = models.ForeignKey(
         Staff,
         related_name='coachees'
-    )
-
-    ELEARN = 'elearn'
-    ACE = 'ace'
-    OPEN = 'open'
-    COACHING_TYPE_CHOICES = (
-        (ELEARN, 'eLearn'),
-        (ACE, 'ACE'),
-        (OPEN, 'Open Coaching')
     )
 
     coaching_type = models.CharField(
@@ -370,10 +377,14 @@ class Coaching(models.Model):
             kwargs={'pk': self.pk}
         )
 
+    def __str__(self):
+        return "%s coaching %s" % (
+            self.coach.__str__(),
+            self.coachee.__str__(),
+        )
+
 
 class MeetingNote(models.Model):
-
-
 
     ACADEMIC = 'Academic Planning'
     PERSONAL = 'Personal'
@@ -399,6 +410,11 @@ class MeetingNote(models.Model):
 
     meeting_date = models.DateField()
 
+    student_no_show = models.BooleanField(
+        default=False,
+        help_text='Check this box if the student failed to attend the meeting'
+    )
+
     start_time = models.TimeField()
 
     end_time = models.TimeField()
@@ -423,6 +439,9 @@ class MeetingNote(models.Model):
             'coaching:meeting note detail',
             kwargs={'pk': self.pk})
 
+    def __str__(self):
+        meeting_date = self.meeting_date.strftime("%a, %b %d")
+        return "%s - %s" % (self.coaching, meeting_date)
 
 
 class AceRecord(models.Model):
@@ -447,9 +466,51 @@ class AceRecord(models.Model):
         (NEITHER, 'Neither'),
     )
 
+    DEFERRED = 'Deferred'
+    ACTIVE = 'Active'
+    INACTIVE = 'InActive'
+    COMPLETED = 'Completed'
+    STATUS_CHOICES = (
+        (DEFERRED, 'Deferred'),
+        (ACTIVE, 'Active'),
+        (INACTIVE, 'InActive'),
+        (COMPLETED, 'Completed')
+    )
+
+    FALL = 'Fall'
+    SPRING = 'Spring'
+    SUMMER = 'Summer'
+    SEMESTER_CHOICES = (
+        (FALL, 'Fall'),
+        (SPRING, 'Spring'),
+        (SUMMER, 'Summer'),
+    )
+
     student = models.OneToOneField(
         Student,
         related_name='ace_record'
+    )
+
+    ace_status = models.CharField(
+        choices=STATUS_CHOICES,
+        max_length=9,
+        blank=True
+    )
+
+    status_updated = models.DateField(
+        blank=True,
+        null=True
+    )
+
+    intake_semester = models.CharField(
+        choices=SEMESTER_CHOICES,
+        max_length=6,
+        blank=True
+    )
+
+    intake_year = models.CharField(
+        max_length=4,
+        blank=True
     )
 
     lola = models.CharField(
@@ -496,4 +557,11 @@ class AceRecord(models.Model):
         return reverse(
             'coaching:ace record detail',
             kwargs={'slug': self.student.slug}
+        )
+
+    def __str__(self):
+        return "%s for %s-%s" % (
+            "ACE Record",
+            self.student.__str__(),
+            self.student.WRU_ID,
         )
