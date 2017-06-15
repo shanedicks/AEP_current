@@ -221,6 +221,20 @@ class TestHistory(models.Model):
             total_hours += attendance.hours()
         return total_hours
 
+    def latest_tabe(self):
+        return self.tabe_tests.latest('test_date')
+
+    def latest_clas_e(self):
+        return self.clas_e_tests.latest('test_date')
+
+    def latest_gain(self):
+        date = self.gain_tests.latest('test_date').test_date
+        return self.gain_tests.filter(test_date=date)
+
+    def latest_hiset_practice(self):
+        date = self.hiset_practice_tests.latest('test_date').test_date
+        return self.hiset_practice_tests.filter(test_date=date)
+
 
 class Test(models.Model):
 

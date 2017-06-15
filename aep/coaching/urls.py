@@ -41,17 +41,38 @@ meetings_patterns = [
         views.MeetingNoteDetailView.as_view(),
         name='meeting note detail'),
     url(r'^(?P<pk>[0-9]+)/edit/$',
-        views.MeetingNoteUpdateView.as_view,
+        views.MeetingNoteUpdateView.as_view(),
         name='meeting note update'),
 ]
 
 ace_patterns = [
+    url(r'^$',
+        views.AceRecordListView.as_view(),
+        name='ace record list'),
+    url(r'^csv/$',
+        views.AceRecordCSV.as_view(),
+        name='ace record csv'),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/$',
         views.AceRecordDetailView.as_view(),
         name='ace record detail'),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/new/$',
         views.AceRecordCreateView.as_view(),
         name='ace record create')
+]
+
+e_learn_patterns = [
+    url(r'^$',
+        views.ElearnRecordListView.as_view(),
+        name='elearn record list'),
+    url(r'^csv/$',
+        views.ElearnRecordCSV.as_view(),
+        name='elearn record csv'),
+    url(r'^(?P<slug>[a-zA-Z0-9]{5})/$',
+        views.ElearnRecordDetailView.as_view(),
+        name='elearn record detail'),
+    url(r'^(?P<slug>[a-zA-Z0-9]{5})/new/$',
+        views.ElearnRecordCreateView.as_view(),
+        name='elearn record create')
 ]
 
 urlpatterns = [
@@ -62,5 +83,7 @@ urlpatterns = [
     url(r'^meetings/',
         include(meetings_patterns)),
     url(r'^ace/',
-        include(ace_patterns))
+        include(ace_patterns)),
+    url(r'^e-learn/',
+        include(e_learn_patterns))
 ]

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin
-from .models import AceRecord, Coaching, Profile, MeetingNote
+from .models import AceRecord, Coaching, Profile, MeetingNote, ElearnRecord
 from people.models import Student, Staff
 
 
@@ -19,14 +19,41 @@ class AceRecordResource(resources.ModelResource):
         fields = (
             'id',
             'student',
+            'student__user__last_name',
+            'student__user__first_name',
             'lola',
             'dcc_email',
             'ace_pathway',
             'program',
+            'ace_status',
+            'status_updated',
+            'intake_semester',
+            'intake_year',
             'hsd',
             'hsd_date',
             'media_release',
             'third_party_release'
+        )
+
+
+class ElearnRecordResource(resources.ModelResource):
+
+    student = fields.Field(
+        column_name='student',
+        attribute='student',
+        widget=widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    class Meta:
+        model = ElearnRecord
+        fields = (
+            'id',
+            'student',
+            'student__user__last_name',
+            'student__user__first_name',
+            'elearn_status',
+            'status_updated',
+            'intake_date',
         )
 
 
@@ -174,6 +201,33 @@ class AceRecordAdmin(ImportExportActionModelAdmin):
 
 
 admin.site.register(AceRecord, AceRecordAdmin)
+
+
+class ElearnRecordAdmin(ImportExportActionModelAdmin):
+
+    resource_class = ElearnRecordResource
+
+    list_display = (
+        'student',
+        'elearn_status',
+        'status_updated',
+        'intake_date',
+    )
+
+    search_fields = [
+        'student__user__last_name',
+        'student__user__first_name',
+        'student__WRU_ID'
+    ]
+
+    fields = [
+        'elearn_status',
+        'status_updated',
+        'intake_date',
+    ]
+
+
+admin.site.register(ElearnRecord, ElearnRecordAdmin)
 
 
 class CoachingAdmin(ImportExportActionModelAdmin):

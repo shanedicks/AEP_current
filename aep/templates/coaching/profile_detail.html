@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ student }} Info</h1>
+    <h1><a href="{% url 'people:student detail' slug=student.slug %}">{{ student }}</a></h1>
     <table class='table'>
         <td>Birthday</td> 
         <td>{{ student.dob }}</td>
@@ -31,10 +31,6 @@
         <td>{{ profile.get_availability_display }}</td>
       </tr>
       <tr>
-        <td>Optional Medical Information Question</td>
-        <td>{{ profile.conditions }}</td>
-      </tr>
-      <tr>
         <td><h3>Academic History</h3></td>
         <td></td>
       </tr>
@@ -57,6 +53,10 @@
       <tr>
         <td><h3>Coaching Info</h3></td>
         <td></td>
+      </tr>
+      <tr>
+        <td>Optional Medical Information Question</td>
+        <td>{{ profile.conditions }}</td>
       </tr>
       <tr>
         <td>Personal Goal</td>

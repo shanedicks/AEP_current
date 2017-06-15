@@ -2,7 +2,8 @@ from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Row, Column, HTML
-from .models import Profile, Coaching, MeetingNote, AceRecord
+from .models import Profile, Coaching, MeetingNote, AceRecord, ElearnRecord
+from people.models import Staff
 
 
 class ProfileForm(ModelForm):
@@ -11,6 +12,7 @@ class ProfileForm(ModelForm):
         super(ProfileForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+        self.helper.help_text_inline = True
         self.helper.layout = Layout(
             Row(
                 Column(
@@ -134,6 +136,11 @@ class ProfileForm(ModelForm):
             'anything_else'
         )
 
+        labels = {
+            'anything_else': 'Tell us a little about yourself - '
+                             'whatever you feel comfortable sharing'
+        }
+
 
 class MeetingNoteForm(ModelForm):
 
@@ -179,6 +186,8 @@ class MeetingNoteForm(ModelForm):
 class AssignCoach(ModelForm):
 
     def __init__(self, *args, **kwargs):
+        qst = Staff.objects.filter(coach=True)
+        self.base_fields['coach'].queryset = qst
         super(AssignCoach, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -213,4 +222,20 @@ class AceRecordForm(ModelForm):
             'hsd_date',
             'media_release',
             'third_party_release'
+        )
+
+
+class ElearnRecordForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ElearnRecordForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = ElearnRecord
+        fields = (
+            'elearn_status',
+            'status_updated',
+            'intake_date'
         )

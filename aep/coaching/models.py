@@ -434,6 +434,9 @@ class MeetingNote(models.Model):
         help_text=_('Other Notes')
     )
 
+    class Meta:
+        ordering = ['-meeting_date']
+
     def get_absolute_url(self):
         return reverse(
             'coaching:meeting note detail',
@@ -562,6 +565,52 @@ class AceRecord(models.Model):
     def __str__(self):
         return "%s for %s-%s" % (
             "ACE Record",
+            self.student.__str__(),
+            self.student.WRU_ID,
+        )
+
+
+class ElearnRecord(models.Model):
+
+    ACTIVE = 'Active'
+    INACTIVE = 'InActive'
+    COMPLETED = 'Completed'
+    STATUS_CHOICES = (
+        (ACTIVE, 'Active'),
+        (INACTIVE, 'InActive'),
+        (COMPLETED, 'Completed')
+    )
+
+    student = models.OneToOneField(
+        Student,
+        related_name='elearn_record'
+    )
+
+    elearn_status = models.CharField(
+        choices=STATUS_CHOICES,
+        max_length=9,
+        blank=True
+    )
+
+    status_updated = models.DateField(
+        blank=True,
+        null=True
+    )
+
+    intake_date = models.DateField(
+        blank=True,
+        null=True
+    )
+
+    def get_absolute_url(self):
+        return reverse(
+            'coaching:elearn record detail',
+            kwargs={'slug': self.student.slug}
+        )
+
+    def __str__(self):
+        return "%s for %s-%s" % (
+            "eLearn Record",
             self.student.__str__(),
             self.student.WRU_ID,
         )

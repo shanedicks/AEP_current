@@ -378,6 +378,10 @@ class Staff(Profile):
 
     bio = models.TextField(blank=True, max_length=4000)
 
+    teacher = models.BooleanField(default=True)
+
+    coach = models.BooleanField(default=False)
+
     class Meta:
         verbose_name_plural = 'staff'
         ordering = ["user__last_name", "user__first_name"]

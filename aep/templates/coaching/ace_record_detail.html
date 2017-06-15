@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>ACE Record for {{student}}</h1>
+    <h1>ACE Record for <a href="{% url 'people:student detail' slug=student.slug %}">{{student}}</a></h1>
     <h4>LOLA Number</h4>
         {% if record.lola != "" %}
         <p>{{ record.lola }}</p>

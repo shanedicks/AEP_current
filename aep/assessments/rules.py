@@ -66,5 +66,5 @@ has_post_test = ~needs_post_test | has_post_tested
 has_valid_test_record = has_current_pretest & has_post_test
 
 
-rules.add_rule('pretested', has_pretest)
+rules.add_rule('pretested', has_current_pretest)
 rules.add_rule('can_enroll', has_valid_test_record)

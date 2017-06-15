@@ -5,8 +5,10 @@ from django.views.generic import (
     DetailView, ListView, UpdateView,
     CreateView, TemplateView, FormView)
 from people.models import Student
-from .models import Profile, Coaching, MeetingNote, AceRecord
-from .forms import ProfileForm, MeetingNoteForm, AssignCoach, AceRecordForm
+from .models import Profile, Coaching, MeetingNote, AceRecord, ElearnRecord
+from .forms import (
+    ProfileForm, MeetingNoteForm,
+    AssignCoach, AceRecordForm, ElearnRecordForm)
 
 
 class ProfileCreateView(LoginRequiredMixin, CreateView):
@@ -80,12 +82,19 @@ class CoachingDetailView(LoginRequiredMixin, DetailView):
 
     model = Coaching
 
+    def get_context_data(self, **kwargs):
+        context = super(CoachingDetailView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = self.object.coachee
+            context.update(kwargs)
+        return context
+
 
 class MeetingNoteCreateView(LoginRequiredMixin, CreateView):
 
     model = MeetingNote
     form_class = MeetingNoteForm
-    template_name = 'coaching/create_meeting_note.html'
+    template_name = 'coaching/meeting_note_form.html'
 
     def form_valid(self, form):
         note = form.save(commit=False)
@@ -112,6 +121,15 @@ class MeetingNoteDetailView(LoginRequiredMixin, DetailView):
 class MeetingNoteUpdateView(LoginRequiredMixin, UpdateView):
 
     model = MeetingNote
+    form_class = MeetingNoteForm
+    template_name = 'coaching/meeting_note_form.html'
+
+    def get_success_url(self):
+        coaching = self.object.coaching
+        return reverse_lazy(
+            'coaching:coaching detail',
+            kwargs={'pk': coaching.pk}
+        )
 
 
 class AceRecordCreateView(LoginRequiredMixin, CreateView):
@@ -149,7 +167,6 @@ class AceRecordDetailView(LoginRequiredMixin, DetailView):
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 
-
     def get_context_data(self, **kwargs):
         context = super(AceRecordDetailView, self).get_context_data(**kwargs)
         if 'student' not in context:
@@ -158,6 +175,64 @@ class AceRecordDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class AceRecordListVIew(LoginRequiredMixin, ListView):\
+class AceRecordListView(LoginRequiredMixin, ListView):
 
     model = AceRecord
+    template_name = 'coaching/ace_record_list.html'
+    context_object_name = 'records'
+
+
+class AceRecordCSV(LoginRequiredMixin, FormView):
+
+    model = AceRecord
+
+
+class ElearnRecordCreateView(LoginRequiredMixin, CreateView):
+
+    model = ElearnRecord
+    form_class = ElearnRecordForm
+    template_name = 'coaching/create_elearn_record.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ElearnRecordCreateView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def form_valid(self, form):
+        record = form.save(commit=False)
+        student = Student.objects.get(slug=self.kwargs['slug'])
+        record.student = student
+        record.save()
+        return super(ElearnRecordCreateView, self).form_valid(form)
+
+
+class ElearnRecordDetailView(LoginRequiredMixin, DetailView):
+
+    model = ElearnRecord
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = ElearnRecord.objects.get(student__slug=kwargs['slug'])
+        except ElearnRecord.DoesNotExist:
+            raise Http404('Student has no eLearn Record, please create one.')
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super(ElearnRecordDetailView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+
+class ElearnRecordListView(LoginRequiredMixin, ListView):
+
+    model = ElearnRecord
+
+
+class ElearnRecordCSV(LoginRequiredMixin, FormView):
+
+    model = ElearnRecord

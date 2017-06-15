@@ -87,6 +87,8 @@ class StaffResource(resources.ModelResource):
             "user__first_name",
             "user__last_name",
             "user__email",
+            'teacher',
+            'coach',
             "dob",
             "phone",
             "alt_phone",
@@ -235,7 +237,12 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'accuplacer_app'
     )
 
-    search_fields = ["user__first_name", "user__last_name", 'WRU_ID', 'intake_date']
+    search_fields = [
+        "user__first_name",
+        "user__last_name",
+        'WRU_ID',
+        'intake_date'
+    ]
 
     fields = [
         "user",
@@ -271,7 +278,15 @@ admin.site.register(Student, StudentAdmin)
 class StaffAdmin(ImportExportActionModelAdmin):
     resource_class = StaffResource
 
-    list_display = ("user", "__str__", "wru", "phone", "get_email")
+    list_display = (
+        "user",
+        "__str__",
+        "wru",
+        "phone",
+        "get_email",
+        'teacher',
+        'coach'
+    )
 
     search_fields = [
         "user__first_name",

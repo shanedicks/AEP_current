@@ -2,15 +2,119 @@
 
 {% block content %}
 <h1>Coaching Record</h1>
-<h4>Coach: {{coaching.coach}}</h4>
-<h4>Coachee: <a href="{% url 'people:student detail' slug=coaching.coachee.slug %}">{{coaching.coachee }}</a></h4>
-<h4>Meeting Notes</h4>
-{% if coaching.notes.count > 0 %}
-    {% for note in coaching.notes.all %}
-        <p><a href="{%url 'coaching:meeting note detail' pk=note.pk %}">{{ note.meeting_date }}</a></p>
-    {% endfor %}
-{% else %}
-    <p>There are no meeting notes on record for this Coach and Student. Would you like to create one?</p>
-{% endif %}
-    <a class="btn btn-default" href="{% url 'coaching:meeting note create' pk=coaching.pk %}" role="button">Take Note</a>
+<div class='col-md-7'>
+    <h3>Coach: {{coaching.coach}}</h3>
+    <h3>Coachee: <a href="{% url 'people:student detail' slug=coaching.coachee.slug %}">{{ student }}</a></h3>
+    <table class='table'>
+      {% if coaching.coaching_type == 'elearn' %}
+          {% if student.elearn_record %}
+              <tr>
+                  <td>eLearn Intake Date</td>
+                  <td>{{student.elearn_record.intake_date }}</td>
+              </tr>
+          {% else %}
+              <tr>
+                <td><h4>This student is missing an eLearn record</h4></td>
+                <td><a class='btn btn-default' href="{% url 'coaching:elearn record create' slug=student.slug %}">Create Record</a></td>
+              </tr>
+          {% endif %}
+      {% elif coaching.coaching_type == 'ace' %}
+          {% if student.ace_record %}
+              <tr>
+                <td>ACE Intake Semester</td>
+                <td>{{ student.ace_record.intake_semester }} {{ student.ace_record.intake_year }}</td>
+              </tr>
+          {% else %}
+              <tr>
+                <td><h4>This student is missing an ACE record</h4></td>
+                <td><a class='btn btn-default' href="{% url 'coaching:ace record create' slug=student.slug %}">Create Record</a></td>
+              </tr>
+          {% endif %}
+      {% endif %}
+      <tr>
+        <td>Birthday</td> 
+        <td>{{ student.dob }}</td>
+      </tr>
+      <tr>
+        <td>WRU ID</td>
+        <td>{{ student.WRU_ID }}</td>
+      </tr>
+      <tr>
+        <td>Prefered Mode of Contact</td>
+        <td>{{ profile.contact_preference }}</td>
+      </tr>
+      <tr>
+        <td>Personal E-Mail</td>
+        <td>{{ student.user.email }}</td>
+      </tr>
+      <tr>
+        <td>Personal Cell </td>
+        <td>{{ student.phone }}</td>
+      </tr>
+      {% if student.coaching_profile %}
+        {% with profile=student.coaching_profile %}
+          <tr>
+            <td>Device Used for Online Learning</td>
+            <td>{{ profile.device }}</td>
+          </tr>
+          <tr>
+            <td>Hours of Availability</td>
+            <td>{{ profile.get_availability_display }}</td>
+          </tr>
+          <tr>
+            <td><h3>Academic History</h3></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Last Grade Completed</td>
+            <td>{{ profile.grade_level }}</td>
+          </tr>
+          <tr>
+            <td>Did you receive any special help</td>
+            <td>{{ profile.get_special_help_display }}</td>
+          </tr>
+          <tr>
+            <td>Entry GAIN Score</td>
+            <td>{{profile.student.tests.gain_tests.first}}</td>
+          </tr>
+          <tr>
+            <td>Program Completion Goal</td>
+            <td>{{ profile.completion_time }}</td>
+          </tr>
+          <tr>
+            <td><h3>Coaching Info</h3></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Personal Goal</td>
+            <td>{{ profile.personal_goal}}</td>
+          </tr>
+          <tr>
+            <td>Support me by...</td>
+            <td>{{ profile.frustrated }}</td>
+          </tr>
+          <tr>
+            <td>Additional Info</td>
+            <td>{{ profile.anything_else }}</td>
+          </tr>
+          {% endwith %}
+      {% else %}
+      <tr>
+        <td><h4>This student has no coaching profile</h4></td>
+        <td><a class='btn btn-default' href="{% url 'coaching:create profile' slug=student.slug %}">Create Profile</a></td>
+      </tr>
+      {% endif %}
+    </table>
+</div>
+<div class='col-md-5'>
+    <h3>Meeting Notes</h3>
+    {% if coaching.notes.count > 0 %}
+        {% for note in coaching.notes.all %}
+            <p><a href="{%url 'coaching:meeting note detail' pk=note.pk %}">{{ note.meeting_date }}</a></p>
+        {% endfor %}
+    {% else %}
+        <p>There are no meeting notes on record for this Coach and Student. Would you like to create one?</p>
+    {% endif %}
+        <a class="btn btn-default" href="{% url 'coaching:meeting note create' pk=coaching.pk %}" role="button">Take Note</a>
+</div>
 {% endblock content %}

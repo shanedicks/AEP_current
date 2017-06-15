@@ -393,6 +393,3 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
             'sections:attendance overview',
             kwargs={'slug': section.slug}
         )
-
-
-
