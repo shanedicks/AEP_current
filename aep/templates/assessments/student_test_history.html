@@ -98,7 +98,7 @@
 
         <h3>Other Tests</h3>
         {% if history.hiset_practice_tests.count %}
-            <h4><a href="{% url 'assessments: student hiset practice list' slug=history.student.slug %}">HiSET Practice Tests</a></h4>
+            <h4><a href="{% url 'assessments:student hiset practice list' slug=history.student.slug %}">HiSET Practice Tests</a></h4>
             {% with tests=history.latest_hiset_practice %}
                 <table class="table">
                 <tr>
