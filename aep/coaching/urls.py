@@ -7,7 +7,7 @@ single_student_patterns = [
         views.ProfileDetailView.as_view(),
         name='profile detail'),
     url(r'^new/$',
-        views.ProfileCreateView.as_view(),
+        views.ProfileCreateWizard.as_view(),
         name='create profile'),
     url(r'^assign/$',
         views.CoachingCreateView.as_view(),

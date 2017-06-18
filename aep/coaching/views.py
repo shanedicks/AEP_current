@@ -1,14 +1,48 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
+from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy
 from django.views.generic import (
     DetailView, ListView, UpdateView,
     CreateView, TemplateView, FormView)
+from formtools.wizard.views import SessionWizardView
 from people.models import Student
 from .models import Profile, Coaching, MeetingNote, AceRecord, ElearnRecord
 from .forms import (
     ProfileForm, MeetingNoteForm,
-    AssignCoach, AceRecordForm, ElearnRecordForm)
+    AssignCoach, AceRecordForm, ElearnRecordForm,
+    AcademicQuestionaireForm, PersonalQuestionaireForm,
+    GeneralInfoForm)
+
+
+class ProfileCreateWizard(LoginRequiredMixin, SessionWizardView):
+
+    form_list = [
+        GeneralInfoForm,
+        AcademicQuestionaireForm,
+        PersonalQuestionaireForm
+    ]
+
+    template_name = 'coaching/profile_wizard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileCreateWizard, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def done(self, form_list, **kwargs):
+        data = self.get_all_cleaned_data()
+        profile = Profile(**data)
+        student = Student.objects.get(slug=self.kwargs['slug'])
+        profile.student = student
+        profile.save()
+        return HttpResponseRedirect(
+            reverse_lazy(
+                'coaching:profile detail',
+                kwargs={'slug': student.slug}
+            )
+        )
 
 
 class ProfileCreateView(LoginRequiredMixin, CreateView):

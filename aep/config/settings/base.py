@@ -51,6 +51,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'crispy_forms',
     'import_export',
+    'formtools',
     'rules.apps.AutodiscoverRulesConfig'
 ]
 

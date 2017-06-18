@@ -1,75 +1,87 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ student }}</h1>
-    <table class='table'>
-      <tr>
-        <td>WRU ID</td>
-        <td>{{ student.WRU_ID }}</td>
-      </tr>
-      <tr>
-        <td>Intake Date</td>
-        <td>{{ student.intake_date }}</td>
-      </tr>
-      <tr>
-        <td>Birthday</td>
-        <td>{{ student.dob }}</td>
-      </tr>
-      <tr>
-        <td><h4>Student Contact</h4></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Email</td>
-        <td>{{ student.user.email }}</td>
-      </tr>
-      <tr>
-        <td>Phone Number</td>
-        <td>{{ student.phone }}</td>
-      </tr>
-      <tr>
-        <td>Alternate</td>
-        <td>{{ student.alt_phone }}</td>
-      </tr>
-      <tr>
-        <td>Address</td>
-        <td>{{ student.street_address_1 }}{{ student.street_address_2 }}</td>
-      </tr>
-      <tr>
-        <td>City</td>
-        <td>{{ student.city }}</td>
-      </tr>
-      <tr>
-        <td><h4>Emergency Contact</h4></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Name</td>
-        <td>{{student.emergency_contact}}</td>
-      </tr>
-      <tr>
-        <td>Email</td>
-        <td>{{ student.ec_email }}</td>
-      </tr>
-      <tr>
-        <td>Phone</td>
-        <td>{{ student.ec_phone }}</td>
-      </tr>
-    </table>
-    <h3>Student Testing Appointments</h3>
-        {% if student.future_appts %}
-        {% for appt in student.future_appts %}
-            <p><a href="{% url 'assessments:test appointment detail' pk=appt.pk %}">{{ appt.event.title }} - {{appt.event.start }}</a></p>
-        {% endfor %}
-        {% else %}
-            <p>There are no upcoming testing appointments for {{ student }}. Would you like to create one?</p>
-        {% endif %}    
-    <p>
-        <a class="btn btn-default" href="{% url 'people:edit student' slug=student.slug %}" role="button">Edit Student</a>
-        <a class="btn btn-default" href="{% url 'people:student classes' slug=student.slug %}" role="button">Student Classes</a>
-        <a class="btn btn-default" href="{% url 'people:student attendance' slug=student.slug %}" role="button">Student Attendance</a>
-        <a class="btn btn-default" href="{% url 'assessments:student test history' slug=student.slug %}" role="button">Student Test History</a>
-        <a class="btn btn-default" href="{% url 'assessments:test signup' slug=student.slug %}" role="button">Testing Signup</a>
-    </p>
+      <h1>{{ student }}</h1>
+    <div class='col-md-7'>
+      <div class="btn-group" role="group" aria-label="student links">
+          <a type="button" class="btn btn-default" role="button" href="{% url 'people:edit student' slug=student.slug %}">Update Info</a>
+          <a type="button" class="btn btn-default" href="{% url 'people:student classes' slug=student.slug %}" role="button">Classes</a>
+          <a type="button" class="btn btn-default" href="{% url 'people:student attendance' slug=student.slug %}" role="button">Attendance</a>
+          <a type="button" class="btn btn-default" href="{% url 'assessments:student test history' slug=student.slug %}" role="button">Testing</a>
+          {% if student.coaching_profile %}
+            <a type="button" class="btn btn-default" href="{% url 'coaching:profile detail' slug=student.slug %}">Coaching Profile</a>
+          {% else %}
+            <a type="button" class="btn btn-default" href="{% url 'coaching:create profile' slug=student.slug %}">Coaching Profile</a>
+          {% endif %}
+      </div>
+
+      <table class='table'>
+        <tr>
+          <td>WRU ID</td>
+          <td>{{ student.WRU_ID }}</td>
+        </tr>
+        <tr>
+          <td>Intake Date</td>
+          <td>{{ student.intake_date }}</td>
+        </tr>
+        <tr>
+          <td>Birthday</td>
+          <td>{{ student.dob }}</td>
+        </tr>
+        <tr>
+          <td><h4>Student Contact</h4></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>{{ student.user.email }}</td>
+        </tr>
+        <tr>
+          <td>Phone Number</td>
+          <td>{{ student.phone }}</td>
+        </tr>
+        <tr>
+          <td>Alternate</td>
+          <td>{{ student.alt_phone }}</td>
+        </tr>
+        <tr>
+          <td>Address</td>
+          <td>{{ student.street_address_1 }}{{ student.street_address_2 }}</td>
+        </tr>
+        <tr>
+          <td>City</td>
+          <td>{{ student.city }}</td>
+        </tr>
+        <tr>
+          <td><h4>Emergency Contact</h4></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Name</td>
+          <td>{{student.emergency_contact}}</td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>{{ student.ec_email }}</td>
+        </tr>
+        <tr>
+          <td>Phone</td>
+          <td>{{ student.ec_phone }}</td>
+        </tr>
+      </table>
+    </div>
+    <div class='col-md-5'>
+      <h3>Testing Appointments</h3>
+          {% if student.future_appts %}
+          {% for appt in student.future_appts %}
+              <p><a href="{% url 'assessments:test appointment detail' pk=appt.pk %}">{{ appt.event.title }} - {{appt.event.start }}</a></p>
+          {% endfor %}
+          {% else %}
+              <p>There are no upcoming testing appointments for {{ student }}. Would you like to create one?</p>
+              <p>
+                <a class="btn btn-default" href="{% url 'assessments:test signup' slug=student.slug %}" role="button">Testing Signup</a>
+              </p>
+          {% endif %}
+    </div>    
 
 {%endblock content %}
