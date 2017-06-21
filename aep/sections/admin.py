@@ -14,6 +14,7 @@ class SectionResource(resources.ModelResource):
             'title',
             'semester',
             'teacher',
+            'teacher__wru',
             'teacher__user__last_name',
             'teacher__user__first_name',
             'site',

@@ -210,7 +210,7 @@ class NewStudentSignupView(CreateView):
     model = Student
     form_class = StudentForm
     template_name = 'people/sign_up.html'
-    success_url = reverse_lazy('registration success')
+    success_url = reverse_lazy('people:signup success')
 
     def get_context_data(self, **kwargs):
         context = super(
@@ -263,6 +263,11 @@ class NewStudentSignupView(CreateView):
 class StudentCreateSuccessView(TemplateView):
 
     template_name = 'people/student_create_success.html'
+
+
+class StudentSignupSuccessView(TemplateView):
+
+    template_name = 'people/signup_success.html'
 
 
 class CollegeInterestFormView(LoginRequiredMixin, CreateView):
