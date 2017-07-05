@@ -17,7 +17,7 @@ class TestAppointmentForm(ModelForm):
 class TestSignupForm(ModelForm):
     class Meta:
         model = TestAppointment
-        fields = ('event',)
+        fields = ('event', 'notes')
 
     def __init__(self, *args, **kwargs):
         super(TestSignupForm, self).__init__(*args, **kwargs)
@@ -33,51 +33,8 @@ class TestSignupForm(ModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 'Testing Group',
-                'event'
-            )
-        )
-
-
-class PretestSignupForm(TestSignupForm):
-
-    prefix = 'pretest'
-
-    def __init__(self, *args, **kwargs):
-        super(PretestSignupForm, self).__init__(*args, **kwargs)
-        limit = datetime.datetime.today() + datetime.timedelta(days=2) # we only want test events at least 3 days away
-        events = TestEvent.objects.filter(
-            Q(test='TABE') | Q(test='CLAS-E'),
-            start__date__gte=limit
-        ).exclude(
-            full=True
-        ).order_by('title')
-        self.fields['event'].queryset = events
-        self.helper.layout = Layout(
-            Fieldset(
-                'Pre-Test Group',
-                'event'
-            )
-        )
-
-
-class LocatorSignupForm(TestSignupForm):
-
-    prefix = 'locator'
-
-    def __init__(self, *args, **kwargs):
-        super(LocatorSignupForm, self).__init__(*args, **kwargs)
-        limit = datetime.datetime.today() + datetime.timedelta(days=2) # we only want test events at least 2 days away
-        events = TestEvent.objects.filter(
-            Q(test='TABE Locator') | Q(test='CLAS-E Locator'),
-            start__date__gte=limit
-        ).exclude(
-            full=True
-        ).order_by('title')
-        self.fields['event'].queryset = events
-        self.helper.layout = Layout(
-            Fieldset(
-                'Orientation/Locator Group',
-                'event'
+                'event',
+                'notes'
             )
         )
 
@@ -85,6 +42,10 @@ class LocatorSignupForm(TestSignupForm):
 class OrientationSignupForm(TestSignupForm):
 
     prefix = 'orientation'
+
+    class Meta:
+        model = TestAppointment
+        fields = ('event',)
 
     def __init__(self, *args, **kwargs):
         super(OrientationSignupForm, self).__init__(*args, **kwargs)

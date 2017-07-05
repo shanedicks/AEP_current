@@ -13,6 +13,11 @@
           {% else %}
             <a type="button" class="btn btn-default" href="{% url 'coaching:create profile' slug=student.slug %}">Coaching Profile</a>
           {% endif %}
+          {% if student.college_interest %}
+            <a type="button" class="btn btn-default" href="{% url 'people:college interest detail' slug=student.slug %}">College Interest Form</a>
+          {% else %}
+            <a type="button" class="btn btn-default" href="{% url 'people:college interest form' slug=student.slug %}">College Interest Form</a>
+          {% endif %}
       </div>
 
       <table class='table'>

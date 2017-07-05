@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy, reverse
-from assessments.forms import PretestSignupForm, LocatorSignupForm, OrientationSignupForm
+from assessments.forms import OrientationSignupForm
 from core.utils import render_to_csv
 from sections.forms import SectionFilterForm
 from .models import Staff, Student, CollegeInterest

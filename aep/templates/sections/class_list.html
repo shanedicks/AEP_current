@@ -13,6 +13,7 @@
 	    <tr>
 	    	<th>Site</th>
 	    	<th>Class</th>
+            <th>Active Students</th>
 	    	<th>Open Seats</th>
 	    	<th>Seats</th>
 	    	<th>Instructor</th>
@@ -26,6 +27,7 @@
 	    <tr>
 	    	<td>{{ section.site }}</td>   
 	        <td><a href="{{ section.get_absolute_url }}">{{ section.title }}</a></td>
+            <td>{{ section.get_active.count }}</td>
 	        <td>{{ section.open_seats }}</td>
 	        <td>{{ section.seats }}</td>	        
 	        <td>{{ section.teacher }}</td>

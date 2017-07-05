@@ -141,6 +141,11 @@ class TestAppointment(models.Model):
         related_name='students'
     )
 
+    notes = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
     class Meta:
         verbose_name = "Testing Appointment"
         verbose_name_plural = "Testing Appointments"
