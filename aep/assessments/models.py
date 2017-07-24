@@ -550,6 +550,8 @@ class Clas_E(NRSTest):
         )
 
     def assign(self):
+        if self.read_ss > 563:
+            return "9 M"
         if self.form == 'A':
             form = 'B'
         else:

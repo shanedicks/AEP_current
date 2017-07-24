@@ -58,13 +58,13 @@ class ClassAddEnrollmentForm(ModelForm):
         )
 
     def clean(self):
-        cleaned_data = super(ClassAddEnrollmentForm, self).clean()
-        section = cleaned_data.get('section')
+        data = super(ClassAddEnrollmentForm, self).clean()
+        section = data.get('section')
         full = section.is_full()
         over_full = section.over_full()
 
         if full:
-            status = cleaned_data.get('status')
+            status = data.get('status')
             if over_full:
                 raise ValidationError(
                     _('Sorry, even the waitlist for this class is full. Please try something else'),
