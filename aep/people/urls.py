@@ -71,7 +71,7 @@ urlpatterns = [
         views.UserCreateView.as_view(),
         name='create user'),
     url(r'^sign-up/$',
-        views.NewStudentSignupView.as_view(),
+        views.StudentSignupWizard.as_view(),
         name='student signup'),
     url(r'^success/$',
         views.StudentSignupSuccessView.as_view(),

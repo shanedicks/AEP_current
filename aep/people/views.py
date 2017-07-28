@@ -5,12 +5,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy, reverse
+from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
 from core.utils import render_to_csv
 from sections.forms import SectionFilterForm
-from .models import Staff, Student, CollegeInterest
+from .models import Staff, Student, CollegeInterest, WIOA
 from .forms import (
-    StaffForm, StudentForm, StudentSearchForm,
+    StaffForm, StudentPersonalInfoForm, StudentSearchForm,
+    StudentInterestForm, StudentContactForm, SSNForm, REForm,
+    EETForm, AdditionalDetailsForm, DisabilityForm, StudentForm,
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm)
 
 
@@ -106,7 +109,6 @@ class StudentCSV(LoginRequiredMixin, FormView):
             data.append(s)
         return data
 
-
     def form_valid(self, form):
         students = Student.objects.filter(classes__status="A")
         filename = "student_list.csv"
@@ -122,8 +124,6 @@ class StudentCSV(LoginRequiredMixin, FormView):
         students = students.distinct()
         data = self.get_student_data(students)
         return render_to_csv(data=data, filename=filename)
-
-
 
 
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
@@ -205,6 +205,45 @@ class StudentCreateView(CreateView):
             )
 
 
+class StudentSignupWizard(SessionWizardView):
+
+    form_list = [
+        ("user", UserForm),
+        ("ssn", SSNForm),
+        ("personal", StudentPersonalInfoForm),
+        ("interest", StudentInterestForm),
+        ("contact", StudentContactForm),
+        ("race", REForm),
+        ("EET", EETForm),
+        ("disability", DisabilityForm),
+        ("details", AdditionalDetailsForm),
+        ("signup", OrientationSignupForm)
+    ]
+
+    template_name = "people/sign_up_wizard.html"
+
+    def done(self, form_list, form_dict, **kwargs):
+        ssn = self.get_cleaned_data_for_step('ssn')
+        personal = self.get_cleaned_data_for_step('personal')
+        interest = self.get_cleaned_data_for_step('interest')
+        contact = self.get_cleaned_data_for_step('contact')
+        race = self.get_cleaned_data_for_step('race')
+        eet = self.get_cleaned_data_for_step('EET')
+        disability = self.get_cleaned_data_for_step('disability')
+        details = self.get_cleaned_data_for_step('details')
+        user = form_dict["user"].save()
+        student = Student(**personal, **interest, **contact)
+        student.user = user
+        student.save()
+        wioa = WIOA(**ssn, **race, **eet, **disability, **details)
+        wioa.student = student
+        wioa.save()
+        orientation = form_dict["signup"].save(commit=False)
+        orientation.student = student
+        orientation.save()
+        return HttpResponseRedirect(reverse_lazy('people:signup success'))
+
+
 class NewStudentSignupView(CreateView):
 
     model = Student
@@ -244,7 +283,7 @@ class NewStudentSignupView(CreateView):
             wioa = wioa_form.save(commit=False)
             wioa.student = student
             orientation = orientation_form.save(commit=False)
-            orientation. student = student
+            orientation.student = student
             wioa.save()
             orientation.save()
             self.object = student

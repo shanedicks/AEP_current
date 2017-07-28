@@ -289,6 +289,175 @@ class UserUpdateForm(ModelForm):
         )
 
 
+class StudentPersonalInfoForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(StudentPersonalInfoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Personal Information',
+                'US_citizen',
+                Row(
+                    Field(
+                        'dob',
+                        placeholder="MM/DD/YYYY",
+                        wrapper_class="col-md-4",
+                        data_mask="99/99/9999"
+                    ),
+                    Field(
+                        'gender',
+                        'marital_status',
+                        wrapper_class="col-md-4",
+                    ),
+                ),
+                Row(
+                    Field(
+                        'other_ID',
+                        'other_ID_name',
+                        wrapper_class="col-md-6"
+                    )
+                )
+            ),
+        )
+
+    class Meta:
+        model = Student
+        fields = (
+            "dob",
+            "gender",
+            "marital_status",
+            "US_citizen",
+            "other_ID",
+            "other_ID_name",
+        )
+
+
+class StudentInterestForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(StudentInterestForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                'What types of classes are you interested in taking with us?',
+                Column(
+                    'ccr_app',
+                    'esl_app',
+                    'ace_app',
+                    css_class="col-md-6"
+                ),
+                Column(
+                    'success_app',
+                    'e_learn_app',
+                    'accuplacer_app',
+                    css_class="col-md-6"
+                ),
+            )
+        )
+
+    class Meta:
+        model = Student
+        fields = (
+            "ccr_app",
+            "esl_app",
+            "ace_app",
+            "success_app",
+            'e_learn_app',
+            'accuplacer_app',
+        )
+
+
+class StudentContactForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(StudentContactForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Contact Information',
+                Row(
+                    Field(
+                        'phone',
+                        placeholder="504-555-5555",
+                        wrapper_class="col-md-6",
+                        data_mask="999-999-9999",
+                        required=True
+                    ),
+                    Field(
+                        'alt_phone',
+                        wrapper_class="col-md-6",
+                        placeholder="504-555-5555",
+                        data_mask="999-999-9999",
+                    )
+                ),
+                Row(
+                    Field(
+                        'street_address_1',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'street_address_2',
+                        wrapper_class="col-md-6"
+                    )
+                ),
+                Row(
+                    Field(
+                        'city',
+                        'state',
+                        wrapper_class="col-md-4",
+                        required=True
+                    ),
+                    Field(
+                        'zip_code',
+                        data_mask="99999",
+                        wrapper_class="col-md-4",
+                        required=True
+                    ),
+                ),
+                'parish',
+            ),
+            Fieldset(
+                'Emergency Contact Information',
+                'emergency_contact',
+                Field(
+                    'ec_phone',
+                    data_mask="999-999-9999",
+                    wrapper_class="col-md-4"
+                ),
+                Field(
+                    'ec_email',
+                    'ec_relation',
+                    wrapper_class="col-md-4"
+                ),
+            ),
+        )
+
+    class Meta:
+        model = Student
+        fields = (
+            "phone",
+            "alt_phone",
+            "street_address_1",
+            "street_address_2",
+            "city",
+            "state",
+            "parish",
+            "zip_code",
+            "emergency_contact",
+            "ec_phone",
+            "ec_email",
+            "ec_relation",
+        )
+
+
 class StudentForm(ModelForm):
 
     def clean_street_address_1(self):
@@ -311,7 +480,6 @@ class StudentForm(ModelForm):
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
-            'prior_registration',
             Fieldset(
                 'What types of classes are you interested in taking with us?',
                 Column(
@@ -461,6 +629,381 @@ class StudentForm(ModelForm):
         }
 
 
+class SSNForm(ModelForm):
+
+    def clean_SID(self):
+        data = self.cleaned_data['SID']
+        if data != "":
+            if WIOA.objects.filter(SID=data).count() > 0:
+                raise ValidationError(
+                    "Sorry, we have this SSN in our records "
+                    "already. Are you sure you haven't been with us before? "
+                    "Please call 504-671-5434 to speak to a staff member."
+                )
+        return data
+
+    def __init__(self, *args, **kwargs):
+        super(SSNForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Field(
+                "SID",
+                data_mask="999-99-9999"
+            ),
+        )
+
+    class Meta:
+        model = WIOA
+        fields = (
+            'SID',
+        )
+
+
+class REForm(ModelForm):
+
+    def clean(self):
+        data = super(REForm, self).clean()
+        ethnicity = [
+            data['hispanic_latino'],
+            data['amer_indian'],
+            data['asian'],
+            data['black'],
+            data['white'],
+            data['pacific_islander'],
+        ]
+        if not any(ethnicity):
+            raise ValidationError(
+                _('Sorry, the State of Louisiana requires'
+                    ' that we collect race/ethnicity data.'
+                    'You must check at least one of the boxes.'),
+                code=ethnicity
+            )
+
+    def __init__(self, *args, **kwargs):
+        super(REForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Race/Ethnicity/Language Information',
+                Row(
+                    Column(
+                        "amer_indian",
+                        "asian",
+                        css_class="col-md-4"
+                    ),
+                    Column(
+                        "black",
+                        "hispanic_latino",
+                        css_class="col-md-4",
+                    ),
+                    Column(
+                        "white",
+                        "pacific_islander",
+                        css_class="col-md-4"
+                    ),
+
+                ),
+                Row(
+                    Field(
+                        "country",
+                        "native_language",
+                        wrapper_class="col-md-6"
+                    )
+                ),
+            ),
+        )
+
+    class Meta:
+        model = WIOA
+        fields = (
+            "hispanic_latino",
+            "amer_indian",
+            "asian",
+            "black",
+            "white",
+            "pacific_islander",
+            "country",
+            "native_language",
+        )
+
+
+class EETForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(EETForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                "Educational Details",
+                Row(
+                    Field(
+                        "highest_level_completed",
+                        "school_location",
+                        wrapper_class="col-md-4"
+                    ),
+                )
+            ),
+            Fieldset(
+                "Employment Details",
+                Row(
+                    Field(
+                        'current_employment_status',
+                        "employer",
+                        "occupation",
+                        wrapper_class="col-md-4"
+                    )
+                ),
+                "migrant_seasonal_status",
+                "long_term_unemployed",
+            ),
+            Fieldset(
+                "Services/Training Information",
+                Field(
+                    "adult_one_stop",
+                    "youth_one_stop",
+                    "voc_rehab",
+                    "wagner_peyser",
+                    "recieved_training",
+                    "etp_name",
+                    "etp_program",
+                    "etp_CIP_Code",
+                    "training_type_1",
+                    "training_type_2",
+                    "training_type_3",
+                    type="hidden"
+                ),
+                "job_corps",
+                "youth_build",
+                "school_status",
+            ),
+        )
+
+    class Meta:
+        model = WIOA
+        fields = (
+            "highest_level_completed",
+            "school_location",
+            "current_employment_status",
+            "employer",
+            "occupation",
+            "migrant_seasonal_status",
+            "long_term_unemployed",
+            "adult_one_stop",
+            "youth_one_stop",
+            "voc_rehab",
+            "wagner_peyser",
+            "school_status",
+            "recieved_training",
+            "etp_name",
+            "etp_program",
+            "etp_CIP_Code",
+            "training_type_1",
+            "training_type_2",
+            "training_type_3",
+            "job_corps",
+            "youth_build",
+            "school_status",
+        )
+
+
+class DisabilityForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(DisabilityForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                "Disability Disclosure",
+                Row(
+                    Column(
+                        "adhd",
+                        "autism",
+                        "deaf_blind",
+                        "deaf",
+                        "emotional_disturbance",
+                        css_class="col-md-4",
+                    ),
+                    Column(
+                        "k12_iep",
+                        "hard_of_hearing",
+                        "intellectual_disability",
+                        "multiple_disabilities",
+                        "orthopedic_impairment",
+                        css_class="col-md-4",
+                    ),
+                    Column(
+                        "other_health_impairment",
+                        "learning_disability",
+                        "speech_or_lang_impairment",
+                        "traumatic_brain_injury",
+                        "visual_impairment",
+                        css_class="col-md-4",
+                    )
+                ),
+                HTML(
+                    '<h5>Learning Disabilities</h5>'
+                ),
+                Row(
+                    Column(
+                        "dyscalculia",
+                        "dysgraphia",
+                        css_class="col-md-4",
+                    ),
+                    Column(
+                        "dyslexia",
+                        "neurological_impairments",
+                        css_class="col-md-4",
+                    )
+                )
+            ),
+        )
+
+    class Meta:
+        model = WIOA
+        fields = (
+            "adhd",
+            "autism",
+            "deaf_blind",
+            "deaf",
+            "emotional_disturbance",
+            "k12_iep",
+            "hard_of_hearing",
+            "intellectual_disability",
+            "multiple_disabilities",
+            "orthopedic_impairment",
+            "other_health_impairment",
+            "learning_disability",
+            "speech_or_lang_impairment",
+            "traumatic_brain_injury",
+            "visual_impairment",
+            "dyscalculia",
+            "dysgraphia",
+            "dyslexia",
+            "neurological_impairments",
+        )
+
+
+class AdditionalDetailsForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(AdditionalDetailsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                "Additional Details",
+                Row(
+                    HTML("""<div class="col-md-8"><p>This information is
+                         optional, however, sharing it with us can help
+                         us to better understand the needs of our
+                         student body and provide additional
+                         programming and services for all of
+                         our students.</p></div>"""),
+                ),
+                Row(
+                    Column(
+                        "single_parent",
+                        "rural_area",
+                        "displaced_homemaker",
+                        "dislocated_worker",
+                        "state_payed_foster",
+                        css_class="col-md-4"
+                    ),
+                    Column(
+                        "cult_barriers_hind_emp",
+                        "in_foster_care",
+                        "aged_out_foster_care",
+                        "exhaust_tanf",
+                        css_class="col-md-4"
+                    ),
+                ),
+                HTML("""<hr>"""),
+                "recieves_public_assistance",
+                Row(
+                    Column(
+                        HTML(
+                            """<p>(i) SNAP or Louisiana Purchase Card </p>
+                            <p>(ii) TANF Assistance</p>
+                            <p>(iii) SSI Assistance</p>"""
+                        ),
+                        css_class="col-md-4"
+                    ),
+                    Column(
+                        HTML(
+                            """<p>(iv) State or local income-based public
+                             assistance (Louisiana Medicaid, Section 8 Housing,
+                             Kinship Care, Child Care Assisstance,
+                             LSU Hospital Free Care, Free Dental Program)</p>"""
+                        ),
+                        css_class="col-md-4"
+                    ),
+                ),
+                HTML("""<hr>"""),
+                Field(
+                    "low_family_income",
+                    HTML("""<table class="table table-condensed">
+                        <tr>
+                        <th>Individual</th><th>Family of 2</th>
+                        <th>Family of 3</th><th>Family of 4</th>
+                        <th>Family of 5</th><th>Family of 6</th>
+                        <th>Family of 7</th><th>Family of 8</th>
+                        </tr>
+                        <tr>
+                        <td>$11,880</td><td>$16,020</td><td>$20,300</td>
+                        <td>$25,062</td><td>$29,579</td><td>$34,595</td>
+                        <td>$36,730</td><td>$40,890</td>
+                        </tr></table>"""
+                         ),
+                    Field(
+                        "disabled_in_poverty",
+                        "youth_in_high_poverty_area",
+                        type="hidden"
+                    ),
+                    HTML("""<hr>"""),
+                    "subject_of_criminal_justice",
+                    "arrest_record_employment_barrier",
+                    "lacks_adequate_residence",
+                    "irregular_sleep_accomodation",
+                    "migratory_child",
+                    "runaway_youth"
+                )
+            )
+        )
+
+    class Meta:
+        model = WIOA
+        fields = (
+            "single_parent",
+            "rural_area",
+            "displaced_homemaker",
+            "dislocated_worker",
+            "cult_barriers_hind_emp",
+            "in_foster_care",
+            "aged_out_foster_care",
+            "exhaust_tanf",
+            "recieves_public_assistance",
+            "low_family_income",
+            "state_payed_foster",
+            "disabled_in_poverty",
+            "youth_in_high_poverty_area",
+            "subject_of_criminal_justice",
+            "arrest_record_employment_barrier",
+            "lacks_adequate_residence",
+            "irregular_sleep_accomodation",
+            "migratory_child",
+            "runaway_youth",
+        )
+
+
 class WioaForm(ModelForm):
 
     def clean_SID(self):
@@ -469,6 +1012,23 @@ class WioaForm(ModelForm):
             if WIOA.objects.filter(SID=data).count() > 0:
                 raise ValidationError("Sorry, we have this SSN in our records already. Please call 504-671-5434 to speak to a staff member.")
         return data
+
+    def clean(self):
+        data = super(WioaForm, self).clean()
+        ethnicity = [
+            data['hispanic_latino'],
+            data['amer_indian'],
+            data['asian'],
+            data['black'],
+            data['white'],
+            data['pacific_islander'],
+        ]
+        if not any(ethnicity):
+            raise ValidationError(
+                _('Sorry, the State of Louisiana requires'
+                    ' that we collect race/ethnicity data'),
+                code=ethnicity
+            )
 
     def __init__(self, *args, **kwargs):
         super(WioaForm, self).__init__(*args, **kwargs)
