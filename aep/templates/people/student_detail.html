@@ -87,6 +87,19 @@
                 <a class="btn btn-default" href="{% url 'assessments:test signup' slug=student.slug %}" role="button">Testing Signup</a>
               </p>
           {% endif %}
-    </div>    
+    </div>
+    <div class='col-md-5'>
+      <h3>Student Coaching</h3>
+          {% if student.coaches.count > 0 %}
+            {% for coach in student.coaches.all %}
+                <a href="{% url 'coaching:coaching detail' pk=coach.pk %}">{{ coach.coach }} - {{ coach.get_coaching_type_display }} - since {{ coach.start_date.date }}</a>
+            {% endfor %}
+          {% else %}
+              <p>{{ student }} is not assigned to any coaches.</p>
+              <p>
+                <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
+              </p>
+          {% endif %}
+    </div>      
 
 {%endblock content %}
