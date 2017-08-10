@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>CLAS-E Results for {{student}}</h1>
+<p><a class="btn btn-default" href="{% url 'assessments:student clas-e add' slug=student.slug %}">Add CLAS-E Test</a></p>
 {% for test in object_list %}
     <div class="col-md-7">
     <table class="table">
