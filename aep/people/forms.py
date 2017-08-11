@@ -371,6 +371,15 @@ class StudentInterestForm(ModelForm):
             'accuplacer_app',
         )
 
+        help_texts = {
+            "ccr_app": "Reading, writing, and math skill building classes to help with college and career readiness goals as well as passing the HiSET.",
+            "esl_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
+            "ace_app": "Integrated education and training classes where students can earn industry credentials and college credit in career pathways: information technology, healthcare, construction trades, and culinary/hospitality.",
+            "success_app": "Classes designed to help students successfully navigate school and careers such as computer basics, job readiness, career exploration, college skills, and financial success.",
+            'e_learn_app': "Online courses to help with college and career readiness goals as well as passing the HiSET.",
+            'accuplacer_app': "Short preparation classes for the English and math accuplacer college placement tests. ",
+        }
+
 
 class StudentContactForm(ModelForm):
 
