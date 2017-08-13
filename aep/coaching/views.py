@@ -45,6 +45,38 @@ class ProfileCreateWizard(LoginRequiredMixin, SessionWizardView):
         )
 
 
+class ProfileUpdateWizard(LoginRequiredMixin, SessionWizardView):
+
+    form_list = [
+        GeneralInfoForm,
+        AcademicQuestionaireForm,
+        PersonalQuestionaireForm
+    ]
+
+    template_name = 'coaching/profile_wizard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileUpdateWizard, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def get_form_instance(self, step):
+        return Profile.objects.get(student__slug=self.kwargs['slug'])
+
+    def done(self, form_list, **kwargs):
+        data = self.get_all_cleaned_data()
+        student = Student.objects.get(slug=self.kwargs['slug'])
+        profile = Profile.objects.filter(student=student).update(**data)
+        return HttpResponseRedirect(
+            reverse_lazy(
+                'coaching:profile detail',
+                kwargs={'slug': student.slug}
+            )
+        )
+
+
 class ProfileCreateView(LoginRequiredMixin, CreateView):
 
     model = Profile

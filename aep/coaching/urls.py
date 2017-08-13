@@ -9,6 +9,9 @@ single_student_patterns = [
     url(r'^new/$',
         views.ProfileCreateWizard.as_view(),
         name='create profile'),
+    url(r'^edit/$',
+        views.ProfileUpdateWizard.as_view(),
+        name='update profile'),
     url(r'^assign/$',
         views.CoachingCreateView.as_view(),
         name='coaching create')

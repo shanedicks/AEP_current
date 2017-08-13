@@ -2,6 +2,7 @@
 
 {% block content %}
     <h1><a href="{% url 'people:student detail' slug=student.slug %}">{{ student }}</a></h1>
+    <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:update profile' slug=student.slug %}">Update Info</a>
     <table class='table'>
         <td>Birthday</td> 
         <td>{{ student.dob }}</td>
