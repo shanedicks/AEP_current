@@ -73,6 +73,7 @@ class CoachingResource(resources.ModelResource):
     class Meta:
         model = Coaching
         fields = (
+            'id',
             'coach',
             'coachee',
             'coaching_type',
