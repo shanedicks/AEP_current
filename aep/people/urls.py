@@ -75,5 +75,8 @@ urlpatterns = [
         name='student signup'),
     url(r'^success/$',
         views.StudentSignupSuccessView.as_view(),
-        name='signup success')
+        name='signup success'),
+    url(r'^elearn-success/$',
+        views.ElearnSignupSuccessView.as_view(),
+        name='elearn success'),
 ]

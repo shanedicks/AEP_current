@@ -75,12 +75,18 @@ class CoachingResource(resources.ModelResource):
         fields = (
             'id',
             'coach',
+            'coach__user__last_name',
+            'coach__user__first_name',
             'coachee',
+            'coachee__user__last_name',
+            'coachee__user__first_name',
             'coaching_type',
             'active',
             'start_date',
             'end_date',
         )
+
+        export_order = fields
 
 
 class ProfileResource(resources.ModelResource):

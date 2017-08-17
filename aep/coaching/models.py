@@ -571,13 +571,15 @@ class AceRecord(models.Model):
 
 class ElearnRecord(models.Model):
 
+    APPLICANT = 'Applicant'
+    PENDING = 'Pending'
+    HOLD = 'On Hold'
     ACTIVE = 'Active'
-    INACTIVE = 'InActive'
-    COMPLETED = 'Completed'
     STATUS_CHOICES = (
+        (APPLICANT, 'Applicant'),
+        (PENDING, 'Pending'),
+        (HOLD, 'On Hold'),
         (ACTIVE, 'Active'),
-        (INACTIVE, 'InActive'),
-        (COMPLETED, 'Completed')
     )
 
     student = models.OneToOneField(

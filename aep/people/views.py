@@ -3,7 +3,10 @@ from django.views.generic import (
     CreateView, TemplateView, FormView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 from django.http import HttpResponseRedirect, Http404
+from django.template.loader import get_template
+from django.template import Context
 from django.urls import reverse_lazy, reverse
 from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
@@ -241,7 +244,26 @@ class StudentSignupWizard(SessionWizardView):
         orientation = form_dict["signup"].save(commit=False)
         orientation.student = student
         orientation.save()
-        return HttpResponseRedirect(reverse_lazy('people:signup success'))
+        if interest['e_learn_app'] is False:
+            return HttpResponseRedirect(reverse_lazy('people:signup success'))
+        else:
+            if user.email:
+                context = Context({'key': 'value'})
+                text_content = get_template(
+                    'people/elearn_email.txt'
+                ).render(context)
+                html_content = get_template(
+                    'people/elearn_email_inline.html',
+                ).render(context)
+                msg = EmailMultiAlternatives(
+                    "Welcome to eLearn!",
+                    text_content,
+                    "elearn@dccaep.org",
+                    [user.email],
+                )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+            return HttpResponseRedirect(reverse_lazy('people:elearn success'))
 
 
 class NewStudentSignupView(CreateView):
@@ -307,6 +329,11 @@ class StudentCreateSuccessView(TemplateView):
 class StudentSignupSuccessView(TemplateView):
 
     template_name = 'people/signup_success.html'
+
+
+class ElearnSignupSuccessView(TemplateView):
+
+    template_name = 'people/elearn_success.html'
 
 
 class CollegeInterestFormView(LoginRequiredMixin, CreateView):
