@@ -10,6 +10,8 @@ scopes = ['https://www.googleapis.com/auth/admin.directory.user']
 
 def main():
 
+    print(settings.KEYFILE_DICT['private_key'])
+
     credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
         keyfile_dict=settings.KEYFILE_DICT,
         scopes=scopes
