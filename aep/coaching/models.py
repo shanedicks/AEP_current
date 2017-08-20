@@ -589,6 +589,7 @@ class ElearnRecord(models.Model):
 
     elearn_status = models.CharField(
         choices=STATUS_CHOICES,
+        default="Applicant",
         max_length=9,
         blank=True
     )
@@ -601,6 +602,11 @@ class ElearnRecord(models.Model):
     intake_date = models.DateField(
         blank=True,
         null=True
+    )
+
+    g_suite_email = models.EmailField(
+        max_length=40,
+        blank=True,
     )
 
     def get_absolute_url(self):

@@ -1,4 +1,6 @@
+from datetime import datetime
 from django.contrib import admin
+from django.core.mail import send_mail
 
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin
@@ -51,8 +53,11 @@ class ElearnRecordResource(resources.ModelResource):
             'student',
             'student__user__last_name',
             'student__user__first_name',
+            'student__user__email',
+            'student__phone',
             'elearn_status',
             'status_updated',
+            'g_suite_email',
             'intake_date',
         )
 
@@ -232,6 +237,21 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
         'status_updated',
         'intake_date',
     ]
+
+    actions = ['DLA_email']
+
+    def DLA_email(self, request, queryset):
+        for obj in queryset:
+            if obj.elearn_status == 'Applicant':
+                send_mail(
+                    "Subject",
+                    "Content",
+                    "elearn@dccaep.org",
+                    [obj.student.user.email],
+                )
+                obj.elearn_status = 'Pending'
+                obj.status_updated = datetime.today()
+                obj.save()
 
 
 admin.site.register(ElearnRecord, ElearnRecordAdmin)

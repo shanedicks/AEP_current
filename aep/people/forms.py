@@ -210,6 +210,10 @@ class UserForm(ModelForm):
             'last_name': "Last Name (primer y segundo apellido)"
         }
 
+        help_texts = {
+            'email': "If you're hoping to take online classes we will need a valid email."
+        }
+
     def save(self):
         user = super(UserForm, self).save(commit=False)
         user.username = make_username(user.first_name, user.last_name)

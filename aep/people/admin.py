@@ -9,6 +9,7 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
 from .models import Student, Staff, WIOA, CollegeInterest
 from assessments.models import TestHistory
+from coaching.models import ElearnRecord, AceRecord
 
 
 
@@ -219,7 +220,6 @@ class StudentAdmin(ImportExportActionModelAdmin):
         "WRU_ID",
         "dob",
         "intake_date",
-        'program',
         'ccr_app',
         'esl_app',
         'ace_app',
@@ -262,7 +262,9 @@ class StudentAdmin(ImportExportActionModelAdmin):
         "state",
     ]
 
-    actions = ['testify']
+    actions = ['testify', 'create_elearn_record']
+
+    ordering = ['-id']
 
     def testify(self, request, queryset):
         for obj in queryset:
@@ -270,6 +272,16 @@ class StudentAdmin(ImportExportActionModelAdmin):
                 continue
             else:
                 TestHistory.objects.create(student=obj, student_wru=obj.WRU_ID)
+
+    def create_elearn_record(self, request, queryset):
+        for obj in queryset:
+            if ElearnRecord.objects.filter(student=obj).exists():
+                continue
+            else:
+                ElearnRecord.objects.create(
+                    student=obj,
+                    intake_date=datetime.today()
+                )
 
 
 admin.site.register(Student, StudentAdmin)
