@@ -474,7 +474,24 @@ def employment_status(input):
     return emp[input]
 
 
+def wru_search(session, search_dict):
+    s = session.get(
+        'https://workreadyu.lctcs.edu/Student',
+        data=search_dict
+    )
+    p = bs4.BeautifulSoup(
+        s.text,
+        "html.parser"
+    )
+    try:
+        return p.select("table.Webgrid > tbody > tr > td")[9].text.encode('utf-8')
+    except IndexError:
+        return '-'
+
+
+
 class WIOAAdmin(ImportExportActionModelAdmin):
+
     resource_class = WIOAResource
 
     list_display = ("__str__", "get_WRU_ID")
@@ -692,19 +709,36 @@ class WIOAAdmin(ImportExportActionModelAdmin):
                 "btnSave": "Create"
             }
 
-            session.post('https://workreadyu.lctcs.edu/Student/Create/CreateLink', data=student)
-
             search = {
                 'LastNameTextBox': obj.student.user.last_name,
                 'FirstNameTextBox': obj.student.user.first_name,
+                'Status': -1,
+                'AgeSearchType': 1,
+                'AgeFromInequality': 4,
+                'AgeFromTextBox': student['Age'],
                 'btnFilter': 'Filter List'
             }
 
-            s = session.get('https://workreadyu.lctcs.edu/Student', data=search)
+            wru = wru_search(session, search)
 
-            soup = bs4.BeautifulSoup(s.text, "html.parser")
+            if wru == '-':
+                session.post(
+                    'https://workreadyu.lctcs.edu/Student/Create/CreateLink',
+                    data=student
+                )
 
-            wru = soup.select("table.Webgrid > tbody > tr > td")[9].text.encode('utf-8')
+                search = {
+                    'LastNameTextBox': obj.student.user.last_name,
+                    'FirstNameTextBox': obj.student.user.first_name,
+                    'FromTextBox': obj.student.intake_date,
+                    'ToTextBox': obj.student.intake_date,
+                    'btnFilter': 'Filter List'
+                }
+
+                wru = wru_search(session, search)
+
+            else:
+                wru = wru + b'x'
 
             obj.student.WRU_ID = wru
             obj.student.save()
