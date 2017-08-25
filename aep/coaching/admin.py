@@ -244,10 +244,39 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
         for obj in queryset:
             if obj.elearn_status == 'Applicant':
                 send_mail(
-                    "Subject",
-                    "Content",
-                    "elearn@dccaep.org",
-                    [obj.student.user.email],
+                    "Application recieved for Delgado eLearn",
+                    message="",
+                    html_message="<p>Good Morning, eLearn Applicants!</p>"
+                    "<p>This email is to confirm that your "
+                    "application to eLearn <strong>has been received.</strong></p>"
+                    "<h3><strong>What is eLearn?</h3>"
+                    "<p>The eLearn Program is here to help you study to earn a "
+                    "high school equivalency diploma (HiSET, formerly the GED), "
+                    "and transition to college and career pathways.</p>"
+                    "<h3>Why online learning?</h3>"
+                    "<p>The internet is simply amazing! In 2017, online learning"
+                    " has never been easier or more exciting! In eLearn, students"
+                    " and teachers explore the web to find tools to learn, to grow"
+                    ", and to reach our academic, professional, and personal goals!</p>"
+                    "<h3>How to Finish Applying to eLearn</h3>"
+                    "<p>This link below includes instructions on how to complete"
+                    " the 2nd part of the application process. It is <strong>due by 9pm on"
+                    " Wednesday, August 30th.</strong> This next step will take about 1 "
+                    "hour to complete, so be sure to find time to get online!</p>"
+                    "<p>Remember - the eLearn Program is popular and space is "
+                    "limited, so we cannot guarantee that everyone will be "
+                    "accepted. To improve your chances, <strong>be sure to "
+                    "follow the instructions on the following website.</strong>"
+                    "<p><a href='https://sites.google.com/site/applyingtoelearn/home'>"
+                    "Click here to get started with the 2nd stage of "
+                    "the eLearn application process.</a></p>"
+                    "<p>Remember, this next stage is due by 9pm on Wednesday, August 30th."
+                    "<p>Good luck, and we look forward to working with you soon!</p>"
+                    "<p>Sincerely,</p>"
+                    "<p>The eLearn Team</p>"
+                    "<p>apply@elearnclass.org</p>",
+                    from_email="elearn@dccaep.org",
+                    recipient_list=[obj.student.user.email],
                 )
                 obj.elearn_status = 'Pending'
                 obj.status_updated = datetime.today()

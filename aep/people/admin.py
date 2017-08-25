@@ -721,7 +721,9 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
             wru = wru_search(session, search)
 
-            if wru == '-':
+            if wru != '-':
+                wru = wru + b'x'
+            else:
                 session.post(
                     'https://workreadyu.lctcs.edu/Student/Create/CreateLink',
                     data=student
@@ -736,9 +738,6 @@ class WIOAAdmin(ImportExportActionModelAdmin):
                 }
 
                 wru = wru_search(session, search)
-
-            else:
-                wru = wru + b'x'
 
             obj.student.WRU_ID = wru
             obj.student.save()

@@ -313,26 +313,63 @@ class MeetingNoteForm(ModelForm):
         super(MeetingNoteForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+        self.helper.help_text_inline = True
         self.helper.layout = Layout(
-            'meeting_type',
-            Field(
-                'meeting_date',
-                placeholder="MM/DD/YYYY",
-                wrapper_class="col-md-4",
-                data_mask="99/99/9999"
+            Fieldset(
+                'Meeting Info',
+                'meeting_type',
+                Field(
+                    'meeting_date',
+                    placeholder="MM/DD/YYYY",
+                    wrapper_class="col-md-4",
+                    data_mask="99/99/9999"
+                ),
+                Field(
+                    'start_time',
+                    placeholder="HH:MM AM/PM",
+                    wrapper_class="col-md-4",
+                    data_mask="99:99 aa"
+                ),
+                Field(
+                    'end_time',
+                    placeholder="HH:MM AM/PM",
+                    wrapper_class="col-md-4",
+                    data_mask="99:99 aa"
+                ),
             ),
-            Field(
-                'start_time',
-                placeholder="HH:MM AM/PM",
-                wrapper_class="col-md-4",
-                data_mask="99:99 aa"
+            Fieldset(
+                'Meeting Outcomes',
+                Column(
+                    'student_no_show',
+                    'student_reschedule',
+                    css_class='col-md-6'
+                ),
+                Column(
+                    'student_cancel',
+                    'coach_cancel',
+                    css_class='col-md-6'
+                ),
             ),
-            Field(
-                'end_time',
-                placeholder="HH:MM AM/PM",
-                wrapper_class="col-md-4",
-                data_mask="99:99 aa"
-            )
+            Fieldset(
+                'Student Status',
+                Column(
+                    'low_grades',
+                    'class_absences',
+                    css_class='col-md-4'
+                ),
+                Column(
+                    'cannot_reach',
+                    'meeting_absences',
+                    css_class='col-md-4'
+                ),
+                Column(
+                    'ace_withdrawl',
+                    css_class='col-md-4'
+                ),
+            ),
+            'progress',
+            'next_steps',
+            'notes'
         )
 
     class Meta:
@@ -342,6 +379,15 @@ class MeetingNoteForm(ModelForm):
             'meeting_date',
             'start_time',
             'end_time',
+            'student_no_show',
+            'student_reschedule',
+            'student_cancel',
+            'coach_cancel',
+            'low_grades',
+            'class_absences',
+            'meeting_absences',
+            'cannot_reach',
+            'ace_withdrawl',
             'progress',
             'next_steps',
             'notes'

@@ -4,9 +4,39 @@
 <h1>Meeting Note</h1>
 <div class="well">
     <form method="post">
-        {% csrf_token %}
             {% crispy form %}
         <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Submit</button>
     </form>
 </div>
+    {% if latest is not None %}
+    <h3>Last Meeting</h3>
+    <h4>Date and Time</h4>
+        <p>{{ latest.meeting_date }} from {{ latest.start_time }} to {{ latest.end_time }}</p>
+    <h4>Meeting Type</h4>
+        <p>{{ latest.get_meeting_type_display }}</p>
+    <h4>Meeting Outcomes</h4>
+        <table class="table">
+          <tr>
+            <td>Student no show: {{ note.student_no_show }}</td>
+            <td>Student reschedule: {{ note.student_reschedule }}</td>
+            <td>Student cancel: {{ note.student_cancel }}</td>
+            <td>Coach cancel: {{ note.coach_cancel }}</td>
+          </tr>
+        </table>
+    <h4>Student Status</h4>
+        <table class="table">
+          <tr>
+            <td>Low Grades: {{ note.low_grades }}</td>
+            <td>Unable to Reach: {{ note.cannot_reach }}</td>
+            <td>Class Absences: {{ note.class_absences }}</td>
+            <td>Meeting Absences: {{ note.meeting_absences }}</td>
+          </tr>
+        </table>
+    <h4>Progress</h4>
+        <p>{{ latest.progress }}</p>
+    <h4>Next Steps</h4>
+        <p>{{ latest.next_steps }}</p>
+    <h4>Other Notes</h4>
+        <p>{{ latest.notes }}</p>
+    {% endif %}
 {% endblock content %}

@@ -368,7 +368,7 @@ class Coaching(models.Model):
     )
 
     def latest_note(self):
-        return self.notes.latest('meeting_date')
+        return self.notes.latest('pk')
 
     def get_absolute_url(self):
         return reverse(
@@ -385,15 +385,22 @@ class Coaching(models.Model):
 
 class MeetingNote(models.Model):
 
-    ACADEMIC = 'Academic Planning'
-    PERSONAL = 'Personal'
-    COACHING_CHECK_IN = 'Coaching Check-in'
-    OTHER = 'Other'
+    COLLEGE_OPTIONS = 'College Options'
+    NEXT_STEPS = 'Next Steps'
+    SCHEDULING = 'Schedule Classes'
+    SKILL_BUILDING = 'Build Skills'
+    ELEARN_CHECKIN = 'eLearn Check-in'
+    ACE_COACHING = 'ACE Coaching'
+    ACE_RETURN = 'Return to ACE'
+
     MEETING_TYPE_CHOICES = (
-        (ACADEMIC, 'Academic Planning'),
-        (PERSONAL, 'Personal'),
-        (COACHING_CHECK_IN, 'Coaching Check-in'),
-        (OTHER, 'Other'),
+        (COLLEGE_OPTIONS, 'Discuss College Options'),
+        (NEXT_STEPS, 'Plan Next Steps'),
+        (SCHEDULING, 'Schedule Next Classes'),
+        (SKILL_BUILDING, 'Build Student Skills'),
+        (ELEARN_CHECKIN, 'eLearn Check-in'),
+        (ACE_COACHING, 'ACE Student Coaching'),
+        (ACE_RETURN, 'Plan for Return to ACE')
     )
 
     coaching = models.ForeignKey(
@@ -412,6 +419,46 @@ class MeetingNote(models.Model):
     student_no_show = models.BooleanField(
         default=False,
         help_text='Check this box if the student failed to attend the meeting'
+    )
+
+    student_reschedule = models.BooleanField(
+        default=False,
+        help_text='Check this box if the student requested to reschedule the meeting'
+    )
+
+    student_cancel = models.BooleanField(
+        default=False,
+        help_text='Check this box if the student cancelled the meeting'
+    )
+
+    coach_cancel = models.BooleanField(
+        default=False,
+        help_text='Check this box if the coach cancelled the meeting'
+    )
+
+    low_grades = models.BooleanField(
+        default=False,
+        verbose_name='Concern: Low Grades'
+    )
+
+    class_absences = models.BooleanField(
+        default=False,
+        verbose_name='Concern: Class Absences'
+    )
+
+    meeting_absences = models.BooleanField(
+        default=False,
+        verbose_name='Concern: Meeting Absences'
+    )
+
+    cannot_reach = models.BooleanField(
+        default=False,
+        verbose_name='Concern: Coach Unable to Reach'
+    )
+
+    ace_withdrawl = models.BooleanField(
+        default=False,
+        verbose_name='Withdawing from Ace'
     )
 
     start_time = models.TimeField()

@@ -153,6 +153,23 @@ class CoachingDetailView(LoginRequiredMixin, DetailView):
         if 'student' not in context:
             context['student'] = self.object.coachee
             context.update(kwargs)
+        if 'status' not in context:
+            if self.object.notes.count() > 0:
+                context['status'] = [
+                    ('Concern: Low Grades',
+                        self.object.latest_note().low_grades),
+                    ('Concern: Class Absences',
+                        self.object.latest_note().class_absences),
+                    ('Concern: Meeting Absences',
+                        self.object.latest_note().meeting_absences),
+                    ('Concern: Cannot Reach',
+                        self.object.latest_note().cannot_reach),
+                    ('Ace Withdrawl',
+                        self.object.latest_note().ace_withdrawl)
+                ]
+            else:
+                context['status'] = []
+            context.update(kwargs)
         return context
 
 
@@ -161,6 +178,18 @@ class MeetingNoteCreateView(LoginRequiredMixin, CreateView):
     model = MeetingNote
     form_class = MeetingNoteForm
     template_name = 'coaching/meeting_note_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(MeetingNoteCreateView, self).get_context_data(**kwargs)
+        coaching = Coaching.objects.get(pk=self.kwargs['pk'])
+        if coaching.notes.count() > 0:
+            latest = coaching.latest_note()
+        else:
+            latest = None
+        if 'latest' not in context:
+            context['latest'] = latest
+            context.update(kwargs)
+        return context
 
     def form_valid(self, form):
         note = form.save(commit=False)
