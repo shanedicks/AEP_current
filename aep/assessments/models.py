@@ -281,11 +281,13 @@ class Tabe(NRSTest):
     D = "D"
     M = "M"
     E = "E"
+    L = "L"
     LEVEL_CHOICES = (
         (A, "A"),
         (D, "D"),
         (M, "M"),
-        (E, "E")
+        (E, "E"),
+        (L, "L")
     )
 
     form = models.CharField(
@@ -424,7 +426,7 @@ class Tabe(NRSTest):
             level = "M"
         elif 9.0 > score >= 6.0:
             level = "D"
-        elif score > 9.0:
+        elif score >= 9.0:
             level = "A"
         else:
             level = "E"
