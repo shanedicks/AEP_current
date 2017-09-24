@@ -486,7 +486,7 @@ def wru_search(session, search_dict):
     try:
         return p.select("table.Webgrid > tbody > tr > td")[9].text.encode('utf-8')
     except IndexError:
-        return '-'
+        return 'No ID'
 
 
 
@@ -574,7 +574,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
         "SID"
     )
 
-    actions =['send_to_state']
+    actions = ['send_to_state', 'check_for_state_id']
 
     def get_AEP_ID(self, obj):
         return obj.student.AEP_ID
@@ -585,6 +585,39 @@ class WIOAAdmin(ImportExportActionModelAdmin):
         return obj.student.WRU_ID
     get_WRU_ID.admin_order_field = "WRU_ID"
     get_WRU_ID.short_description = "WRU ID"
+
+    def check_for_state_id(self, request, queryset):
+        session = requests.Session()
+
+        login = {
+            'Provider': '9',
+            'Parish': '19',
+            'Login': 'shanedicks',
+            'Password': 'LCTCS1617passDATA',
+            'btnLogin': 'Login'
+        }
+
+        session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login)
+
+        for obj in queryset:
+
+            search = {
+                'LastNameTextBox': obj.student.user.last_name,
+                'FirstNameTextBox': obj.student.user.first_name,
+                'Status': -1,
+                'AgeSearchType': 1,
+                'AgeFromInequality': 4,
+                'AgeFromTextBox': get_age_at_intake(obj.student.dob, obj.student.intake_date),
+                'btnFilter': 'Filter List'
+            }
+
+            wru = wru_search(session, search)
+            
+            if wru != 'No ID':
+                wru = wru + b'x'
+
+            obj.student.WRU_ID = wru
+            obj.student.save()
 
     def send_to_state(self, request, queryset):
         session = requests.Session()
@@ -709,35 +742,20 @@ class WIOAAdmin(ImportExportActionModelAdmin):
                 "btnSave": "Create"
             }
 
+            session.post(
+                'https://workreadyu.lctcs.edu/Student/Create/CreateLink',
+                data=student
+            )
+
             search = {
                 'LastNameTextBox': obj.student.user.last_name,
                 'FirstNameTextBox': obj.student.user.first_name,
-                'Status': -1,
-                'AgeSearchType': 1,
-                'AgeFromInequality': 4,
-                'AgeFromTextBox': student['Age'],
+                'FromTextBox': obj.student.intake_date,
+                'ToTextBox': obj.student.intake_date,
                 'btnFilter': 'Filter List'
             }
 
             wru = wru_search(session, search)
-
-            if wru != '-':
-                wru = wru + b'x'
-            else:
-                session.post(
-                    'https://workreadyu.lctcs.edu/Student/Create/CreateLink',
-                    data=student
-                )
-
-                search = {
-                    'LastNameTextBox': obj.student.user.last_name,
-                    'FirstNameTextBox': obj.student.user.first_name,
-                    'FromTextBox': obj.student.intake_date,
-                    'ToTextBox': obj.student.intake_date,
-                    'btnFilter': 'Filter List'
-                }
-
-                wru = wru_search(session, search)
 
             obj.student.WRU_ID = wru
             obj.student.save()
