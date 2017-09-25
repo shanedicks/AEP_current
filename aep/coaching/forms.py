@@ -402,12 +402,24 @@ class AssignCoach(ModelForm):
         super(AssignCoach, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field(
+                'coach',
+                'coaching_type',
+            ),
+            Field(
+                'start_date',
+                placeholder="MM/DD/YYYY",
+                data_mask="99/99/9999"
+            ),
+        )
 
     class Meta:
         model = Coaching
         fields = (
             'coach',
-            'coaching_type'
+            'start_date',
+            'coaching_type',
         )
 
 
