@@ -552,8 +552,11 @@ class Clas_E(NRSTest):
         )
 
     def assign(self):
-        if self.read_ss > 563:
-            return "9 M"
+        if self.read_ss >= 563:
+            if self.read_level == "3":
+                level = "4"
+            else:
+                return "9 M"
         if self.form == 'A':
             form = 'B'
         else:
