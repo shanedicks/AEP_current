@@ -4,8 +4,10 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from core.utils import make_slug
+from academics.models import Course
 from people.models import Staff, Student
 from semesters.models import Semester
+
 
 
 class Section(models.Model):
@@ -18,6 +20,7 @@ class Section(models.Model):
     HISPANIC_CHAMBER = 'HC'
     WEST_BANK_LIB = 'WL'
     JOB_1 = 'J1'
+    CHARITY = 'CH'
     SITE_CHOICES = (
         (CITY_PARK, 'City Park'),
         (MID_CITY, 'NOALC'),
@@ -26,7 +29,8 @@ class Section(models.Model):
         (SIDNEY_COLLIER, 'Sidney Collier'),
         (HISPANIC_CHAMBER, 'HCC'),
         (WEST_BANK_LIB, 'West Bank Regional Library'),
-        (JOB_1, 'Job 1')
+        (JOB_1, 'Job 1'),
+        (CHARITY, 'Charity')
     )
     ESL = 'ESL'
     CCR = 'CCR'
@@ -51,6 +55,16 @@ class Section(models.Model):
         Staff,
         related_name='classes',
         null=True,
+        blank=True
+    )
+    course = models.ForeignKey(
+        Course,
+        related_name='sections',
+        null=True,
+        blank=True
+    )
+    g_suite_id = models.CharField(
+        max_length=20,
         blank=True
     )
     site = models.CharField(
