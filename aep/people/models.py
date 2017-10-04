@@ -382,6 +382,8 @@ class Staff(Profile):
 
     coach = models.BooleanField(default=False)
 
+    active = models.BooleanField(default=True)
+
     class Meta:
         verbose_name_plural = 'staff'
         ordering = ["user__last_name", "user__first_name"]
