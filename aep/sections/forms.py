@@ -108,6 +108,7 @@ class SectionFilterForm(Form):
             ('HC', 'Hispanic Chamber'),
             ('WL', 'West Bank Library'),
             ('J1', 'Job 1'),
+            ('CH', 'Charity')
         ),
         required=False,
     )
