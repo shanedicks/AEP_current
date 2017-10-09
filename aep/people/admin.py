@@ -302,6 +302,8 @@ class StaffAdmin(ImportExportActionModelAdmin):
 
     list_filter = (
         'active',
+        'teacher',
+        'coach'
     )
 
     search_fields = [
