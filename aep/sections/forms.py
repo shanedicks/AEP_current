@@ -1,5 +1,5 @@
 import datetime
-from django.forms import ModelForm, Form, ChoiceField, modelformset_factory, ValidationError, CharField
+from django.forms import ModelForm, Form, ChoiceField, modelformset_factory, ValidationError, CharField, DateField
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
@@ -130,6 +130,33 @@ class SectionFilterForm(Form):
         self.helper.form_tag = False
         self.helper.help_text_inline = False
         self.helper.form_show_labels = False
+        self.helper.disable_csrf = True
+
+
+class AttReportFilterForm(Form):
+
+    from_date = DateField(
+        input_formats=[
+            '%Y-%m-%d',
+            '%m/%d/%Y',
+            '%m/%d/%y'
+        ],
+        required=True
+    )
+    to_date = DateField(
+        input_formats=[
+            '%Y-%m-%d',
+            '%m/%d/%Y',
+            '%m/%d/%y'
+        ],
+        required=True
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(AttReportFilterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
         self.helper.disable_csrf = True
 
 

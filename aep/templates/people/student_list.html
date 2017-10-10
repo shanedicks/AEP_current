@@ -2,8 +2,8 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <h1>Students</h1>
-    <form class='form-inline' method='get'>
+    <h1>Students <a href="{% url 'people:student list csv' %}" class="btn btn-default btn-sm">Student Lists</a></h1>
+        <form class='form-inline' method='get'>
         <div class="form-group">
             <label class="sr-only" for="id_f_name">First Name</label>
             <input class="form-control" id="id_f_name" name="f_name" type="text" placeholder="First Name" />
@@ -23,6 +23,7 @@
         {% if is_paginated %}
             {% include 'components/pagination.html' %}
         {% endif %}
+
         <table class="table">
         	<tr>
         		<th>Student</th>

@@ -6,13 +6,61 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.db import IntegrityError
+from core.utils import render_to_csv
 from people.models import Student
 from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     ClassAddFromListEnrollForm, StudentAddEnrollmentForm,
                     SingleAttendanceForm, AttendanceFormSet, SectionSearchForm,
-                    AdminAttendanceForm)
+                    AdminAttendanceForm, AttReportFilterForm)
+
+
+class AttendanceCSV(LoginRequiredMixin, FormView):
+
+    model = Attendance
+    form_class = AttReportFilterForm
+    template_name = "sections/attendance_report_csv.html"
+
+    def get_data(self, attendance):
+        data = []
+        headers = [
+            'attendance_type',
+            'attendance_date',
+            'time_in',
+            'time_out',
+            'student__WRU_ID',
+            'last_name',
+            'first_name',
+            'WRU_ID'
+        ]
+        data.append(headers)
+        for att in attendance:
+            s = [
+                att.attendance_type,
+                att.attendance_date,
+                att.time_in,
+                att.time_out,
+                att.enrollment.student.WRU_ID,
+                att.enrollment.student.user.last_name,
+                att.enrollment.student.user.first_name,
+                att.enrollment.section.WRU_ID
+            ]
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        attendance = Attendance.objects.select_related().all()
+        filename = "attendance_report.csv"
+        if form.cleaned_data['from_date'] != "":
+            from_date = form.cleaned_data['from_date']
+            attendance = attendance.filter(attendance_date__gte=from_date)
+        if form.cleaned_data['to_date'] != "":
+            to_date = form.cleaned_data['to_date']
+            attendance = attendance.filter(attendance_date__lte=to_date)
+
+        data = self.get_data(attendance)
+        return render_to_csv(data=data, filename=filename)
 
 
 class ClassListView(LoginRequiredMixin, ListView, FormView):
