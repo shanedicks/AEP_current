@@ -262,7 +262,12 @@ class StudentAdmin(ImportExportActionModelAdmin):
         "state",
     ]
 
-    actions = ['testify', 'create_elearn_record']
+    actions = [
+        'testify',
+        'create_elearn_record',
+        'move_classes',
+        'move_tests'
+    ]
 
     ordering = ['-id']
 
@@ -282,6 +287,18 @@ class StudentAdmin(ImportExportActionModelAdmin):
                     student=obj,
                     intake_date=datetime.today()
                 )
+
+    def move_tests(self, request, queryset):
+        q = queryset.order_by('pk')
+        t = q[0].tests
+        t.student = q[1]
+        t.save()
+
+    def move_classes(self, request, queryset):
+        q = queryset.order_by('pk')
+        for c in q[0].classes.all():
+            c.student = q[1]
+            c.save()
 
 
 admin.site.register(Student, StudentAdmin)

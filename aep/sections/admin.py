@@ -52,7 +52,7 @@ class SectionAdmin(ImportExportModelAdmin):
 
     )
 
-    search_fields = ["title", "program", 'site']
+    search_fields = ["title", "program", 'site', 'WRU_ID']
 
     actions = ["begin", "enforce_attendance"]
 
