@@ -398,7 +398,7 @@ class StaffListView(LoginRequiredMixin, ListView):
 
     model = Staff
 
-    queryset = Staff.objects.all().order_by(
+    queryset = Staff.objects.filter(active=True).order_by(
         'user__last_name',
         'user__first_name'
     )
