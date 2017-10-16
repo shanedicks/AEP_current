@@ -378,6 +378,11 @@ class Staff(Profile):
 
     bio = models.TextField(blank=True, max_length=4000)
 
+    g_suite_email = models.EmailField(
+        blank=True,
+        max_length=30
+    )
+
     teacher = models.BooleanField(default=True)
 
     coach = models.BooleanField(default=False)

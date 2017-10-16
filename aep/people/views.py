@@ -10,6 +10,7 @@ from django.template import Context
 from django.urls import reverse_lazy, reverse
 from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
+from core.forms import DateFilterForm
 from core.utils import render_to_csv
 from sections.forms import SectionFilterForm
 from .models import Staff, Student, CollegeInterest, WIOA
@@ -58,11 +59,11 @@ class StudentListView(LoginRequiredMixin, ListView, FormView):
         )
 
 
-class StudentCSV(LoginRequiredMixin, FormView):
+class ActiveStudentCSV(LoginRequiredMixin, FormView):
 
     model = Student
     form_class = SectionFilterForm
-    template_name = "people/student_csv.html"
+    template_name = "people/active_student_csv.html"
 
     def get_student_data(self, students):
         data = []
@@ -128,6 +129,25 @@ class StudentCSV(LoginRequiredMixin, FormView):
         data = self.get_student_data(students)
         return render_to_csv(data=data, filename=filename)
 
+
+class NewStudentCSV(ActiveStudentCSV):
+
+    form_class = DateFilterForm
+    template_name = "people/new_student_csv.html"
+
+    def form_valid(self, form):
+        students = Student.objects.all()
+        filename = "student_list.csv"
+        if form.cleaned_data['from_date'] != "":
+            from_date = form.cleaned_data['from_date']
+            students = students.filter(intake_date__gte=from_date)
+        if form.cleaned_data['to_date'] != "":
+            to_date = form.cleaned_data['to_date']
+            students = students.filter(intake_date__lte=to_date)
+
+        students = students.distinct()
+        data = self.get_student_data(students)
+        return render_to_csv(data=data, filename=filename)
 
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
 

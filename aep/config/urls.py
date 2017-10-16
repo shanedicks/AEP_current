@@ -14,6 +14,11 @@ urlpatterns = [
             template_name='pages/home.html'
         ),
         name='home'),
+    url(r'^resources/$',
+        TemplateView.as_view(
+            template_name='pages/resources.html'
+        ),
+        name='resources'),
 
     # Django Admin Stuff
     url(r'^admin/', admin.site.urls),

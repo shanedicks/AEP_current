@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1>Student Lists</h1>
+    <div class="well">
+        <form class="form-inline" action="" method="post">
+            {% csrf_token %}
+            {% crispy form %}
+            <button type="submit" class="btn btn-default" value"filter">Export Students</button>
+        </form>
+        <p></p>
+    <p>This tool can export lists of students based on their intake date. Choose a 'From Date' and a 'To Date' to export all students with intake between those dates. Students who were previously recorded may not be exported using this method.</p> 
+    </div>
+{% endblock content %}

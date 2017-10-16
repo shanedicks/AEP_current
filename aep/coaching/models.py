@@ -322,6 +322,12 @@ class Profile(models.Model):
             self.student.WRU_ID
         )
 
+    def save(self):
+        if self.coachee.elearn_record:
+            self.coachee.elearn_record.elearn_status = 'Active'
+            self.coachee.elearn_record.save()
+        super(Profile, self).save()
+
 
 class Coaching(models.Model):
 
@@ -381,6 +387,13 @@ class Coaching(models.Model):
             self.coach.__str__(),
             self.coachee.__str__(),
         )
+
+    def save(self):
+        if self.coaching_type == 'elearn':
+            if self.coachee.elearn_record:
+                self.coachee.elearn_record.elearn_status = 'Active'
+                self.coachee.elearn_record.save()
+        super(Coaching, self).save()
 
 
 class MeetingNote(models.Model):
@@ -622,11 +635,13 @@ class ElearnRecord(models.Model):
     PENDING = 'Pending'
     HOLD = 'On Hold'
     ACTIVE = 'Active'
+    INACTIVE = 'InActive'
     STATUS_CHOICES = (
         (APPLICANT, 'Applicant'),
         (PENDING, 'Pending'),
         (HOLD, 'On Hold'),
         (ACTIVE, 'Active'),
+        (INACTIVE, 'InActive')
     )
 
     student = models.OneToOneField(

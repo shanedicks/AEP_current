@@ -17,8 +17,8 @@ def main(lookup):
         scopes=scopes
     )
 
-    shane = credentials.create_delegated('shane.dicks@elearnclass.org')
-    http_auth = shane.authorize(Http())
+    acct = credentials.create_delegated('shane.dicks@elearnclass.org')
+    http_auth = acct.authorize(Http())
     service = discovery.build('admin', 'directory_v1', http=http_auth)
 
     x = 0

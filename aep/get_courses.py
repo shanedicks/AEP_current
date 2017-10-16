@@ -5,7 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from django.conf import settings
 
 
-scopes = ['https://www.googleapis.com/auth/admin.directory.user']
+scopes = ['https://www.googleapis.com/auth/classroom.courses']
 
 
 def main():
@@ -17,23 +17,23 @@ def main():
 
     acct = credentials.create_delegated('shane.dicks@elearnclass.org')
     http_auth = acct.authorize(Http())
-    service = discovery.build('admin', 'directory_v1', http=http_auth)
+    service = discovery.build('classroom', 'v1', http=http_auth)
 
     print("Contacting Google")
     print("...")
     print("...")
-    print('Getting the first 500 users in the domain')
-    results = service.users().list(domain='elearnclass.org', maxResults=500).execute()
-    users = results.get('users', [])
+    print('Retrieving Courses')
+    results = service.courses().list().execute()
+    courses = results.get('courses', [])
 
-    if not users:
-        print('No users in the domain.')
+    if not courses:
+        print('No Courses in the domain.')
     else:
-        print('Users:')
-        for user in users:
+        print('Courses:')
+        for course in courses:
             print('{0} ({1})'.format(
-                user['primaryEmail'],
-                user['name']['fullName']
+                course['name'],
+                course.get('section', '')
             )
             )
 

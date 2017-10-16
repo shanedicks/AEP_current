@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.db import IntegrityError
+from core.forms import DateFilterForm
 from core.utils import render_to_csv
 from people.models import Student
 from people.forms import StudentSearchForm
@@ -13,13 +14,13 @@ from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     ClassAddFromListEnrollForm, StudentAddEnrollmentForm,
                     SingleAttendanceForm, AttendanceFormSet, SectionSearchForm,
-                    AdminAttendanceForm, AttReportFilterForm)
+                    AdminAttendanceForm)
 
 
 class AttendanceCSV(LoginRequiredMixin, FormView):
 
     model = Attendance
-    form_class = AttReportFilterForm
+    form_class = DateFilterForm
     template_name = "sections/attendance_report_csv.html"
 
     def get_data(self, attendance):

@@ -35,7 +35,10 @@ class Skill(models.Model):
         blank=True
     )
 
-    resources = models.ManyToManyField(Resource)
+    resources = models.ManyToManyField(
+        Resource,
+        blank=True
+    )
 
     class Meta:
         pass
@@ -61,12 +64,24 @@ class Course(models.Model):
     )
 
     description = models.TextField(
-        max_length=1000
+        max_length=1000,
+        blank=True
     )
 
-    skills = models.ManyToManyField(Skill)
+    objectives = models.TextField(
+        max_length=500,
+        blank=True
+    )
 
-    resources = models.ManyToManyField(Resource)
+    skills = models.ManyToManyField(
+        Skill,
+        blank=True
+    )
+
+    resources = models.ManyToManyField(
+        Resource,
+        blank=True
+    )
 
     class Meta:
         pass

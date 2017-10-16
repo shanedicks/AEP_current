@@ -369,7 +369,6 @@ class CoachingAdmin(ImportExportActionModelAdmin):
 
     fields = [
         'coach',
-        'coachee',
         'coaching_type',
         'active',
         'start_date',
