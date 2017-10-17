@@ -651,7 +651,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
             wru = wru_search(session, search)
             
             if wru != 'No ID':
-                wru = wru + b'x'
+                wru = b'x' + wru
 
             obj.student.WRU_ID = wru
             obj.student.save()

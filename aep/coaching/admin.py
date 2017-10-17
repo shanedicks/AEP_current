@@ -232,6 +232,10 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
         'g_suite_email'
     )
 
+    list_filter = (
+        'elearn_status',
+    )
+
     search_fields = [
         'student__user__last_name',
         'student__user__first_name',
