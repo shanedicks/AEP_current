@@ -306,46 +306,49 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
         service = discovery.build('admin', 'directory_v1', http=http_auth)
 
         for obj in queryset:
-            first = obj.student.user.first_name
-            last = obj.student.user.last_name
-            name = ".".join([first, last])
-            x = 0
-            def check_email(name, x): # check g_suite for email, add numbers incrementally if email in use until email is valid
-                if x == 0:
-                    email = "@".join([name, 'elearnclass.org'])
-                    try:
-                        user = service.users().get(userKey=email).execute()
-                        return check_email(name, x + 1)
-                    except:
-                        return email
-                else:
-                    new_name = "{0}{1}".format(name, x)
-                    new_email = "@".join([new_name, 'elearnclass.org'])
-                    try:
-                        user = service.users().get(userKey=new_email).execute()
-                        return check_email(name, x + 1)
-                    except:
-                        return new_email
-            email = check_email(name, x)
+            if obj.g_suite_email:
+                pass
+            else:
+                first = obj.student.user.first_name
+                last = obj.student.user.last_name
+                name = ".".join([first, last])
+                x = 0
+                def check_email(name, x): # check g_suite for email, add numbers incrementally if email in use until email is valid
+                    if x == 0:
+                        email = "@".join([name, 'elearnclass.org'])
+                        try:
+                            user = service.users().get(userKey=email).execute()
+                            return check_email(name, x + 1)
+                        except:
+                            return email
+                    else:
+                        new_name = "{0}{1}".format(name, x)
+                        new_email = "@".join([new_name, 'elearnclass.org'])
+                        try:
+                            user = service.users().get(userKey=new_email).execute()
+                            return check_email(name, x + 1)
+                        except:
+                            return new_email
+                email = check_email(name, x)
 
-            record = {
-                "primaryEmail": email,
-                "name": {
-                    "givenName": first,
-                    "familyName": last
-                },
-                "password": last + first + "Pass",
-                "externalIds": [
-                    {
-                        "value": obj.student.WRU_ID,
-                        "type": "custom",
-                        "customType": "wru"
-                    }
-                ],
-            }
-            service.users().insert(body=record).execute()
-            obj.g_suite_email = email
-            obj.save()
+                record = {
+                    "primaryEmail": email,
+                    "name": {
+                        "givenName": first,
+                        "familyName": last
+                    },
+                    "password": last + first + "Pass",
+                    "externalIds": [
+                        {
+                            "value": obj.student.WRU_ID,
+                            "type": "custom",
+                            "customType": "wru"
+                        }
+                    ],
+                }
+                service.users().insert(body=record).execute()
+                obj.g_suite_email = email
+                obj.save()
 
 
 admin.site.register(ElearnRecord, ElearnRecordAdmin)

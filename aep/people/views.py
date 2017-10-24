@@ -413,6 +413,13 @@ class StaffHomeView(LoginRequiredMixin, DetailView):
     model = Staff
     template_name = 'people/staff_home.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(StaffHomeView, self).get_context_data(**kwargs)
+        if 'coachees' not in context:
+            context['coachees'] = self.object.coachees.filter(active=True)
+            context.update(kwargs)
+        return context
+
 
 class StaffListView(LoginRequiredMixin, ListView):
 

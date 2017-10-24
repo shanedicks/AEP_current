@@ -1,4 +1,5 @@
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from people.models import Staff, Student
@@ -323,9 +324,11 @@ class Profile(models.Model):
         )
 
     def save(self):
-        if self.coachee.elearn_record:
+        try:
             self.coachee.elearn_record.elearn_status = 'Active'
             self.coachee.elearn_record.save()
+        except ObjectDoesNotExist:
+            pass
         super(Profile, self).save()
 
 
@@ -389,10 +392,11 @@ class Coaching(models.Model):
         )
 
     def save(self):
-        if self.coaching_type == 'elearn':
-            if self.coachee.elearn_record:
-                self.coachee.elearn_record.elearn_status = 'Active'
-                self.coachee.elearn_record.save()
+        try:
+            self.coachee.elearn_record.elearn_status = 'Active'
+            self.coachee.elearn_record.save()
+        except ObjectDoesNotExist:
+            pass
         super(Coaching, self).save()
 
 

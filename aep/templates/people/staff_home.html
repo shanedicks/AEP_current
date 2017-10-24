@@ -58,7 +58,7 @@
             <th>Times Met</th>
             <th>Last Meeting Date</th>
         <tr>
-        {% for coachee in staff.coachees.all %}
+        {% for coachee in coachees %}
         <tr>
             <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
             <td>{{ coachee.notes.count }}</td>
