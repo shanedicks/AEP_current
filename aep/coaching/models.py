@@ -325,8 +325,8 @@ class Profile(models.Model):
 
     def save(self):
         try:
-            self.coachee.elearn_record.elearn_status = 'Active'
-            self.coachee.elearn_record.save()
+            self.student.elearn_record.elearn_status = 'Active'
+            self.student.elearn_record.save()
         except ObjectDoesNotExist:
             pass
         super(Profile, self).save()
