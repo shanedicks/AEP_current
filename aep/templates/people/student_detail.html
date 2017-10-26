@@ -94,6 +94,9 @@
             {% for coach in student.coaches.all %}
                 <a href="{% url 'coaching:coaching detail' pk=coach.pk %}">{{ coach.coach }} - {{ coach.get_coaching_type_display }} - since {{ coach.start_date.date }}</a>
             {% endfor %}
+              <p>
+                <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
+              </p>
           {% else %}
               <p>{{ student }} is not assigned to any coaches.</p>
               <p>
