@@ -101,7 +101,8 @@ class StaffResource(resources.ModelResource):
             "emergency_contact",
             "ec_phone",
             "ec_email",
-            "ec_relation"
+            "ec_relation",
+            "g_suite_id"
         )
 
 
@@ -327,6 +328,7 @@ class StaffAdmin(ImportExportActionModelAdmin):
         "wru",
         "phone",
         "get_email",
+        "g_suite_id",
         'teacher',
         'coach'
     )
