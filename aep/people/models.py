@@ -380,7 +380,7 @@ class Staff(Profile):
 
     g_suite_email = models.EmailField(
         blank=True,
-        max_length=30
+        max_length=50
     )
 
     teacher = models.BooleanField(default=True)

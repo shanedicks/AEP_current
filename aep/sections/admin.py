@@ -2,10 +2,17 @@ from django.contrib import admin
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from people.models import Staff
+from academics.models import Course
 from .models import Section, Enrollment, Attendance
 
 
 class SectionResource(resources.ModelResource):
+
+    course = fields.Field(
+        column_name='course',
+        attribute='course',
+        widget=widgets.ForeignKeyWidget(Course, 'code')
+    )
 
     class Meta:
         model = Section
@@ -17,6 +24,7 @@ class SectionResource(resources.ModelResource):
             'teacher__wru',
             'teacher__user__last_name',
             'teacher__user__first_name',
+            'course',
             'site',
             'room',
             'program',
@@ -34,7 +42,7 @@ class SectionResource(resources.ModelResource):
         )
 
 
-class SectionAdmin(ImportExportModelAdmin):
+class SectionAdmin(ImportExportActionModelAdmin):
 
     resource_class = SectionResource
 
@@ -52,7 +60,7 @@ class SectionAdmin(ImportExportModelAdmin):
 
     )
 
-    search_fields = ["title", "program", 'site', 'WRU_ID']
+    search_fields = ["title", "program", 'site', 'WRU_ID', 'semester__title']
 
     actions = ["begin", "enforce_attendance"]
 

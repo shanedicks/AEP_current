@@ -33,7 +33,7 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
             'student__WRU_ID',
             'last_name',
             'first_name',
-            'WRU_ID'
+            'Section WRU_ID'
         ]
         data.append(headers)
         for att in attendance:

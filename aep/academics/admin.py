@@ -40,6 +40,7 @@ class CourseResource(resources.ModelResource):
             'title',
             'code',
             'description',
+            'g_suite_id',
             'skills',
             'resources'
         )
