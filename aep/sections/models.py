@@ -21,6 +21,7 @@ class Section(models.Model):
     WEST_BANK_LIB = 'WL'
     JOB_1 = 'J1'
     CHARITY = 'CH'
+    ONLINE = 'OL'
     SITE_CHOICES = (
         (CITY_PARK, 'City Park'),
         (MID_CITY, 'NOALC'),
@@ -30,7 +31,8 @@ class Section(models.Model):
         (HISPANIC_CHAMBER, 'HCC'),
         (WEST_BANK_LIB, 'West Bank Regional Library'),
         (JOB_1, 'Job 1'),
-        (CHARITY, 'Charity')
+        (CHARITY, 'Charity'),
+        (ONLINE, 'Online Classes')
     )
     ESL = 'ESL'
     CCR = 'CCR'

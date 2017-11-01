@@ -1,6 +1,10 @@
+from apiclient import discovery
+from httplib2 import Http
 from django.contrib import admin
+from django.conf import settings
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
+from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff
 from academics.models import Course
 from .models import Section, Enrollment, Attendance
@@ -56,13 +60,13 @@ class SectionAdmin(ImportExportActionModelAdmin):
         "seats",
         "start_time",
         "end_time",
-        'semester'
-
+        'semester',
+        'g_suite_id'
     )
 
     search_fields = ["title", "program", 'site', 'WRU_ID', 'semester__title']
 
-    actions = ["begin", "enforce_attendance"]
+    actions = ["begin", "enforce_attendance", 'create_classroom_section']
 
     def begin(self, request, queryset):
         for obj in queryset:
@@ -71,6 +75,46 @@ class SectionAdmin(ImportExportActionModelAdmin):
     def enforce_attendance(self, request, queryset):
         for obj in queryset:
             obj.enforce_attendance()
+
+    def create_classroom_section(self, request, queryset):
+
+        scopes = ['https://www.googleapis.com/auth/classroom.courses']
+
+        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+            keyfile_dict=settings.KEYFILE_DICT,
+            scopes=scopes
+        )
+
+        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        http_auth = shane.authorize(Http())
+        service = discovery.build('classroom', 'v1', http=http_auth)
+
+        for obj in queryset:
+            if obj.g_suite_id:
+                pass
+            else:
+                record = {
+                    "name": obj.title,
+                    "section": obj.semester.title,
+                    "ownerId": obj.teacher.g_suite_email
+                }
+
+                post = service.courses().create(body=record).execute()
+                obj.g_suite_id = post.get('id')
+                obj.save()
+
+    def assign_teacher(self, request, queryset):
+
+        scopes = ['https://www.googleapis.com/auth/classroom.rosters']
+
+        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+            keyfile_dict=settings.KEYFILE_DICT,
+            scopes=scopes
+        )
+
+        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        http_auth = shane.authorize(Http())
+        service = discovery.build('classroom', 'v1', http=http_auth)
 
 
 admin.site.register(Section, SectionAdmin)
