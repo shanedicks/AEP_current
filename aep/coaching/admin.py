@@ -246,6 +246,7 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
         'elearn_status',
         'status_updated',
         'intake_date',
+        'g_suite_email'
     ]
 
     actions = ['DLA_email', 'create_g_suite_account']

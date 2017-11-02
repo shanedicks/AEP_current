@@ -5,7 +5,7 @@ from django.conf import settings
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from oauth2client.service_account import ServiceAccountCredentials
-from people.models import Staff
+from people.models import Staff, Student
 from academics.models import Course
 from .models import Section, Enrollment, Attendance
 
@@ -122,19 +122,27 @@ admin.site.register(Section, SectionAdmin)
 
 class EnrollmentResource(resources.ModelResource):
 
+    student = fields.Field(
+        column_name='student',
+        attribute='student',
+        widget=widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
     class Meta:
         model = Enrollment
         fields = (
+            "id",
+            "section",
+            "creator",
             "section__WRU_ID",
             "section__title",
-            "student__WRU_ID",
             "student__user__last_name",
             "student__user__first_name",
             "created"
         )
 
 
-class EnrollmentAdmin(ImportExportModelAdmin):
+class EnrollmentAdmin(ImportExportActionModelAdmin):
 
     resource_class = EnrollmentResource
 
