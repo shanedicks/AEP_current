@@ -42,13 +42,16 @@ class TestEventCSV(LoginRequiredMixin, View):
     def get_student_data(self, students):
         data = []
         headers = [
-            "WRU Id",
-            "Last Name",
-            "First Name",
-            "Intake Date",
-            "DOB",
-            "Marital Status",
+            "District Code",
+            "School Code",
+            "Student ID",
+            "Student Last Name",
+            "Student First Name",
+            "Student Middle Initial",
             "Gender",
+            "Date of Birth",
+            "Intake Date",
+            "Marital Status",
             "Address",
             "City",
             "State",
@@ -63,13 +66,16 @@ class TestEventCSV(LoginRequiredMixin, View):
         data.append(headers)
         for student in students:
             s = [
+                "1142370",
+                "1153531",
                 student.student.WRU_ID,
                 student.student.user.last_name,
                 student.student.user.first_name,
-                str(student.student.intake_date),
-                str(student.student.dob),
-                student.student.get_marital_status_display(),
+                "",
                 student.student.get_gender_display(),
+                str(student.student.dob),
+                student.student.intake_date,
+                student.student.get_marital_status_display(),
                 " ".join([
                     student.student.street_address_1,
                     student.student.street_address_2

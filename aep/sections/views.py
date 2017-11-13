@@ -1,7 +1,8 @@
 from datetime import datetime
 from django.views.generic import (DetailView, ListView, CreateView,
-                                  DeleteView, UpdateView, FormView)
+                                  DeleteView, UpdateView, FormView, View)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -111,6 +112,61 @@ class ClassDetailView(LoginRequiredMixin, DetailView):
                 'student__user__first_name'
             )
         return context
+
+
+class ClassRosterCSV(LoginRequiredMixin, View):
+
+    def get_student_data(self, students):
+        data = []
+        headers = [
+            "Student ID",
+            "Student Last Name",
+            "Student First Name",
+            "Student Middle Initial",
+            "Gender",
+            "Date of Birth",
+            "Intake Date",
+            "Email",
+            "G Suite Email",
+            "Phone",
+            "Alt Phone",
+            "Emergency Contact",
+            "Emergency Contact Phone"
+        ]
+        data.append(headers)
+        for student in students:
+            try:
+                g_suite = student.student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite = ''
+
+            s = [
+                student.student.WRU_ID,
+                student.student.user.last_name,
+                student.student.user.first_name,
+                "",
+                student.student.get_gender_display(),
+                str(student.student.dob),
+                student.student.intake_date,
+                student.student.user.email,
+                g_suite,
+                student.student.phone,
+                student.student.alt_phone,
+                student.student.emergency_contact,
+                student.student.ec_phone
+            ]
+            data.append(s)
+        return data
+
+    def get(self, request, *args, **kwargs):
+        section = Section.objects.get(
+            slug=self.kwargs['slug'])
+        filename = "student_list.csv"
+        students = section.students.prefetch_related(
+            'student', 'student__user'
+        )
+        data = self.get_student_data(students)
+        return render_to_csv(data=data, filename=filename)
 
 
 class ClassTestingPreview(ClassDetailView):

@@ -29,7 +29,10 @@ single_class_patterns = [
         include(single_class_attendance_patterns)),
     url(r'^testing-preview/$',
         views.ClassTestingPreview.as_view(),
-        name='testing preview')
+        name='testing preview'),
+    url(r'^csv/$',
+        views.ClassRosterCSV.as_view(),
+        name='class roster csv')
 ]
 
 staff_patterns = [
