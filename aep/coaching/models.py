@@ -640,12 +640,14 @@ class ElearnRecord(models.Model):
     HOLD = 'On Hold'
     ACTIVE = 'Active'
     INACTIVE = 'InActive'
+    ALUMNI = 'Alumni'
     STATUS_CHOICES = (
         (APPLICANT, 'Applicant'),
         (PENDING, 'Pending'),
         (HOLD, 'On Hold'),
         (ACTIVE, 'Active'),
-        (INACTIVE, 'InActive')
+        (INACTIVE, 'InActive'),
+        (ALUMNI, 'Alumni')
     )
 
     student = models.OneToOneField(

@@ -204,13 +204,9 @@ class TestHistory(models.Model):
         return self.last_test > date.today() - timedelta(days=150)
 
     def update_status(self, test):
-        if not self.last_test:
+        if self.last_test <= test.test_date:
             self.last_test = test.test_date
-            self.test_assignment = test.assign()
-        else:
-            if self.last_test <= test.test_date:
-                self.last_test = test.test_date
-                self.test_assignment = test.assign()
+        self.test_assignment = test.assign()
         self.save()
 
     def active_hours(self):
@@ -552,25 +548,27 @@ class Clas_E(NRSTest):
         )
 
     def assign(self):
-        if self.read_ss >= 563:
-            if self.read_level == "3":
-                level = "4"
-            else:
-                return "9 M"
+        assignment_dict = {
+            "1": (350, 400, 560, 0),
+            "2": (400, 450, 500, 620),
+            "3": (400, 450, 500, 650),
+            "4": (360, 473, 554, 680)
+        }
+        a = assignment_dict[self.read_level]
         if self.form == 'A':
             form = 'B'
         else:
             form = 'A'
-        if self.read_ss < 401:
+        if self.read_ss <= a[0]:
             level = "1"
-        elif self.read_ss < 451:
+        elif self.read_ss <= a[1]:
             level = "2"
-        elif self.read_ss < 491:
+        elif self.read_ss <= a[2]:
             level = "3"
-        elif self.read_level == "1":
-            level = "3"
-        else:
+        elif self.read_ss <= a[3]:
             level = "4"
+        else:
+            return "9 M"
         return " ".join([level, form])
 
 

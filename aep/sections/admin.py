@@ -28,6 +28,7 @@ class SectionResource(resources.ModelResource):
             'teacher__wru',
             'teacher__user__last_name',
             'teacher__user__first_name',
+            'g_suite_id',
             'course',
             'site',
             'room',

@@ -368,11 +368,11 @@ class CoachingAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'coachee__student__user__last_name',
-        'coachee__student__user__first_name',
-        'coachee__student__WRU_ID',
-        'coach__staff__user__last_name',
-        'coach__staff__user__last_name'
+        'coachee__user__last_name',
+        'coachee__user__first_name',
+        'coachee__WRU_ID',
+        'coach__user__first_name',
+        'coach__user__last_name'
     ]
 
     fields = [
