@@ -204,8 +204,13 @@ class TestHistory(models.Model):
         return self.last_test > date.today() - timedelta(days=150)
 
     def update_status(self, test):
-        if self.last_test <= test.test_date:
+        if not self.last_test:
             self.last_test = test.test_date
+            self.test_assignment = test.assign()
+        else:
+            if self.last_test <= test.test_date:
+                self.last_test = test.test_date
+                self.test_assignment = test.assign()
         self.test_assignment = test.assign()
         self.save()
 
