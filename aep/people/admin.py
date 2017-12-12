@@ -241,8 +241,9 @@ class StudentAdmin(ImportExportActionModelAdmin):
     search_fields = [
         "user__first_name",
         "user__last_name",
+        'user__email',
         'WRU_ID',
-        'intake_date'
+        'intake_date',
     ]
 
     fields = [
