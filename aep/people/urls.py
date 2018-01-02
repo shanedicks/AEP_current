@@ -70,9 +70,6 @@ staff_patterns = [
 urlpatterns = [
     url(r'^students/', include(student_patterns)),
     url(r'^staff/', include(staff_patterns)),
-    url(r'^new/$',
-        views.UserCreateView.as_view(),
-        name='create user'),
     url(r'^sign-up/$',
         views.StudentSignupWizard.as_view(),
         name='student signup'),
