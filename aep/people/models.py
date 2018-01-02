@@ -69,6 +69,21 @@ class Profile(models.Model):
         ("G", "Legal Guardian"),
         ("O", "Other")
     )
+    first_name = models.CharField(
+        max_length=30,
+        verbose_name=_("First Name"),
+        blank=True
+    )
+    last_name = models.CharField(
+        max_length=150,
+        verbose_name=_("Last Name"),
+        blank=True
+    )
+    email = models.EmailField(
+        max_length=60,
+        verbose_name=_("Email Address"),
+        blank=True
+    )
     phone = models.CharField(
         max_length=20,
         verbose_name=_("Phone Number"),
@@ -238,7 +253,8 @@ class Student(Profile):
         settings.AUTH_USER_MODEL,
         models.PROTECT,
         related_name='student',
-        verbose_name=_("user")
+        verbose_name=_("user"),
+        null=True
     )
     intake_date = models.DateField(
         null=True,
