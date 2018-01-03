@@ -697,25 +697,27 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
         for obj in queryset:
 
-            if obj.SID:
-                search = {
-                    'SSNTextBox': get_SID(obj.SID),
-                    'Status': -1,
-                    'btnFilter': 'Filter List'
-                }
-            else:
-                search = {
-                    'LastNameTextBox': obj.student.last_name,
-                    'FirstNameTextBox': obj.student.first_name,
-                    'Status': -1,
-                    'AgeSearchType': 1,
-                    'AgeFromInequality': 4,
-                    'AgeFromTextBox': get_age_at_intake(obj.student.dob, obj.student.intake_date),
-                    'btnFilter': 'Filter List'
-                }
+            search = {
+                'LastNameTextBox': obj.student.last_name,
+                'FirstNameTextBox': obj.student.first_name,
+                'Status': -1,
+                'AgeSearchType': 1,
+                'AgeFromInequality': 4,
+                'AgeFromTextBox': get_age_at_intake(obj.student.dob, obj.student.intake_date),
+                'btnFilter': 'Filter List'
+            }
 
             wru = wru_search(session, search)
-            
+
+            if wru == 'No ID':
+                if obj.SID:
+                    search = {
+                        'SSNTextBox': get_SID(obj.SID),
+                        'Status': -1,
+                        'btnFilter': 'Filter List'
+                    }
+                    wru = wru_search(session, search)
+
             if wru != 'No ID':
                 wru = b'x' + wru
 
