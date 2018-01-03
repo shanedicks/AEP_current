@@ -95,7 +95,7 @@ class TestEvent(models.Model):
 
     def orientation_reminder(self):
         for student in self.students.all():
-            if student.student.user.email:
+            if student.student.email:
                 send_mail(
                     subject="Thank you for registering for the Delgado "
                     "Community College Adult Education Program!",
@@ -119,13 +119,13 @@ class TestEvent(models.Model):
                     "<br><p>Thank you,</p>"
                     "<p>The Adult Education Program</p>"
                     "<p>Delgado Community College</p>".format(
-                        student=student.student.user.first_name,
+                        student=student.student.first_name,
                         dfmt='%m-%d-%Y',
                         date=self.start.date(),
                         time=self.start.time()
                     ),
                     from_email="reminder@dccaep.org",
-                    recipient_list=[student.student.user.email],
+                    recipient_list=[student.student.email],
                 )
 
 

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ staff.user.get_full_name }}</h1>
+    <h1>{{ staff }}</h1>
     <h3>Contact</h3>
-    <p>P: {{ staff.phone }} E: {{ staff.user.email }}
+    <p>P: {{ staff.phone }} E: {{ staff.email }}
     <h3>Bio</h3>
     <p>{{ staff.bio }}</p>
 {%endblock content %}

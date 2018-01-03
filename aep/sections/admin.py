@@ -26,8 +26,8 @@ class SectionResource(resources.ModelResource):
             'semester',
             'teacher',
             'teacher__wru',
-            'teacher__user__last_name',
-            'teacher__user__first_name',
+            'teacher__last_name',
+            'teacher__first_name',
             'g_suite_id',
             'course',
             'site',
@@ -137,8 +137,8 @@ class EnrollmentResource(resources.ModelResource):
             "creator",
             "section__WRU_ID",
             "section__title",
-            "student__user__last_name",
-            "student__user__first_name",
+            "student__last_name",
+            "student__first_name",
             "created"
         )
 
@@ -157,8 +157,8 @@ class EnrollmentAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        "student__user__first_name",
-        "student__user__last_name",
+        "student__first_name",
+        "student__last_name",
         "section__title"
     ]
 
@@ -181,8 +181,8 @@ class AttendanceResource(resources.ModelResource):
         model = Attendance
         fields = (
             "enrollment__student__WRU_ID",
-            "enrollment__student__user__last_name",
-            "enrollment__student__user__first_name",
+            "enrollment__student__last_name",
+            "enrollment__student__first_name",
             "enrollment__section__WRU_ID",
             "attendance_type",
             "attendance_date",
@@ -201,8 +201,8 @@ class AttendanceAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = (
-        'enrollment__student__user__first_name',
-        'enrollment__student__user__last_name',
+        'enrollment__student__first_name',
+        'enrollment__student__last_name',
         'enrollment__section__title',
         'attendance_date',
     )

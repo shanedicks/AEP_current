@@ -308,7 +308,7 @@ class Profile(models.Model):
     )
 
     class Meta:
-        ordering = ["student__user__last_name", "student__user__first_name"]
+        ordering = ["student__last_name", "student__first_name"]
 
     def get_absolute_url(self):
         return reverse(

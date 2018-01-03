@@ -44,8 +44,8 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
                 att.time_in,
                 att.time_out,
                 att.enrollment.student.WRU_ID,
-                att.enrollment.student.user.last_name,
-                att.enrollment.student.user.first_name,
+                att.enrollment.student.last_name,
+                att.enrollment.student.first_name,
                 att.enrollment.section.WRU_ID
             ]
             data.append(s)
@@ -108,8 +108,8 @@ class ClassDetailView(LoginRequiredMixin, DetailView):
         if 'students' not in context:
             context['students'] = self.object.get_all_students(
             ).order_by(
-                'student__user__last_name',
-                'student__user__first_name'
+                'student__last_name',
+                'student__first_name'
             )
         return context
 
@@ -142,13 +142,13 @@ class ClassRosterCSV(LoginRequiredMixin, View):
 
             s = [
                 student.student.WRU_ID,
-                student.student.user.last_name,
-                student.student.user.first_name,
+                student.student.last_name,
+                student.student.first_name,
                 "",
                 student.student.get_gender_display(),
                 str(student.student.dob),
                 student.student.intake_date,
-                student.student.user.email,
+                student.student.email,
                 g_suite,
                 student.student.phone,
                 student.student.alt_phone,
@@ -177,8 +177,8 @@ class ClassTestingPreview(ClassDetailView):
         context = super(ClassTestingPreview, self).get_context_data(**kwargs)
         context['students'] = self.object.get_active(
         ).order_by(
-            'student__user__last_name',
-            'student__user__first_name'
+            'student__last_name',
+            'student__first_name'
         )
         return context
 
@@ -194,8 +194,8 @@ class PrintSignInView(LoginRequiredMixin, DetailView):
         if 'active' not in context:
             context['active'] = self.object.get_active(
             ).order_by(
-                'student__user__last_name',
-                'student__user__first_name'
+                'student__last_name',
+                'student__first_name'
             )
         return context
 
@@ -402,20 +402,20 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
         if 'active' not in context:
             context['active'] = self.object.get_active(
             ).order_by(
-                'student__user__last_name',
-                'student__user__first_name'
+                'student__last_name',
+                'student__first_name'
             ).prefetch_related('attendance')
         if 'dropped' not in context:
             context['dropped'] = self.object.get_dropped(
             ).order_by(
-                'student__user__last_name',
-                'student__user__first_name'
+                'student__last_name',
+                'student__first_name'
             ).prefetch_related('attendance')
         if 'waitlist' not in context:
             context['waitlist'] = self.object.get_waiting(
             ).order_by(
-                'student__user__last_name',
-                'student__user__first_name'
+                'student__last_name',
+                'student__first_name'
             ).prefetch_related('attendance')
         return context
 
@@ -469,8 +469,8 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
             enrollment__status="A",
             attendance_date=attendance_date
         ).order_by(
-            "enrollment__student__user__last_name",
-            "enrollment__student__user__first_name"
+            "enrollment__student__last_name",
+            "enrollment__student__first_name"
         )
         formset = AttendanceFormSet(queryset=queryset)
         return self.render_to_response(

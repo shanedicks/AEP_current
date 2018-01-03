@@ -9,9 +9,9 @@
     		<th>Email</th>
         {% for staff in object_list %}
         	<tr>
-	            <td><a href="{{ staff.get_absolute_url }}">{{ staff.user.get_full_name }}</a></td>
+	            <td><a href="{{ staff.get_absolute_url }}">{{ staff }}</a></td>
 	            <td>{{ staff.phone }}</td>
-	            <td>{{ staff.user.email }}</td>
+	            <td>{{ staff.email }}</td>
             </tr>
         {% endfor %}
     </table>

@@ -52,8 +52,8 @@ class TestAppointmentAdmin(admin.ModelAdmin):
     )
 
     search_fields = [
-        'student__user__first_name',
-        'student__user__last_name',
+        'student__first_name',
+        'student__last_name',
         'student__WRU_ID',
         'event__start',
         'event__test'
@@ -77,8 +77,8 @@ class TestHistoryAdmin(admin.ModelAdmin):
     )
 
     search_fields = [
-        'student__user__first_name',
-        'student__user__last_name',
+        'student__first_name',
+        'student__last_name',
         'student_wru',
         'last_test'
     ]
@@ -151,8 +151,8 @@ class TabeAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'student__student__user__first_name',
-        'student__student__user__last_name',
+        'student__student__first_name',
+        'student__student__last_name',
         'test_date'
     ]
 
@@ -209,8 +209,8 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'student__student__user__first_name',
-        'student__student__user__last_name',
+        'student__student__first_name',
+        'student__student__last_name',
         'test_date'
     ]
 
@@ -257,8 +257,8 @@ class Tabe_Loc_Admin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'student__student__user__first_name',
-        'student__student__user__last_name',
+        'student__student__first_name',
+        'student__student__last_name',
         'test_date'
     ]
 
@@ -298,8 +298,8 @@ class Clas_E_Loc_Admin(ImportExportActionModelAdmin):
     ]
 
     search_fields = [
-        'student__student__user__first_name',
-        'student__student__user__last_name',
+        'student__student__first_name',
+        'student__student__last_name',
         'test_date'
     ]
 
@@ -343,8 +343,8 @@ class Gain_Admin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'student__student__user__first_name',
-        'student__student__user__last_name',
+        'student__student__first_name',
+        'student__student__last_name',
         'test_date'
     ]
 
@@ -394,8 +394,8 @@ class Hiset_Practice_Admin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'student__student__user__first_name',
-        'student__student__user__last_name',
+        'student__student__first_name',
+        'student__student__last_name',
         'test_date'
     ]
 

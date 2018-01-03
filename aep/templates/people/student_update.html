@@ -4,7 +4,6 @@
 {% block content %}
 <form class="form_group" method="post">
     {% csrf_token %}
-    {% crispy user_form %}
     {% crispy form %}
     <button type="submit" class="btn btn-success">Update Student</button>
 </form>

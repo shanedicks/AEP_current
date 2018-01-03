@@ -148,7 +148,7 @@ class Profile(models.Model):
         abstract = True
 
     def __str__(self):
-        return self.user.get_full_name()
+        return '{0} {1}'.format(self.first_name, self.last_name)
 
 
 class Student(Profile):
@@ -345,7 +345,7 @@ class Student(Profile):
     )
 
     class Meta:
-        ordering = ["user__last_name", "user__first_name"]
+        ordering = ["last_name", "first_name"]
 
     def get_absolute_url(self):
         return reverse('people:student detail', kwargs={'slug': self.slug})
@@ -407,7 +407,7 @@ class Staff(Profile):
 
     class Meta:
         verbose_name_plural = 'staff'
-        ordering = ["user__last_name", "user__first_name"]
+        ordering = ["last_name", "first_name"]
 
     def get_absolute_url(self):
         return reverse('people:staff detail', kwargs={'slug': self.slug})
@@ -737,6 +737,7 @@ class WIOA(models.Model):
     school_status = models.CharField(
         max_length=1,
         choices=SCHOOL_STATUS_CHOICES,
+        default="4",
         blank=True
     )
     recieved_training = models.CharField(

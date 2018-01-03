@@ -53,11 +53,11 @@ class StudentSearchForm(Form):
         qst = queryset
         if self.cleaned_data['f_name']:
             qst = qst.filter(
-                user__first_name__icontains=self.cleaned_data['f_name']
+                first_name__icontains=self.cleaned_data['f_name']
             )
         if self.cleaned_data['l_name']:
             qst = qst.filter(
-                user__last_name__icontains=self.cleaned_data['l_name']
+                last_name__icontains=self.cleaned_data['l_name']
             )
         if self.cleaned_data['stu_id']:
             qst = qst.filter(
@@ -217,7 +217,7 @@ class UserForm(ModelForm):
 
     def save(self):
         user = super(UserForm, self).save(commit=False)
-        user.username = make_username(user.first_name, user.last_name)
+        user.username = make_username(first_name, last_name)
         user.password = User.objects.make_random_password()
         user.save()
         return user
@@ -324,7 +324,19 @@ class StudentPersonalInfoForm(ModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 'Personal Information',
-                'US_citizen',
+                Row(
+                    Field(
+                        'first_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'last_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                ),
+                'email',
                 Row(
                     Field(
                         'dob',
@@ -344,13 +356,17 @@ class StudentPersonalInfoForm(ModelForm):
                         'other_ID_name',
                         wrapper_class="col-md-6"
                     )
-                )
+                ),
+                'US_citizen',
             ),
         )
 
     class Meta:
         model = Student
         fields = (
+            "first_name",
+            "last_name",
+            "email",
             "dob",
             "gender",
             "marital_status",
@@ -358,6 +374,10 @@ class StudentPersonalInfoForm(ModelForm):
             "other_ID",
             "other_ID_name",
         )
+        labels = {
+            'first_name': "First Name (primer y segundo nombre)",
+            'last_name': "Last Name (primer y segundo apellido)"
+        }
 
 
 class StudentInterestForm(ModelForm):
@@ -515,6 +535,22 @@ class StudentForm(ModelForm):
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
             Fieldset(
+                'User Information',
+                Row(
+                    Field(
+                        'first_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'last_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                ),
+                'email'
+            ),
+            Fieldset(
                 'What types of classes are you interested in taking with us?',
                 Column(
                     'ccr_app',
@@ -616,6 +652,9 @@ class StudentForm(ModelForm):
     class Meta:
         model = Student
         fields = (
+            "first_name",
+            "last_name",
+            "email",
             "dob",
             "gender",
             "marital_status",
@@ -642,7 +681,6 @@ class StudentForm(ModelForm):
             "ec_email",
             "ec_relation",
         )
-
         labels = {
             "US_citizen": "Check this box if you are a US citizen",
             "ccr_app": "College and Career Readiness (HiSET Prep)",
@@ -812,9 +850,12 @@ class EETForm(ModelForm):
                     "training_type_3",
                     type="hidden"
                 ),
-                "job_corps",
-                "youth_build",
-                "school_status",
+                Field(
+                    "job_corps",
+                    "youth_build",
+                    "school_status",
+                    required=True
+                ),
             ),
         )
 
@@ -1113,9 +1154,12 @@ class WioaForm(ModelForm):
                     "training_type_3",
                     type="hidden"
                 ),
-                "job_corps",
-                "youth_build",
-                "school_status",
+                Field(
+                    "job_corps",
+                    "youth_build",
+                    "school_status",
+                    required=True
+                )
             ),
             Fieldset(
                 'Race/Ethnicity/Language Information',

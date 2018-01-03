@@ -38,7 +38,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 class StudentListView(LoginRequiredMixin, ListView, FormView):
 
     form_class = StudentSearchForm
-    queryset = Student.objects.all().order_by('user__last_name', 'user__first_name')
+    queryset = Student.objects.all().order_by('last_name', 'first_name')
     context_object_name = 'students'
     paginate_by = 25
 
@@ -90,8 +90,8 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
         for student in students:
             s = [
                 student.WRU_ID,
-                student.user.last_name,
-                student.user.first_name,
+                student.last_name,
+                student.first_name,
                 str(student.intake_date),
                 str(student.dob),
                 student.get_marital_status_display(),
@@ -104,7 +104,7 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
                 student.state,
                 student.zip_code,
                 student.get_parish_display(),
-                student.user.email,
+                student.email,
                 student.phone,
                 student.alt_phone,
                 student.emergency_contact,
@@ -155,36 +155,36 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
     form_class = StudentForm
     template_name = "people/student_update.html"
 
-    def get_context_data(self, **kwargs):
-        context = super(StudentUpdateView, self).get_context_data(**kwargs)
-        if 'user_form' not in context:
-            context['user_form'] = UserUpdateForm(instance=self.object.user)
-            context.update(kwargs)
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super(StudentUpdateView, self).get_context_data(**kwargs)
+    #     if 'user_form' not in context:
+    #         context['user_form'] = UserUpdateForm(instance=self.object.user)
+    #         context.update(kwargs)
+    #     return context
 
-    def post(self, request, *args, **kwargs):
-        user_form = UserUpdateForm(
-            request.POST,
-            instance=self.get_object().user
-        )
-        student_form = StudentForm(
-            request.POST,
-            instance=self.get_object()
-        )
-        uf_valid = user_form.is_valid()
-        sf_valid = student_form.is_valid()
-        if uf_valid and sf_valid:
-            user = user_form.save()
-            student = student_form.save(commit=False)
-            student.user = user
-            student.save()
-            self.object = student
-            return HttpResponseRedirect(self.get_success_url())
-        else:
-            self.object = None
-            return self.render_to_response(
-                self.get_context_data(user_form=user_form)
-            )
+    # def post(self, request, *args, **kwargs):
+    #     user_form = UserUpdateForm(
+    #         request.POST,
+    #         instance=self.get_object().user
+    #     )
+    #     student_form = StudentForm(
+    #         request.POST,
+    #         instance=self.get_object()
+    #     )
+    #     uf_valid = user_form.is_valid()
+    #     sf_valid = student_form.is_valid()
+    #     if uf_valid and sf_valid:
+    #         user = user_form.save()
+    #         student = student_form.save(commit=False)
+    #         student.user = user
+    #         student.save()
+    #         self.object = student
+    #         return HttpResponseRedirect(self.get_success_url())
+    #     else:
+    #         self.object = None
+    #         return self.render_to_response(
+    #             self.get_context_data(user_form=user_form)
+    #         )
 
 
 class StudentCreateView(CreateView):
@@ -196,25 +196,18 @@ class StudentCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(StudentCreateView, self).get_context_data(**kwargs)
-        if 'user_form' not in context:
-            context['user_form'] = UserForm
-            context.update(kwargs)
         if 'wioa_form' not in context:
             context['wioa_form'] = WioaForm
             context.update(kwargs)
         return context
 
     def post(self, request, *args, **kwargs):
-        user_form = UserForm(request.POST)
         student_form = StudentForm(request.POST)
         wioa_form = WioaForm(request.POST)
-        uf_valid = user_form.is_valid()
         sf_valid = student_form.is_valid()
         wf_valid = wioa_form.is_valid()
-        if uf_valid and sf_valid and wf_valid:
-            user = user_form.save()
+        if sf_valid and wf_valid:
             student = student_form.save(commit=False)
-            student.user = user
             student.save()
             wioa = wioa_form.save(commit=False)
             wioa.student = student
@@ -224,16 +217,15 @@ class StudentCreateView(CreateView):
         else:
             self.object = None
             return self.render_to_response(
-                self.get_context_data(user_form=user_form, wioa_form=wioa_form)
+                self.get_context_data(wioa_form=wioa_form)
             )
 
 
 class StudentSignupWizard(SessionWizardView):
 
     form_list = [
-        ("user", UserForm),
-        ("ssn", SSNForm),
         ("personal", StudentPersonalInfoForm),
+        ("ssn", SSNForm),
         ("interest", StudentInterestForm),
         ("contact", StudentContactForm),
         ("race", REForm),
@@ -254,9 +246,7 @@ class StudentSignupWizard(SessionWizardView):
         eet = self.get_cleaned_data_for_step('EET')
         disability = self.get_cleaned_data_for_step('disability')
         details = self.get_cleaned_data_for_step('details')
-        user = form_dict["user"].save()
         student = Student(**personal, **interest, **contact)
-        student.user = user
         student.save()
         wioa = WIOA(**ssn, **race, **eet, **disability, **details)
         wioa.student = student
@@ -267,7 +257,7 @@ class StudentSignupWizard(SessionWizardView):
         if interest['e_learn_app'] is False:
             return HttpResponseRedirect(reverse_lazy('people:signup success'))
         else:
-            if user.email:
+            if student.email:
                 context = Context({'key': 'value'})
                 text_content = get_template(
                     'people/elearn_email.txt'
@@ -279,7 +269,7 @@ class StudentSignupWizard(SessionWizardView):
                     "Welcome to eLearn!",
                     text_content,
                     "elearn@dccaep.org",
-                    [user.email],
+                    [student.email],
                 )
                 msg.attach_alternative(html_content, "text/html")
                 msg.send()
@@ -426,8 +416,8 @@ class StaffListView(LoginRequiredMixin, ListView):
     model = Staff
 
     queryset = Staff.objects.filter(active=True).order_by(
-        'user__last_name',
-        'user__first_name'
+        'last_name',
+        'first_name'
     )
 
 

@@ -12,8 +12,6 @@ from assessments.models import TestHistory
 from coaching.models import ElearnRecord, AceRecord
 
 
-
-
 class UserResource(resources.ModelResource):
 
     class Meta:
@@ -40,9 +38,9 @@ class StudentResource(resources.ModelResource):
         fields = (
             "id",
             'user',
-            "user__first_name",
-            "user__last_name",
-            "user__email",
+            "first_name",
+            "last_name",
+            "email",
             "dob",
             'intake_date',
             "AEP_ID",
@@ -85,9 +83,9 @@ class StaffResource(resources.ModelResource):
         fields = (
             "id",
             'user',
-            "user__first_name",
-            "user__last_name",
-            "user__email",
+            "first_name",
+            "last_name",
+            "email",
             'teacher',
             'coach',
             "dob",
@@ -114,9 +112,9 @@ class WIOAResource(resources.ModelResource):
             "id",
             "student__user__id",
             "student__id",
-            "student__user__first_name",
-            "student__user__last_name",
-            "student__user__email",
+            "student__first_name",
+            "student__last_name",
+            "student__email",
             "student__WRU_ID",
             "student__dob",
             "student__intake_date",
@@ -239,9 +237,9 @@ class StudentAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        "user__first_name",
-        "user__last_name",
-        'user__email',
+        "first_name",
+        "last_name",
+        'email',
         'WRU_ID',
         'intake_date',
     ]
@@ -341,12 +339,12 @@ class StaffAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        "user__first_name",
-        "user__last_name",
+        "first_name",
+        "last_name",
     ]
 
     def get_email(self, obj):
-        return obj.user.email
+        return obj.email
     get_email.admin_order_field = "Email"
     get_email.short_description = "Email"
 
@@ -514,6 +512,65 @@ def employment_status(input):
     return emp[input]
 
 
+def migrant(input):
+    mig = {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 0,
+    }
+    return mig[input]
+
+
+def one_stop(input):
+    o = {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 0
+    }
+    return o[input]
+
+
+def y_n_u(input):
+    y = {
+        "": 9,
+        "1": 1,
+        "2": 0,
+        "3": 9
+    }
+    return y[input]
+
+
+def school_status(input):
+    status = {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6
+    }
+    return status[input]
+
+
+def dislocated(input):
+    if input is True:
+        return 1
+    else:
+        return 0
+
+
+def voc_rehab(input):
+    v = {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 0
+    }
+    return v[input]
+
+
 def wru_search(session, search_dict):
     s = session.get(
         'https://workreadyu.lctcs.edu/Student',
@@ -529,7 +586,6 @@ def wru_search(session, search_dict):
         return 'No ID'
 
 
-
 class WIOAAdmin(ImportExportActionModelAdmin):
 
     resource_class = WIOAResource
@@ -537,8 +593,8 @@ class WIOAAdmin(ImportExportActionModelAdmin):
     list_display = ("__str__", "get_WRU_ID")
 
     search_fields = [
-        "student__user__first_name",
-        "student__user__last_name",
+        "student__first_name",
+        "student__last_name",
         "student__WRU_ID",
         "student__intake_date"
     ]
@@ -641,15 +697,22 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
         for obj in queryset:
 
-            search = {
-                'LastNameTextBox': obj.student.user.last_name,
-                'FirstNameTextBox': obj.student.user.first_name,
-                'Status': -1,
-                'AgeSearchType': 1,
-                'AgeFromInequality': 4,
-                'AgeFromTextBox': get_age_at_intake(obj.student.dob, obj.student.intake_date),
-                'btnFilter': 'Filter List'
-            }
+            if obj.SID:
+                search = {
+                    'SSNTextBox': obj.SID,
+                    'Status': -1,
+                    'btnFilter': 'Filter List'
+                }
+            else:
+                search = {
+                    'LastNameTextBox': obj.student.last_name,
+                    'FirstNameTextBox': obj.student.first_name,
+                    'Status': -1,
+                    'AgeSearchType': 1,
+                    'AgeFromInequality': 4,
+                    'AgeFromTextBox': get_age_at_intake(obj.student.dob, obj.student.intake_date),
+                    'btnFilter': 'Filter List'
+                }
 
             wru = wru_search(session, search)
             
@@ -676,16 +739,19 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
             student = {
                 "hdnRoleType": "2",
+                "hdnInactiveStateKey": ",2,3,4,5,",
+                "hdnInactiveProg": ",7,13,",
+                "hdnInactiveEmpStat": ",4_UNL, 5_NLF,",
                 "EnrollPStat.IntakeDate": obj.student.intake_date,
-                "FY": "4",
-                "lblCurrentFY": "4",
-                "FYBginDate": "7/1/2016",
-                "FYEndDate": "6/30/2017",
+                "FY": "5",
+                "lblCurrentFY": "5",
+                "FYBginDate": "7/1/2017",
+                "FYEndDate": "6/30/2018",
                 "hdnProviderId": "DELGADO COMMUNITY COLLEGE",
                 "StudentId": "0",
                 "SSN": get_SID(obj.SID),
-                "LastName": obj.student.user.last_name,
-                "FirstName": obj.student.user.first_name,
+                "LastName": obj.student.last_name,
+                "FirstName": obj.student.first_name,
                 "MiddleInitial": "",
                 "DateOfBirth": obj.student.dob,
                 "Age": get_age_at_intake(obj.student.dob, obj.student.intake_date),
@@ -721,9 +787,9 @@ class WIOAAdmin(ImportExportActionModelAdmin):
                 "Emergency.RelationshipId": "",
                 "Emergency.Telephone1": "",
                 "Emergency.Telephone2": "",
-                "Email.Email1": obj.student.user.email,
+                "Email.Email1": obj.student.email,
                 "Email.EmailTypeId": "1",
-                "Email.EmailStatus": email_status(obj.student.user.email),
+                "Email.EmailStatus": email_status(obj.student.email),
                 "HispanicLatino": hl_tf(obj.hispanic_latino),
                 "Ethnicity_1": true_false(obj.amer_indian),
                 "Ethnicity_2": true_false(obj.asian),
@@ -734,7 +800,6 @@ class WIOAAdmin(ImportExportActionModelAdmin):
                 "Program.StateKeyword": "",
                 "Program.SecondaryProgram1TypeId": secondary_program(obj.student),
                 "ESLStudent": esl(obj.student),
-                "ESLStudent": "false",
                 "Program.Keyword": "",
                 "Program.SecondaryProgram2TypeId": "",
                 "Program.NativeLanguage": obj.native_language,
@@ -752,6 +817,48 @@ class WIOAAdmin(ImportExportActionModelAdmin):
                 "EnrollSStat.DisplayedHomemaker": true_false(obj.displaced_homemaker),
                 "EnrollSStat.SingleParent": true_false(obj.single_parent),
                 "EnrollSStat.DislocatedWorker": true_false(obj.dislocated_worker),
+                "StudentWIOADetail.MigrantAndSeasonalFarmworker": migrant(obj.migrant_seasonal_status),
+                "StudentWIOADetail.NNLongTermUnemployed": true_false(obj.long_term_unemployed),
+                "StudentWIOADetail.DislocatedWorker": dislocated(obj.dislocated_worker),
+                "StudentWIOADetail.NNCulturalBarriers": true_false(obj.cult_barriers_hind_emp),
+                "StudentWIOADetail.NNFostercareYouth": true_false(obj.in_foster_care),
+                "StudentWIOADetail.NNAgedOutFosterCare": true_false(obj.aged_out_foster_care),
+                "StudentWIOADetail.NNExhaustingTANFWithin2Years": true_false(obj.exhaust_tanf),
+                "StudentWIOADetail.IndividualWithDisability": "",
+                "StudentWIOADetail.JobCorps": y_n_u(obj.job_corps),
+                "StudentWIOADetail.YouthBuild": y_n_u(obj.youth_build),
+                "StudentWIOADetail.NNLowLevelsOfLiteracy": "false",
+                "StudentWIOADetail.NNRecievedAssistance": true_false(obj.recieves_public_assistance),
+                "StudentWIOADetail.NNIncomeBelowStandardIncomeLevel": true_false(obj.low_family_income),
+                "StudentWIOADetail.NNReceiveReducedPriceLunch": "false",
+                "StudentWIOADetail.NNLowIncomeFosterChild": true_false(obj.state_payed_foster),
+                "StudentWIOADetail.NNLowIncomeIndividualWithDisability": true_false(obj.disabled_in_poverty),
+                "StudentWIOADetail.NNHomelessOrRunawayYouth": true_false(obj.runaway_youth),
+                "StudentWIOADetail.NNLivingInHighPovertyArea": true_false(obj.youth_in_high_poverty_area),
+                "StudentWIOADetail.NNSubjectToCriminalJusticeProcess": true_false(obj.subject_of_criminal_justice),
+                "StudentWIOADetail.NNBarriersToEmployment": true_false(obj.arrest_record_employment_barrier),
+                "StudentWIOADetail.NNLacksFixedNighttimeResidence": true_false(obj.lacks_adequate_residence),
+                "StudentWIOADetail.NNNighttimeResidenceNotForHumans": true_false(obj.irregular_sleep_accomodation),
+                "StudentWIOADetail.NNMigratoryChild": true_false(obj.migratory_child),
+                "StudentWIOADetail.NNBelow18AndAbsetFromHome": true_false(obj.runaway_youth),
+                "StudentWIOADetail.Adult": one_stop(obj.adult_one_stop),
+                "StudentWIOADetail.AdultDateofLastService": "",
+                "StudentWIOADetail.AdultProviderName": "",
+                "StudentWIOADetail.AdultTypeOfService": 0,
+                "StudentWIOADetail.Youth": one_stop(obj.youth_one_stop),
+                "StudentWIOADetail.YouthDateofLastService": "",
+                "StudentWIOADetail.YouthProviderName": "",
+                "StudentWIOADetail.YouthTypeOfService": 0,
+                "StudentWIOADetail.VocationalRehabilitation": voc_rehab(obj.voc_rehab),
+                "StudentWIOADetail.WagnerPeyserAct": y_n_u(obj.wagner_peyser),
+                "StudentWIOADetail.SchoolStatusAtParticipation": school_status(obj.school_status),
+                "StudentWIOADetail.ReceivedTraining": "",
+                "StudentWIOADetail.EligibleTrainingProvider": "",
+                "StudentWIOADetail.TypeTrainingServices": "",
+                "StudentWIOADetail.EligibleTrainingProviderStudy": "",
+                "StudentWIOADetail.EligibleTrainingProviderCIP": "",
+                "StudentWIOADetail.TypeTrainingService2": "",
+                "StudentWIOADetail.TypeTrainingService3": "",
                 "Disability_12": true_false(obj.adhd),
                 "Disability_13": true_false(obj.autism),
                 "Disability_9": true_false(obj.deaf_blind),
@@ -783,13 +890,13 @@ class WIOAAdmin(ImportExportActionModelAdmin):
             }
 
             session.post(
-                'https://workreadyu.lctcs.edu/Student/Create/CreateLink',
+                'https://workreadyu.lctcs.edu/Student/CreateWithWIOA/CreateLink',
                 data=student
             )
 
             search = {
-                'LastNameTextBox': obj.student.user.last_name,
-                'FirstNameTextBox': obj.student.user.first_name,
+                'LastNameTextBox': obj.student.last_name,
+                'FirstNameTextBox': obj.student.first_name,
                 'FromTextBox': obj.student.intake_date,
                 'ToTextBox': obj.student.intake_date,
                 'btnFilter': 'Filter List'

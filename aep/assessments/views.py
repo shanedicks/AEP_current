@@ -30,8 +30,8 @@ class TestEventDetailView(LoginRequiredMixin, DetailView):
         if 'students' not in context:
             context['students'] = self.object.students.all(
             ).order_by(
-                'student__user__last_name',
-                'student__user__first_name'
+                'student__last_name',
+                'student__first_name'
             )
             context.update(kwargs)
         return context
@@ -69,8 +69,8 @@ class TestEventCSV(LoginRequiredMixin, View):
                 "1142370",
                 "1153531",
                 student.student.WRU_ID,
-                student.student.user.last_name,
-                student.student.user.first_name,
+                student.student.last_name,
+                student.student.first_name,
                 "",
                 student.student.get_gender_display(),
                 str(student.student.dob),
@@ -84,7 +84,7 @@ class TestEventCSV(LoginRequiredMixin, View):
                 student.student.state,
                 student.student.zip_code,
                 student.student.get_parish_display(),
-                student.student.user.email,
+                student.student.email,
                 student.student.phone,
                 student.student.alt_phone,
                 student.student.emergency_contact,

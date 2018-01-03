@@ -26,8 +26,8 @@ class AceRecordResource(resources.ModelResource):
         fields = (
             'id',
             'student',
-            'student__user__last_name',
-            'student__user__first_name',
+            'student__last_name',
+            'student__first_name',
             'lola',
             'dcc_email',
             'ace_pathway',
@@ -56,9 +56,9 @@ class ElearnRecordResource(resources.ModelResource):
         fields = (
             'id',
             'student',
-            'student__user__last_name',
-            'student__user__first_name',
-            'student__user__email',
+            'student__last_name',
+            'student__first_name',
+            'student__email',
             'student__phone',
             'elearn_status',
             'status_updated',
@@ -85,11 +85,11 @@ class CoachingResource(resources.ModelResource):
         fields = (
             'id',
             'coach',
-            'coach__user__last_name',
-            'coach__user__first_name',
+            'coach__last_name',
+            'coach__first_name',
             'coachee',
-            'coachee__user__last_name',
-            'coachee__user__first_name',
+            'coachee__last_name',
+            'coachee__first_name',
             'coaching_type',
             'active',
             'start_date',
@@ -106,8 +106,8 @@ class ProfileResource(resources.ModelResource):
         fields = (
             'id',
             'student__WRU_ID',
-            'student__user__last_name',
-            'student__user__first_name',
+            'student__last_name',
+            'student__first_name',
             'health_pathway_interest',
             'crafts_pathway_interest',
             'it_pathway_interest',
@@ -180,8 +180,8 @@ class AceRecordAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'student__user__last_name',
-        'student__user__first_name',
+        'student__last_name',
+        'student__first_name',
         'student__WRU_ID'
     ]
 
@@ -237,8 +237,8 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'student__user__last_name',
-        'student__user__first_name',
+        'student__last_name',
+        'student__first_name',
         'student__WRU_ID'
     ]
 
@@ -287,7 +287,7 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
                     "<p>The eLearn Team</p>"
                     "<p>apply@elearnclass.org</p>",
                     from_email="elearn@dccaep.org",
-                    recipient_list=[obj.student.user.email],
+                    recipient_list=[obj.student.email],
                 )
                 obj.elearn_status = 'Pending'
                 obj.status_updated = datetime.today()
@@ -310,8 +310,8 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
             if obj.g_suite_email:
                 pass
             else:
-                first = obj.student.user.first_name
-                last = obj.student.user.last_name
+                first = obj.student.first_name
+                last = obj.student.last_name
                 name = ".".join([first, last])
                 x = 0
                 def check_email(name, x): # check g_suite for email, add numbers incrementally if email in use until email is valid
@@ -368,11 +368,11 @@ class CoachingAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'coachee__user__last_name',
-        'coachee__user__first_name',
+        'coachee__last_name',
+        'coachee__first_name',
         'coachee__WRU_ID',
-        'coach__user__first_name',
-        'coach__user__last_name'
+        'coach__first_name',
+        'coach__last_name'
     ]
 
     fields = [
@@ -396,8 +396,8 @@ class ProfileAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'student__user__last_name',
-        'student__user__first_name',
+        'student__last_name',
+        'student__first_name',
         'student__WRU_ID'
     ]
 
@@ -453,11 +453,11 @@ class MeetingNoteAdmin(ImportExportActionModelAdmin):
     )
 
     search_fields = [
-        'coaching__coachee__student__user__last_name',
-        'coaching__coachee__student__user__first_name',
+        'coaching__coachee__student__last_name',
+        'coaching__coachee__student__first_name',
         'coaching__coachee__student__WRU_ID',
-        'coaching__coach__staff__user__last_name',
-        'coaching__coach__staff__user__first_name',
+        'coaching__coach__staff__last_name',
+        'coaching__coach__staff__first_name',
     ]
 
     fields = [

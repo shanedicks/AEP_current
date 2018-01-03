@@ -18,7 +18,7 @@
     <div class='well'>
         <h3>NRS Reported Tests</h3>
         {% if history.last_test is None %}
-            <p>{{history.student.user.first_name}} doesn't seem to have any tests on record</p>
+            <p>{{history.student.first_name}} doesn't seem to have any tests on record</p>
         {% else %}
             <h5>Last Tested: {{ history.last_test }}</h5>
         {%endif%}
@@ -47,7 +47,7 @@
                     {% endwith %}
             {% else %}
                 <h4><a href="{% url 'assessments:student tabe add' slug=history.student.slug %}">TABE Tests</a></h4>
-                <p>{{history.student.user.first_name}} has no TABE tests on record. Click the link above to add one</p>
+                <p>{{history.student.first_name}} has no TABE tests on record. Click the link above to add one</p>
             {% endif %}
             {% if history.clas_e_tests.count > 0 %}
                 <h4><a href="{% url 'assessments:student clas-e list' slug=history.student.slug %}">CLAS-E Tests</a></h4>
@@ -69,7 +69,7 @@
                     {% endwith %}
             {% else %}
                 <h4><a href="{% url 'assessments:student clas-e add' slug=history.student.slug %}">CLAS-E Tests</a></h4>
-                <p>{{history.student.user.first_name}} has no CLAS-E tests on record. Click the link above to add one</p>
+                <p>{{history.student.first_name}} has no CLAS-E tests on record. Click the link above to add one</p>
             {% endif %}
             {% if history.gain_tests.count > 0 %}
                 <h4><a href="{% url 'assessments:student gain list' slug=history.student.slug %}">GAIN Tests</a></h4>    
@@ -95,7 +95,7 @@
                     {% endwith %}
             {% else %}
                 <h4><a href="{% url 'assessments:student gain add' slug=history.student.slug %}">GAIN Tests</a></h4>
-                <p>{{history.student.user.first_name}} has no GAIN tests on record. Click the link above to add one</p>
+                <p>{{history.student.first_name}} has no GAIN tests on record. Click the link above to add one</p>
             {% endif %}
 
         <h3>Other Tests</h3>
@@ -121,7 +121,7 @@
             {% endwith %}
         {% else %}
             <h4><a href="{% url 'assessments:student hiset practice add' slug=history.student.slug %}">HiSET Practice Tests</a></h4>
-            <p>{{history.student.user.first_name}} has no HiSET Practice tests on record. Click the link above to add one</p>
+            <p>{{history.student.first_name}} has no HiSET Practice tests on record. Click the link above to add one</p>
         {% endif %}
     </div>
 {% endblock %}

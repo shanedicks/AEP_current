@@ -10,7 +10,7 @@
         </tr>
         {% for record in records %}
             <tr>
-                <td><a href="{{ record.get_absolute_url }}">{{ record.student.user.get_full_name }}</a></td>
+                <td><a href="{{ record.get_absolute_url }}">{{ record.student }}</a></td>
                 <td>{{ record.student.WRU_ID }}</td>
                 <td>{{ record.lola }}</td>
             </tr>

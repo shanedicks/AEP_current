@@ -4,7 +4,6 @@
 <div class="well">
     <form method="post">
         {% csrf_token %}
-            {% crispy user_form %}
             {% crispy form %}
             {% crispy wioa_form %}
         <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Register</button>

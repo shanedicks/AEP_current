@@ -163,7 +163,7 @@ class Section(models.Model):
                 added.append(str(student.student))
         self.begin()
         if len(dropped) > 0:
-            if self.teacher.user.email:
+            if self.teacher.email:
                 send_mail(
                     "Delgado Adult Ed Dropped Student Notice {day}".format(day=datetime.today().date()),
                     "Hi {teacher},\n"
@@ -180,11 +180,11 @@ class Section(models.Model):
                     "Consider calling these newly added students to be sure "
                     "they are aware of the change. Thanks".format(
                         section=self.title,
-                        teacher=self.teacher.user.first_name,
+                        teacher=self.teacher.first_name,
                         drop=dropped,
                         add=added),
                     "admin@dccaep.org",
-                    [self.teacher.user.email],
+                    [self.teacher.email],
                     fail_silently=False
                 )
 
@@ -193,7 +193,7 @@ class Section(models.Model):
             student.attendance_drop()
 
     def attendance_reminder(self):
-        if self.teacher.user.email:
+        if self.teacher.email:
             today = datetime.today()
             last_week = datetime.today() - td(days=7)
             att = Attendance.objects.filter(
@@ -214,10 +214,10 @@ class Section(models.Model):
                     "with program attendance and testing policies.\n\n"
                     "Please update or check your attendance for accuracy as soon as possible.".format(
                         section=self.title,
-                        teacher=self.teacher.user.first_name
+                        teacher=self.teacher.first_name
                     ),
                     "admin@dccaep.org",
-                    [self.teacher.user.email],
+                    [self.teacher.email],
                     fail_silently=False
                 )
 
@@ -353,10 +353,10 @@ class Enrollment(models.Model):
         if absent > 1 and present < 1:
             self.status = "D"
             self.save()
-            if self.student.user.email:
+            if self.student.email:
                 send_mail(
                     "We're sorry {student}, but you've been dropped from {section}".format(
-                        student=self.student.user.first_name,
+                        student=self.student.first_name,
                         section=self.section.title),
                     "According to our attendance policy, "
                     "students who miss the first two class periods "
@@ -364,7 +364,7 @@ class Enrollment(models.Model):
                     "Please stop by our main office or call "
                     "504-671-5434 for more information.",
                     "attendance_robot@dccaep.org",
-                    [self.student.user.email],
+                    [self.student.email],
                     fail_silently=False)
             return True
         return False
@@ -374,7 +374,7 @@ class Enrollment(models.Model):
         if not self.section.is_full():
             self.status = 'A'
             self.save()
-            if self.student.user.email:
+            if self.student.email:
                 send_mail(
                     "Good News! You've been added to {section}".format(
                         section=self.section.title
@@ -384,10 +384,10 @@ class Enrollment(models.Model):
                     "To keep your spot, please attend this class the next time it meets.\n"
                     "If you are unsure when that is, "
                     "stop by our main office or call 504-671-5434".format(
-                        student=self.student.user.first_name,
+                        student=self.student.first_name,
                         section=self.section.title),
                     "class_roster_robot@dccaep.org",
-                    [self.student.user.email],
+                    [self.student.email],
                     fail_silently=False
                 )
             return True
@@ -400,10 +400,10 @@ class Enrollment(models.Model):
         if absences > policy:
             self.status = 'D'
             self.save()
-            if self.student.user.email:
+            if self.student.email:
                 send_mail(
                     "We're sorry {student}, but you've been dropped from {section}".format(
-                        student=self.student.user.first_name,
+                        student=self.student.first_name,
                         section=self.section.title),
                     "According to our program's attendance policy, "
                     "students who miss a class more than 4 times "
@@ -412,7 +412,7 @@ class Enrollment(models.Model):
                     "Please stop by our main office or call "
                     "504-671-5434 for more information.",
                     "attendance_robot@dccaep.org",
-                    [self.student.user.email],
+                    [self.student.email],
                     fail_silently=False)
 
 
