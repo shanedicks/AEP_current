@@ -699,7 +699,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
             if obj.SID:
                 search = {
-                    'SSNTextBox': obj.SID,
+                    'SSNTextBox': get_SID(obj.SID),
                     'Status': -1,
                     'btnFilter': 'Filter List'
                 }
