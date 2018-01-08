@@ -1,9 +1,11 @@
 import requests
 import bs4
 from datetime import datetime
+from django.db import IntegrityError
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
+from django.core.exceptions import ObjectDoesNotExist
 
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
@@ -246,6 +248,9 @@ class StudentAdmin(ImportExportActionModelAdmin):
 
     fields = [
         "user",
+        "first_name",
+        "last_name",
+        "email",
         ("WRU_ID",
          'program'),
         "US_citizen",
@@ -265,10 +270,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
     actions = [
         'testify',
         'create_elearn_record',
-        'move_classes',
-        'move_test_history',
-        'move_appointments',
-        'move_elearn_record'
+        'full_merge'
     ]
 
     ordering = ['-id']
@@ -292,9 +294,29 @@ class StudentAdmin(ImportExportActionModelAdmin):
 
     def move_test_history(self, request, queryset):
         q = queryset.order_by('pk')
-        t = q[0].tests
-        t.student = q[1]
-        t.save()
+        try:
+            t = q[0].tests
+            t.student = q[1]
+            try:
+                t.save()
+            except IntegrityError:
+                tabe = q[1].tests.tabe_tests.all()
+                tabe.update(student=t)
+                tabe_loc = q[1].tests.tabe_loc_tests.all()
+                tabe_loc.update(student=t)
+                clas_e = q[1].tests.clas_e_tests.all()
+                clas_e.update(student=t)
+                clas_e_loc = q[1].tests.clas_e_tests.all()
+                clas_e_loc.update(student=t)
+                gain = q[1].tests.gain_tests.all()
+                gain.update(student=t)
+                hiset = q[1].tests.hiset_practice_tests.all()
+                hiset.update(student=t)
+                q[1].tests.delete()
+                t.save()
+        except ObjectDoesNotExist:
+            pass
+
 
     def move_classes(self, request, queryset):
         q = queryset.order_by('pk')
@@ -306,13 +328,51 @@ class StudentAdmin(ImportExportActionModelAdmin):
         q = queryset.order_by('pk')
         for a in q[0].test_appointments.all():
             a.student = q[1]
-            a.save()
+            try:
+                a.save()
+            except IntegrityError:
+                pass
 
     def move_elearn_record(self, request, queryset):
         q = queryset.order_by('pk')
-        t = q[0].elearn_record
-        t.student = q[1]
-        t.save()
+        try:
+            e = q[0].elearn_record
+            e.student = q[1]
+            e.save()
+        except ObjectDoesNotExist:
+            pass
+
+    def move_coaching(self, request, queryset):
+        q = queryset.order_by('pk')
+        try:
+            p = q[0].coaching_profile
+            p.student = q[1]
+            p.save()
+        except ObjectDoesNotExist:
+            pass
+        for c in q[0].coaches.all():
+            c.coachee = q[1]
+            try:
+                c.save()
+            except IntegrityError:
+                pass
+
+    def move_ace_record(self, request, queryset):
+        q = queryset.order_by('pk')
+        try:
+            a = q[0].ace_record
+            a.student = q[1]
+            a.save()
+        except ObjectDoesNotExist:
+            pass
+
+    def full_merge(self, request, queryset):
+        self.move_test_history(request, queryset)
+        self.move_classes(request, queryset)
+        self.move_appointments(request, queryset)
+        self.move_elearn_record(request, queryset)
+        self.move_coaching(request, queryset)
+        self.move_ace_record(request, queryset)
 
 
 admin.site.register(Student, StudentAdmin)
