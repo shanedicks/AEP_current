@@ -254,7 +254,8 @@ class Student(Profile):
         models.PROTECT,
         related_name='student',
         verbose_name=_("user"),
-        null=True
+        null=True,
+        blank=True
     )
     intake_date = models.DateField(
         null=True,
