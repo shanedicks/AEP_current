@@ -67,7 +67,12 @@ class SectionAdmin(ImportExportActionModelAdmin):
 
     search_fields = ["title", "program", 'site', 'WRU_ID', 'semester__title']
 
-    actions = ["begin", "enforce_attendance", 'create_classroom_section']
+    actions = [
+        "begin",
+        "enforce_attendance",
+        'create_classroom_section',
+        'roster_to_classroom'
+    ]
 
     def begin(self, request, queryset):
         for obj in queryset:
@@ -116,6 +121,32 @@ class SectionAdmin(ImportExportActionModelAdmin):
         shane = credentials.create_delegated('shane.dicks@elearnclass.org')
         http_auth = shane.authorize(Http())
         service = discovery.build('classroom', 'v1', http=http_auth)
+
+    def roster_to_classroom(self, request, queryset):
+
+        scopes = ['https://www.googleapis.com/auth/classroom.rosters']
+
+        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+            keyfile_dict=settings.KEYFILE_DICT,
+            scopes=scopes
+        )
+
+        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        http_auth = shane.authorize(Http())
+        service = discovery.build('classroom', 'v1', http=http_auth)
+
+        for obj in queryset:
+            students = obj.students.all().prefetch_related(
+                'student__elearn_record'
+            )
+            for student in students:
+                s = {
+                    "userId": student.student.elearn_record.g_suite_email
+                }
+                service.courses().students().create(
+                    courseId=obj.g_suite_id,
+                    body=s
+                ).execute()
 
 
 admin.site.register(Section, SectionAdmin)
