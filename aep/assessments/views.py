@@ -127,6 +127,46 @@ class TestEventListView(LoginRequiredMixin, ListView):
         return context
 
 
+class CurrentEventListView(LoginRequiredMixin, ListView):
+
+    model = TestEvent
+    template_name = "assessments/test_event_list.html"
+    queryset = TestEvent.objects.filter(
+        start__gte=timezone.now()
+    )
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(
+            CurrentEventListView,
+            self
+        ).get_context_data(*args, **kwargs)
+        if 'tempus' not in context:
+            context['tempus'] = "Current"
+            context.update(kwargs)
+        return context
+
+
+class PastEventListView(LoginRequiredMixin, ListView):
+
+    model = TestEvent
+    template_name = "assessments/test_event_list.html"
+    paginate_by = 20
+    queryset = TestEvent.objects.filter(
+        start__lt=timezone.now()
+    )
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(
+            PastEventListView,
+            self
+        ).get_context_data(*args, **kwargs)
+        if 'tempus' not in context:
+            context['tempus'] = "Past"
+            context.update(kwargs)
+        return context
+
+
+
 class TestingSignupView(LoginRequiredMixin, CreateView):
 
     model = TestAppointment
