@@ -317,15 +317,12 @@ class StudentAdmin(ImportExportActionModelAdmin):
         except ObjectDoesNotExist:
             pass
 
-
-    def move_classes(self, request, queryset):
-        q = queryset.order_by('pk')
+    def move_classes(self, request, q):
         for c in q[0].classes.all():
             c.student = q[1]
             c.save()
 
-    def move_appointments(self, request, queryset):
-        q = queryset.order_by('pk')
+    def move_appointments(self, request, q):
         for a in q[0].test_appointments.all():
             a.student = q[1]
             try:
@@ -333,8 +330,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
             except IntegrityError:
                 pass
 
-    def move_elearn_record(self, request, queryset):
-        q = queryset.order_by('pk')
+    def move_elearn_record(self, request, q):
         try:
             e = q[0].elearn_record
             e.student = q[1]
@@ -342,8 +338,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         except ObjectDoesNotExist:
             pass
 
-    def move_coaching(self, request, queryset):
-        q = queryset.order_by('pk')
+    def move_coaching(self, request, q):
         try:
             p = q[0].coaching_profile
             p.student = q[1]
@@ -357,8 +352,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
             except IntegrityError:
                 pass
 
-    def move_ace_record(self, request, queryset):
-        q = queryset.order_by('pk')
+    def move_ace_record(self, request, q):
         try:
             a = q[0].ace_record
             a.student = q[1]
@@ -367,12 +361,17 @@ class StudentAdmin(ImportExportActionModelAdmin):
             pass
 
     def full_merge(self, request, queryset):
-        self.move_test_history(request, queryset)
-        self.move_classes(request, queryset)
-        self.move_appointments(request, queryset)
-        self.move_elearn_record(request, queryset)
-        self.move_coaching(request, queryset)
-        self.move_ace_record(request, queryset)
+        q = queryset.order_by('pk')
+        self.move_test_history(request, q)
+        self.move_classes(request, q)
+        self.move_appointments(request, q)
+        self.move_elearn_record(request, q)
+        self.move_coaching(request, q)
+        self.move_ace_record(request, q)
+        s = q[1]
+        s.intake_date = q[0].intake_date
+        s.WRU_ID = q[0].WRU_ID
+        s.save()
 
 
 admin.site.register(Student, StudentAdmin)
