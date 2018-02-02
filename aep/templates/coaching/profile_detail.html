@@ -20,6 +20,12 @@
         <td>Personal E-Mail</td>
         <td>{{ student.email }}</td>
       </tr>
+      {% if student.elearn_record %}
+      <tr>
+        <td>G-Suite Email</td>
+        <td>{{ student.elearn_record.g_suite_email }}</td>
+      </tr>
+      {% endif %}
       <tr>
         <td>Personal Cell </td>
         <td>{{ student.phone }}</td>

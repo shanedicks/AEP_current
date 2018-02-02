@@ -310,8 +310,8 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
             if obj.g_suite_email:
                 pass
             else:
-                first = obj.student.first_name
-                last = obj.student.last_name
+                first = obj.student.first_name.split()[0]
+                last = obj.student.last_name.split()[0]
                 name = ".".join([first, last])
                 x = 0
                 def check_email(name, x): # check g_suite for email, add numbers incrementally if email in use until email is valid

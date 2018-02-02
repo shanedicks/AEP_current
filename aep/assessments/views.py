@@ -1,5 +1,6 @@
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
@@ -58,6 +59,7 @@ class TestEventCSV(LoginRequiredMixin, View):
             "Zip",
             "Parish",
             "Email",
+            "G-Suite Email",
             "Phone",
             "Alt Phone",
             "Emergency Contact",
@@ -65,6 +67,10 @@ class TestEventCSV(LoginRequiredMixin, View):
         ]
         data.append(headers)
         for student in students:
+            try:
+                g_suite_email = student.student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite_email = ""
             s = [
                 "1142370",
                 "1153531",
@@ -85,6 +91,7 @@ class TestEventCSV(LoginRequiredMixin, View):
                 student.student.zip_code,
                 student.student.get_parish_display(),
                 student.student.email,
+                g_suite_email,
                 student.student.phone,
                 student.student.alt_phone,
                 student.student.emergency_contact,

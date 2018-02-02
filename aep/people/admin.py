@@ -270,6 +270,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
     actions = [
         'testify',
         'create_elearn_record',
+        'create_ace_record',
         'full_merge'
     ]
 
@@ -290,6 +291,31 @@ class StudentAdmin(ImportExportActionModelAdmin):
                 ElearnRecord.objects.create(
                     student=obj,
                     intake_date=datetime.today()
+                )
+
+    def create_ace_record(self, request, queryset):
+        sem = {
+            "1": 'Spring',
+            "2": 'Spring',
+            "3": 'Spring',
+            "4": 'Summer',
+            "5": 'Summer',
+            "6": 'Summer',
+            "7": 'Summer',
+            "8": 'Fall',
+            "9": 'Fall',
+            "10": 'Fall',
+            "11": 'Fall',
+            "12": 'Spring',
+        }
+        for obj in queryset:
+            if AceRecord.objects.filter(student=obj).exists():
+                continue
+            else:
+                AceRecord.objects.create(
+                    student=obj,
+                    intake_year=datetime.today().year,
+                    intake_semester=sem[str(datetime.today().month)]
                 )
 
     def move_test_history(self, request, queryset):
