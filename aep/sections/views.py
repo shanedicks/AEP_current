@@ -1,8 +1,12 @@
-from datetime import datetime
+from apiclient import discovery
+from datetime import datetime, date
+from httplib2 import Http
+from oauth2client.service_account import ServiceAccountCredentials
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView, FormView, View)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -417,6 +421,8 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
                 'student__last_name',
                 'student__first_name'
             ).prefetch_related('attendance')
+        if 'summary' not in context:
+            context['summary'] = ['ELRN', 'ADMIN']
         return context
 
 
@@ -498,3 +504,50 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
             'sections:attendance overview',
             kwargs={'slug': section.slug}
         )
+
+
+class GSuiteAttendanceView(LoginRequiredMixin, DetailView):
+
+    model = Section
+    template_name = 'sections/g_suite_attendance.html'
+
+    def get_context_data(self, **kwargs):
+        scopes = ['https://www.googleapis.com/auth/classroom.coursework.students']
+
+        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+            keyfile_dict=settings.KEYFILE_DICT,
+            scopes=scopes
+        )
+
+        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        http_auth = shane.authorize(Http())
+        service = discovery.build('classroom', 'v1', http=http_auth)
+        raw = {}
+        for student in self.object.get_all_students():
+            if student.student.elearn_record.g_suite_email:
+                raw[student] = service.courses(
+                ).courseWork().studentSubmissions().list(
+                    courseId=self.object.g_suite_id,
+                    states='RETURNED',
+                    courseWorkId='-',
+                    userId=student.student.elearn_record.g_suite_email
+                ).execute()
+        scores = {}
+        for key, value in raw.items():
+            scores[key] = []
+            subs = value.get('studentSubmissions')
+            if subs is not None:
+                for sub in subs:
+                    scores[key].insert(0,
+                        [
+                            datetime.strptime(
+                                sub['creationTime'].split('T')[0],
+                                "%Y-%m-%d"
+                            ).date(),
+                            sub.get('assignedGrade', 0)
+                        ]
+                    )
+        context = super(GSuiteAttendanceView, self).get_context_data()
+        if 'scores' not in context:
+            context['scores'] = scores
+        return context

@@ -50,6 +50,10 @@ class Semester(models.Model):
         for section in self.get_sections():
             section.enforce_attendance()
 
+    def g_suite_attendance(self):
+        for section in self.get_sections():
+            section.g_suite_attendance()
+
 
 class Day(models.Model):
 

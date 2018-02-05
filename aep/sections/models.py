@@ -1,5 +1,8 @@
+from apiclient import discovery
 from datetime import date, datetime, timedelta as td
-from django.db import models
+from httplib2 import Http
+from oauth2client.service_account import ServiceAccountCredentials
+from django.db import models, IntegrityError
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
@@ -150,6 +153,55 @@ class Section(models.Model):
                 student.status = student.COMPLETED
                 student.save()
 
+    def g_suite_attendance(self):
+        scopes = ['https://www.googleapis.com/auth/classroom.coursework.students']
+
+        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+            keyfile_dict=settings.KEYFILE_DICT,
+            scopes=scopes
+        )
+
+        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        http_auth = shane.authorize(Http())
+        service = discovery.build('classroom', 'v1', http=http_auth)
+        raw = {}
+        print("Starting", self.title)
+        for student in self.get_all_students():
+            if student.student.elearn_record.g_suite_email:
+                print("Fetching", student.student)
+                raw[student] = service.courses(
+                ).courseWork().studentSubmissions().list(
+                    courseId=self.g_suite_id,
+                    states='RETURNED',
+                    courseWorkId='-',
+                    userId=student.student.elearn_record.g_suite_email
+                ).execute()
+                print(
+                    "Fetched",
+                    len(raw[student].get('studentSubmissions', [])),
+                    "records"
+                )
+        for key, value in raw.items():
+            subs = value.get('studentSubmissions')
+            if subs is not None:
+                print('Creating attendance for', key.student)
+                for sub in subs:
+                    try:
+                        a = Attendance.objects.create(
+                            enrollment=key,
+                            attendance_date=datetime.strptime(
+                                sub['creationTime'].split('T')[0],
+                                "%Y-%m-%d"
+                            ).date(),
+                            time_in=key.section.start_time,
+                            time_out=key.section.start_time,
+                            attendance_type='P',
+                            att_hours=sub.get('assignedGrade', 0)
+                        )
+                        print(a)
+                    except IntegrityError:
+                        print("Duplicate attendance found. Skipping....")
+        print("Finished with", self.title)
 
     # Drops active students with 2 absences and fills their spots with waitlisted students in enrollment order
     def waitlist_update(self):
@@ -444,9 +496,14 @@ class Attendance(models.Model):
     time_out = models.TimeField(
         blank=True
     )
+    att_hours = models.IntegerField(
+        blank=True,
+        null=True
+    )
 
     class Meta:
         ordering = ['attendance_date', ]
+        unique_together = ('enrollment', 'attendance_date', 'att_hours')
 
     def __str__(self):
         s = str(self.enrollment.student)
@@ -464,10 +521,13 @@ class Attendance(models.Model):
         )
 
     def hours(self):
-        if self.attendance_type == 'P':
-            d1 = datetime.combine(self.attendance_date, self.time_in)
-            d2 = datetime.combine(self.attendance_date, self.time_out)
-            delta = d2 - d1
-            hours = delta.total_seconds() / 3600
-            return float("{0:.2f}".format(hours))
-        return 0
+        if self.att_hours:
+            return self.att_hours
+        else:
+            if self.attendance_type == 'P':
+                d1 = datetime.combine(self.attendance_date, self.time_in)
+                d2 = datetime.combine(self.attendance_date, self.time_out)
+                delta = d2 - d1
+                hours = delta.total_seconds() / 3600
+                return float("{0:.2f}".format(hours))
+            return 0
