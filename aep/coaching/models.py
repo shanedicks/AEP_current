@@ -532,11 +532,15 @@ class AceRecord(models.Model):
         (NEITHER, 'Neither'),
     )
 
+    APPLICANT = 'Applicant'
+    PENDING = 'Pending'
     DEFERRED = 'Deferred'
     ACTIVE = 'Active'
     INACTIVE = 'InActive'
     COMPLETED = 'Completed'
     STATUS_CHOICES = (
+        (APPLICANT, 'Applicant'),
+        (PENDING, 'Pending'),
         (DEFERRED, 'Deferred'),
         (ACTIVE, 'Active'),
         (INACTIVE, 'InActive'),
