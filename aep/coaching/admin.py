@@ -338,7 +338,7 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
                         "givenName": first,
                         "familyName": last
                     },
-                    "password": last + first + "Pass",
+                    "password": "123456789",
                     "externalIds": [
                         {
                             "value": obj.student.WRU_ID,

@@ -66,6 +66,18 @@ single_student_assessment_patterns = [
         include(single_student_gain_patterns)),
 ]
 
+report_patterns = [
+    url(r'^tabe/$',
+        views.TabeCSV.as_view(),
+        name='tabe csv'),
+    url(r'^clas-e/$',
+        views.ClasECSV.as_view(),
+        name='clas-e csv'),
+    url(r'^gain/$',
+        views.GainCSV.as_view(),
+        name='gain csv')
+]
+
 urlpatterns = [
     url(r'^$',
         views.TestingHomeView.as_view(),
@@ -88,6 +100,8 @@ urlpatterns = [
     url(r'^events/(?P<pk>[0-9]+)/csv$',
         views.TestEventCSV.as_view(),
         name="test event csv"),
+    url(r'^reports/',
+        include(report_patterns)),
     url(r'(?P<slug>[a-zA-Z0-9]{5})/',
         include(single_student_assessment_patterns)),
 ]

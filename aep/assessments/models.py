@@ -234,8 +234,7 @@ class TestHistory(models.Model):
         return self.clas_e_tests.latest('test_date')
 
     def latest_gain(self):
-        date = self.gain_tests.latest('test_date').test_date
-        return self.gain_tests.filter(test_date=date)
+        return self.gain_tests.latest('test_date')
 
     def latest_hiset_practice(self):
         date = self.hiset_practice_tests.latest('test_date').test_date

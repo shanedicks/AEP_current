@@ -1,4 +1,4 @@
-
+from datetime import timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
@@ -6,8 +6,9 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import (DetailView, ListView, CreateView,
-                                  TemplateView, View)
+                                  TemplateView, View, FormView)
 from core.utils import render_to_csv
+from core.forms import DateFilterForm
 from people.models import Student
 from .models import (TestEvent, TestAppointment, TestHistory,
                      Tabe, Clas_E, HiSet_Practice, Gain)
@@ -329,6 +330,144 @@ class StudentTabeDetailView(StudentTestDetailView):
     model = Tabe
     template_name = 'assessments/student_tabe_detail.html'
 
+class TabeCSV(LoginRequiredMixin, FormView):
+
+    model = Tabe
+    form_class = DateFilterForm
+    template_name = "assessments/tabe_csv.html"
+
+    def get_data(self, tests):
+        nrs = {
+            '1': 'BEGINNING ABE LITERACY',
+            '2': 'BEGINNING BASIC ABE',
+            '3': 'LOW INTERMEDIATE ABE',
+            '4': 'HIGH INTERMEDIATE ABE',
+            '5': 'LOW ASE',
+            '6': 'HIGH ASE',
+        }
+        data = []
+        headers = [
+            'SID',
+            'LastName',
+            'FirstName',
+            'AssessmentType',
+            'FiscalYear',
+            'AssessmentName',
+            'AssessmentForm',
+            'AssessmentLevel',
+            'AssessmentSubject',
+            'AssessmentDate',
+            'AssessmentScaleScore',
+            'AssessmentGradeEquivalent',
+            'FunctioningLevel',
+            'LowestFunctioningLevelFlag',
+            'SurveyIndicator',
+            'CompleteBatteryIndicator',
+        ]
+        data.append(headers)
+        for test in tests:
+            r = test.read_ss
+            m = test.total_math_ss
+            l = test.lang_ss
+            date = test.test_date
+            pre = test.test_date - timedelta(days=180)
+            test_type = 'Pretest'
+            if test.student.tabe_tests.filter(
+                test_date__lt=date).filter(
+                test_date__gte=pre).count() > 0:
+                test_type = 'Posttest'
+            if test.read_ss:
+                s = [
+                    test.student.student.WRU_ID,
+                    test.student.student.last_name,
+                    test.student.student.first_name,
+                    test_type,
+                    '2017-2018',
+                    'TABE',
+                    test.form,
+                    test.read_level,
+                    'READING',
+                    datetime.strftime(test.test_date, "%Y%m%d"),
+                    r,
+                    test.read_ge,
+                    nrs.get(test.read_nrs, ''),
+                    '1',
+                    '0',
+                    '1',
+                ]
+                if m is not None:
+                    if m < r:
+                        s[13] = 0
+                if l is not None:
+                    if l < r:
+                        s[13] = 0
+                data.append(s)
+            if test.total_math_ss:
+                s = [
+                    test.student.student.WRU_ID,
+                    test.student.student.last_name,
+                    test.student.student.first_name,
+                    test_type,
+                    '2017-2018',
+                    'TABE',
+                    test.form,
+                    test.math_level,
+                    'TOTAL MATH',
+                    datetime.strftime(test.test_date, "%Y%m%d"),
+                    m,
+                    test.total_math_ge,
+                    nrs.get(test.math_nrs, ''),
+                    '1',
+                    '0',
+                    '1',
+                ]
+                if r is not None:
+                    if r < m:
+                        s[13] = 0
+                if l is not None:
+                    if l < m:
+                        s[13] = 0               
+                data.append(s)
+            if test.lang_ss:
+                s = [
+                    test.student.student.WRU_ID,
+                    test.student.student.last_name,
+                    test.student.student.first_name,
+                    test_type,
+                    '2017-2018',
+                    'TABE',
+                    test.form,
+                    test.lang_level,
+                    'LANGUAGE',
+                    datetime.strftime(test.test_date, "%Y%m%d"),
+                    l,
+                    test.lang_ge,
+                    nrs.get(test.lang_nrs, ''),
+                    '1',
+                    '0',
+                    '1',
+                ]
+                if m is not None:
+                    if m < l:
+                        s[13] = 0
+                if r is not None:
+                    if r < l:
+                        s[13] = 0
+                data.append(s)
+        return data
+
+    def form_valid(self, form):
+        tests = Tabe.objects.select_related().all()
+        filename = "tabe_report.csv"
+        if form.cleaned_data['from_date'] != "":
+            from_date = form.cleaned_data['from_date']
+            tests = tests.filter(test_date__gte=from_date)
+        if form.cleaned_data['to_date'] != "":
+            to_date = form.cleaned_data['to_date']
+            tests = tests.filter(test_date__lte=to_date)
+
+        data = self.get_data(tests)
+        return render_to_csv(data=data, filename=filename)
 
 class StudentClasEListView(StudentTestListView):
 
@@ -353,6 +492,83 @@ class StudentClasEDetailView(StudentTestDetailView):
 
     model = Clas_E
     template_name = 'assessments/student_clas-e_detail.html'
+
+class ClasECSV(LoginRequiredMixin, FormView):
+
+    model = Clas_E
+    form_class = DateFilterForm
+    template_name = "assessments/clas-e_csv.html"
+
+    def get_data(self, tests):
+        nrs = {
+            '1': 'BEGINNING ESL LITERACY',
+            '2': 'LOW BEGINNING ESL',
+            '3': 'HIGH BEGINNING ESL',
+            '4': 'LOW INTERMEDIATE ESL',
+            '5': 'HIGH INTERMEDIATE ESL',
+            '6': 'ADVANCED ESL',
+        }
+        data = []
+        headers = [
+            'SID',
+            'LastName',
+            'FirstName',
+            'AssessmentType',
+            'FiscalYear',
+            'AssessmentName',
+            'AssessmentForm',
+            'AssessmentLevel',
+            'AssessmentSubject',
+            'AssessmentDate',
+            'AssessmentScaleScore',
+            'AssessmentGradeEquivalent',
+            'FunctioningLevel',
+            'LowestFunctioningLevelFlag',
+            'SurveyIndicator',
+            'CompleteBatteryIndicator',
+        ]
+        data.append(headers)
+        for test in tests:
+            date = test.test_date
+            pre = test.test_date - timedelta(days=180)
+            test_type = 'Pretest'
+            if test.student.tabe_tests.filter(
+                test_date__lt=date).filter(
+                test_date__gte=pre).count() > 0:
+                test_type = 'Posttest'
+            s = [
+                test.student.student.WRU_ID,
+                test.student.student.last_name,
+                test.student.student.first_name,
+                test_type,
+                '2017-2018',
+                'TABE CLAS-E',
+                test.form,
+                test.read_level,
+                'READING',
+                datetime.strftime(test.test_date, "%Y%m%d"),
+                test.read_ss,
+                '',
+                nrs.get(test.read_nrs, ''),
+                '1',
+                '0',
+                '1',
+            ]
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        tests = Clas_E.objects.select_related().all()
+        filename = "clas_e_report.csv"
+        if form.cleaned_data['from_date'] != "":
+            from_date = form.cleaned_data['from_date']
+            tests = tests.filter(test_date__gte=from_date)
+        if form.cleaned_data['to_date'] != "":
+            to_date = form.cleaned_data['to_date']
+            tests = tests.filter(test_date__lte=to_date)
+
+        data = self.get_data(tests)
+        return render_to_csv(data=data, filename=filename)
 
 
 class StudentHisetPracticeListView(StudentTestListView):
@@ -409,3 +625,65 @@ class StudentGainDetailView(StudentTestDetailView):
 
     model = Gain
     template_name = 'assessments/student_gain_detail.html'
+
+class GainCSV(LoginRequiredMixin, FormView):
+
+    model = Gain
+    form_class = DateFilterForm
+    template_name = "assessments/gain_csv.html"
+
+    def get_data(self, tests):
+        data = []
+        headers = [
+            'SID',
+            'LastName',
+            'FirstName',
+            'AssessmentType',
+            'FiscalYear',
+            'AssessmentName',
+            'AssessmentForm',
+            'AssessmentLevel',
+            'AssessmentSubject',
+            'AssessmentDate',
+            'AssessmentScaleScore',
+            'AssessmentGradeEquivalent',
+            'FunctioningLevel',
+            'LowestFunctioningLevelFlag',
+            'SurveyIndicator',
+            'CompleteBatteryIndicator',
+        ]
+        data.append(headers)
+        for test in tests:
+            s = [
+                'SID',
+                'LastName',
+                'FirstName',
+                'AssessmentType',
+                'FiscalYear',
+                'AssessmentName',
+                'AssessmentForm',
+                'AssessmentLevel',
+                'AssessmentSubject',
+                'AssessmentDate',
+                'AssessmentScaleScore',
+                'AssessmentGradeEquivalent',
+                'FunctioningLevel',
+                'LowestFunctioningLevelFlag',
+                'SurveyIndicator',
+                'CompleteBatteryIndicator',
+            ]
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        tests = Gain.objects.select_related().all()
+        filename = "Gain_report.csv"
+        if form.cleaned_data['from_date'] != "":
+            from_date = form.cleaned_data['from_date']
+            tests = tests.filter(test_date__gte=from_date)
+        if form.cleaned_data['to_date'] != "":
+            to_date = form.cleaned_data['to_date']
+            tests = tests.filter(test_date__lte=to_date)
+
+        data = self.get_data(tests)
+        return render_to_csv(data=data, filename=filename)

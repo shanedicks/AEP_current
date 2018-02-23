@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1>CLAS-E CSV</h1>
+    <div class="well">
+        <form class="form-inline" action="" method="post">
+            {% csrf_token %}
+            {% crispy form %}
+            <button type="submit" class="btn btn-default" value"filter">Export State CLAS-E Report</button>
+        </form>
+        <p></p>
+    </div>
+{% endblock content %}
