@@ -19,13 +19,13 @@ from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     ClassAddFromListEnrollForm, StudentAddEnrollmentForm,
                     SingleAttendanceForm, AttendanceFormSet, SectionSearchForm,
-                    AdminAttendanceForm)
+                    AdminAttendanceForm, AttendanceReportForm)
 
 
 class AttendanceCSV(LoginRequiredMixin, FormView):
 
     model = Attendance
-    form_class = DateFilterForm
+    form_class = AttendanceReportForm
     template_name = "sections/attendance_report_csv.html"
 
     def get_data(self, attendance):
@@ -58,13 +58,15 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         attendance = Attendance.objects.select_related().all()
         filename = "attendance_report.csv"
+        if form.cleaned_data['semester'] != "":
+            semester = form.cleaned_data['semester']
+            attendance = attendance.filter(enrollment__section__semester=semester)
         if form.cleaned_data['from_date'] != "":
             from_date = form.cleaned_data['from_date']
             attendance = attendance.filter(attendance_date__gte=from_date)
         if form.cleaned_data['to_date'] != "":
             to_date = form.cleaned_data['to_date']
             attendance = attendance.filter(attendance_date__lte=to_date)
-
         data = self.get_data(attendance)
         return render_to_csv(data=data, filename=filename)
 

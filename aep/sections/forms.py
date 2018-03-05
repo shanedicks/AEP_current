@@ -1,10 +1,12 @@
 import datetime
-from django.forms import ModelForm, Form, ChoiceField, modelformset_factory, ValidationError, CharField, DateField
+from django.forms import ModelForm, Form, ChoiceField, modelformset_factory, ValidationError, CharField, DateField, ModelMultipleChoiceField
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from core.forms import DateFilterForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from people.models import Student
+from semesters.models import Semester
 from .models import Enrollment, Section, Attendance
 
 
@@ -122,7 +124,7 @@ class SectionFilterForm(Form):
         self.helper.disable_csrf = True
 
 
-class AttReportFilterForm(Form):
+class AttendanceReportForm(Form):
 
     from_date = DateField(
         input_formats=[
@@ -141,12 +143,23 @@ class AttReportFilterForm(Form):
         required=True
     )
 
+    semester = ModelMultipleChoiceField(queryset=Semester.objects.all())
+
     def __init__(self, *args, **kwargs):
-        super(AttReportFilterForm, self).__init__(*args, **kwargs)
+        super(AttendanceReportForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.help_text_inline = False
         self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Field(
+                'semester'
+            ),
+            Field(
+                'from_date',
+                'to_date'
+            ),
+        )
 
 
 class SectionSearchForm(Form):

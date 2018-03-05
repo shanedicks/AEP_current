@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block head_title %}Reports{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+	<p><a href="{% url 'people:active student csv' %}">Active Student Report</a></p>
+	<p><a href="{% url 'people:new student csv' %}">New Student Report</a></p>
+	<p><a href="{% url 'sections:attendance csv' %}">Attendance Report</a></p>
+	<p><a href="{% url 'assessments:tabe csv' %}">Tabe Test Report</a></p>
+	<p><a href="{% url 'assessments:clas-e csv' %}">CLAS-E Test Report</a></p>
+	<p><a href="{% url 'assessments:gain csv' %}">GAIN Test Report</a></p>		
+{% endblock %}
