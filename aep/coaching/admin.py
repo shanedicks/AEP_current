@@ -367,6 +367,11 @@ class CoachingAdmin(ImportExportActionModelAdmin):
         'end_date',
     )
 
+    list_filter = (
+        'coaching_type',
+        'active'
+    )
+
     search_fields = [
         'coachee__last_name',
         'coachee__first_name',

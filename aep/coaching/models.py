@@ -325,7 +325,7 @@ class Profile(models.Model):
 
     def save(self):
         try:
-            self.student.elearn_record.elearn_status = 'Active'
+            self.student.elearn_record.elearn_status = 'New'
             self.student.elearn_record.save()
         except ObjectDoesNotExist:
             pass
@@ -392,11 +392,12 @@ class Coaching(models.Model):
         )
 
     def save(self):
-        try:
-            self.coachee.elearn_record.elearn_status = 'Active'
-            self.coachee.elearn_record.save()
-        except ObjectDoesNotExist:
-            pass
+        if active is True:
+            try:
+                self.coachee.elearn_record.elearn_status = 'Active'
+                self.coachee.elearn_record.save()
+            except ObjectDoesNotExist:
+                pass
         super(Coaching, self).save()
 
 
@@ -639,6 +640,7 @@ class AceRecord(models.Model):
 
 class ElearnRecord(models.Model):
 
+    NEW = 'New'
     APPLICANT = 'Applicant'
     PENDING = 'Pending'
     HOLD = 'On Hold'
@@ -646,6 +648,7 @@ class ElearnRecord(models.Model):
     INACTIVE = 'InActive'
     ALUMNI = 'Alumni'
     STATUS_CHOICES = (
+        (NEW, 'New'),
         (APPLICANT, 'Applicant'),
         (PENDING, 'Pending'),
         (HOLD, 'On Hold'),
@@ -693,3 +696,12 @@ class ElearnRecord(models.Model):
             self.student.__str__(),
             self.student.WRU_ID,
         )
+
+    def save(self):
+        if self.elearn_status == 'InActive':
+            try:
+                s = self.student.coaches.filter(coaching_type='elearn')
+                s.update(active=False)
+            except ObjectDoesNotExist:
+                pass
+        super(ElearnRecord, self).save()
