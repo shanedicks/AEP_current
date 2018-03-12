@@ -73,7 +73,7 @@
             {% endif %}
             {% if history.gain_tests.count > 0 %}
                 <h4><a href="{% url 'assessments:student gain list' slug=history.student.slug %}">GAIN Tests</a></h4>    
-                    {% with tests=history.latest_gain %}
+                    {% with test=history.latest_gain %}
                         <table class="table">
                             <tr>
                                 <th>Date</th>
@@ -82,7 +82,6 @@
                                 <th>Grade Eq.</th>
                                 <th>NRS</th>
                             </tr>
-                            {% for test in tests %}
                             <tr>
                                 <p><td>{{ test.test_date|date:"m/d/y" }}</td></p>
                                 <p><td>{{ test.subject }} {{test.form}}</td></p>
@@ -90,7 +89,6 @@
                                 <p><td>{{ test.grade_eq }}</td></p>
                                 <p><td>{{ test.nrs }}</td></p>
                             </tr>
-                            {% endfor %}
                         </table>
                     {% endwith %}
             {% else %}

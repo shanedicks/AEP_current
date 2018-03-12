@@ -112,6 +112,49 @@ class TestEventCSV(LoginRequiredMixin, View):
         return render_to_csv(data=data, filename=filename)
 
 
+class TabeOnlineCSV(LoginRequiredMixin, View):
+
+    def get_student_data(self, students):
+        data = []
+        headers = [
+            "District Code",
+            "School Code",
+            "Student ID",
+            "Student Last Name",
+            "Student First Name",
+            "Student Middle Initial",
+            "Gender",
+            "Date of Birth",
+        ]
+        data.append(headers)
+        for student in students:
+            try:
+                g_suite_email = student.student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite_email = ""
+            s = [
+                "1142370",
+                "1153531",
+                student.student.WRU_ID,
+                student.student.last_name,
+                student.student.first_name,
+                "",
+                student.student.gender,
+                student.student.dob.strftime('%m/%d/%Y'),
+            ]
+            data.append(s)
+        return data
+
+    def get(self, request, *args, **kwargs):
+        event = TestEvent.objects.get(
+            pk=self.kwargs['pk'])
+        filename = "student_list.csv"
+        students = event.students.prefetch_related(
+            'student', 'student__user'
+        )
+        data = self.get_student_data(students)
+        return render_to_csv(data=data, filename=filename)
+
 class TestEventListView(LoginRequiredMixin, ListView):
 
     model = TestEvent

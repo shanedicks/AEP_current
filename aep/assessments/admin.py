@@ -1,6 +1,7 @@
 from django.contrib import admin
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
+from people.models import Student
 from .models import *
 
 
@@ -45,7 +46,27 @@ class TestEventAdmin(admin.ModelAdmin):
 admin.site.register(TestEvent, TestEventAdmin)
 
 
-class TestAppointmentAdmin(admin.ModelAdmin):
+class TestAppointmentResource(resources.ModelResource):
+
+    student = fields.Field(
+        column_name='student',
+        attribute='student',
+        widget=widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    class Meta:
+        model = TestAppointment
+        fields = (
+            'id',
+            'student',
+            'event',
+            'notes'
+        )
+
+
+class TestAppointmentAdmin(ImportExportActionModelAdmin):
+
+    resource_class = TestAppointmentResource
 
     list_display = (
         '__str__',

@@ -5,6 +5,7 @@
 <h3>Proctor: {{event.proctor}}</h3>
 <h3>Room: {{ event.room }}</h3>
 <a class="btn btn-default btn-sm" href="{% url 'assessments:test event csv' pk=event.pk %}" role="button">Export Student Details</a>
+<a class="btn btn-default btn-sm" href="{% url 'assessments:tabe online csv' pk=event.pk %}" role="button">Export TABE ONLINE Input</a>
 <table class="table">
 	<tr>
 		<th>ID</th>
