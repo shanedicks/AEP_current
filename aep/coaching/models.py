@@ -392,7 +392,7 @@ class Coaching(models.Model):
         )
 
     def save(self):
-        if active is True:
+        if self.active is True:
             try:
                 self.coachee.elearn_record.elearn_status = 'Active'
                 self.coachee.elearn_record.save()
