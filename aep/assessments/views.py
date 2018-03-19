@@ -44,8 +44,6 @@ class TestEventCSV(LoginRequiredMixin, View):
     def get_student_data(self, students):
         data = []
         headers = [
-            "District Code",
-            "School Code",
             "Student ID",
             "Student Last Name",
             "Student First Name",
@@ -73,8 +71,6 @@ class TestEventCSV(LoginRequiredMixin, View):
             except ObjectDoesNotExist:
                 g_suite_email = ""
             s = [
-                "1142370",
-                "1153531",
                 student.student.WRU_ID,
                 student.student.last_name,
                 student.student.first_name,
