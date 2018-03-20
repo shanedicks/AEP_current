@@ -316,6 +316,14 @@ class StudentPersonalInfoForm(ModelForm):
             )
         return data
 
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name'].title()
+        return data
+
+    def clean_last_name(self):
+        data = self.cleaned_data['last_name'].title()
+        return data
+
     def __init__(self, *args, **kwargs):
         super(StudentPersonalInfoForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()

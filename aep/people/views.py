@@ -263,7 +263,7 @@ class StudentSignupWizard(SessionWizardView):
                     'people/elearn_email.txt'
                 ).render(context)
                 html_content = get_template(
-                    'people/elearn_email_inline.html',
+                    'people/elearn_email.html',
                 ).render(context)
                 msg = EmailMultiAlternatives(
                     "Welcome to eLearn!",
