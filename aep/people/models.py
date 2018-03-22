@@ -345,6 +345,11 @@ class Student(Profile):
         verbose_name=_('Marital Status')
     )
 
+    partner = models.CharField(
+        max_length=40,
+        blank=True
+    )
+
     class Meta:
         ordering = ["last_name", "first_name"]
 

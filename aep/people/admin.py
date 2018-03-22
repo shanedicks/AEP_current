@@ -47,6 +47,7 @@ class StudentResource(resources.ModelResource):
             'intake_date',
             "AEP_ID",
             "WRU_ID",
+            "partner",
             "gender",
             "marital_status",
             "US_citizen",
@@ -235,7 +236,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'ace_app',
         'e_learn_app',
         'success_app',
-        'accuplacer_app'
+        'accuplacer_app',
+        'partner'
     )
 
     search_fields = [
@@ -244,6 +246,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'email',
         'WRU_ID',
         'intake_date',
+        'partner'
     ]
 
     fields = [
@@ -253,6 +256,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         "email",
         ("WRU_ID",
          'program'),
+        'partner',
         "US_citizen",
         ("gender",
          "marital_status"),

@@ -522,6 +522,14 @@ class StudentContactForm(ModelForm):
 
 class StudentForm(ModelForm):
 
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name'].title()
+        return data
+
+    def clean_last_name(self):
+        data = self.cleaned_data['last_name'].title()
+        return data
+
     def clean_street_address_1(self):
         data = self.cleaned_data['street_address_1'].title()
         return data
@@ -707,6 +715,208 @@ class StudentForm(ModelForm):
             'e_learn_app': "Online courses to help with college and career readiness goals as well as passing the HiSET.",
             'accuplacer_app': "Short preparation classes for the English and math accuplacer college placement tests. ",
         }
+
+
+class PartnerForm(ModelForm):
+
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name'].title()
+        return data
+
+    def clean_last_name(self):
+        data = self.cleaned_data['last_name'].title()
+        return data
+
+    def clean_street_address_1(self):
+        data = self.cleaned_data['street_address_1'].title()
+        return data
+
+    def clean_street_address_2(self):
+        data = self.cleaned_data['street_address_2'].title()
+        return data
+
+    def clean_emergency_contact(self):
+        data = self.cleaned_data['emergency_contact'].title()
+        return data
+
+    def __init__(self, *args, **kwargs):
+        super(PartnerForm, self).__init__(*args, **kwargs)
+        self.fields['phone'].validators.append(phone_validator)
+        self.fields['alt_phone'].validators.append(phone_validator)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Student Information',
+                Row(
+                    Field(
+                        'first_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'last_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                ),
+                'email',
+                Row(
+                    Field(
+                        'WRU_ID',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'partner',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                ),
+                'US_citizen',
+                Row(
+                    Field(
+                        'dob',
+                        placeholder="MM/DD/YYYY",
+                        wrapper_class="col-md-4",
+                        data_mask="99/99/9999"
+                    ),
+                    Field(
+                        'gender',
+                        'marital_status',
+                        wrapper_class="col-md-4",
+                    ),
+                ),
+            ),
+            Fieldset(
+                'Student Contact Information',
+                Row(
+                    Field(
+                        'phone',
+                        placeholder="504-555-5555",
+                        wrapper_class="col-md-6",
+                        data_mask="999-999-9999",
+                        required=True
+                    ),
+                    Field(
+                        'alt_phone',
+                        wrapper_class="col-md-6",
+                        placeholder="504-555-5555",
+                        data_mask="999-999-9999",
+                    )
+                ),
+                Row(
+                    Field(
+                        'street_address_1',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'street_address_2',
+                        wrapper_class="col-md-6"
+                    )
+                ),
+                Row(
+                    Field(
+                        'city',
+                        'state',
+                        wrapper_class="col-md-4",
+                        required=True
+                    ),
+                    Field(
+                        'zip_code',
+                        data_mask="99999",
+                        wrapper_class="col-md-4",
+                        required=True
+                    ),
+                ),
+                'parish',
+            ),
+            Fieldset(
+                'Student Emergency Contact Information',
+                'emergency_contact',
+                Field(
+                    'ec_phone',
+                    data_mask="999-999-9999",
+                    wrapper_class="col-md-4"
+                ),
+                Field(
+                    'ec_email',
+                    'ec_relation',
+                    wrapper_class="col-md-4"
+                ),
+            ),
+            Fieldset(
+                'What types of classes will the student be taking with us?',
+                Column(
+                    'ccr_app',
+                    'esl_app',
+                    'ace_app',
+                    css_class="col-md-6"
+                ),
+                Column(
+                    'success_app',
+                    'e_learn_app',
+                    'accuplacer_app',
+                    css_class="col-md-6"
+                ),
+            ),
+        )
+
+    class Meta:
+        model = Student
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "WRU_ID",
+            "partner",
+            "dob",
+            "gender",
+            "marital_status",
+            "ccr_app",
+            "esl_app",
+            "ace_app",
+            "success_app",
+            'e_learn_app',
+            'accuplacer_app',
+            "phone",
+            "alt_phone",
+            "street_address_1",
+            "street_address_2",
+            "city",
+            "state",
+            "parish",
+            "zip_code",
+            "emergency_contact",
+            "ec_phone",
+            "ec_email",
+            "ec_relation",
+        )
+
+        labels = {
+            "ec_relation": "Their relationship to student",
+            "US_citizen": "Check this box if you are a US citizen",
+            "ccr_app": "College and Career Readiness (HiSET Prep)",
+            "esl_app": "English Language Learning",
+            "ace_app": "Accelerated Career Education Program",
+            "success_app": "Success Classes",
+            'e_learn_app': "Online Classes with eLearn",
+            'accuplacer_app': "Accuplacer Prep Classes",
+        }
+
+        help_texts = {
+            "WRU_ID": "Student's ID number in LCTCS workreadyu database",
+            "partner": "Name of Delgado partner organization where this student is registered",
+            "ccr_app": "Reading, writing, and math skill building classes to help with college and career readiness goals as well as passing the HiSET.",
+            "esl_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
+            "ace_app": "Integrated education and training classes where students can earn industry credentials and college credit in career pathways: information technology, healthcare, construction trades, and culinary/hospitality.",
+            "success_app": "Classes designed to help students successfully navigate school and careers such as computer basics, job readiness, career exploration, college skills, and financial success.",
+            'e_learn_app': "Online courses to help with college and career readiness goals as well as passing the HiSET.",
+            'accuplacer_app': "Short preparation classes for the English and math accuplacer college placement tests. ",
+        }
+
 
 
 class SSNForm(ModelForm):

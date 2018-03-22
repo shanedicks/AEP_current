@@ -170,6 +170,7 @@ class EnrollmentResource(resources.ModelResource):
             "section__title",
             "student__last_name",
             "student__first_name",
+            "student__partner",
             "created"
         )
 
@@ -190,7 +191,8 @@ class EnrollmentAdmin(ImportExportActionModelAdmin):
     search_fields = [
         "student__first_name",
         "student__last_name",
-        "section__title"
+        "section__title",
+        "student__partner"
     ]
 
     fields = (
@@ -215,6 +217,7 @@ class AttendanceResource(resources.ModelResource):
             "enrollment__student__last_name",
             "enrollment__student__first_name",
             "enrollment__section__WRU_ID",
+            "enrollment__student__partner",
             "attendance_type",
             "attendance_date",
             "time_in",
@@ -236,6 +239,7 @@ class AttendanceAdmin(ImportExportActionModelAdmin):
         'enrollment__student__last_name',
         'enrollment__section__title',
         'attendance_date',
+        'enrollment__student__partner'
     )
 
     fields = (

@@ -18,7 +18,7 @@ from .forms import (
     StaffForm, StudentPersonalInfoForm, StudentSearchForm,
     StudentInterestForm, StudentContactForm, SSNForm, REForm,
     EETForm, AdditionalDetailsForm, DisabilityForm, StudentForm,
-    UserForm, UserUpdateForm, WioaForm, CollegeInterestForm)
+    UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm)
 
 
 class UserCreateView(CreateView):
@@ -72,6 +72,7 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
             "Last Name",
             "First Name",
             "Intake Date",
+            'Partner',
             "DOB",
             "Marital Status",
             "Gender",
@@ -93,6 +94,7 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
                 student.last_name,
                 student.first_name,
                 str(student.intake_date),
+                student.partner,
                 str(student.dob),
                 student.get_marital_status_display(),
                 student.get_gender_display(),
@@ -219,6 +221,14 @@ class StudentCreateView(CreateView):
             return self.render_to_response(
                 self.get_context_data(wioa_form=wioa_form)
             )
+
+
+class PartnerStudentCreateView(CreateView):
+
+    model = Student
+    form_class = PartnerForm
+    template_name = 'people/partner_student.html'
+    success_url = reverse_lazy('people:student created')
 
 
 class StudentSignupWizard(SessionWizardView):

@@ -31,13 +31,14 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
     def get_data(self, attendance):
         data = []
         headers = [
-            'attendance_type',
-            'attendance_date',
-            'time_in',
-            'time_out',
-            'student__WRU_ID',
-            'last_name',
-            'first_name',
+            'Attendance type',
+            'Attendance date',
+            'Time-in',
+            'Time-out',
+            'Student WRU_ID',
+            'Partner org',
+            'Last Name',
+            'First Name',
             'Section WRU_ID'
         ]
         data.append(headers)
@@ -48,6 +49,7 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
                 att.time_in,
                 att.time_out,
                 att.enrollment.student.WRU_ID,
+                att.enrollment.student.partner,
                 att.enrollment.student.last_name,
                 att.enrollment.student.first_name,
                 att.enrollment.section.WRU_ID
@@ -125,6 +127,7 @@ class ClassRosterCSV(LoginRequiredMixin, View):
     def get_student_data(self, students):
         data = []
         headers = [
+            "Partner Org.",
             "Student ID",
             "Student Last Name",
             "Student First Name",
@@ -134,6 +137,7 @@ class ClassRosterCSV(LoginRequiredMixin, View):
             "Intake Date",
             "Email",
             "G Suite Email",
+            "Partner",
             "Phone",
             "Alt Phone",
             "Emergency Contact",
@@ -147,6 +151,7 @@ class ClassRosterCSV(LoginRequiredMixin, View):
                 g_suite = ''
 
             s = [
+                student.student.partner,
                 student.student.WRU_ID,
                 student.student.last_name,
                 student.student.first_name,
@@ -156,6 +161,7 @@ class ClassRosterCSV(LoginRequiredMixin, View):
                 student.student.intake_date,
                 student.student.email,
                 g_suite,
+                student.student.partner,
                 student.student.phone,
                 student.student.alt_phone,
                 student.student.emergency_contact,

@@ -44,6 +44,7 @@ class TestEventCSV(LoginRequiredMixin, View):
     def get_student_data(self, students):
         data = []
         headers = [
+            "Partner",
             "Student ID",
             "Student Last Name",
             "Student First Name",
@@ -71,6 +72,7 @@ class TestEventCSV(LoginRequiredMixin, View):
             except ObjectDoesNotExist:
                 g_suite_email = ""
             s = [
+                student.student.partner,
                 student.student.WRU_ID,
                 student.student.last_name,
                 student.student.first_name,
@@ -386,6 +388,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
         }
         data = []
         headers = [
+            'Partner',
             'SID',
             'LastName',
             'FirstName',
@@ -443,6 +446,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                 data.append(s)
             if test.total_math_ss:
                 s = [
+                    test.student.student.partner,
                     test.student.student.WRU_ID,
                     test.student.student.last_name,
                     test.student.student.first_name,
@@ -549,6 +553,7 @@ class ClasECSV(LoginRequiredMixin, FormView):
         }
         data = []
         headers = [
+            'Partner',
             'SID',
             'LastName',
             'FirstName',
@@ -576,6 +581,7 @@ class ClasECSV(LoginRequiredMixin, FormView):
                 test_date__gte=pre).count() > 0:
                 test_type = 'Posttest'
             s = [
+                test.student.student.partner,
                 test.student.student.WRU_ID,
                 test.student.student.last_name,
                 test.student.student.first_name,
@@ -674,6 +680,7 @@ class GainCSV(LoginRequiredMixin, FormView):
     def get_data(self, tests):
         data = []
         headers = [
+            'Partner',
             'SID',
             'LastName',
             'FirstName',
