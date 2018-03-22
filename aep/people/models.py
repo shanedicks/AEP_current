@@ -1,3 +1,5 @@
+import requests
+import bs4
 from datetime import date, datetime
 from django.db import models
 from django.conf import settings
@@ -425,6 +427,239 @@ class Staff(Profile):
     def past_classes(self):
         today = date.today()
         return self.classes.filter(semester__end_date__lt=today)
+
+def convert_date_format(date_string):
+    date_input = datetime.strptime(date_string, "%m/%d/%y")
+    return datetime.strftime(date_input, "%m/%d/%Y")
+
+
+def get_SID(sid):
+    return "".join(sid.split("-"))
+
+def get_age_at_intake(dob, intake_date):
+    diff = intake_date - dob
+    age = diff.days // 365
+    return age
+
+
+def citizen(input):
+    if input == 1:
+        cit = "true"
+    else:
+        cit = "false"
+    return cit
+
+
+def marital(input):
+    statuses = {
+        "S": "1",
+        "M": "2",
+        "D": "3",
+        "W": "4",
+        "O": "5"
+    }
+    return statuses[input]
+
+
+def gender(input):
+    genders = {
+        "M": "2",
+        "F": "1"
+    }
+    return genders[input]
+
+
+def state(input):
+    states = {
+        "AL": "2",
+        "AK": "1",
+        "AZ": "4",
+        "AR": "3",
+        "CA": "5",
+        "CO": "6",
+        "CT": "7",
+        "DC": "8",
+        "DE": "9",
+        "FL": "10",
+        "GA": "11",
+        "HI": "12",
+        "ID": "14",
+        "IL": "15",
+        "IN": "16",
+        "IA": "13",
+        "KS": "17",
+        "KY": "18",
+        "LA": "19",
+        "ME": "22",
+        "MA": "20",
+        "MD": "21",
+        "MI": "23",
+        "MN": "24",
+        "MS": "26",
+        "MO": "25",
+        "MT": "27",
+        "NE": "30",
+        "NV": "34",
+        "NH": "31",
+        "NJ": "32",
+        "NM": "33",
+        "NY": "35",
+        "NC": "28",
+        "ND": "29",
+        "OH": "36",
+        "OK": "37",
+        "OR": "38",
+        "PA": "39",
+        "RI": "40",
+        "SC": "41",
+        "SD": "42",
+        "TN": "43",
+        "TX": "44",
+        "UT": "45",
+        "VA": "46",
+        "VT": "47",
+        "WA": "48",
+        "WV": "50",
+        "WI": "49",
+        "WY": "51"
+    }
+    return states[input]
+
+
+def email_status(input):
+    if input != "":
+        return "true"
+    else:
+        return "false"
+
+
+def true_false(input):
+    if input is True:
+        return "true"
+    else:
+        return "false"
+
+
+def hl_tf(input):
+    if input is True:
+        return "True"
+    else:
+        return "False"
+
+
+def primary_program(student):
+    program = "1"
+    if student.esl_app:
+        program = '7'
+    elif student.e_learn_app:
+        program = '12'
+    elif student.ace_app:
+        program = '2'
+    elif student.success_app:
+        program = '14'
+    return program
+
+
+def secondary_program(student):
+    program = ""
+    if student.ccr_app:
+        program = '8'
+    if student.esl_app:
+        program = '6'
+    return program
+
+
+def esl(student):
+    if student.esl_app:
+        return "true"
+    else:
+        return "false"
+
+
+def employment_status(input):
+    emp = {
+        "1": "1_EM",
+        "2": "3_UE",
+        "3": "4_UNL",
+        "4": "5_NLF",
+        "5": "1_EM",
+        "6": "5_NLF"
+    }
+    return emp[input]
+
+
+def migrant(input):
+    mig = {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 0,
+    }
+    return mig[input]
+
+
+def one_stop(input):
+    o = {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 0
+    }
+    return o[input]
+
+
+def y_n_u(input):
+    y = {
+        "": 9,
+        "1": 1,
+        "2": 0,
+        "3": 9
+    }
+    return y[input]
+
+
+def school_status(input):
+    status = {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6
+    }
+    return status[input]
+
+
+def dislocated(input):
+    if input is True:
+        return 1
+    else:
+        return 0
+
+
+def voc_rehab(input):
+    v = {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 0
+    }
+    return v[input]
+
+
+def wru_search(session, search_dict):
+    s = session.get(
+        'https://workreadyu.lctcs.edu/Student',
+        data=search_dict
+    )
+    p = bs4.BeautifulSoup(
+        s.text,
+        "html.parser"
+    )
+    try:
+        return p.select("table.Webgrid > tbody > tr > td")[9].text.encode('utf-8')
+    except IndexError:
+        return 'No ID'
 
 
 class WIOA(models.Model):
@@ -901,6 +1136,230 @@ class WIOA(models.Model):
 
     def __str__(self):
         return self.student.__str__()
+
+    def check_for_state_id(self):
+        session = requests.Session()
+
+        login = {
+            'Provider': '9',
+            'Parish': '19',
+            'Login': 'shanedicks',
+            'Password': 'LCTCS1617passDATA',
+            'btnLogin': 'Login'
+        }
+
+        session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login)
+
+
+        search = {
+            'LastNameTextBox': self.student.last_name,
+            'FirstNameTextBox': self.student.first_name,
+            'Status': -1,
+            'AgeSearchType': 1,
+            'AgeFromInequality': 4,
+            'AgeFromTextBox': get_age_at_intake(self.student.dob, self.student.intake_date),
+            'btnFilter': 'Filter List'
+        }
+
+        wru = wru_search(session, search)
+
+        if wru == 'No ID':
+            if self.SID:
+                search = {
+                    'SSNTextBox': get_SID(self.SID),
+                    'Status': -1,
+                    'btnFilter': 'Filter List'
+                }
+                wru = wru_search(session, search)
+
+        if wru != 'No ID':
+            wru = b'x' + wru
+
+        self.student.WRU_ID = wru
+        self.student.save()
+
+    def send_to_state(self):
+        session = requests.Session()
+
+        login = {
+            'Provider': '9',
+            'Parish': '19',
+            'Login': 'shanedicks',
+            'Password': 'LCTCS1617passDATA',
+            'btnLogin': 'Login'
+        }
+
+        session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login)
+
+        student = {
+            "hdnRoleType": "2",
+            "hdnInactiveStateKey": ",2,3,4,5,",
+            "hdnInactiveProg": ",7,13,",
+            "hdnInactiveEmpStat": ",4_UNL, 5_NLF,",
+            "EnrollPStat.IntakeDate": self.student.intake_date,
+            "FY": "5",
+            "lblCurrentFY": "5",
+            "FYBginDate": "7/1/2017",
+            "FYEndDate": "6/30/2018",
+            "hdnProviderId": "DELGADO COMMUNITY COLLEGE",
+            "StudentId": "0",
+            "SSN": get_SID(self.SID),
+            "LastName": self.student.last_name,
+            "FirstName": self.student.first_name,
+            "MiddleInitial": "",
+            "DateOfBirth": self.student.dob,
+            "Age": get_age_at_intake(self.student.dob, self.student.intake_date),
+            "USCitizen": citizen(self.student.US_citizen),
+            "MaritalStatusId": marital(self.student.marital_status),
+            "Gender": gender(self.student.gender),
+            "OtherID": "",
+            "Suffix": "",
+            "Address.Street1": self.student.street_address_1,
+            "Address.Street2": self.student.street_address_2,
+            "Address.City": self.student.city,
+            "Address.StateId": state(self.student.state),
+            "Address.Zip": self.student.zip_code,
+            "Address.AddressTypeId": "1",
+            "Address.Status": "true",
+            "Address.Status": "false",
+            "Address.VTCountyId": self.student.parish,
+            "Telephone.PrimaryPhoneNumber": self.student.phone,
+            "Telephone.PrimaryPhoneTypeId": "3",
+            "Telephone.PrimaryPhoneStatus": "true",
+            "Telephone.PrimaryPhoneStatus": "false",
+            "Telephone.AlternativePhoneNumber1": "",
+            "Telephone.AlternativePhoneType1Id": "",
+            "Telephone.AlternativePhoneStatus1": "false",
+            "Telephone.AlternativePhoneNumber2": "",
+            "Telephone.AlternativePhoneType2Id": "",
+            "Telephone.AlternativePhoneStatus2": "false",
+            "Telephone.AlternativePhoneNumber3": "",
+            "Telephone.AlternativePhoneTypeId3": "",
+            "Telephone.AlternativePhoneNumberStatus3": "false",
+            "Emergency.LastName": "",
+            "Emergency.FirstName": "",
+            "Emergency.RelationshipId": "",
+            "Emergency.Telephone1": "",
+            "Emergency.Telephone2": "",
+            "Email.Email1": self.student.email,
+            "Email.EmailTypeId": "1",
+            "Email.EmailStatus": email_status(self.student.email),
+            "HispanicLatino": hl_tf(self.hispanic_latino),
+            "Ethnicity_1": true_false(self.amer_indian),
+            "Ethnicity_2": true_false(self.asian),
+            "Ethnicity_3": true_false(self.black),
+            "Ethnicity_5": true_false(self.white),
+            "Ethnicity_4": true_false(self.pacific_islander),
+            "Program.ProgramTypeId": primary_program(self.student),
+            "Program.StateKeyword": "",
+            "Program.SecondaryProgram1TypeId": secondary_program(self.student),
+            "ESLStudent": esl(self.student),
+            "Program.Keyword": "",
+            "Program.SecondaryProgram2TypeId": "",
+            "Program.NativeLanguage": self.native_language,
+            "Program.SecondaryProgram3TypeId": "",
+            "Program.SecondaryProgram4TypeId": "",
+            "Program.CountryOfHighestEducation": self.country,
+            "Program.PastEnrollment": true_false(self.student.prior_registration),
+            "Program.PastEnrollCollege": "",
+            "EmploymentStatusId": employment_status(self.current_employment_status),
+            "EnrollPStat.EmploymentLocation": self.employer,
+            "EnrollPStat.Occupation": self.occupation,
+            "EnrollSStat.PublicAssistance": true_false(self.recieves_public_assistance),
+            "EnrollSStat.RuralArea": true_false(self.rural_area),
+            "EnrollSStat.LowIncome": true_false(self.low_family_income),
+            "EnrollSStat.DisplayedHomemaker": true_false(self.displaced_homemaker),
+            "EnrollSStat.SingleParent": true_false(self.single_parent),
+            "EnrollSStat.DislocatedWorker": true_false(self.dislocated_worker),
+            "StudentWIOADetail.MigrantAndSeasonalFarmworker": migrant(self.migrant_seasonal_status),
+            "StudentWIOADetail.NNLongTermUnemployed": true_false(self.long_term_unemployed),
+            "StudentWIOADetail.DislocatedWorker": dislocated(self.dislocated_worker),
+            "StudentWIOADetail.NNCulturalBarriers": true_false(self.cult_barriers_hind_emp),
+            "StudentWIOADetail.NNFostercareYouth": true_false(self.in_foster_care),
+            "StudentWIOADetail.NNAgedOutFosterCare": true_false(self.aged_out_foster_care),
+            "StudentWIOADetail.NNExhaustingTANFWithin2Years": true_false(self.exhaust_tanf),
+            "StudentWIOADetail.IndividualWithDisability": "",
+            "StudentWIOADetail.JobCorps": y_n_u(self.job_corps),
+            "StudentWIOADetail.YouthBuild": y_n_u(self.youth_build),
+            "StudentWIOADetail.NNLowLevelsOfLiteracy": "false",
+            "StudentWIOADetail.NNRecievedAssistance": true_false(self.recieves_public_assistance),
+            "StudentWIOADetail.NNIncomeBelowStandardIncomeLevel": true_false(self.low_family_income),
+            "StudentWIOADetail.NNReceiveReducedPriceLunch": "false",
+            "StudentWIOADetail.NNLowIncomeFosterChild": true_false(self.state_payed_foster),
+            "StudentWIOADetail.NNLowIncomeIndividualWithDisability": true_false(self.disabled_in_poverty),
+            "StudentWIOADetail.NNHomelessOrRunawayYouth": true_false(self.runaway_youth),
+            "StudentWIOADetail.NNLivingInHighPovertyArea": true_false(self.youth_in_high_poverty_area),
+            "StudentWIOADetail.NNSubjectToCriminalJusticeProcess": true_false(self.subject_of_criminal_justice),
+            "StudentWIOADetail.NNBarriersToEmployment": true_false(self.arrest_record_employment_barrier),
+            "StudentWIOADetail.NNLacksFixedNighttimeResidence": true_false(self.lacks_adequate_residence),
+            "StudentWIOADetail.NNNighttimeResidenceNotForHumans": true_false(self.irregular_sleep_accomodation),
+            "StudentWIOADetail.NNMigratoryChild": true_false(self.migratory_child),
+            "StudentWIOADetail.NNBelow18AndAbsetFromHome": true_false(self.runaway_youth),
+            "StudentWIOADetail.Adult": one_stop(self.adult_one_stop),
+            "StudentWIOADetail.AdultDateofLastService": "",
+            "StudentWIOADetail.AdultProviderName": "",
+            "StudentWIOADetail.AdultTypeOfService": 0,
+            "StudentWIOADetail.Youth": one_stop(self.youth_one_stop),
+            "StudentWIOADetail.YouthDateofLastService": "",
+            "StudentWIOADetail.YouthProviderName": "",
+            "StudentWIOADetail.YouthTypeOfService": 0,
+            "StudentWIOADetail.VocationalRehabilitation": voc_rehab(self.voc_rehab),
+            "StudentWIOADetail.WagnerPeyserAct": y_n_u(self.wagner_peyser),
+            "StudentWIOADetail.SchoolStatusAtParticipation": school_status(self.school_status),
+            "StudentWIOADetail.ReceivedTraining": "",
+            "StudentWIOADetail.EligibleTrainingProvider": "",
+            "StudentWIOADetail.TypeTrainingServices": "",
+            "StudentWIOADetail.EligibleTrainingProviderStudy": "",
+            "StudentWIOADetail.EligibleTrainingProviderCIP": "",
+            "StudentWIOADetail.TypeTrainingService2": "",
+            "StudentWIOADetail.TypeTrainingService3": "",
+            "Disability_12": true_false(self.adhd),
+            "Disability_13": true_false(self.autism),
+            "Disability_9": true_false(self.deaf_blind),
+            "Disability_3": true_false(self.deaf),
+            "Disability_6": true_false(self.emotional_disturbance),
+            "Disability_15": true_false(self.k12_iep),
+            "Disability_2": true_false(self.hard_of_hearing),
+            "Disability_1": true_false(self.intellectual_disability),
+            "Disability_10": true_false(self.multiple_disabilities),
+            "Disability_7": true_false(self.orthopedic_impairment),
+            "Disability_8": true_false(self.other_health_impairment),
+            "Disability_11": true_false(self.learning_disability),
+            "Disability_4": true_false(self.speech_or_lang_impairment),
+            "Disability_14": true_false(self.traumatic_brain_injury),
+            "Disability_5": true_false(self.visual_impairment),
+            "SpecLearningDisId": "11",
+            "Dislearning_4": true_false(self.dyscalculia),
+            "Dislearning_3": true_false(self.dysgraphia),
+            "Dislearning_2": true_false(self.dyslexia),
+            "Dislearning_1": true_false(self.neurological_impairments),
+            "HighestId": self.highest_level_completed,
+            "HighLocId": self.school_location,
+            "GoalId": "",
+            "ReferralDate": "",
+            "ReferralTo": "",
+            "CommentDate": "",
+            "Comment": "",
+            "btnSave": "Create"
+        }
+
+        session.post(
+            'https://workreadyu.lctcs.edu/Student/CreateWithWIOA/CreateLink',
+            data=student
+        )
+
+        search = {
+            'LastNameTextBox': self.student.last_name,
+            'FirstNameTextBox': self.student.first_name,
+            'FromTextBox': self.student.intake_date,
+            'ToTextBox': self.student.intake_date,
+            'btnFilter': 'Filter List'
+        }
+
+        wru = wru_search(session, search)
+
+        self.student.WRU_ID = wru
+        self.student.save()
 
 
 class CollegeInterest(models.Model):
