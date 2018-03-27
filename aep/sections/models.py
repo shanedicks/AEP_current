@@ -4,6 +4,7 @@ from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
 from django.db import models, IntegrityError
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from core.utils import make_slug
@@ -167,20 +168,23 @@ class Section(models.Model):
         raw = {}
         print("Starting", self.title)
         for student in self.get_all_students():
-            if student.student.elearn_record.g_suite_email:
-                print("Fetching", student.student)
-                raw[student] = service.courses(
-                ).courseWork().studentSubmissions().list(
-                    courseId=self.g_suite_id,
-                    states='RETURNED',
-                    courseWorkId='-',
-                    userId=student.student.elearn_record.g_suite_email
-                ).execute()
-                print(
-                    "Fetched",
-                    len(raw[student].get('studentSubmissions', [])),
-                    "records"
-                )
+            try:
+                if student.student.elearn_record.g_suite_email:
+                    print("Fetching", student.student)
+                    raw[student] = service.courses(
+                    ).courseWork().studentSubmissions().list(
+                        courseId=self.g_suite_id,
+                        states='RETURNED',
+                        courseWorkId='-',
+                        userId=student.student.elearn_record.g_suite_email
+                    ).execute()
+                    print(
+                        "Fetched",
+                        len(raw[student].get('studentSubmissions', [])),
+                        "records"
+                    )
+            except ObjectDoesNotExist:
+                print(student.student, "has no elearn record. Skipping...")
         for key, value in raw.items():
             subs = value.get('studentSubmissions')
             if subs is not None:
