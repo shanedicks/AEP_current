@@ -624,6 +624,26 @@ class AceRecord(models.Model):
         default=False
     )
 
+    read_072 = models.BooleanField(
+        default=False,
+        verbose_name='Passed Townsend'
+    )
+
+    eng_062 = models.BooleanField(
+        default=False,
+        verbose_name='Passed ENG 062'
+    )
+
+    math_092 = models.BooleanField(
+        default=False,
+        verbose_name='Passed MATH 092'
+    )
+
+    math_098 = models.BooleanField(
+        default=False,
+        verbose_name='Passed MATH 098'
+    )
+
     def get_absolute_url(self):
         return reverse(
             'coaching:ace record detail',

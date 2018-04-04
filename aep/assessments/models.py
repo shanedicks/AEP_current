@@ -710,6 +710,7 @@ class HiSet_Practice(Test):
     FPT6A = 'FPT6A'
     PPT6A = 'PPT6A'
     OPT6A = 'OPT6A'
+    OPT7 = 'OPT7'
 
     VERSION_CHOICES = (
         (FPT2, 'Free Practice Test 2 (2015)'),
@@ -723,6 +724,7 @@ class HiSet_Practice(Test):
         (FPT6A, 'Free Practice Test 6A (2016)'),
         (PPT6A, 'Paid Practice Test 6A (2016)'),
         (OPT6A, 'Official Practice Test 6A (2016)'),
+        (OPT7, 'Official Practice Test 7 (2018)')
     )
 
     STAFF = 'Staff'
