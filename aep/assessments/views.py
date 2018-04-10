@@ -420,6 +420,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                 test_type = 'Posttest'
             if test.read_ss:
                 s = [
+                    test.student.student.partner,
                     test.student.student.WRU_ID,
                     test.student.student.last_name,
                     test.student.student.first_name,
@@ -473,6 +474,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                 data.append(s)
             if test.lang_ss:
                 s = [
+                    test.student.student.partner,
                     test.student.student.WRU_ID,
                     test.student.student.last_name,
                     test.student.student.first_name,

@@ -39,7 +39,11 @@ class AceRecordResource(resources.ModelResource):
             'hsd',
             'hsd_date',
             'media_release',
-            'third_party_release'
+            'third_party_release',
+            'read_072',
+            'eng_062',
+            'math_092',
+            'math_098'
         )
 
 
@@ -197,7 +201,11 @@ class AceRecordAdmin(ImportExportActionModelAdmin):
         'hsd',
         'hsd_date',
         'media_release',
-        'third_party_release'
+        'third_party_release',
+        'read_072',
+        'eng_062',
+        'math_092',
+        'math_098'
     ]
 
     def ace_status_column(self, obj):
