@@ -390,6 +390,14 @@ class StudentAdmin(ImportExportActionModelAdmin):
         except ObjectDoesNotExist:
             pass
 
+    def move_college_interest(self, request, q):
+        try:
+            a = q[0].college_interest
+            a.student = q[1]
+            a.save()
+        except ObjectDoesNotExist:
+            pass
+
     def full_merge(self, request, queryset):
         q = queryset.order_by('pk')
         self.move_test_history(request, q)
@@ -398,6 +406,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         self.move_elearn_record(request, q)
         self.move_coaching(request, q)
         self.move_ace_record(request, q)
+        self.move_college_interest(request, q)
         s = q[1]
         s.intake_date = q[0].intake_date
         s.WRU_ID = q[0].WRU_ID

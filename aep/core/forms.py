@@ -15,7 +15,7 @@ class DateFilterForm(Form):
             '%m/%d/%Y',
             '%m/%d/%y'
         ],
-        required=True
+        required=False
     )
     to_date = DateField(
         input_formats=[
@@ -23,7 +23,7 @@ class DateFilterForm(Form):
             '%m/%d/%Y',
             '%m/%d/%y'
         ],
-        required=True
+        required=False
     )
 
     def __init__(self, *args, **kwargs):

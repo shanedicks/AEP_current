@@ -36,10 +36,10 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
             'Time-in',
             'Time-out',
             'Student WRU_ID',
-            'Partner org',
             'Last Name',
             'First Name',
-            'Section WRU_ID'
+            'Section WRU_ID',
+            'Partner org',
         ]
         data.append(headers)
         for att in attendance:
@@ -49,10 +49,10 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
                 att.time_in,
                 att.time_out,
                 att.enrollment.student.WRU_ID,
-                att.enrollment.student.partner,
                 att.enrollment.student.last_name,
                 att.enrollment.student.first_name,
-                att.enrollment.section.WRU_ID
+                att.enrollment.section.WRU_ID,
+                att.enrollment.student.partner,
             ]
             data.append(s)
         return data

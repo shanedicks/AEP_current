@@ -1,10 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy
 from django.views.generic import (
     DetailView, ListView, UpdateView,
     CreateView, TemplateView, FormView)
 from formtools.wizard.views import SessionWizardView
+from core.forms import DateFilterForm
+from core.utils import render_to_csv
 from people.models import Student
 from .models import Profile, Coaching, MeetingNote, AceRecord, ElearnRecord
 from .forms import (
@@ -331,3 +334,53 @@ class ElearnRecordListView(LoginRequiredMixin, ListView):
 class ElearnRecordCSV(LoginRequiredMixin, FormView):
 
     model = ElearnRecord
+    form_class = DateFilterForm
+    template_name = "coaching/elearn_csv.html"
+
+    def get_student_data(self, students):
+        data = []
+        headers = [
+            "Last Name",
+            "First Name",
+            "Last Test Date",
+            "Coach",
+            "Elearn Email",
+            "WRU Id",
+            "Partner",
+        ]
+
+        data.append(headers)
+
+        for student in students:
+            try:
+                last_test = student.student.tests.last_test
+            except ObjectDoesNotExist:
+                last_test = 'No test on record'
+            try:
+                coach = student.student.coaches.filter(active=True).latest('id').coach
+            except ObjectDoesNotExist:
+                coach = 'No Active Coach'
+            s = [
+                student.student.last_name,
+                student.student.first_name,
+                last_test,
+                coach,
+                student.g_suite_email,
+                student.student.partner,
+                student.student.WRU_ID,
+            ]
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        students = ElearnRecord.objects.all()
+        filename = "student_list.csv"
+        if form.cleaned_data['from_date'] != None:
+            from_date = form.cleaned_data['from_date']
+            students = students.filter(intake_date__gte=from_date)
+        if form.cleaned_data['to_date'] != None:
+            to_date = form.cleaned_data['to_date']
+            students = students.filter(intake_date__lte=to_date)
+        students = students.distinct()
+        data = self.get_student_data(students)
+        return render_to_csv(data=data, filename=filename)

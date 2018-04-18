@@ -62,12 +62,11 @@ class ElearnRecordResource(resources.ModelResource):
             'student',
             'student__last_name',
             'student__first_name',
-            'student__email',
-            'student__phone',
             'elearn_status',
             'status_updated',
             'g_suite_email',
             'intake_date',
+            'student__partner'
         )
 
 
