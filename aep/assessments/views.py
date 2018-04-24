@@ -71,12 +71,16 @@ class TestEventCSV(LoginRequiredMixin, View):
                 g_suite_email = student.student.elearn_record.g_suite_email
             except ObjectDoesNotExist:
                 g_suite_email = ""
+            try:
+                test_assignment = student.student.tests.test_assignment
+            except ObjectDoesNotExist:
+                test_assignment = 'Missing Test History'
             s = [
                 student.student.partner,
                 student.student.WRU_ID,
                 student.student.last_name,
                 student.student.first_name,
-                student.student.tests.test_assignment,
+                test_assignment,
                 student.student.intake_date,
                 student.student.get_gender_display(),
                 str(student.student.dob),

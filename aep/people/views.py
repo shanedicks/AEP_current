@@ -189,7 +189,7 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
     #         )
 
 
-class StudentCreateView(CreateView):
+class StudentCreateView(LoginRequiredMixin, CreateView):
 
     model = Student
     form_class = StudentForm
