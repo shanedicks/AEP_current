@@ -323,7 +323,7 @@ class Profile(models.Model):
             self.student.WRU_ID
         )
 
-    def save(self):
+    def save(self, **kwargs):
         try:
             self.student.elearn_record.elearn_status = 'New'
             self.student.elearn_record.save()
@@ -391,7 +391,7 @@ class Coaching(models.Model):
             self.coachee.__str__(),
         )
 
-    def save(self):
+    def save(self, **kwargs):
         if self.active is True:
             try:
                 self.coachee.elearn_record.elearn_status = 'Active'
@@ -717,7 +717,7 @@ class ElearnRecord(models.Model):
             self.student.WRU_ID,
         )
 
-    def save(self):
+    def save(self, **kwargs):
         if self.elearn_status == 'InActive':
             try:
                 s = self.student.coaches.filter(coaching_type='elearn')

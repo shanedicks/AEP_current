@@ -246,7 +246,8 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
     search_fields = [
         'student__last_name',
         'student__first_name',
-        'student__WRU_ID'
+        'student__WRU_ID',
+        'g_suite_email'
     ]
 
     fields = [
