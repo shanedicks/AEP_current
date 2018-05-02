@@ -222,12 +222,10 @@ class StudentAdmin(ImportExportActionModelAdmin):
         "WRU_ID",
         "dob",
         "intake_date",
-        'ccr_app',
-        'esl_app',
         'ace_app',
         'e_learn_app',
         'success_app',
-        'accuplacer_app'
+        'partner'
     )
 
     list_filter = (
