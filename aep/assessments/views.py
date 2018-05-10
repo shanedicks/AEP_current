@@ -423,6 +423,13 @@ class TabeCSV(LoginRequiredMixin, FormView):
                 test_date__gte=pre).count() > 0:
                 test_type = 'Posttest'
             if test.read_ss:
+                lowest = 1
+                if m is not None:
+                    if m < r:
+                        lowest = 0
+                if l is not None:
+                    if l < r:
+                        lowest = 0
                 s = [
                     test.student.student.partner,
                     test.student.student.WRU_ID,
@@ -438,18 +445,19 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     r,
                     test.read_ge,
                     nrs.get(test.read_nrs, ''),
-                    '1',
+                    lowest,
                     '0',
                     '1',
                 ]
-                if m is not None:
-                    if m < r:
-                        s[13] = 0
-                if l is not None:
-                    if l < r:
-                        s[13] = 0
                 data.append(s)
             if test.total_math_ss:
+                lowest = 1
+                if r is not None:
+                    if r < m:
+                        lowest = 0
+                if l is not None:
+                    if l < m:
+                        lowest = 0 
                 s = [
                     test.student.student.partner,
                     test.student.student.WRU_ID,
@@ -465,18 +473,19 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     m,
                     test.total_math_ge,
                     nrs.get(test.math_nrs, ''),
-                    '1',
+                    lowest,
                     '0',
                     '1',
-                ]
-                if r is not None:
-                    if r < m:
-                        s[13] = 0
-                if l is not None:
-                    if l < m:
-                        s[13] = 0               
+                ]              
                 data.append(s)
             if test.lang_ss:
+                lowest = 1
+                if m is not None:
+                    if m < l:
+                        lowest = 0
+                if r is not None:
+                    if r < l:
+                        lowest = 0
                 s = [
                     test.student.student.partner,
                     test.student.student.WRU_ID,
@@ -492,16 +501,10 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     l,
                     test.lang_ge,
                     nrs.get(test.lang_nrs, ''),
-                    '1',
+                    lowest,
                     '0',
                     '1',
                 ]
-                if m is not None:
-                    if m < l:
-                        s[13] = 0
-                if r is not None:
-                    if r < l:
-                        s[13] = 0
                 data.append(s)
         return data
 
