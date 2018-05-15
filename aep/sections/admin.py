@@ -166,12 +166,14 @@ class EnrollmentResource(resources.ModelResource):
             "id",
             "section",
             "creator",
+            "status",
             "section__WRU_ID",
             "section__title",
             "student__last_name",
             "student__first_name",
             "student__partner",
-            "created"
+            "created",
+            "section__semester__title"
         )
 
 
@@ -188,11 +190,16 @@ class EnrollmentAdmin(ImportExportActionModelAdmin):
         'last_modified'
     )
 
+    list_filter = (
+        'status',
+    )
+
     search_fields = [
         "student__first_name",
         "student__last_name",
         "section__title",
-        "student__partner"
+        "student__partner",
+        "section__semester__title"
     ]
 
     fields = (
