@@ -2,12 +2,13 @@
 
 {% block content %}
     <h1>Staff</h1>
+    <h3>Full Time</h3>
     <table class="table">
     	<tr>
     		<th>Name</th>
     		<th>Phone</th>
     		<th>Email</th>
-        {% for staff in object_list %}
+        {% for staff in full_time %}
         	<tr>
 	            <td><a href="{{ staff.get_absolute_url }}">{{ staff }}</a></td>
 	            <td>{{ staff.phone }}</td>
@@ -15,4 +16,18 @@
             </tr>
         {% endfor %}
     </table>
-{% endblock content %}
+    <h3>Part Time</h3>
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+        {% for staff in part_time %}
+            <tr>
+                <td><a href="{{ staff.get_absolute_url }}">{{ staff }}</a></td>
+                <td>{{ staff.phone }}</td>
+                <td>{{ staff.email }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock content %} 

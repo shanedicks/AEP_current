@@ -425,10 +425,24 @@ class StaffListView(LoginRequiredMixin, ListView):
 
     model = Staff
 
-    queryset = Staff.objects.filter(active=True).order_by(
-        'last_name',
-        'first_name'
-    )
+    def get_context_data(self, **kwargs):
+        context = super(StaffListView, self).get_context_data(**kwargs)
+        if 'full_time' not in context:
+            context['full_time'] = Staff.objects.filter(
+                full_time=True
+            ).order_by(
+                'last_name',
+                'first_name'
+            )
+            context.update(kwargs)
+        if 'part_time' not in context:
+            context['part_time'] = Staff.objects.filter(
+                full_time=False
+            ).order_by(
+                'last_name',
+                'first_name'
+            )
+        return context
 
 
 class StaffUpdateView(LoginRequiredMixin, UpdateView):

@@ -89,6 +89,7 @@ class StaffResource(resources.ModelResource):
             "first_name",
             "last_name",
             "email",
+            'full_time',
             'teacher',
             'coach',
             "dob",
@@ -431,6 +432,7 @@ class StaffAdmin(ImportExportActionModelAdmin):
     list_filter = (
         'active',
         'teacher',
+        'full_time',
         'coach'
     )
 
