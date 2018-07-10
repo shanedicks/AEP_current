@@ -6,7 +6,7 @@ from django.db import models, IntegrityError
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from core.utils import make_slug
 from academics.models import Course
 from people.models import Staff, Student

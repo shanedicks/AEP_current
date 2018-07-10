@@ -3,7 +3,7 @@ import bs4
 from datetime import date, datetime
 from django.db import models
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from core.utils import make_slug, make_AEP_ID
 
@@ -552,7 +552,7 @@ def hl_tf(input):
 def primary_program(student):
     program = "1"
     if student.esl_app:
-        program = '7'
+        program = '16'
     elif student.e_learn_app:
         program = '12'
     elif student.ace_app:
@@ -1199,10 +1199,10 @@ class WIOA(models.Model):
             "hdnInactiveProg": ",7,13,",
             "hdnInactiveEmpStat": ",4_UNL, 5_NLF,",
             "EnrollPStat.IntakeDate": self.student.intake_date,
-            "FY": "5",
+            "FY": "6",
             "lblCurrentFY": "5",
-            "FYBginDate": "7/1/2017",
-            "FYEndDate": "6/30/2018",
+            "FYBginDate": "7/1/2018",
+            "FYEndDate": "6/30/2019",
             "hdnProviderId": "DELGADO COMMUNITY COLLEGE",
             "StudentId": "0",
             "SSN": get_SID(self.SID),
@@ -1362,6 +1362,11 @@ class WIOA(models.Model):
 
         self.student.WRU_ID = wru
         self.student.save()
+
+    def send(self):
+        self.check_for_state_id()
+        if self.student.WRU_ID == 'No ID':
+            self.send_to_state()
 
 
 class CollegeInterest(models.Model):
