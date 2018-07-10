@@ -346,9 +346,15 @@ class Student(Profile):
         default='S',
         verbose_name=_('Marital Status')
     )
-
     partner = models.CharField(
         max_length=40,
+        blank=True
+    )
+    duplicate = models.BooleanField(
+        default=False
+    )
+    dupl_date = models.DateField(
+        null=True,
         blank=True
     )
 

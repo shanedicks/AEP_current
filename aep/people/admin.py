@@ -230,13 +230,12 @@ class StudentAdmin(ImportExportActionModelAdmin):
     )
 
     list_filter = (
-        'ccr_app',
-        'esl_app',
         'ace_app',
         'e_learn_app',
         'success_app',
         'accuplacer_app',
-        'partner'
+        'partner',
+        'duplicate'
     )
 
     search_fields = [
@@ -268,6 +267,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
          "street_address_2"),
         "city",
         "state",
+        ("duplicate",
+         "dupl_date")
     ]
 
     actions = [
@@ -406,10 +407,14 @@ class StudentAdmin(ImportExportActionModelAdmin):
         self.move_coaching(request, q)
         self.move_ace_record(request, q)
         self.move_college_interest(request, q)
-        s = q[1]
-        s.intake_date = q[0].intake_date
-        s.WRU_ID = q[0].WRU_ID
-        s.save()
+        n = q[1]
+        o = q[0]
+        n.intake_date = o.intake_date
+        n.WRU_ID = o.WRU_ID
+        n.save()
+        o.duplicate = True
+        o.dupl_date = datetime.today().date()
+        o.save()
 
 
 admin.site.register(Student, StudentAdmin)

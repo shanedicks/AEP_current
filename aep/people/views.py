@@ -38,7 +38,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 class StudentListView(LoginRequiredMixin, ListView, FormView):
 
     form_class = StudentSearchForm
-    queryset = Student.objects.all().order_by('last_name', 'first_name')
+    queryset = Student.objects.filter(duplicate=False).order_by('last_name', 'first_name')
     context_object_name = 'students'
     paginate_by = 25
 
@@ -138,7 +138,7 @@ class NewStudentCSV(ActiveStudentCSV):
     template_name = "people/new_student_csv.html"
 
     def form_valid(self, form):
-        students = Student.objects.all()
+        students = Student.objects.filter(duplicate=False)
         filename = "student_list.csv"
         if form.cleaned_data['from_date'] != "":
             from_date = form.cleaned_data['from_date']
