@@ -1,13 +1,29 @@
 from django.conf.urls import url, include
+from sections.views import StudentClassListView, StudentScheduleView, AddClassView, StudentAttendanceView
 from . import views
 
 app_name = 'people'
+
+class_patterns = [
+    url(r'^$',
+        StudentClassListView.as_view(),
+        name='student classes'),
+    url(r'^print-schedule/$',
+        StudentScheduleView.as_view(),
+        name='print schedule'),
+    url(r'^add-class/$',
+        AddClassView.as_view(),
+        name='add class')
+]
 
 single_student_patterns = [
     url(r'^$',
         views.StudentDetailView.as_view(),
         name='student detail'
         ),
+    url(r'^attendance/$',
+        StudentAttendanceView.as_view(),
+        name='student attendance'),
     url(r'^edit/$',
         views.StudentUpdateView.as_view(),
         name='edit student'
@@ -20,7 +36,7 @@ single_student_patterns = [
         views.CollegeInterestFormView.as_view(),
         name='college interest form'
         ),
-    url(r'^', include('sections.urls'))
+    url(r'^my-classes/', include(class_patterns))
 ]
 
 student_patterns = [

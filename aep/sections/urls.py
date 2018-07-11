@@ -43,24 +43,6 @@ staff_patterns = [
 
 ]
 
-student_patterns = [
-    url(r'^$',
-        views.StudentClassListView.as_view(),
-        name='student classes'),
-    url(r'^print-schedule/$',
-        views.StudentScheduleView.as_view(),
-        name='print schedule'),
-    url(r'^add-class/$',
-        views.AddClassView.as_view(),
-        name='add class')
-   # url(r'^add-section/$',
-   #     views.AddClassListView.as_view(),
-   #     name='add section list'),
-   # url(r'^add-section/(?P<pk>[0-9]{2})/$',
-   #     views.AddClassFromListView.as_view(),
-   #     name='add-section')
-]
-
 enrollment_patterns = [
     url(r'(?P<pk>[0-9]+)/$',
         views.EnrollmentView.as_view(),
@@ -81,11 +63,6 @@ urlpatterns = [
         include(enrollment_patterns)),
     url(r'^teaching/',
         include(staff_patterns)),
-    url(r'^my-classes/',
-        include(student_patterns)),
-    url(r'^attendance/$',
-        views.StudentAttendanceView.as_view(),
-        name='student attendance'),
     url(r'^attendance_csv/$',
         views.AttendanceCSV.as_view(),
         name='attendance csv'),

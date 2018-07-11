@@ -34,9 +34,9 @@ urlpatterns = [
 
     # Other Stuff
     url(r'^', include('people.urls', namespace='people')),
-    url(r'^testing/', include('assessments.urls', namespace='assessments')),
-    url(r'^classes/', include('sections.urls', namespace='sections')),
-    url(r'^coaching/', include('coaching.urls', namespace='coaching')),
+    url(r'^testing/', include('assessments.urls')),
+    url(r'^classes/', include('sections.urls')),
+    url(r'^coaching/', include('coaching.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
