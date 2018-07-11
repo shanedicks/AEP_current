@@ -28,6 +28,7 @@ class TestEvent(models.Model):
 
     proctor = models.ForeignKey(
         Staff,
+        models.PROTECT,
         related_name="Tests",
         blank=True,
         null=True
@@ -133,11 +134,13 @@ class TestAppointment(models.Model):
 
     student = models.ForeignKey(
         Student,
+        models.CASCADE,
         related_name='test_appointments'
     )
 
     event = models.ForeignKey(
         TestEvent,
+        models.CASCADE,
         related_name='students'
     )
 
@@ -169,6 +172,7 @@ class TestHistory(models.Model):
 
     student = models.OneToOneField(
         Student,
+        models.CASCADE,
         related_name="tests"
     )
 
@@ -245,6 +249,7 @@ class Test(models.Model):
 
     student = models.ForeignKey(
         TestHistory,
+        models.PROTECT,
         related_name="%(class)s_tests"
     )
 
@@ -761,6 +766,7 @@ class HiSet_Practice(Test):
 
     reported_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        models.PROTECT,
         related_name='hpt_submissions'
     )
 

@@ -1,6 +1,8 @@
 from django.conf.urls import url, include
 from . import views
 
+app_name = 'assessments'
+
 single_student_tabe_patterns = [
     url(r'^$',
         views.StudentTabeListView.as_view(),

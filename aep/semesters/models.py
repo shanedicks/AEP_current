@@ -60,6 +60,7 @@ class Day(models.Model):
     date = models.DateField()
     semester = models.ForeignKey(
         Semester,
+        models.CASCADE,
         related_name='days'
     )
     notes = models.TextField(

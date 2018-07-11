@@ -1422,6 +1422,7 @@ class CollegeInterest(models.Model):
 
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        models.PROTECT,
         related_name='college_interest_records'
     )
 

@@ -84,6 +84,7 @@ class Profile(models.Model):
 
     student = models.OneToOneField(
         Student,
+        models.CASCADE,
         related_name='coaching_profile'
     )
 
@@ -345,11 +346,13 @@ class Coaching(models.Model):
 
     coachee = models.ForeignKey(
         Student,
+        models.CASCADE,
         related_name='coaches'
     )
 
     coach = models.ForeignKey(
         Staff,
+        models.PROTECT,
         related_name='coachees'
     )
 
@@ -423,6 +426,7 @@ class MeetingNote(models.Model):
 
     coaching = models.ForeignKey(
         Coaching,
+        models.CASCADE,
         related_name='notes'
     )
 
@@ -559,6 +563,7 @@ class AceRecord(models.Model):
 
     student = models.OneToOneField(
         Student,
+        models.CASCADE,
         related_name='ace_record'
     )
 
@@ -679,6 +684,7 @@ class ElearnRecord(models.Model):
 
     student = models.OneToOneField(
         Student,
+        models.CASCADE,
         related_name='elearn_record'
     )
 

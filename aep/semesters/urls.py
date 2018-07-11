@@ -1,6 +1,8 @@
 from django.conf.urls import url
 from . import views
 
+app_name = 'semesters'
+
 urlpatterns = [
     url(r'^$',
         views.SemesterListView.as_view(),

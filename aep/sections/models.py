@@ -53,18 +53,21 @@ class Section(models.Model):
     title = models.CharField(max_length=50)
     semester = models.ForeignKey(
         Semester,
+        models.PROTECT,
         related_name='sections',
         null=True,
         blank=True
     )
     teacher = models.ForeignKey(
         Staff,
+        models.PROTECT,
         related_name='classes',
         null=True,
         blank=True
     )
     course = models.ForeignKey(
         Course,
+        models.PROTECT,
         related_name='sections',
         null=True,
         blank=True
@@ -331,14 +334,17 @@ class Enrollment(models.Model):
     )
     student = models.ForeignKey(
         Student,
+        models.CASCADE,
         related_name='classes'
     )
     section = models.ForeignKey(
         Section,
+        models.PROTECT,
         related_name='students'
     )
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        models.PROTECT,
         related_name='enrollment_records'
     )
     status = models.CharField(
@@ -348,6 +354,7 @@ class Enrollment(models.Model):
     )
     modified_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        models.PROTECT,
         related_name='modified_enrollments',
         null=True
     )
@@ -486,6 +493,7 @@ class Attendance(models.Model):
     )
     enrollment = models.ForeignKey(
         Enrollment,
+        models.CASCADE,
         related_name='attendance'
     )
     attendance_type = models.CharField(

@@ -1,6 +1,8 @@
 from django.conf.urls import url, include
 from . import views
 
+app_name = 'coaching'
+
 
 single_student_patterns = [
     url(r'^$',

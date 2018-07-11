@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from . import views
 
+app_name = 'sections'
 
 single_class_attendance_patterns = [
     url(r'^$',
