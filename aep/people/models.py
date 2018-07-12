@@ -1366,6 +1366,7 @@ class WIOA(models.Model):
         }
 
         wru = wru_search(session, search)
+        wru = wru.decode('ascii')
 
         self.student.WRU_ID = wru
         self.student.save()
