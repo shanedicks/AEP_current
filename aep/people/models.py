@@ -1369,6 +1369,7 @@ class WIOA(models.Model):
         try:
             wru = wru.decode('ascii')
         except AttributeError:
+            pass
 
         self.student.WRU_ID = wru
         self.student.save()
