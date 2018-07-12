@@ -267,7 +267,7 @@ class Student(Profile):
     WRU_ID = models.CharField(
         null=True,
         blank=True,
-        max_length=7
+        max_length=20
     )
     AEP_ID = models.CharField(
         unique=True,
@@ -1182,6 +1182,7 @@ class WIOA(models.Model):
 
         if wru != 'No ID':
             wru = b'x' + wru
+            wru = wru.decode('ascii')
 
         self.student.WRU_ID = wru
         self.student.save()
