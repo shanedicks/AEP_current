@@ -3,7 +3,23 @@
 
 {% block content %}
     <h1>Students <a href="{% url 'people:active student csv' %}" class="btn btn-default btn-sm">Student Lists</a></h1>
-        <form class='form-inline' method='get'>
+    {% if request.GET %}
+        <form id='student-filter' class='form-inline' method='get' action="{% url 'people:student list' %}">
+        <div class="form-group">
+            <label class="sr-only" for="id_f_name">First Name</label>
+            <input class="form-control" id="id_f_name" name="f_name" value="{{form.f_name.value}}" type="text" placeholder="First Name" />
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="id_l_name">Last Name</label>
+            <input class="form-control" id="id_l_name" name="l_name" value="{{form.l_name.value}}" type="text" placeholder="Last Name" />
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="id_stu_id">Student Id</label>
+            <input class="form-control" id="id_stu_id" name="stu_id" value="{{form.stu_id.value}}" type="text" placeholder="Student Id" />
+        </div>              
+    <button type="submit" class="btn btn-default btn-sm">Filter Students</button>
+    {% else %}
+        <form id='student-filter' class='form-inline' method='get' action="{% url 'people:student list' %}">
         <div class="form-group">
             <label class="sr-only" for="id_f_name">First Name</label>
             <input class="form-control" id="id_f_name" name="f_name" type="text" placeholder="First Name" />
@@ -15,13 +31,14 @@
         <div class="form-group">
             <label class="sr-only" for="id_stu_id">Student Id</label>
             <input class="form-control" id="id_stu_id" name="stu_id" type="text" placeholder="Student Id" />
-        </div>              
+        </div>
     <button type="submit" class="btn btn-default btn-sm">Filter Students</button>
+    {% endif %}
     <a href="{% url 'people:student list' %}" class="btn btn-default btn-sm">Clear</a>
     </form>
     {% if students %}
         {% if is_paginated %}
-            {% include 'components/pagination.html' %}
+            {% include 'components/pagination2.html' with form_target='student-filter' %}
         {% endif %}
 
         <table class="table">

@@ -2,12 +2,21 @@
 
 {% block content %}
     <h1>Classes</h1>
-    <form class='form-inline' method='get'>
+    {% if request.GET %}
+    <form id='class-filter' class='form-inline' method='get' action="{% url 'sections:class list' %}">
+        <div class="form-group">
+            <label class="sr-only" for="id_c_name">Class Name</label>
+            <input class="form-control" id="id_c_name" name="c_name" value="{{form.c_name.value}}" type="text" placeholder="Class Name" />
+        </div>
+    <button type="submit" class="btn btn-default btn-sm">Filter Classes</button>
+    {% else %}
+    <form id='class-filter' class='form-inline' method='get' action="{% url 'sections:class list' %}">
         <div class="form-group">
             <label class="sr-only" for="id_c_name">Class Name</label>
             <input class="form-control" id="id_c_name" name="c_name" type="text" placeholder="Class Name" />
         </div>
     <button type="submit" class="btn btn-default btn-sm">Filter Classes</button>
+    {% endif %}
     <a href="{% url 'sections:class list' %}" class="btn btn-default btn-sm">Clear</a>
     <table class="table">
 	    <tr>
@@ -21,7 +30,7 @@
 	    	<th>Time</th>
 	    </tr>
         {% if is_paginated %}
-            {% include 'components/pagination.html' %}
+            {% include 'components/pagination2.html' with form_target='class-filter' %}
         {% endif %}
 	    {% for section in object_list %}
 	    <tr>
