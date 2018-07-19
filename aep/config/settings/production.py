@@ -1,5 +1,10 @@
 from .base import *
 
+########## CELERY CONFIGURATION
+CELERY_BROKER_URL = get_env_variable('CLOUDAMPQ_URL')
+CELERY_BROKER_POOL_LIMIT = 1
+########## END CELERY CONFIGURATION
+
 ########## DATABASE CONFIGURATION
 import dj_database_url
 DATABASES = {}
