@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block head_title %}DCCAEP | {{event}} {% endblock head_title %}
 {% block content %}
 <h1>{{ event }}</h1>
 <h3>{{event.start}} - {{event.end.time}}</h3>

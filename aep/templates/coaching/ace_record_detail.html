@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% block head_title %}DCCAEP | {{student}} ACE Record{% endblock head_title %}
 {% block content %}
     <h1>ACE Record for <a href="{% url 'people:student detail' slug=student.slug %}">{{student}}</a></h1>
     <h4>LOLA Number</h4>

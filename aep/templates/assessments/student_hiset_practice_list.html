@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}} HiSET Practice Scores{% endblock head_title %}
 {% block content %}
 <h1>HiSET Practice Test Results for {{student}}</h1>
 <p><a class="btn btn-default" href="{% url 'assessments:student hiset practice add' slug=student.slug %}">Add HiSET Practice Test</a></p>

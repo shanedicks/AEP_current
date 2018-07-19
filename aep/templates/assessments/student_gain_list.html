@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% block head_title %}DCCAEP | {{student}} GAIN Scores{% endblock head_title %}
 <h1>GAIN Results for {{student}}</h1>
 <p><a class="btn btn-default" href="{% url 'assessments:student gain add' slug=student.slug %}">Add GAIN Test</a></p>
 {% for test in object_list %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-
+{% block head_title %}DCCAEP | Edit {{student}} info{% endblock head_title %}
 {% block content %}
 <form class="form_group" method="post">
     {% csrf_token %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block head_title %}DCCAEP | {{semester}}{% endblock head_title %}
 {% block content %}
     <h1>{{ semester.title }}</h1>
     <h4>{{ semester.start_date }} - {{semester.end_date}}</h4>

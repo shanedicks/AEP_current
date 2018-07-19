@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}} Coaching Profile{% endblock head_title %}
 
 {% block content %}
     <h1><a href="{% url 'people:student detail' slug=student.slug %}">{{ student }}</a></h1>

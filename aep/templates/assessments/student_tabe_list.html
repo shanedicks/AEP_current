@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}} TABE Scores{% endblock head_title %}
 {% block content %}
 <h1>TABE Results for {{student}}</h1>
 <p><a class="btn btn-default" href="{% url 'assessments:student tabe add' slug=student.slug %}">Add TABE Test</a></p>

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block head_title %}DCCAEP | {{enrollment}}{% endblock head_title %}
 {% block content %}
     <h1>Enrollment Details</h1>
     <h3><a href="{{ enrollment.student.get_absolute_url }}" >{{ enrollment.student }}</a> enrolled in <a href="{{ enrollment.section.get_absolute_url }}">{{ enrollment.section.title }} {{enrollment.section.get_days_str}} {{ enrollment.section.start_time }} - {{enrollment.section.end_time}}</a></h3>

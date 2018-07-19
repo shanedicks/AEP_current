@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Create Staff{% endblock head_title %}
 {% block content %}
 <form action="/people/staff/new/" method="post">
     {% csrf_token %}
