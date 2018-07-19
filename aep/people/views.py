@@ -268,13 +268,12 @@ class StudentSignupWizard(SessionWizardView):
             return HttpResponseRedirect(reverse_lazy('people:signup success'))
         else:
             if student.email:
-                context = Context({'key': 'value'})
                 text_content = get_template(
                     'people/elearn_email.txt'
-                ).render(context)
+                ).render()
                 html_content = get_template(
                     'people/elearn_email.html',
-                ).render(context)
+                ).render()
                 msg = EmailMultiAlternatives(
                     "Welcome to eLearn!",
                     text_content,
