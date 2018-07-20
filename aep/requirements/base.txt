@@ -23,6 +23,7 @@ pyasn1==0.3.2
 pyasn1-modules==0.0.11
 pytz==2016.10
 PyYAML==3.13
+redis==2.10.6
 requests==2.13.0
 rsa==3.4.2
 rules==1.3

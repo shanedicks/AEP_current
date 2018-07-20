@@ -162,13 +162,12 @@ MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = '/'
 
 # django-crispy-forms template-pack setting
-
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # import_export settings
-
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 
+# Google Classroom settings
 KEYFILE_DICT = {
     "type": "service_account",
     "project_id": "maximal-ceiling-171219",
@@ -181,3 +180,6 @@ KEYFILE_DICT = {
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/admin-91%40maximal-ceiling-171219.iam.gserviceaccount.com"
 }
+
+# Celery settings
+CELERY_RESULT_BACKEND = 'redis://'
