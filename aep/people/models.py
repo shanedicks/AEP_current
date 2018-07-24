@@ -5,7 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from core.utils import make_slug, make_AEP_ID
+from core.utils import make_slug, make_AEP_ID, state_session
 
 
 class Profile(models.Model):
@@ -1145,19 +1145,7 @@ class WIOA(models.Model):
     def __str__(self):
         return self.student.__str__()
 
-    def check_for_state_id(self):
-        session = requests.Session()
-
-        login = {
-            'Provider': '9',
-            'Parish': '19',
-            'Login': 'shanedicks',
-            'Password': 'LCTCS1617passDATA',
-            'btnLogin': 'Login'
-        }
-
-        session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login)
-
+    def check_for_state_id(self, session):
 
         search = {
             'LastNameTextBox': self.student.last_name,
@@ -1187,18 +1175,7 @@ class WIOA(models.Model):
         self.student.WRU_ID = wru
         self.student.save()
 
-    def send_to_state(self):
-        session = requests.Session()
-
-        login = {
-            'Provider': '9',
-            'Parish': '19',
-            'Login': 'shanedicks',
-            'Password': 'LCTCS1617passDATA',
-            'btnLogin': 'Login'
-        }
-
-        session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login)
+    def send_to_state(self, session):
 
         student = {
             "hdnRoleType": "2",
@@ -1374,10 +1351,10 @@ class WIOA(models.Model):
         self.student.WRU_ID = wru
         self.student.save()
 
-    def send(self):
-        self.check_for_state_id()
+    def send(self, session):
+        self.check_for_state_id(session)
         if self.student.WRU_ID == 'No ID':
-            self.send_to_state()
+            self.send_to_state(session)
 
 
 class CollegeInterest(models.Model):

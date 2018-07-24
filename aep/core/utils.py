@@ -1,4 +1,5 @@
 import csv
+import requests
 from django.utils.crypto import get_random_string
 from django.http import HttpResponse
 
@@ -22,3 +23,18 @@ def render_to_csv(data, filename):
         writer.writerow(row)
 
     return response
+
+def state_session():
+    session = requests.Session()
+
+    login = {
+        'Provider': '9',
+        'Parish': '19',
+        'Login': 'shanedicks',
+        'Password': 'LCTCS1617passDATA',
+        'btnLogin': 'Login'
+    }
+
+    session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login)
+
+    return session

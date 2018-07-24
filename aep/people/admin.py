@@ -12,6 +12,7 @@ from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
 from .models import Student, Staff, WIOA, CollegeInterest
 from assessments.models import TestHistory
 from coaching.models import ElearnRecord, AceRecord
+from core.utils import state_session
 
 
 class UserResource(resources.ModelResource):
@@ -552,14 +553,14 @@ class WIOAAdmin(ImportExportActionModelAdmin):
     get_WRU_ID.short_description = "WRU ID"
 
     def check_for_state_id(self, request, queryset):
-
+        session = state_session()
         for obj in queryset:
-            obj.check_for_state_id()
+            obj.check_for_state_id(session)
 
     def send_to_state(self, request, queryset):
-
+        session = state_session()
         for obj in queryset:
-            obj.send_to_state()
+            obj.send_to_state(session)
 
 
 admin.site.register(WIOA, WIOAAdmin)
