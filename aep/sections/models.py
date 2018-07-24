@@ -126,6 +126,9 @@ class Section(models.Model):
     def get_dropped(self):
         return self.students.filter(status='D')
 
+    def get_completed(self):
+        return self.students.filter(status='C')
+
     def get_waiting(self):
         return self.students.filter(status='W').order_by('created')
 

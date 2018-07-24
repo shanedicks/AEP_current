@@ -423,6 +423,12 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
                 'student__last_name',
                 'student__first_name'
             ).prefetch_related('attendance')
+        if 'completed' not in context:
+            context['completed'] = self.object.get_completed(
+            ).order_by(
+                'student__last_name',
+                'student__first_name'
+            ).prefetch_related('attendance')
         if 'waitlist' not in context:
             context['waitlist'] = self.object.get_waiting(
             ).order_by(

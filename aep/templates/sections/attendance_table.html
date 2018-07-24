@@ -1,10 +1,12 @@
 <table class="table">
     <tr>
-        <th><h4>Active</h4></th>
+        <th><h4></h4></th>
         {% for day in days %}
         <th><a href="{% url 'sections:daily attendance' slug=section.slug attendance_date=day|date:"Y-m-d" %}">{{day|date:"M - d"}}</a></th>
         {% endfor %}
     </tr>
+    {% if section.get_active %}
+    <tr><th><h4>Active</h4></th></tr>
     {% for student in active %}
         <tr>
             <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
@@ -23,6 +25,26 @@
             {% endfor %}
         </tr>
     {% endfor %}
+    {% endif %}
+    {% if section.get_completed %}
+    <tr><td><h4>Completed</h4></td></tr>
+        {% for student in completed %}
+            <tr>
+                <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
+                {% for att in student.attendance.all %}
+                    <td>
+                        {% if att.attendance_type == "X" %}
+                            -
+                        {% elif att.attendance_type == 'C' %}
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                        {% else %}
+                            {{ att.hours }} 
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    {% endif %}
     {% if section.get_dropped %}
     <tr><td><h4>Dropped</h4></td></tr>
         {% for student in dropped %}
