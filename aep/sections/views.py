@@ -194,6 +194,7 @@ class ClassTestingPreview(ClassDetailView):
         )
         return context
 
+
 class PrintSignInView(LoginRequiredMixin, DetailView):
 
     model = Section
