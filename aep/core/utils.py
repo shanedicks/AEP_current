@@ -2,6 +2,7 @@ import csv
 import requests
 from django.utils.crypto import get_random_string
 from django.http import HttpResponse
+from django.conf import settings
 
 
 def make_AEP_ID():
@@ -30,8 +31,8 @@ def state_session():
     login = {
         'Provider': '9',
         'Parish': '19',
-        'Login': 'shanedicks',
-        'Password': 'LCTCS1617passDATA',
+        'Login': 'greenbean',
+        'Password': settings.LCTCS_PASS,
         'btnLogin': 'Login'
     }
 
