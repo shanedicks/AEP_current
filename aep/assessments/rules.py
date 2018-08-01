@@ -25,7 +25,7 @@ has_pretest = has_tabe | has_clas_e | has_gain
 
 @rules.predicate
 def within_six_months(student):
-    target = timezone.now().date() - timedelta(days=180)
+    target = timezone.now().date() - timedelta(days=150)
     return student.tests.last_test > target
 
 
