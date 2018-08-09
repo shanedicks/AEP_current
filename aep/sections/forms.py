@@ -143,7 +143,7 @@ class AttendanceReportForm(Form):
         required=True
     )
 
-    semester = ModelMultipleChoiceField(queryset=Semester.objects.all())
+    semesters = ModelMultipleChoiceField(queryset=Semester.objects.all())
 
     def __init__(self, *args, **kwargs):
         super(AttendanceReportForm, self).__init__(*args, **kwargs)
@@ -153,7 +153,7 @@ class AttendanceReportForm(Form):
         self.helper.disable_csrf = True
         self.helper.layout = Layout(
             Field(
-                'semester'
+                'semesters'
             ),
             Field(
                 'from_date',
