@@ -436,7 +436,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     test.student.student.last_name,
                     test.student.student.first_name,
                     test_type,
-                    '2017-2018',
+                    '2018-2019',
                     'TABE',
                     test.form,
                     test.read_level,
@@ -464,7 +464,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     test.student.student.last_name,
                     test.student.student.first_name,
                     test_type,
-                    '2017-2018',
+                    '2018-2019',
                     'TABE',
                     test.form,
                     test.math_level,
@@ -492,7 +492,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     test.student.student.last_name,
                     test.student.student.first_name,
                     test_type,
-                    '2017-2018',
+                    '2018-2019',
                     'TABE',
                     test.form,
                     test.lang_level,
@@ -585,7 +585,7 @@ class ClasECSV(LoginRequiredMixin, FormView):
             date = test.test_date
             pre = test.test_date - timedelta(days=180)
             test_type = 'Pretest'
-            if test.student.tabe_tests.filter(
+            if test.student.clas_e_tests.filter(
                 test_date__lt=date).filter(
                 test_date__gte=pre).count() > 0:
                 test_type = 'Posttest'
@@ -595,7 +595,7 @@ class ClasECSV(LoginRequiredMixin, FormView):
                 test.student.student.last_name,
                 test.student.student.first_name,
                 test_type,
-                '2017-2018',
+                '2018-2019',
                 'TABE CLAS-E',
                 test.form,
                 test.read_level,
