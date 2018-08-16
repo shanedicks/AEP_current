@@ -411,8 +411,10 @@ class StudentAdmin(ImportExportActionModelAdmin):
         n = q[1]
         o = q[0]
         n.intake_date = o.intake_date
+        nid = n.WRU_ID
         n.WRU_ID = o.WRU_ID
         n.save()
+        o.WRU_ID = 'd' + nid
         o.duplicate = True
         o.dupl_date = datetime.today().date()
         o.save()

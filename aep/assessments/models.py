@@ -542,6 +542,7 @@ class Clas_E(NRSTest):
         verbose_name = "CLAS-E"
         verbose_name_plural = "CLAS-E scores"
 
+
     def __str__(self):
         student = self.student.__str__()
         date = str(self.test_date)
@@ -564,7 +565,7 @@ class Clas_E(NRSTest):
             "4": (360, 473, 510, 554)
         }
         a = assignment_dict[self.read_level]
-        if self.form == 'A':
+        if self.form.upper() == 'A':
             form = 'B'
         else:
             form = 'A'
