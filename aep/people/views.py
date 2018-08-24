@@ -461,7 +461,8 @@ class StaffListView(LoginRequiredMixin, ListView):
         context = super(StaffListView, self).get_context_data(**kwargs)
         if 'full_time' not in context:
             context['full_time'] = Staff.objects.filter(
-                full_time=True
+                full_time=True,
+                active=True
             ).order_by(
                 'last_name',
                 'first_name'
@@ -469,7 +470,8 @@ class StaffListView(LoginRequiredMixin, ListView):
             context.update(kwargs)
         if 'part_time' not in context:
             context['part_time'] = Staff.objects.filter(
-                full_time=False
+                full_time=False,
+                active=True
             ).order_by(
                 'last_name',
                 'first_name'
