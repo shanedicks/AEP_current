@@ -363,19 +363,27 @@ class StudentAdmin(ImportExportActionModelAdmin):
 
     def move_elearn_record(self, request, q):
         try:
-            e = q[0].elearn_record
-            e.student = q[1]
-            e.save()
-        except ObjectDoesNotExist:
+            e = q[1].elearn_record
             pass
+        except ObjectDoesNotExist:
+            try:
+                e = q[0].elearn_record
+                e.student = q[1]
+                e.save()
+            except ObjectDoesNotExist:
+                pass
 
     def move_coaching(self, request, q):
         try:
-            p = q[0].coaching_profile
-            p.student = q[1]
-            p.save()
-        except ObjectDoesNotExist:
+            p = q[1].coaching_profile
             pass
+        except ObjectDoesNotExist:
+            try:
+                p = q[0].coaching_profile
+                p.student = q[1]
+                p.save()
+            except ObjectDoesNotExist:
+                pass
         for c in q[0].coaches.all():
             c.coachee = q[1]
             try:
@@ -385,11 +393,15 @@ class StudentAdmin(ImportExportActionModelAdmin):
 
     def move_ace_record(self, request, q):
         try:
-            a = q[0].ace_record
-            a.student = q[1]
-            a.save()
-        except ObjectDoesNotExist:
+            e = q[1].ace_record
             pass
+        except ObjectDoesNotExist:
+            try:
+                a = q[0].ace_record
+                a.student = q[1]
+                a.save()
+            except ObjectDoesNotExist:
+                pass
 
     def move_college_interest(self, request, q):
         try:
@@ -414,7 +426,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         nid = n.WRU_ID
         n.WRU_ID = o.WRU_ID
         n.save()
-        o.WRU_ID = 'd' + nid
+        o.WRU_ID = 'd' + nid.replace('x', '')
         o.duplicate = True
         o.dupl_date = datetime.today().date()
         o.save()
