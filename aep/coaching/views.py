@@ -15,6 +15,7 @@ from .forms import (
     AssignCoach, AceRecordForm, ElearnRecordForm,
     AcademicQuestionaireForm, PersonalQuestionaireForm,
     GeneralInfoForm)
+import rules
 
 
 class ProfileCreateWizard(LoginRequiredMixin, SessionWizardView):
@@ -382,5 +383,114 @@ class ElearnRecordCSV(LoginRequiredMixin, FormView):
             to_date = form.cleaned_data['to_date']
             students = students.filter(intake_date__lte=to_date)
         students = students.distinct()
+        data = self.get_student_data(students)
+        return render_to_csv(data=data, filename=filename)
+
+
+class ExitExamCSV(LoginRequiredMixin, FormView):
+
+    model = AceRecord
+    form_class = DateFilterForm
+    template_name = "coaching/exit_exam.html"
+
+    def get_student_data(self, students):
+        data = []
+        headers = [
+            "Last Name",
+            "First Name",
+            "WRU_ID",
+            "ENG 062 Eligible",
+            "Read 072 Eligible",
+            "MATH 092 Eligible",
+            "MATH 098 Eligible",
+            "Passed Townsend",
+            "Passed ENG 062",
+            "Passed Math 092",
+            "Passed Math 098",
+            "Course History"
+        ]
+
+        data.append(headers)
+
+        for student in students:
+            enrolled = student.student.active_classes()
+            prior = student.student.completed_classes()
+            current = []
+            completed = []
+            towns, eng062, mth092, mth098 = "No", "No", "No", "No"
+            for e in enrolled:
+                current.append(e.section.title)
+            for p in prior:
+                completed.append(p.section.title)
+            uri = "http://www.dccaep.org" + str(
+                    reverse_lazy(
+                        'people:student classes',
+                        kwargs={'slug': student.student.slug}
+                    )
+                )
+            s = [
+                student.student.last_name,
+                student.student.first_name,
+                student.student.WRU_ID,
+                rules.test_rule('can_eng062', student),
+                rules.test_rule('can_read072', student),
+                rules.test_rule('can_math092', student),
+                rules.test_rule('can_math098', student),
+                student.read_072,
+                student.eng_062,
+                student.math_092,
+                student.math_098,
+                uri
+            ]
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        students = AceRecord.objects.all()
+        filename = "exit_exam_report.csv"
+        data = self.get_student_data(students)
+        return render_to_csv(data=data, filename=filename)
+
+
+class EnrollmentCSV(LoginRequiredMixin, FormView):
+
+    model=None
+    form_class = DateFilterForm
+    template_name = "coaching/enrollment_csv.html"
+
+    def get_student_data(self, students):
+        data = []
+        headers = [
+            "Last Name",
+            "First Name",
+            "WRU_ID",
+            "Current Classes",
+            "Completed Classes"
+        ]
+
+        data.append(headers)
+
+        for student in students:
+            enrolled = student.student.active_classes()
+            prior = student.student.completed_classes()
+            current = []
+            completed = []
+            for e in enrolled:
+                current.append(e.section)
+            for p in prior:
+                completed.append(p.section)
+            s = [
+                student.student.last_name,
+                student.student.first_name,
+                student.student.WRU_ID,
+                current,
+                completed,
+            ]
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        students = self.model.objects.all()
+        filename = "enrollments.csv"
         data = self.get_student_data(students)
         return render_to_csv(data=data, filename=filename)

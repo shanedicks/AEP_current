@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
 from . import views
+from .models import AceRecord, ElearnRecord
 
 app_name = 'coaching'
 
@@ -57,6 +58,12 @@ ace_patterns = [
     url(r'^csv/$',
         views.AceRecordCSV.as_view(),
         name='ace record csv'),
+    url(r'exit-exam/$',
+        views.ExitExamCSV.as_view(),
+        name='exit exam csv'),
+    url(r'enrollments/$',
+        views.EnrollmentCSV.as_view(model=AceRecord),
+        name='ace enrollment csv'),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/$',
         views.AceRecordDetailView.as_view(),
         name='ace record detail'),
@@ -72,6 +79,9 @@ e_learn_patterns = [
     url(r'^csv/$',
         views.ElearnRecordCSV.as_view(),
         name='elearn record csv'),
+    url(r'enrollments/$',
+        views.EnrollmentCSV.as_view(model=ElearnRecord),
+        name='elearn enrollment csv'),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/$',
         views.ElearnRecordDetailView.as_view(),
         name='elearn record detail'),
