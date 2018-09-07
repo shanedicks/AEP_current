@@ -403,7 +403,7 @@ class ExitExamCSV(LoginRequiredMixin, FormView):
             "Read 072 Eligible",
             "MATH 092 Eligible",
             "MATH 098 Eligible",
-            "Passed Townsend",
+            "Passed Read 072",
             "Passed ENG 062",
             "Passed Math 092",
             "Passed Math 098",

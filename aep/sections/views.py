@@ -13,6 +13,7 @@ from django.urls import reverse_lazy
 from django.db import IntegrityError
 from core.forms import DateFilterForm
 from core.utils import render_to_csv
+from coaching.models import ElearnRecord
 from people.models import Student
 from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance
@@ -71,6 +72,84 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
             attendance = attendance.filter(attendance_date__lte=to_date)
         data = self.get_data(attendance)
         return render_to_csv(data=data, filename=filename)
+
+
+class ElearnAttendanceCSV(LoginRequiredMixin, FormView):
+
+    model = ElearnRecord
+    form_class = AttendanceReportForm
+    template_name = "sections/elearn_att.html"
+
+    def get_student_data(self, students):
+        data = []
+        headers = [
+            "WRU_ID",
+            "Last Name",
+            "First Name",
+            "Coach",
+            "Partner",
+            "Class",
+            "Teacher",
+            "Attendance"
+        ]
+
+        data.append(headers)
+
+        for student in students:
+            s = [
+                student['wru'],
+                student['last'],
+                student['first'],
+                student['coach'],
+                student['partner'],
+                student['section'],
+                student['teacher']
+            ]
+            for a in student['attendance']:
+                att = ["{}".format(a.attendance_date), a.att_hours]
+                s.extend(att)
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        if form.cleaned_data['semesters'] != "":
+            semesters = form.cleaned_data['semesters']
+        if form.cleaned_data['from_date'] != "":
+            from_date = form.cleaned_data['from_date']
+        if form.cleaned_data['to_date'] != "":
+            to_date = form.cleaned_data['to_date']
+        elearn = ElearnRecord.objects.select_related().all()
+        students = []
+        for record in elearn:
+            try:
+                coach = record.student.coaches.filter(coaching_type='elearn').latest('pk').coach
+            except ObjectDoesNotExist:
+                coach = "None"
+            enrollments = record.student.classes.all()
+            if semesters:
+                enrollments = enrollments.filter(section__semester__in=semesters)
+            for e in enrollments:
+                attendance = e.attendance.all()
+                if from_date:
+                    attendance = e.attendance.filter(attendance_date__gte=from_date)
+                if to_date:
+                    attendance = e.attendance.filter(attendance_date__lte=to_date)
+                s = {
+                    'wru': record.student.WRU_ID,
+                    'last': record.student.last_name,
+                    'first': record.student.first_name,
+                    'coach': coach,
+                    'partner': record.student.partner,
+                    'section': e.section.title,
+                    'teacher': e.section.teacher,
+                    'attendance': attendance
+                }
+                students.append(s)
+
+        filename = "elearn_attendance.csv"
+        data = self.get_student_data(students)
+        return render_to_csv(data=data, filename=filename)
+
 
 
 class ClassListView(LoginRequiredMixin, ListView, FormView):

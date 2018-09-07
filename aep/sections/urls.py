@@ -66,6 +66,9 @@ urlpatterns = [
     url(r'^attendance_csv/$',
         views.AttendanceCSV.as_view(),
         name='attendance csv'),
+    url(r'^elearn_attendance/$',
+        views.ElearnAttendanceCSV.as_view(),
+        name='elearn attendance csv'),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/',
         include(single_class_patterns))
 ]
