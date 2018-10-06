@@ -12,6 +12,7 @@ from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
 from core.forms import DateFilterForm
 from core.utils import render_to_csv
+from core.tasks import send_mail_task
 from sections.forms import SectionFilterForm
 from .models import Staff, Student, CollegeInterest, WIOA
 from .forms import (
@@ -266,7 +267,7 @@ class StudentSignupWizard(SessionWizardView):
         orientation.save()
         if interest['e_learn_app'] is False:
             if student.email:
-                send_mail(
+                send_mail_task.delay(
                     subject="Thank you for registering for the Delgado "
                     "Community College Adult Education Program!",
                     message="",

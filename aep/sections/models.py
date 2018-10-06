@@ -8,9 +8,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.urls import reverse
 from core.utils import make_slug
+from core.tasks import send_mail_task
 from academics.models import Course
 from people.models import Staff, Student
 from semesters.models import Semester
+from .tasks import activate_task, end_task, drop_task
 
 
 
@@ -151,14 +153,11 @@ class Section(models.Model):
 
     def begin(self):
         for student in self.get_active():
-            student.activate()
-            student.save()
+            activate_task.delay(enrollment_id=student.id)
 
     def end(self):
         for student in self.get_active():
-            if student.status == student.ACTIVE:
-                student.status = student.COMPLETED
-                student.save()
+            end_task.delay(enrollment_id=student.id)
 
     def g_suite_attendance(self):
         scopes = ['https://www.googleapis.com/auth/classroom.coursework.students']
@@ -206,7 +205,8 @@ class Section(models.Model):
                             time_in=key.section.start_time,
                             time_out=key.section.start_time,
                             attendance_type='P',
-                            att_hours=sub.get('assignedGrade', 0)
+                            att_hours=sub.get('assignedGrade', 0),
+                            online=True,
                         )
                         print(a)
                     except IntegrityError:
@@ -226,7 +226,7 @@ class Section(models.Model):
         self.begin()
         if len(dropped) > 0:
             if self.teacher.email:
-                send_mail(
+                send_mail_task.delay(
                     "Delgado Adult Ed Dropped Student Notice {day}".format(day=datetime.today().date()),
                     "Hi {teacher},\n"
                     "In accordance with our attendance policy, "
@@ -252,7 +252,7 @@ class Section(models.Model):
 
     def enforce_attendance(self):
         for student in self.get_active():
-            student.attendance_drop()
+            drop_task.delay(enrollment_id=student.id)
 
     def attendance_reminder(self):
         if self.teacher.email:
@@ -266,7 +266,7 @@ class Section(models.Model):
                 enrollment__status='A'
             ).count()
             if att > 1:
-                send_mail(
+                send_mail_task.delay(
                     "Delgado Adult Ed Attendance Reminder {day}".format(day=datetime.today().date()),
                     "Hi {teacher} \n"
                     "\n"
@@ -420,18 +420,18 @@ class Enrollment(models.Model):
             self.status = "D"
             self.save()
             if self.student.email:
-                send_mail(
-                    "We're sorry {student}, but you've been dropped from {section}".format(
+                send_mail_task.delay(
+                    subject="We're sorry {student}, but you've been dropped from {section}".format(
                         student=self.student.first_name,
                         section=self.section.title),
-                    "According to our attendance policy, "
+                    message="According to our attendance policy, "
                     "students who miss the first two class periods "
                     "are dropped to make room for waitlisted students.\n"
                     "Please stop by our main office or call "
                     "504-671-5434 for more information.",
-                    "attendance_robot@dccaep.org",
-                    [self.student.email],
-                    fail_silently=False)
+                    from_email="attendance_robot@dccaep.org",
+                    recipient_list=[self.student.email],
+                )
             return True
         return False
 
@@ -441,20 +441,19 @@ class Enrollment(models.Model):
             self.status = 'A'
             self.save()
             if self.student.email:
-                send_mail(
-                    "Good News! You've been added to {section}".format(
+                send_mail_task.delay(
+                    subject="Good News! You've been added to {section}".format(
                         section=self.section.title
                     ),
-                    "Hi {student} \n"
+                    message="Hi {student} \n"
                     "Space has opened up in {section} and you have been added the roster.\n"
                     "To keep your spot, please attend this class the next time it meets.\n"
                     "If you are unsure when that is, "
                     "stop by our main office or call 504-671-5434".format(
                         student=self.student.first_name,
                         section=self.section.title),
-                    "class_roster_robot@dccaep.org",
-                    [self.student.email],
-                    fail_silently=False
+                    from_email="class_roster_robot@dccaep.org",
+                    recipient_list=[self.student.email],
                 )
             return True
         return False
@@ -467,19 +466,19 @@ class Enrollment(models.Model):
             self.status = 'D'
             self.save()
             if self.student.email:
-                send_mail(
-                    "We're sorry {student}, but you've been dropped from {section}".format(
+                send_mail_task.delay(
+                    subject="We're sorry {student}, but you've been dropped from {section}".format(
                         student=self.student.first_name,
                         section=self.section.title),
-                    "According to our program's attendance policy, "
+                    message="According to our program's attendance policy, "
                     "students who miss a class more than 4 times "
                     "will be dropped from that class. "
                     "You're still part of our program, you're just dropped from this class.\n"
                     "Please stop by our main office or call "
                     "504-671-5434 for more information.",
-                    "attendance_robot@dccaep.org",
-                    [self.student.email],
-                    fail_silently=False)
+                    from_email="attendance_robot@dccaep.org",
+                    recipient_list=[self.student.email]
+                )
 
 
 class Attendance(models.Model):
@@ -514,6 +513,12 @@ class Attendance(models.Model):
     att_hours = models.IntegerField(
         blank=True,
         null=True
+    )
+    online = models.BooleanField(
+        default=False)
+    notes = models.CharField(
+        max_length=80,
+        blank=True,       
     )
 
     class Meta:

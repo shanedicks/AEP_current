@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 from django.conf import settings
-from django.core.mail import send_mail
+from core.tasks import send_mail_task
 from django.urls import reverse
 from django.db import models
 from people.models import Staff, Student
@@ -97,12 +97,12 @@ class TestEvent(models.Model):
     def orientation_reminder(self):
         for student in self.students.all():
             if student.student.email:
-                send_mail(
-                    subject="Thank you for registering for the Delgado "
+                send_mail_task.delay(
+                    subject="Your Orientation Reminder for the Delgado "
                     "Community College Adult Education Program!",
                     message="",
                     html_message="<p>Hi, {student}</p><p>You have selected "
-                    "to attend Orientation on {date:{dfmt}} at {time} "
+                    "to attend Orientation on {date:{dfmt}} at {time:{tfmt}} "
                     "at the City Park Campus (615 City Park Ave,"
                     " New Orleans, LA 70119), though you can "
                     "later choose to attend classes at other locations. "
@@ -122,6 +122,7 @@ class TestEvent(models.Model):
                     "<p>Delgado Community College</p>".format(
                         student=student.student.first_name,
                         dfmt='%m-%d-%Y',
+                        tfmt="%I:%M %p",
                         date=self.start.date(),
                         time=self.start.time()
                     ),

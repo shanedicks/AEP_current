@@ -899,12 +899,14 @@ class WIOA(models.Model):
         max_length=1,
         choices=YES_NO_UNKNOWN,
         blank=True,
+        default=2,
         verbose_name=_("Are you in Job Corps?")
     )
     youth_build = models.CharField(
         max_length=1,
         choices=YES_NO_UNKNOWN,
         blank=True,
+        default=2,
         verbose_name=_("Are you in a Youth Build program?")
     )
 

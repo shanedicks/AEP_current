@@ -2,15 +2,17 @@ from apiclient import discovery
 from httplib2 import Http
 from datetime import datetime
 from django.contrib import admin
-from django.core.mail import send_mail
 from django.conf import settings
 
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin
 from oauth2client.service_account import ServiceAccountCredentials
 
-from .models import AceRecord, Coaching, Profile, MeetingNote, ElearnRecord
+from core.tasks import send_mail_task
 from people.models import Student, Staff
+from .models import AceRecord, Coaching, Profile, MeetingNote, ElearnRecord
+from .tasks import elearn_status_task
+
 
 
 class AceRecordResource(resources.ModelResource):
@@ -262,8 +264,8 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
     def DLA_email(self, request, queryset):
         for obj in queryset:
             if obj.elearn_status == 'Applicant':
-                send_mail(
-                    "Application recieved for Delgado eLearn",
+                send_mail_task.delay(
+                    subject="Application recieved for Delgado eLearn",
                     message="",
                     html_message="<p>Good Morning, eLearn Applicants!</p>"
                     "<p>This email is to confirm that your "
@@ -297,9 +299,7 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
                     from_email="elearn@dccaep.org",
                     recipient_list=[obj.student.email],
                 )
-                obj.elearn_status = 'Pending'
-                obj.status_updated = datetime.today()
-                obj.save()
+                elearn_status_task.delay(obj.id)
 
     def create_g_suite_account(self, request, queryset):
 
