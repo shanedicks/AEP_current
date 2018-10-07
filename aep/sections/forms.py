@@ -166,9 +166,44 @@ class AttendanceReportForm(Form):
 class SectionSearchForm(Form):
 
     c_name = CharField(label=_('Class Name'), required=False)
+    site = ChoiceField(
+        choices=(
+            ('', 'Site'),
+            ('CP', 'City Park'),
+            ('MC', 'NOALC'),
+            ('WB', 'West Bank'),
+            ('JP', 'Jefferson Parish'),
+            ('SC', 'Sidney Collier'),
+            ('OL', 'Online Class'),
+            ('HC', 'Hispanic Chamber'),
+            ('WL', 'West Bank Library'),
+            ('J1', 'Job 1'),
+            ('CH', 'Charity')
+        ),
+        required=False
+    )
+    program = ChoiceField(
+        choices=(
+            ('', 'Program'),
+            ('ESL', 'ESL'),
+            ('CCR', 'CCR'),
+            ('TRANS', 'Transitions'),
+            ('ELRN', 'ELearn'),
+            ('ADMIN', 'Admin'),
+        ),
+        required=False
+    )
 
     def filter_queryset(self, request, queryset):
         qst = queryset
+        if self.cleaned_data['program']:
+            qst = qst.filter(
+                site=self.cleaned_data['program']
+            )
+        if self.cleaned_data['site']:
+            qst = qst.filter(
+                site=self.cleaned_data['site']
+            )
         if self.cleaned_data['c_name']:
             qst = qst.filter(
                 title__icontains=self.cleaned_data['c_name']

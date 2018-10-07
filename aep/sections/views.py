@@ -313,7 +313,7 @@ class StudentClassListView(LoginRequiredMixin, ListView):
             return Enrollment.objects.filter(
                 student__slug=slug
             ).order_by(
-                "section__semester__start_date",
+                "-section__semester__start_date",
                 "section__tuesday",
                 "section__start_time"
             ).prefetch_related('attendance')

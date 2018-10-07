@@ -5,7 +5,6 @@ from oauth2client.service_account import ServiceAccountCredentials
 from django.db import models, IntegrityError
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
 from django.urls import reverse
 from core.utils import make_slug
 from core.tasks import send_mail_task

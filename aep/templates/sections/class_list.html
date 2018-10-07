@@ -9,12 +9,49 @@
             <label class="sr-only" for="id_c_name">Class Name</label>
             <input class="form-control" id="id_c_name" name="c_name" value="{{form.c_name.value}}" type="text" placeholder="Class Name" />
         </div>
+        <div class="form-group">
+            <label class="sr-only" for="id_program">Program</label>
+            <input class="form-control" id="id_program" name="program" value="{{form.program.value}}" type="text" placeholder="Program" />
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="id_c_site">Site</label>
+            <input class="form-control" id="id_site" name="site" value="{{form.site.value}}" type="text" placeholder="Site" />
+        </div>
     <button type="submit" class="btn btn-default btn-sm">Filter Classes</button>
     {% else %}
     <form id='class-filter' class='form-inline' method='get' action="{% url 'sections:class list' %}">
         <div class="form-group">
             <label class="sr-only" for="id_c_name">Class Name</label>
             <input class="form-control" id="id_c_name" name="c_name" type="text" placeholder="Class Name" />
+        </div>
+        <div id="div_id_program" class="form-group">
+            <div class="controls ">
+                <select name="program" class="select form-control" id="id_program">
+                    <option value="" selected>Program</option>
+                    <option value="ESL">ESL</option>
+                    <option value="CCR">CCR</option>
+                    <option value="TRANS">Transitions</option>
+                    <option value="ELRN">ELearn</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            </div>
+        </div>
+        <div id="div_id_site" class="form-group"> 
+            <div class="controls "> 
+                <select name="site" class="select form-control" id="id_site"> 
+                    <option value="" selected>Site</option> 
+                    <option value="CP">City Park</option> 
+                    <option value="MC">NOALC</option> 
+                    <option value="WB">West Bank</option> 
+                    <option value="JP">Jefferson Parish</option> 
+                    <option value="SC">Sidney Collier</option>
+                    <option value="OL">Online Class</option> 
+                    <option value="HC">Hispanic Chamber</option> 
+                    <option value="WL">West Bank Library</option> 
+                    <option value="J1">Job 1</option> 
+                    <option value="CH">Charity</option>
+                </select> 
+            </div> 
         </div>
     <button type="submit" class="btn btn-default btn-sm">Filter Classes</button>
     {% endif %}

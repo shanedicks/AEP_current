@@ -3,7 +3,6 @@ from django.views.generic import (
     CreateView, TemplateView, FormView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.core.mail import send_mail, EmailMultiAlternatives
 from django.http import HttpResponseRedirect, Http404
 from django.template.loader import get_template
 from django.template import Context
@@ -12,7 +11,7 @@ from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
 from core.forms import DateFilterForm
 from core.utils import render_to_csv
-from core.tasks import send_mail_task
+from core.tasks import send_mail_task, email_multi_alternatives_task
 from sections.forms import SectionFilterForm
 from .models import Staff, Student, CollegeInterest, WIOA
 from .forms import (
@@ -151,6 +150,7 @@ class NewStudentCSV(ActiveStudentCSV):
         students = students.distinct()
         data = self.get_student_data(students)
         return render_to_csv(data=data, filename=filename)
+
 
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
 
@@ -302,20 +302,13 @@ class StudentSignupWizard(SessionWizardView):
             return HttpResponseRedirect(reverse_lazy('people:signup success'))
         else:
             if student.email:
-                text_content = get_template(
-                    'people/elearn_email.txt'
-                ).render()
-                html_content = get_template(
-                    'people/elearn_email.html',
-                ).render()
-                msg = EmailMultiAlternatives(
-                    "Welcome to eLearn!",
-                    text_content,
-                    "elearn@dccaep.org",
-                    [student.email],
+                email_multi_alternatives_task.delay(
+                    subject="Welcome to eLearn!",
+                    from_email="elearn@dccaep.org",
+                    to=[student.email],
+                    text_template='people/elearn_email.txt',
+                    html_template='people/elearn_email.html',
                 )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
             return HttpResponseRedirect(reverse_lazy('people:elearn success'))
 
 
