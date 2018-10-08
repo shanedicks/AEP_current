@@ -27,6 +27,7 @@ class Section(models.Model):
     JOB_1 = 'J1'
     CHARITY = 'CH'
     ONLINE = 'OL'
+    RIVER_CITY = 'RC'
     SITE_CHOICES = (
         (CITY_PARK, 'City Park'),
         (MID_CITY, 'NOALC'),
@@ -37,7 +38,8 @@ class Section(models.Model):
         (WEST_BANK_LIB, 'West Bank Regional Library'),
         (JOB_1, 'Job 1'),
         (CHARITY, 'Charity'),
-        (ONLINE, 'Online Classes')
+        (ONLINE, 'Online Classes'),
+        (RIVER_CITY, 'River City')
     )
     ESL = 'ESL'
     CCR = 'CCR'
