@@ -6,7 +6,7 @@ s = state_session()
 count = w.count()
 
 print("Collecting WIOA records")
-print("{0} unsent records collected".format(count)
+print("{0} unsent records collected".format(count))
 
 
 print("Reporting collected records")
