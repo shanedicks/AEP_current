@@ -19,9 +19,9 @@ def activate_task(enrollment_id):
 def end_task(enrollment_id):
 	logger.info('Ending enrollment {0}'.format(enrollment_id))
 	enrollment = get_enrollment(enrollment_id)
-	if student.status == student.ACTIVE:
-		student.status = student.COMPLETED
-	return student.save()
+	if enrollment.status == enrollment.ACTIVE:
+		enrollment.status = enrollment.COMPLETED
+	return enrollment.save()
 
 @shared_task
 def drop_task(enrollment_id):
