@@ -3,6 +3,7 @@
 
 {% block content %}
     <h1>Meeting Note</h1>
+    <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:meeting note update' pk=note.pk %}">Update Note</a>
     <h4>Coachee / Coach</h4>
         <p>{{ note.coaching.coachee }} / {{ note.coaching.coach }}</p> 
     <h4>Date and Time</h4>

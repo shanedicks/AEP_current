@@ -211,11 +211,9 @@ class TestHistory(models.Model):
     def update_status(self, test):
         if not self.last_test:
             self.last_test = test.test_date
-            self.test_assignment = test.assign()
         else:
             if self.last_test <= test.test_date:
                 self.last_test = test.test_date
-                self.test_assignment = test.assign()
         self.test_assignment = test.assign()
         self.save()
 
@@ -278,9 +276,13 @@ class Tabe(NRSTest):
 
     NINE = '9'
     TEN = '10'
+    ELEVEN = '11'
+    TWELVE = '12'
     FORM_CHOICES = (
         (NINE, '9'),
-        (TEN, '10')
+        (TEN, '10'),
+        (ELEVEN, '11'),
+        (TWELVE, '12')
     )
 
     A = "A"
@@ -441,8 +443,12 @@ class Tabe(NRSTest):
     def assign(self):
         if self.form == "9":
             form = "10"
-        else:
+        elif self.form == "10":
             form = "9"
+        elif self.form == "11":
+            form = "12"
+        else:
+            form = "11"
         r_level = self.get_level(self.read_ge)
         m_level = self.get_level(self.total_math_ge)
         l_level = self.get_level(self.lang_ge)

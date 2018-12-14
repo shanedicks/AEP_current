@@ -556,15 +556,16 @@ def hl_tf(input):
 
 
 def primary_program(student):
-    program = "1"
-    if student.esl_app:
-        program = '16'
+    if student.success_app:
+        program = '14'
+    elif student.ace_app:        
+        program = '15'
     elif student.e_learn_app:
         program = '12'
-    elif student.ace_app:
-        program = '2'
-    elif student.success_app:
-        program = '14'
+    elif student.esl_app:
+        program = '16'
+    else:
+        program = "1"
     return program
 
 
