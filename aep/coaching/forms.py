@@ -397,11 +397,11 @@ class MeetingNoteForm(ModelForm):
 
 class NewMeetingNoteForm(ModelForm):
 
-    STANDARD = 'standard check-in'
-    FOLLOW_UP = 'follow up'
-    CONTACT = 'contact teacher'
-    ON_CAMPUS = 'refer to on campus resources'
-    HISET = 'reccomend HISET'
+    STANDARD = 'Standard check-in'
+    FOLLOW_UP = 'Follow-up with online resources'
+    CONTACT = 'Contact teacher'
+    ON_CAMPUS = 'Refer to on-campus resources'
+    HISET = 'Recommend HISET'
 
     NEXT_STEPS_CHOICES = (
         (STANDARD, 'Standard check-in'),
@@ -411,15 +411,15 @@ class NewMeetingNoteForm(ModelForm):
         (HISET, 'Recommend HISET')
     )
 
-    PERSONAL = 'personal'
-    CLASSWORK = 'classwork'
-    HISET = 'hiset'
-    PRACTICE_TEST = 'practice test'
-    COURSE_PLANNING = 'course planning'
-    SUCCESS = 'success skills'
-    RETENTION = 'retention'
-    NEXT_STEPS = 'next steps'
-    COLLEGE = 'discuss college options'
+    PERSONAL = 'Personal'
+    CLASSWORK = 'Classwork'
+    HISET = 'Official HiSET Registration/Prep'
+    PRACTICE_TEST = 'Practice Testingt'
+    COURSE_PLANNING = 'Course Planning'
+    SUCCESS = 'Success Skills'
+    RETENTION = 'Retention'
+    NEXT_STEPS = 'Plan Next Steps'
+    COLLEGE = 'Discuss College Options'
 
     MEETING_TOPIC_CHOICES = (
         (PERSONAL, 'Personal'),
