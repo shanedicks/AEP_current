@@ -427,13 +427,15 @@ class MeetingNote(models.Model):
     TEXT = 'text'
     HANGOUTS = 'hangouts'
     MESSENGER = 'messenger'
+    PERSON = 'In person'
 
     CONTACT_TYPE_CHOICES = (
         (EMAIL, 'Email'),
         (PHONE, 'Phone'),
         (TEXT, 'Text'),
         (HANGOUTS, 'Google Hangouts'),
-        (MESSENGER, 'Facebook Messenger')        
+        (MESSENGER, 'Facebook Messenger'),
+        (PERSON, 'In Person')        
     )
 
     meeting_type = models.CharField(
