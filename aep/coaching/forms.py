@@ -1,5 +1,5 @@
 from django.contrib.admin import widgets
-from django.forms import ModelForm
+from django.forms import ModelForm, widgets, MultipleChoiceField
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Row, Column, HTML
@@ -397,6 +397,52 @@ class MeetingNoteForm(ModelForm):
 
 class NewMeetingNoteForm(ModelForm):
 
+    STANDARD = 'standard check-in'
+    FOLLOW_UP = 'follow up'
+    CONTACT = 'contact teacher'
+    ON_CAMPUS = 'refer to on campus resources'
+    HISET = 'reccomend HISET'
+
+    NEXT_STEPS_CHOICES = (
+        (STANDARD, 'Standard check-in'),
+        (FOLLOW_UP, 'Follow-up with online resources'),
+        (CONTACT, 'Contact teacher'),
+        (ON_CAMPUS, 'Refer to on-campus resources'),
+        (HISET, 'Recommend HISET')
+    )
+
+    PERSONAL = 'personal'
+    CLASSWORK = 'classwork'
+    HISET = 'hiset'
+    PRACTICE_TEST = 'practice test'
+    COURSE_PLANNING = 'course planning'
+    SUCCESS = 'success skills'
+    RETENTION = 'retention'
+    NEXT_STEPS = 'next steps'
+    COLLEGE = 'discuss college options'
+
+    MEETING_TOPIC_CHOICES = (
+        (PERSONAL, 'Personal'),
+        (CLASSWORK, 'Classwork/Tutoring'),
+        (HISET, 'Official HiSET Registration/Prep'),
+        (PRACTICE_TEST, 'Practice Testing'),
+        (COURSE_PLANNING, 'Course Planning'),
+        (SUCCESS, 'Success Skills'),
+        (RETENTION, 'Retention'),
+        (NEXT_STEPS, 'Plan Next Steps'),
+        (COLLEGE, 'Discuss College Options')
+    )
+
+    meeting_topic = MultipleChoiceField(
+        widget=widgets.CheckboxSelectMultiple, 
+        choices=MEETING_TOPIC_CHOICES
+    )
+
+    next_steps = MultipleChoiceField(
+        widget=widgets.CheckboxSelectMultiple,
+        choices=NEXT_STEPS_CHOICES
+    )
+
     def __init__(self, *args, **kwargs):
         super(NewMeetingNoteForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -425,7 +471,9 @@ class NewMeetingNoteForm(ModelForm):
                 ),
             ),
             'multiple_days',
+            'contact_type',
             'meeting_topic',
+            'next_steps',
             'notes'
         )
 
@@ -442,10 +490,7 @@ class NewMeetingNoteForm(ModelForm):
             'notes'
         )
         widgets = {
-            'meeting_date': widgets.AdminDateWidget,
-            'start_time': widgets.AdminTimeWidget,
-            'end_time': widgets.AdminTimeWidget
-
+            'contact_type': widgets.RadioSelect,
         }
 
 
