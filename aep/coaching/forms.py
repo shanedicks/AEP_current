@@ -1,3 +1,4 @@
+from django.contrib.admin import widgets
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
@@ -392,6 +393,60 @@ class MeetingNoteForm(ModelForm):
             'next_steps',
             'notes'
         )
+
+
+class NewMeetingNoteForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(NewMeetingNoteForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+            Fieldset(
+               'Meeting Info',
+                Field(
+                    'meeting_date',
+                    placeholder="MM/DD/YYYY",
+                    wrapper_class="col-md-4",
+                    data_mask="99/99/9999"
+                ),
+                Field(
+                    'start_time',
+                    placeholder="HH:MM AM/PM",
+                    wrapper_class="col-md-4",
+                    data_mask="99:99 aa"
+                ),
+                Field(
+                    'end_time',
+                    placeholder="HH:MM AM/PM",
+                    wrapper_class="col-md-4",
+                    data_mask="99:99 aa"
+                ),
+            ),
+            'multiple_days',
+            'meeting_topic',
+            'notes'
+        )
+
+    class Meta:
+        model = MeetingNote
+        fields = (
+            'meeting_date',
+            'start_time',
+            'end_time',
+            'contact_type',
+            'multiple_days',
+            'meeting_topic',
+            'next_steps',
+            'notes'
+        )
+        widgets = {
+            'meeting_date': widgets.AdminDateWidget,
+            'start_time': widgets.AdminTimeWidget,
+            'end_time': widgets.AdminTimeWidget
+
+        }
 
 
 class AssignCoach(ModelForm):

@@ -11,7 +11,7 @@ from core.utils import render_to_csv
 from people.models import Student
 from .models import Profile, Coaching, MeetingNote, AceRecord, ElearnRecord
 from .forms import (
-    ProfileForm, MeetingNoteForm,
+    ProfileForm, NewMeetingNoteForm,
     AssignCoach, AceRecordForm, ElearnRecordForm,
     AcademicQuestionaireForm, PersonalQuestionaireForm,
     GeneralInfoForm)
@@ -180,7 +180,7 @@ class CoachingDetailView(LoginRequiredMixin, DetailView):
 class MeetingNoteCreateView(LoginRequiredMixin, CreateView):
 
     model = MeetingNote
-    form_class = MeetingNoteForm
+    form_class = NewMeetingNoteForm
     template_name = 'coaching/meeting_note_form.html'
 
     def get_context_data(self, **kwargs):
@@ -220,7 +220,7 @@ class MeetingNoteDetailView(LoginRequiredMixin, DetailView):
 class MeetingNoteUpdateView(LoginRequiredMixin, UpdateView):
 
     model = MeetingNote
-    form_class = MeetingNoteForm
+    form_class = NewMeetingNoteForm
     template_name = 'coaching/meeting_note_form.html'
 
     def get_success_url(self):

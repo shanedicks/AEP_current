@@ -406,28 +406,70 @@ class Coaching(models.Model):
 
 class MeetingNote(models.Model):
 
-    COLLEGE_OPTIONS = 'College Options'
-    NEXT_STEPS = 'Next Steps'
-    SCHEDULING = 'Schedule Classes'
-    SKILL_BUILDING = 'Build Skills'
-    ELEARN_CHECKIN = 'eLearn Check-in'
-    ACE_COACHING = 'ACE Coaching'
-    ACE_RETURN = 'Return to ACE'
-
-    MEETING_TYPE_CHOICES = (
-        (COLLEGE_OPTIONS, 'Discuss College Options'),
-        (NEXT_STEPS, 'Plan Next Steps'),
-        (SCHEDULING, 'Schedule Next Classes'),
-        (SKILL_BUILDING, 'Build Student Skills'),
-        (ELEARN_CHECKIN, 'eLearn Check-in'),
-        (ACE_COACHING, 'ACE Student Coaching'),
-        (ACE_RETURN, 'Plan for Return to ACE')
-    )
-
     coaching = models.ForeignKey(
         Coaching,
         models.CASCADE,
         related_name='notes'
+    )
+
+    ELEARN = 'eLearn'
+    ACE = 'ACE'
+    OPEN = 'Open Coaching'
+
+    MEETING_TYPE_CHOICES = (
+        (ELEARN, 'eLearn'),
+        (ACE, 'ACE'),
+        (OPEN, 'Open Coaching')
+    )
+
+    EMAIL = 'email'
+    PHONE = 'phone'
+    TEXT = 'text'
+    HANGOUTS = 'hangouts'
+    MESSENGER = 'messenger'
+
+    CONTACT_TYPE_CHOICES = (
+        (EMAIL, 'Email'),
+        (PHONE, 'Phone'),
+        (TEXT, 'Text'),
+        (HANGOUTS, 'Google Hangouts'),
+        (MESSENGER, 'Facebook Messenger')        
+    )
+
+    STANDARD = 'standard check-in'
+    FOLLOW_UP = 'follow up'
+    CONTACT = 'contact teacher'
+    ON_CAMPUS = 'refer to on campus resources'
+    HISET = 'reccomend HISET'
+
+    NEXT_STEPS_CHOICES = (
+        (STANDARD, 'Standard check-in'),
+        (FOLLOW_UP, 'Follow-up with online resources'),
+        (CONTACT, 'Contact teacher'),
+        (ON_CAMPUS, 'Refer to on-campus resources'),
+        (HISET, 'Recommend HISET')
+    )
+
+    PERSONAL = 'personal'
+    CLASSWORK = 'classwork'
+    HISET = 'hiset'
+    PRACTICE_TEST = 'practice test'
+    COURSE_PLANNING = 'course planning'
+    SUCCESS = 'success skills'
+    RETENTION = 'retention'
+    NEXT_STEPS = 'next steps'
+    COLLEGE = 'discuss college options'
+
+    MEETING_TOPIC_CHOICES = (
+        (PERSONAL, 'Personal'),
+        (CLASSWORK, 'Classwork/Tutoring'),
+        (HISET, 'Official HiSET Registration/Prep'),
+        (PRACTICE_TEST, 'Practice Testing'),
+        (COURSE_PLANNING, 'Course Planning'),
+        (SUCCESS, 'Success Skills'),
+        (RETENTION, 'Retention'),
+        (NEXT_STEPS, 'Plan Next Steps'),
+        (COLLEGE, 'Discuss College Options')
     )
 
     meeting_type = models.CharField(
@@ -436,7 +478,26 @@ class MeetingNote(models.Model):
         help_text=_('Type of coaching (Choose One)')
     )
 
-    meeting_date = models.DateField()
+    contact_type = models.CharField(
+        max_length=10,
+        choices=CONTACT_TYPE_CHOICES,
+        blank=True
+    )
+
+    next_steps = models.TextField(
+        blank=True,
+        choices=NEXT_STEPS_CHOICES,
+    )
+
+    meeting_topic = models.TextField(
+        blank=True,
+        choices=MEETING_TOPIC_CHOICES,
+    )
+
+    meeting_date = models.DateField(
+        null=True,
+        blank=True
+    )
 
     student_no_show = models.BooleanField(
         default=False,
@@ -483,23 +544,28 @@ class MeetingNote(models.Model):
         verbose_name='Withdawing from Ace'
     )
 
-    start_time = models.TimeField()
+    start_time = models.TimeField(
+        null=True,
+        blank=True
+    )
 
-    end_time = models.TimeField()
+    end_time = models.TimeField(
+        null=True,
+        blank=True
+    )
+
+    multiple_days = models.BooleanField(
+        default=False,
+        verbose_name='Meeting took place over multiple days'
+    )
 
     progress = models.TextField(
         blank=True,
         help_text=_('Progress on Next Steps')
     )
 
-    next_steps = models.TextField(
-        blank=True,
-        help_text=_('New Next Steps')
-    )
-
     notes = models.TextField(
         blank=True,
-        help_text=_('Other Notes')
     )
 
     class Meta:
