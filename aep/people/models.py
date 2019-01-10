@@ -1,6 +1,7 @@
 import requests
 import bs4
 from datetime import date, datetime
+from django.apps import apps
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
@@ -394,6 +395,14 @@ class Student(Profile):
 
     def all_classes(self):
         return self.classes.all()
+
+    def testify(self):
+        TestHistory = apps.get_model('assessments', 'TestHistory')
+        if TestHistory.objects.filter(student=self).exists():
+            pass
+        else:
+            if self.WRU_ID not in [None, 'No ID']:
+                TestHistory.objects.create(student=self, student_wru=self.WRU_ID)
 
 
 class Staff(Profile):
@@ -1353,6 +1362,7 @@ class WIOA(models.Model):
 
         self.student.WRU_ID = wru
         self.student.save()
+        self.student.testify()
 
     def send(self, session):
         self.check_for_state_id(session)

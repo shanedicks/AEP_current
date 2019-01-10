@@ -283,10 +283,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
 
     def testify(self, request, queryset):
         for obj in queryset:
-            if TestHistory.objects.filter(student=obj).exists():
-                continue
-            else:
-                TestHistory.objects.create(student=obj, student_wru=obj.WRU_ID)
+            obj.testify()
 
     def create_elearn_record(self, request, queryset):
         for obj in queryset:
