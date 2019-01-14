@@ -29,37 +29,74 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
     form_class = AttendanceReportForm
     template_name = "sections/attendance_report_csv.html"
 
-    def get_data(self, attendance):
+    def get_data(self, att_dict):
         data = []
         headers = [
-            'Attendance type',
-            'Attendance date',
-            'Time-in',
-            'Time-out',
-            'Student WRU_ID',
-            'Last Name',
-            'First Name',
-            'Section WRU_ID',
-            'Partner org',
+            "PROVIDERID",
+            "SID",
+            "LAST_NAME",
+            "FIRST_NAME",
+            "MIDDLE_INITIAL",
+            "COURSE_ID",
+            "Partner",
+            "HOURS_1", "HOURS_DATE_1", "HOURS_DL_1",
+            "HOURS_2", "HOURS_DATE_2", "HOURS_DL_2",
+            "HOURS_3", "HOURS_DATE_3", "HOURS_DL_3",
+            "HOURS_4", "HOURS_DATE_4", "HOURS_DL_4", 
+            "HOURS_5", "HOURS_DATE_5", "HOURS_DL_5",
+            "HOURS_6", "HOURS_DATE_6", "HOURS_DL_6",
+            "HOURS_7", "HOURS_DATE_7", "HOURS_DL_7",
+            "HOURS_8", "HOURS_DATE_8", "HOURS_DL_8",
+            "HOURS_9", "HOURS_DATE_9", "HOURS_DL_9",
+            "HOURS_10", "HOURS_DATE_10", "HOURS_DL_10",
+            "HOURS_11", "HOURS_DATE_11", "HOURS_DL_11",
+            "HOURS_12", "HOURS_DATE_12", "HOURS_DL_12",
+            "HOURS_13", "HOURS_DATE_13", "HOURS_DL_13",
+            "HOURS_14", "HOURS_DATE_14", "HOURS_DL_14",
+            "HOURS_15", "HOURS_DATE_15", "HOURS_DL_15",
+            "HOURS_16", "HOURS_DATE_16", "HOURS_DL_16",
+            "HOURS_17", "HOURS_DATE_17", "HOURS_DL_17", 
+            "HOURS_18", "HOURS_DATE_18", "HOURS_DL_18", 
+            "HOURS_19", "HOURS_DATE_19", "HOURS_DL_19",
+            "HOURS_20", "HOURS_DATE_20", "HOURS_DL_20",
+            "HOURS_21", "HOURS_DATE_21", "HOURS_DL_21",
+            "HOURS_22", "HOURS_DATE_22", "HOURS_DL_22",
+            "HOURS_23", "HOURS_DATE_23", "HOURS_DL_23",
+            "HOURS_24", "HOURS_DATE_24", "HOURS_DL_24",
+            "HOURS_25", "HOURS_DATE_25", "HOURS_DL_25",
+            "HOURS_26", "HOURS_DATE_26", "HOURS_DL_26",
+            "HOURS_27", "HOURS_DATE_27", "HOURS_DL_27",
+            "HOURS_28", "HOURS_DATE_28", "HOURS_DL_28",
+            "HOURS_29", "HOURS_DATE_29", "HOURS_DL_29",
+            "HOURS_30", "HOURS_DATE_30", "HOURS_DL_30",
+            "HOURS_31", "HOURS_DATE_31", "HOURS_DL_31",
+            "HOURS_32", "HOURS_DATE_32", "HOURS_DL_32",
+            "HOURS_33", "HOURS_DATE_33", "HOURS_DL_33",
+            "HOURS_34", "HOURS_DATE_34", "HOURS_DL_34",
+            "HOURS_35", "HOURS_DATE_35", "HOURS_DL_35",
+            "HOURS_36", "HOURS_DATE_36", "HOURS_DL_36",
+            "HOURS_37", "HOURS_DATE_37", "HOURS_DL_37",
+            "HOURS_38", "HOURS_DATE_38", "HOURS_DL_38",
+            "HOURS_39", "HOURS_DATE_39", "HOURS_DL_39",
+            "HOURS_40", "HOURS_DATE_40", "HOURS_DL_40",
+            "HOURS_41", "HOURS_DATE_41", "HOURS_DL_41",
+            "HOURS_42", "HOURS_DATE_42", "HOURS_DL_42",
+            "HOURS_43", "HOURS_DATE_43", "HOURS_DL_43",
+            "HOURS_44", "HOURS_DATE_44", "HOURS_DL_44", 
+            "HOURS_45", "HOURS_DATE_45", "HOURS_DL_45",
+            "HOURS_46", "HOURS_DATE_46", "HOURS_DL_46",
+            "HOURS_47", "HOURS_DATE_47", "HOURS_DL_47",
+            "HOURS_48", "HOURS_DATE_48", "HOURS_DL_48"
         ]
         data.append(headers)
-        for att in attendance:
-            s = [
-                att.attendance_type,
-                att.attendance_date,
-                att.time_in,
-                att.time_out,
-                att.enrollment.student.WRU_ID,
-                att.enrollment.student.last_name,
-                att.enrollment.student.first_name,
-                att.enrollment.section.WRU_ID,
-                att.enrollment.student.partner,
-            ]
+        for item in att_dict:
+            s = att_dict[item]
             data.append(s)
         return data
 
+
     def form_valid(self, form):
-        attendance = Attendance.objects.select_related().all()
+        attendance = Attendance.objects.select_related('enrollment__student').all()
         filename = "attendance_report.csv"
         if form.cleaned_data['semesters'] != "":
             semesters = form.cleaned_data['semesters']
@@ -70,7 +107,33 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
         if form.cleaned_data['to_date'] != "":
             to_date = form.cleaned_data['to_date']
             attendance = attendance.filter(attendance_date__lte=to_date)
-        data = self.get_data(attendance)
+        el = {
+            False: 'N',
+            True: 'Y'
+        }
+        att_dict = {}
+        for att in attendance:
+            if att.PRESENT:
+                record = [
+                    att.hours(),
+                    att.attendance_date.strftime("%Y%m%d"),
+                    el[att.online]
+                ]
+                if att.enrollment not in att_dict:
+                    enrollment = [
+                        '9',
+                        att.enrollment.student.WRU_ID,
+                        att.enrollment.student.last_name,
+                        att.enrollment.student.first_name,
+                        '',
+                        att.enrollment.section.WRU_ID,
+                        att.enrollment.student.partner 
+                    ]
+                    att_dict[att.enrollment] = enrollment
+                    att_dict[att.enrollment].extend(record)
+                else:
+                    att_dict[att.enrollment].extend(record)
+        data = self.get_data(att_dict)
         return render_to_csv(data=data, filename=filename)
 
 
