@@ -165,10 +165,10 @@ class TabeAdmin(ImportExportActionModelAdmin):
     list_display = (
         'student',
         'test_date',
-        'read_ge',
-        'total_math_ge',
-        'lang_ge',
-        'total_batt_ge'
+        'read_nrs',
+        'math_nrs',
+        'lang_nrs',
+
     )
 
     search_fields = [
