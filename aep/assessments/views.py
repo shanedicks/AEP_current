@@ -186,6 +186,9 @@ class CurrentEventListView(LoginRequiredMixin, ListView):
     template_name = "assessments/test_event_list.html"
     queryset = TestEvent.objects.filter(
         start__gte=timezone.now()
+    ).order_by(
+        'start',
+        'title'
     )
 
     def get_context_data(self, *args, **kwargs):
@@ -206,6 +209,9 @@ class PastEventListView(LoginRequiredMixin, ListView):
     paginate_by = 20
     queryset = TestEvent.objects.filter(
         start__lt=timezone.now()
+    ).order_by(
+        '-start',
+        'title'
     )
 
     def get_context_data(self, *args, **kwargs):
