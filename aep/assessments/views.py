@@ -13,7 +13,7 @@ from people.models import Student
 from .models import (TestEvent, TestAppointment, TestHistory,
                      Tabe, Clas_E, HiSet_Practice, Gain)
 from .forms import (TestSignupForm, TabeForm, Clas_E_Form,
-                    GainForm, HiSet_Practice_Form)
+                    GainForm, HiSet_Practice_Form, CSVImportForm)
 
 
 class TestingHomeView(LoginRequiredMixin, TemplateView):
@@ -521,6 +521,15 @@ class TabeCSV(LoginRequiredMixin, FormView):
         data = self.get_data(tests)
         return render_to_csv(data=data, filename=filename)
 
+class TabeImportCSV(LoginRequiredMixin, FormView):
+
+    model = Tabe
+    form_class = CSVImportForm
+    template_name = 'assessments/tabe_import.html'
+
+    def form_valid(self, form):
+        file = request.Files
+
 class StudentClasEListView(StudentTestListView):
 
     model = Clas_E
@@ -623,6 +632,16 @@ class ClasECSV(LoginRequiredMixin, FormView):
 
         data = self.get_data(tests)
         return render_to_csv(data=data, filename=filename)
+
+
+class ClasEImportCSV(LoginRequiredMixin, FormView):
+
+    model = Clas_E
+    form_class = CSVImportForm
+    template_name = 'assessments/clas-e_import.html'
+
+    def form_valid(self, form):
+        file = request.Files
 
 
 class StudentHisetPracticeListView(StudentTestListView):
