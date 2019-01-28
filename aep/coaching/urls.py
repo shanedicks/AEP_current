@@ -21,9 +21,12 @@ single_student_patterns = [
 ]
 
 single_coach_patterns = [
-    url(r'^(?P<pk>[0-9]+)/$',
+    url(r'^$',
         views.CoacheeListView.as_view(),
         name='coachee list'),
+    url(r'^export$',
+        views.CoacheeExportCSV.as_view(),
+        name='coachee export')
 ]
 
 single_coaching_patterns = [

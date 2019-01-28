@@ -358,6 +358,9 @@ class Student(Profile):
         null=True,
         blank=True
     )
+    notes = models.TextField(
+        blank=True
+    )
 
     class Meta:
         ordering = ["last_name", "first_name"]
@@ -391,7 +394,11 @@ class Student(Profile):
 
     def past_classes(self):
         today = date.today()
-        return self.classes.filter(section__semester__end_date__lt=today)
+        return self.classes.filter(
+            section__semester__end_date__lt=today
+        ).order_by(
+            '-section__semester__end_date'
+        )
 
     def all_classes(self):
         return self.classes.all()
@@ -439,11 +446,22 @@ class Staff(Profile):
 
     def current_classes(self):
         today = date.today()
-        return self.classes.filter(semester__end_date__gte=today)
+        return self.classes.filter(
+            semester__end_date__gte=today
+        ).order_by(
+            '-monday',
+            'start_time'
+        )
 
     def past_classes(self):
         today = date.today()
-        return self.classes.filter(semester__end_date__lt=today)
+        return self.classes.filter(
+            semester__end_date__lt=today
+        ).order_by(
+            '-semester__end_date',
+            '-monday',
+            'start_time'
+        )
 
 def convert_date_format(date_string):
     date_input = datetime.strptime(date_string, "%m/%d/%y")

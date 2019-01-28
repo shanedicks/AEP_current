@@ -111,6 +111,12 @@
                 <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
               </p>
           {% endif %}
+    </div>
+    <div class='col-md-5'>
+      <h3>Notes</h3>
+          {% if student.notes != '' %}
+              <p> {{student.notes }} </p>
+          {% endif %}
     </div>      
 
 {%endblock content %}

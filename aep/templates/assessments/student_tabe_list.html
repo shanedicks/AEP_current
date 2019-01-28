@@ -3,27 +3,45 @@
 {% block content %}
 <h1>TABE Results for {{student}}</h1>
 <p><a class="btn btn-default" href="{% url 'assessments:student tabe add' slug=student.slug %}">Add TABE Test</a></p>
-{% for test in object_list %}
 	<div class="col-md-7">
-	<h4>{{ test.test_date|date:"m/d/y" }} -- {{test.form}} {{ test.read_level }} {{ test.math_level }} {{ test.lang_level }}</h4>
 	<table class="table">
 	<tr>
+		<th>Date</th>
+		<th>Form</th>
+		<th>Read Level</th>
+		<th>Math Level</th>
+		<th>Lang Level</th>
+		<th>Read NRS</th>
+		<th>Math NRS</th>
+		<th>Lang NRS</th>
 		<th>Reading</th>
 		<th>Math Comp</th>
 		<th>Applied Math</th>
 		<th>Language</th>
 		<th>Total Math</th>
 		<th>Total Battery</th>
+
 	</tr>
+	{% for test in object_list %}
 	<tr>
-		<p><td>{{ test.read_ge }}</td></p>
-		<p><td>{{ test.math_comp_ge }}</td></p>
-		<p><td>{{ test.app_math_ge }}</td></p>
-		<p><td>{{ test.lang_ge }}</td></p>
-		<p><td>{{ test.total_math_ge}}</td></p>
-		<p><td>{{ test.total_batt_ge}}</td></p>
+		<p><td>{{ test.test_date|date:"m/d/y" }}</td></p>
+		<p><td>{{test.form}}</td></p>
+		<p><td>{{ test.read_level }}</td></p>
+		<p><td>{{ test.math_level }}</td></p>
+		<p><td>{{ test.lang_level }}</td></p>
+		<p><td>{{ test.read_nrs}}</td></p>
+		<p><td>{{ test.math_nrs}}</td></p>
+		<p><td>{{ test.lang_nrs}}</td></p>
+		<p><td>{{ test.read_ss }}</td></p>
+		<p><td>{{ test.math_comp_ss }}</td></p>
+		<p><td>{{ test.app_math_ss }}</td></p>
+		<p><td>{{ test.lang_ss }}</td></p>
+		<p><td>{{ test.total_math_ss}}</td></p>
+		<p><td>{{ test.total_batt_ss}}</td></p>
+
 	</tr>
+	{% endfor %}
 	</table>
 	</div>
-{% endfor %}
+
 {% endblock %}

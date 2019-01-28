@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, Http404
@@ -125,6 +126,80 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
 class CoacheeListView(LoginRequiredMixin, ListView):
 
     model = Coaching
+
+
+class CoacheeExportCSV(LoginRequiredMixin, ListView):
+    model = Coaching
+
+    def get_student_data(self, coachings):
+        Attendance = apps.get_model('sections', 'Attendance')
+        data = []
+        headers = [
+            'Last Name',
+            'First Name',
+            'Personal Email',
+            'G Suite Email',
+            'Phone',
+            'Date of Last Note',
+            'Last Note Content',
+            'Date of Last Attendance',
+            'Last Attendance Section'
+        ]
+        data.append(headers)
+        for coaching in coachings:
+            try:
+                last_note = coaching.notes.latest('meeting_date')
+                last_note_date = last_note.meeting_date
+                last_note_note = last_note.notes
+            except ObjectDoesNotExist:
+                last_note_date ="No notes found"
+                last_note_note = ""
+            try:
+                attendance = Attendance.objects.filter(
+                    enrollment__student=coaching.coachee,
+                    attendance_type = 'P'
+                )
+                last_attendance = attendance.latest('attendance_date', 'time_in')
+                last_attendance_date = last_attendance.attendance_date
+                section = last_attendance.enrollment.section
+            except ObjectDoesNotExist:
+                last_attendance_date = "No attendance found"
+                section = ""
+            try:
+                elearn_record = coaching.coachee.elearn_record
+                if elearn_record.g_suite_email != '':
+                    g_suite_email = elearn_record.g_suite_email
+                else:
+                    g_suite_email = 'Student has no g_suite_email'
+            except ObjectDoesNotExist:
+                g_suite_email = 'Student has no elearn_record'
+            s = [
+                coaching.coachee.last_name,
+                coaching.coachee.first_name,
+                coaching.coachee.email,
+                g_suite_email,
+                coaching.coachee.phone,
+                last_note_date,
+                last_note_note,
+                last_attendance_date,
+                section
+            ]
+            data.append(s)
+        return data
+
+    def get(self, request, *args, **kwargs):
+        filename = 'coachee_export.csv'
+        coachings = Coaching.objects.filter(
+            coach__slug=kwargs['slug']
+        ).prefetch_related(
+            'coachee__classes__attendance'
+        ).prefetch_related(
+            'notes'
+        )
+        data = self.get_student_data(coachings)
+        return render_to_csv(data=data, filename=filename)
+
+
 
 
 class CoachingCreateView(LoginRequiredMixin, CreateView):

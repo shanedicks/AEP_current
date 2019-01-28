@@ -1,24 +1,24 @@
 {% extends "base.html" %}
-{% block content %}
 {% block head_title %}DCCAEP | {{student}} CLAS-E Scores {% endblock head_title %}
+{% block content %}
 <h1>CLAS-E Results for {{student}}</h1>
 <p><a class="btn btn-default" href="{% url 'assessments:student clas-e add' slug=student.slug %}">Add CLAS-E Test</a></p>
-{% for test in object_list %}
     <div class="col-md-7">
     <table class="table">
     <tr>
         <th>Date</th>
         <th>Test</th>
-        <th>Scale Score</th>
         <th>NRS Level</th>
+        <th>Scale Score</th>
     </tr>
+    {% for test in object_list %}
     <tr>
         <p><td>{{ test.test_date|date:"m/d/y" }}</td></p>
         <p><td>{{ test.read_level }}{{test.form}}</td></p>
-        <p><td>{{ test.read_ss }}</td></p>
         <p><td>{{ test.read_nrs }}</td></p>
+        <p><td>{{ test.read_ss }}</td></p>
     </tr>
+    {% endfor %}
     </table>
     </div>
-{% endfor %}
 {% endblock %}
