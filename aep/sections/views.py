@@ -40,7 +40,6 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
             "COURSE_ID",
             "COURSE_NAME",
             "Partner",
-            "Coach",
             "HOURS_1", "HOURS_DATE_1", "HOURS_DL_1",
             "HOURS_2", "HOURS_DATE_2", "HOURS_DL_2",
             "HOURS_3", "HOURS_DATE_3", "HOURS_DL_3",
@@ -126,13 +125,6 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
                     el[att.online]
                 ]
                 if att.enrollment not in att_dict:
-                    try:
-                        coaching = att.enrollment.student.coaches.filter(
-                            coaching_type='eLearn'
-                        ).latest('start_date')
-                        coach = coaching.coach
-                    except ObjectDoesNotExist:
-                        coach = 'No elearn coach found'
                     enrollment = [
                         '9',
                         att.enrollment.student.WRU_ID,
@@ -142,7 +134,6 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
                         att.enrollment.section.WRU_ID,
                         att.enrollment.section.title,
                         att.enrollment.student.partner,
-                        coach
                     ]
                     att_dict[att.enrollment] = enrollment
                     att_dict[att.enrollment].extend(record)
