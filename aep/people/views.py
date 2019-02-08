@@ -224,7 +224,7 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
             )
 
 
-class PartnerStudentCreateView(CreateView):
+class PartnerStudentCreateView(LoginRequiredMixin, CreateView):
 
     model = Student
     form_class = PartnerForm
