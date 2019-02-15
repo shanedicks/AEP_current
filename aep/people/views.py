@@ -18,7 +18,8 @@ from .forms import (
     StaffForm, StudentPersonalInfoForm, StudentSearchForm,
     StudentInterestForm, StudentContactForm, SSNForm, REForm,
     EETForm, AdditionalDetailsForm, DisabilityForm, StudentForm,
-    UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm)
+    UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
+    StudentComplianceForm)
 
 
 class UserCreateView(CreateView):
@@ -158,36 +159,12 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
     form_class = StudentForm
     template_name = "people/student_update.html"
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(StudentUpdateView, self).get_context_data(**kwargs)
-    #     if 'user_form' not in context:
-    #         context['user_form'] = UserUpdateForm(instance=self.object.user)
-    #         context.update(kwargs)
-    #     return context
 
-    # def post(self, request, *args, **kwargs):
-    #     user_form = UserUpdateForm(
-    #         request.POST,
-    #         instance=self.get_object().user
-    #     )
-    #     student_form = StudentForm(
-    #         request.POST,
-    #         instance=self.get_object()
-    #     )
-    #     uf_valid = user_form.is_valid()
-    #     sf_valid = student_form.is_valid()
-    #     if uf_valid and sf_valid:
-    #         user = user_form.save()
-    #         student = student_form.save(commit=False)
-    #         student.user = user
-    #         student.save()
-    #         self.object = student
-    #         return HttpResponseRedirect(self.get_success_url())
-    #     else:
-    #         self.object = None
-    #         return self.render_to_response(
-    #             self.get_context_data(user_form=user_form)
-    #         )
+class StudentComplianceFormView(LoginRequiredMixin, UpdateView):
+
+    model = Student
+    form_class = StudentComplianceForm
+    template_name = "people/student_compliance.html"
 
 
 class StudentCreateView(LoginRequiredMixin, CreateView):

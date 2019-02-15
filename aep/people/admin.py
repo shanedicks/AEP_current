@@ -40,13 +40,11 @@ class StudentResource(resources.ModelResource):
         model = Student
         fields = (
             "id",
-            'user',
             "first_name",
             "last_name",
             "email",
             "dob",
             'intake_date',
-            "AEP_ID",
             "WRU_ID",
             "partner",
             "gender",
@@ -58,7 +56,6 @@ class StudentResource(resources.ModelResource):
             "e_learn_app",
             "ace_app",
             "success_app",
-            "prior_registration",
             "phone",
             "alt_phone",
             "street_address_1",
@@ -70,7 +67,9 @@ class StudentResource(resources.ModelResource):
             "emergency_contact",
             "ec_phone",
             "ec_email",
-            "ec_relation"
+            "ec_relation",
+            "paperwork",
+            "orientation"
         )
 
 

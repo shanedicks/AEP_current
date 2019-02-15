@@ -190,7 +190,8 @@ class CoacheeExportCSV(LoginRequiredMixin, ListView):
     def get(self, request, *args, **kwargs):
         filename = 'coachee_export.csv'
         coachings = Coaching.objects.filter(
-            coach__slug=kwargs['slug']
+            coach__slug=kwargs['slug'],
+            active=True
         ).prefetch_related(
             'coachee__classes__attendance'
         ).prefetch_related(

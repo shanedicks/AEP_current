@@ -362,6 +362,14 @@ class Student(Profile):
         blank=True
     )
 
+    paperwork = models.BooleanField(
+        default=False
+    )
+
+    orientation = models.BooleanField(
+        default=False
+    )
+
     class Meta:
         ordering = ["last_name", "first_name"]
 

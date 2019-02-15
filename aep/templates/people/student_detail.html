@@ -113,6 +113,20 @@
           {% endif %}
     </div>
     <div class='col-md-5'>
+      <h3>Office Tracking</h3>
+          {% if student.paperwork %}
+          <p>Office paperwork is complete</p>
+          {% else %}
+          <p>Office paperwork is not complete</p>
+          {% endif %}
+          {% if student.orientation %}
+          <p>Orientation is complete</p>
+          {% else %}
+          <p>Orientation is not complete</p>
+          {% endif %}
+          <a class="btn btn-default" href="{% url 'people:student compliance form' slug=student.slug %}" role="button">Update</a>
+    </div>
+    <div class='col-md-5'>
       <h3>Notes</h3>
           {% if student.notes != '' %}
               <p> {{student.notes }} </p>
