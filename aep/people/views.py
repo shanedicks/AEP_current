@@ -19,7 +19,7 @@ from .forms import (
     StudentInterestForm, StudentContactForm, SSNForm, REForm,
     EETForm, AdditionalDetailsForm, DisabilityForm, StudentForm,
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
-    #StudentComplianceForm
+    StudentComplianceForm
     )
 
 
@@ -164,7 +164,7 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
 class StudentComplianceFormView(LoginRequiredMixin, UpdateView):
 
     model = Student
-#    form_class = StudentComplianceForm
+    form_class = StudentComplianceForm
     template_name = "people/student_compliance.html"
 
 

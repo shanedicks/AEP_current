@@ -4,7 +4,7 @@
       <h1>{{ student }}</h1>
     <div class='col-md-7'>
       <div class="btn-group" role="group" aria-label="student links">
-          <a type="button" class="btn btn-default" role="button" href="{% url 'people:edit student' slug=student.slug %}">Update Info</a>
+          <a type="button" class="btn btn-default" role="button" href="{% url 'people:edit student' slug=student.slug %}">Update</a>
           <a type="button" class="btn btn-default" href="{% url 'people:student classes' slug=student.slug %}" role="button">Classes</a>
           <a type="button" class="btn btn-default" href="{% url 'people:student attendance' slug=student.slug %}" role="button">Attendance</a>
           <a type="button" class="btn btn-default" href="{% url 'assessments:student test history' slug=student.slug %}" role="button">Testing</a>
@@ -114,16 +114,9 @@
     </div>
     <div class='col-md-5'>
       <h3>Office Tracking</h3>
-          {% if student.paperwork %}
-          <p>Office paperwork is complete</p>
-          {% else %}
-          <p>Office paperwork is not complete</p>
-          {% endif %}
-          {% if student.orientation %}
-          <p>Orientation is complete</p>
-          {% else %}
-          <p>Orientation is not complete</p>
-          {% endif %}
+          <p>Office Paperwork: {{ student.get_paperwork_display }}</p>
+          <p>Office Folder: {{ student.get_folder_display }}</p>
+          <p>Orientation: {{ student.get_orientation_display }}</p>
           <a class="btn btn-default" href="{% url 'people:student compliance form' slug=student.slug %}" role="button">Update</a>
     </div>
     <div class='col-md-5'>

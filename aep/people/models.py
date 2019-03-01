@@ -372,6 +372,27 @@ class Student(Profile):
         (COMPLETE, 'Complete')
     )
 
+    paperwork = models.CharField(
+        max_length=1,
+        blank=True,
+        choices=OFFICE_CHOICES,
+        default=PENDING
+    )
+
+    folder = models.CharField(
+        max_length=1,
+        blank=True,
+        choices=OFFICE_CHOICES,
+        default=PENDING
+    )
+
+    orientation = models.CharField(
+        max_length=1,
+        blank=True,
+        choices=OFFICE_CHOICES,
+        default=PENDING
+    )
+
 
     class Meta:
         ordering = ["last_name", "first_name"]
