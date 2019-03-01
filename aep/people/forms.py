@@ -44,32 +44,32 @@ phone_validator = RegexValidator(
 )
 
 
-class StudentComplianceForm(ModelForm):
-
-    class Meta:
-        model = Student
-
-        fields = (
-            'paperwork',
-            'orientation'
-        )
-
-        labels = {
-            'paperwork': 'Intake Paperwork Completed',
-            'orientation': 'Attended Orientation'
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(StudentComplianceForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.help_text_inline = True
-        self.helper.layout = Layout(
-            Field(
-                'paperwork',
-                'orientation'
-            )
-        )
+#class StudentComplianceForm(ModelForm):
+#
+#    class Meta:
+#        model = Student
+#
+#        fields = (
+#            'paperwork',
+#            'orientation'
+#        )
+#
+#        labels = {
+#            'paperwork': 'Intake Paperwork Completed',
+#            'orientation': 'Attended Orientation'
+#        }
+#
+#    def __init__(self, *args, **kwargs):
+#        super(StudentComplianceForm, self).__init__(*args, **kwargs)
+#        self.helper = FormHelper()
+#        self.helper.form_tag = False
+#        self.helper.help_text_inline = True
+#        self.helper.layout = Layout(
+#            Field(
+#                'paperwork',
+#                'orientation'
+#            )
+#        )
 
 class StudentSearchForm(Form):
     f_name = CharField(label=_('First Name'), required=False)

@@ -362,13 +362,16 @@ class Student(Profile):
         blank=True
     )
 
-    paperwork = models.BooleanField(
-        default=False
+    PENDING = 'P'
+    INCOMPLETE = 'I'
+    COMPLETE = 'C'
+
+    OFFICE_CHOICES = (
+        (PENDING, 'Pending'),
+        (INCOMPLETE, 'Incomplete'),
+        (COMPLETE, 'Complete')
     )
 
-    orientation = models.BooleanField(
-        default=False
-    )
 
     class Meta:
         ordering = ["last_name", "first_name"]
