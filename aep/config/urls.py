@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^testing/', include('assessments.urls')),
     url(r'^classes/', include('sections.urls')),
     url(r'^coaching/', include('coaching.urls')),
+    url(r'^sessions/', include('semesters.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
