@@ -143,7 +143,9 @@ class CoacheeExportCSV(LoginRequiredMixin, ListView):
             'Date of Last Note',
             'Last Note Content',
             'Date of Last Attendance',
-            'Last Attendance Section'
+            'Last Attendance Section',
+            'Last Tabe',
+            'Last Hiset'
         ]
         data.append(headers)
         for coaching in coachings:
@@ -173,6 +175,20 @@ class CoacheeExportCSV(LoginRequiredMixin, ListView):
                     g_suite_email = 'Student has no g_suite_email'
             except ObjectDoesNotExist:
                 g_suite_email = 'Student has no elearn_record'
+            try:
+                tests = coaching.coachee.tests
+                if tests.latest_tabe is not None:
+                    last_tabe = tests.latest_tabe.test_date
+                else:
+                    last_tabe = 'Student has no TABE'
+                if tests.latest_hiset_practice is not None:
+                    last_hiset = tests.latest_hiset_practice[0].test_date
+                else:
+                    last_hiset = 'Student has no Practice Test'
+            except ObjectDoesNotExist:
+                last_tabe = 'Student has no Test History'
+                last_hiset = 'Student has no Test History'
+
             s = [
                 coaching.coachee.last_name,
                 coaching.coachee.first_name,
@@ -182,7 +198,9 @@ class CoacheeExportCSV(LoginRequiredMixin, ListView):
                 last_note_date,
                 last_note_note,
                 last_attendance_date,
-                section
+                section,
+                last_tabe,
+                last_hiset
             ]
             data.append(s)
         return data
@@ -192,6 +210,8 @@ class CoacheeExportCSV(LoginRequiredMixin, ListView):
         coachings = Coaching.objects.filter(
             coach__slug=kwargs['slug'],
             active=True
+        ).prefetch_related(
+            'coachee__tests'
         ).prefetch_related(
             'coachee__classes__attendance'
         ).prefetch_related(
