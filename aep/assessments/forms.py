@@ -1,6 +1,6 @@
 import datetime
 from django.db.models import Q
-from django.forms import ModelForm, Form, FileField
+from django.forms import ModelForm, Form, FileField, modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset
@@ -25,6 +25,31 @@ class TestAppointmentForm(ModelForm):
     class Meta:
         model = TestAppointment
         fields = ('student', 'event')
+
+
+class TestAppointmentAttendanceForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(TestAppointmentAttendanceForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+            Field(
+                'attendance_type',
+                wrapper_class="col-md-4",
+                required=True
+            ),
+            Field(
+                'time_in',
+                'time_out',
+                wrapper_class="col-md-4"
+            )
+        )
+
+    class Meta:
+        model = TestAppointment
+        fields = ('attendance_type', 'time_in', 'time_out')
 
 
 class TestSignupForm(ModelForm):
@@ -269,3 +294,9 @@ class HiSet_Practice_Form(ModelForm):
                 wrapper_class='col-md-4'
             )
         )
+
+TestAttendanceFormSet = modelformset_factory(
+        TestAppointment, 
+        form=TestAppointmentAttendanceForm, 
+        extra=0
+    )

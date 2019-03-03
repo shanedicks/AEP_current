@@ -3,17 +3,22 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.http import Http404, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import (DetailView, ListView, CreateView,
-                                  TemplateView, View, FormView)
+                                  TemplateView, View, FormView, UpdateView)
 from core.utils import render_to_csv
 from core.forms import DateFilterForm
 from people.models import Student
-from .models import (TestEvent, TestAppointment, TestHistory,
-                     Tabe, Clas_E, HiSet_Practice, Gain)
-from .forms import (TestSignupForm, TabeForm, Clas_E_Form,
-                    GainForm, HiSet_Practice_Form, CSVImportForm)
+from .models import (
+        TestEvent, TestAppointment, TestHistory,                 
+        Tabe, Clas_E, HiSet_Practice, Gain,
+    )
+from .forms import (
+        TestSignupForm, TabeForm, Clas_E_Form,
+        GainForm, HiSet_Practice_Form, CSVImportForm,
+        TestAppointmentAttendanceForm, TestAttendanceFormSet
+    )
 
 
 class TestingHomeView(LoginRequiredMixin, TemplateView):
@@ -114,6 +119,48 @@ class TestEventCSV(LoginRequiredMixin, View):
         return render_to_csv(data=data, filename=filename)
 
 
+class TestEventAttendanceView(LoginRequiredMixin, UpdateView):
+
+    model = TestEvent
+    form_class = TestAppointmentAttendanceForm
+    template_name = "assessments/event_attendance.html"
+
+    def get(self, request, *args, **kwargs):
+        self.object = TestEvent.objects.get(pk=self.kwargs['pk'])
+        attendance_date = self.object.start.date()
+        queryset = TestAppointment.objects.filter(
+            event=self.object.pk
+        ).order_by(
+            "student__last_name",
+            "student__first_name"
+        )
+        formset = TestAttendanceFormSet(queryset=queryset)
+        return self.render_to_response(
+            self.get_context_data(
+                formset=formset,
+                event=self.object,
+                attendance_date=attendance_date
+            )
+        )
+
+    def post(self, request, *args, **kwargs):
+        self.object = TestEvent.objects.get(pk=self.kwargs['pk'])
+        formset = TestAttendanceFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render_to_response(
+                self.get_context_data(formset=formset)
+            )
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'assessments:test event detail',
+            kwargs={'pk': self.object.pk}
+        )
+
+
 class TabeOnlineCSV(LoginRequiredMixin, View):
 
     def get_student_data(self, students):
@@ -156,6 +203,7 @@ class TabeOnlineCSV(LoginRequiredMixin, View):
         )
         data = self.get_student_data(students)
         return render_to_csv(data=data, filename=filename)
+
 
 class TestEventListView(LoginRequiredMixin, ListView):
 
@@ -232,6 +280,7 @@ class TestingSignupView(LoginRequiredMixin, CreateView):
     form_class = TestSignupForm
     template_name = 'assessments/test_signup.html'
 
+
     def get_context_data(self, **kwargs):
         context = super(
             TestingSignupView,
@@ -246,6 +295,9 @@ class TestingSignupView(LoginRequiredMixin, CreateView):
         student = Student.objects.get(slug=self.kwargs['slug'])
         appt = form.save(commit=False)
         appt.student = student
+        appt.attendance_date = appt.event.start.date()
+        appt.time_in = appt.event.start.time()
+        appt.time_out = appt.event.end.time()
         try:
             appt.save()
             return super(TestingSignupView, self).form_valid(form)
@@ -262,6 +314,20 @@ class TestAppointmentDetailView(LoginRequiredMixin, DetailView):
     model = TestAppointment
     template_name = 'assessments/test_appointment_detail.html'
     context_object_name = "appt"
+
+
+class TestAppointmentAttendanceView(LoginRequiredMixin, UpdateView):
+
+    model = TestAppointment
+    form_class = TestAppointmentAttendanceForm
+    template_name = 'assessments/test_appointment_attendance.html'
+
+    def get_success_url(self):
+        event = self.object.event
+        return reverse_lazy(
+            'assessments:test event detail',
+            kwargs={'pk': event.pk}
+        )
 
 
 class StudentTestHistoryView(LoginRequiredMixin, DetailView):

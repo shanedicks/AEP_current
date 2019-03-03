@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Daily Attendance{% endblock head_title %}
+
+{% block content %}
+<h2>Attendance for {{ object.title }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <button type="submit" class="btn btn-success">Update Attendance</button>
+    <table>
+        {% for form in formset %}
+        <tr>
+        	{{ form.id }}
+        	<td class='col-md-1'>{{ form.instance.student.WRU_ID }}</td>
+	        <td class='col-md-2'>{{ form.instance.student}}</td>
+	        <td class='col-md-5'>{% crispy form %}<td>
+	    </tr>
+        {% endfor %}
+        <tr>
+        	<td></td>
+        	<td></td>
+        	<td><button type="submit" class="btn btn-success">Update Attendance</button></td>
+        </tr>
+    </table>
+</form>
+{% endblock content %}

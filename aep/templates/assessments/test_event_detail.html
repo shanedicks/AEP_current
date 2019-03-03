@@ -15,6 +15,7 @@
 		<th>Phone</th>
 		<th>Email</th>
 		<th>Notes</th>
+		<th><a href="{% url 'assessments:test event attendance' pk=event.pk %}">Attendance</a></th>
 	</tr>
 {% for student in students %}
 	<tr>
@@ -24,7 +25,7 @@
 		<td>{{ student.student.phone }}</td>
 		<td>{{ student.student.email }}</td>
 		<td>{{ student.notes }}</td>
-
+		<td><a href="{% url 'assessments:test appointment attendance' pk=student.pk %}">{{student.get_attendance_type_display}}</a></td>
 	</tr>
 {% endfor %}
 </table>

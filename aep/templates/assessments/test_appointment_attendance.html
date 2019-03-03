@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Attendance{% endblock head_title %}
+{% block content %}
+<h1>Attendance for {{ object.student }}</h1>
+<h3>WRU ID - {{ object.student.WRU_ID }}</h3>
+<h3>{{ object.student.tests.test_assignment }}</h3>
+<form class="form_group" method="post">
+    {% crispy form %}
+    <button type="submit" class="btn btn-success">Update Attendance</button>
+</form>
+{% endblock content %}

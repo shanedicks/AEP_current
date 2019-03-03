@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block head_title %}DCCAEP | Test Appointment{% endblock head_title %}
 {% block content %}
-<h1>Test Appointment for {{appt.student}}</h1>
-<h3>{{appt.event.title}}: {{appt.event.test}}<h3>
+<h1>Test Appointment for <a href="{% url 'people:student detail' slug=appt.student.slug %}">{{appt.student}}</a></h1>
+<h3><a href="{% url 'assessments:test event detail' pk=appt.event.pk %}">{{appt.event.title}}: {{appt.event.test}}</a><h3>
     {%if appt.event.proctor is not None %}
         <h4>Proctor: {{appt.event.proctor}} </h4>
     {% endif %}

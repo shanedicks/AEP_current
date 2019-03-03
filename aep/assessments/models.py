@@ -130,6 +130,31 @@ class TestEvent(models.Model):
                     recipient_list=[student.student.email],
                 )
 
+    def test_reminder(self):
+        for student in self.student.all():
+            if student.student.email:
+                send_mail_task.delay(
+                    subject="Testing Reminder from the Delgado "
+                    "Community College Adult Education Program",
+                    message="",
+                    html_message="<p>Hi, {student}</p><p>This message is "
+                    "to remind you that you have signed up for a testing "
+                    "appointment on {date:{dfmt}} at {time:{tfmt}}."
+                    ". Please call 504-671-5434 or email adulted@dcc.edu "
+                    "if you have any questions or need to reschedule.</p>"
+                    "<br><p>Thank you,</p>"
+                    "<p>The Adult Education Program</p>"
+                    "<p>Delgado Community College</p>".format(
+                        student=student.student.first_name,
+                        dfmt='%m-%d-%Y',
+                        tfmt="%I:%M %p",
+                        date=self.start.date(),
+                        time=self.start.time()
+                    ),
+                    from_email="reminder@dccaep.org",
+                    recipient_list=[student.student.email],
+                )
+
 
 class TestAppointment(models.Model):
 
@@ -150,6 +175,32 @@ class TestAppointment(models.Model):
         blank=True
     )
 
+    PRESENT = 'P'
+    ABSENT = 'A'
+    PENDING = 'X'
+    TYPE_CHOICES = (
+        (PRESENT, 'Present'),
+        (ABSENT, 'Absent'),
+        (PENDING, 'Pending'),
+    )
+    attendance_type = models.CharField(
+        max_length=1,
+        choices=TYPE_CHOICES,
+        default=PENDING
+    )
+    attendance_date = models.DateField(
+        null=True,
+        blank=True
+    )
+    time_in = models.TimeField(
+        blank=True,
+        null=True
+    )
+    time_out = models.TimeField(
+        blank=True,
+        null=True
+    )
+
     class Meta:
         verbose_name = "Testing Appointment"
         verbose_name_plural = "Testing Appointments"
@@ -163,6 +214,18 @@ class TestAppointment(models.Model):
             "assessments:test appointment detail",
             kwargs={'pk': self.pk}
         )
+
+    def hours(self):
+        if self.att_hours:
+            return self.att_hours
+        else:
+            if self.attendance_type == 'P':
+                d1 = datetime.combine(self.attendance_date, self.time_in)
+                d2 = datetime.combine(self.attendance_date, self.time_out)
+                delta = d2 - d1
+                hours = delta.total_seconds() / 3600
+                return float("{0:.2f}".format(hours))
+            return 0
 
     def save(self, *args, **kwargs):
         self.event.check_full()
@@ -230,15 +293,19 @@ class TestHistory(models.Model):
             total_hours += attendance.hours()
         return total_hours
 
+    @property
     def latest_tabe(self):
         return self.tabe_tests.latest('test_date')
 
+    @property
     def latest_clas_e(self):
         return self.clas_e_tests.latest('test_date')
 
+    @property
     def latest_gain(self):
         return self.gain_tests.latest('test_date')
 
+    @property
     def latest_hiset_practice(self):
         date = self.hiset_practice_tests.latest('test_date').test_date
         return self.hiset_practice_tests.filter(test_date=date)

@@ -145,7 +145,7 @@ class CoacheeExportCSV(LoginRequiredMixin, ListView):
             'Date of Last Attendance',
             'Last Attendance Section',
             'Last Tabe',
-            'Last Hiset'
+            'Last Hiset Practice'
         ]
         data.append(headers)
         for coaching in coachings:
