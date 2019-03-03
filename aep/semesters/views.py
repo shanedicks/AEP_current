@@ -7,6 +7,7 @@ class SemesterListView(LoginRequiredMixin, ListView):
 
     model = Semester
     template_name = 'semesters/semester_list.html'
+    paginate_by = 20
 
 
 class SemesterDetailView(LoginRequiredMixin, DetailView):

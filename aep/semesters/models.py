@@ -10,6 +10,9 @@ class Semester(models.Model):
 
     allowed_absences = models.SmallIntegerField(default=4)
 
+    class Meta:
+        ordering = ['-end_date']
+
     def __str__(self):
         return self.title
 
@@ -22,6 +25,10 @@ class Semester(models.Model):
     def get_sections(self):
         return self.sections.all()
 
+    @property
+    def section_count(self):
+        return self.sections.all().count()
+ 
     def get_enrollments(self):
         sections = self.sections.all()
         students = []
@@ -29,6 +36,10 @@ class Semester(models.Model):
             for student in section.students.all():
                 students.append(student)
         return students
+
+    @property
+    def enrollment_count(self):
+        return len(self.get_enrollments())
 
     def begin(self):
         for section in self.get_sections():

@@ -2,8 +2,25 @@
 {% block head_title %}DCCAEP | Semester Overview{% endblock head_title %}
 {% block content %}
     <h1>Sessions</h1>
-    {% for semester in object_list %}
-        <h4><a href="{{ semester.get_absolute_url }}">{{ semester.title }}</a></h4><p>{{ semester.start_date }} - {{ semester.end_date }} </p>
-    {% endfor %}
-    
+        {% if is_paginated %}
+            {% include 'components/pagination.html' %}
+        {% endif %}
+    <div class='col-md-8'>
+      <table class='table'>
+      	<tr>
+      		<td>Semester</td>
+      		<td>Dates</td>
+      		<td>Sections</td>
+      		<td>Enrollments</td>
+		</tr>
+		{% for semester in object_list %}
+	      	<tr>
+	          <td><a href="{{ semester.get_absolute_url }}">{{ semester.title }}</a></td>
+	          <td>{{ semester.start_date }} - {{ semester.end_date }}</td>
+	          <td>{{ semester.section_count }}</td>
+	          <td>{{ semester.enrollment_count }}</td>
+	    	</tr>
+    	{% endfor %}
+      </table>
+    </div>   
 {% endblock content %}
