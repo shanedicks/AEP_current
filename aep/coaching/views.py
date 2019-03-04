@@ -177,13 +177,13 @@ class CoacheeExportCSV(LoginRequiredMixin, ListView):
                 g_suite_email = 'Student has no elearn_record'
             try:
                 tests = coaching.coachee.tests
-                if tests.latest_tabe is not None:
+                try:
                     last_tabe = tests.latest_tabe.test_date
-                else:
+                except ObjectDoesNotExist:
                     last_tabe = 'Student has no TABE'
-                if tests.latest_hiset_practice is not None:
+                try:
                     last_hiset = tests.latest_hiset_practice[0].test_date
-                else:
+                except ObjectDoesNotExist:
                     last_hiset = 'Student has no Practice Test'
             except ObjectDoesNotExist:
                 last_tabe = 'Student has no Test History'
