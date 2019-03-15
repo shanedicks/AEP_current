@@ -168,7 +168,7 @@ class StudentComplianceFormView(LoginRequiredMixin, UpdateView):
     template_name = "people/student_compliance.html"
 
 
-class StudentCreateView(LoginRequiredMixin, CreateView):
+class StudentCreateView(CreateView):
 
     model = Student
     form_class = StudentForm
