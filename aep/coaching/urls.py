@@ -39,10 +39,10 @@ single_coaching_patterns = [
 ]
 
 coaches_patterns = [
-    url(r'^(?P<slug>[a-zA-Z0-9]{5})/',
-        include(single_coach_patterns)),
     url(r'^(?P<pk>[0-9]+)/',
         include(single_coaching_patterns)),
+    url(r'^(?P<slug>[a-zA-Z0-9]{5})/',
+        include(single_coach_patterns)),
 ]
 
 meetings_patterns = [
