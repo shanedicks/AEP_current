@@ -11,7 +11,9 @@
       		<td>Semester</td>
       		<td>Dates</td>
       		<td>Sections</td>
-      		<td>Enrollments</td>
+      		<td>Total Enrollments</td>
+          <td>Completed</td>
+          <td>Dropped</td>
 		</tr>
 		{% for semester in object_list %}
 	      	<tr>
@@ -19,6 +21,9 @@
 	          <td>{{ semester.start_date }} - {{ semester.end_date }}</td>
 	          <td>{{ semester.section_count }}</td>
 	          <td>{{ semester.enrollment_count }}</td>
+            <td>{{ semester.completed_enrollment_count }}</td>
+            <td>{{ semester.dropped_enrollment_count }}</td>
+          </tr>
 	    	</tr>
     	{% endfor %}
       </table>

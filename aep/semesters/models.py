@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models
 from django.urls import reverse
 
@@ -37,9 +38,21 @@ class Semester(models.Model):
                 students.append(student)
         return students
 
+    def get_enrollment_queryset(self):
+        Enrollment = apps.get_model('sections', 'Enrollment')
+        return Enrollment.objects.filter(section__semester=self)
+
     @property
     def enrollment_count(self):
         return len(self.get_enrollments())
+
+    @property
+    def completed_enrollment_count(self):
+        return(len(self.get_enrollment_queryset().filter(status='C')))
+
+    @property
+    def dropped_enrollment_count(self):
+        return(len(self.get_enrollment_queryset().filter(status='D')))
 
     def begin(self):
         for section in self.get_sections():
