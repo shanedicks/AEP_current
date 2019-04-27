@@ -7,8 +7,33 @@ from import_export.admin import ImportExportModelAdmin, ImportExportActionModelA
 from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff, Student
 from academics.models import Course
-from .models import Section, Enrollment, Attendance
+from .models import Site, Section, Enrollment, Attendance
 
+class SiteResource(resources.ModelResource):
+
+    class Meta:
+        model = Site
+        fields = (
+            'code',
+            'name',
+            'street_address',
+            'state',
+            'zip_code'
+        )
+
+class SiteAdmin(ImportExportModelAdmin):
+
+    resource_class = SiteResource
+
+    list_display = (
+            'code',
+            'name',
+            'street_address',
+            'state',
+            'zip_code'
+        )
+
+admin.site.register(Site, SiteAdmin)
 
 class SectionResource(resources.ModelResource):
 
