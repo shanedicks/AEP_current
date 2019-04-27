@@ -14,6 +14,26 @@ from semesters.models import Semester
 from .tasks import activate_task, end_task, drop_task
 
 
+class Site(models.Model):
+    
+    code = models.CharField(max_length=2)
+
+    name = models.CharField(max_length=50)
+
+    street_address = models.CharField(
+        max_length=60,
+        verbose_name="Street Address",
+    )
+    city = models.CharField(
+        max_length=30,
+    )
+    state = models.CharField(
+        max_length=2,
+        default="LA"
+    )
+    zip_code = models.CharField(
+        max_length=10,
+    ) 
 
 class Section(models.Model):
 
