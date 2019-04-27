@@ -14,6 +14,7 @@ class SiteResource(resources.ModelResource):
     class Meta:
         model = Site
         fields = (
+            'id'
             'code',
             'name',
             'street_address',
