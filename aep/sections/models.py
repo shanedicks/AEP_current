@@ -104,6 +104,13 @@ class Section(models.Model):
         choices=SITE_CHOICES,
         blank=True,
     )
+    site_link = models.ForeignKey(
+        Site,
+        models.PROTECT,
+        related_name='sections',
+        null=True,
+        blank=True
+    )
     room = models.CharField(
         max_length=20,
         blank=True

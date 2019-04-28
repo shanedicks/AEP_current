@@ -14,7 +14,7 @@ class SiteResource(resources.ModelResource):
     class Meta:
         model = Site
         fields = (
-            'id'
+            'id',
             'code',
             'name',
             'street_address',
@@ -44,6 +44,12 @@ class SectionResource(resources.ModelResource):
         widget=widgets.ForeignKeyWidget(Course, 'code')
     )
 
+    site_link = fields.Field(
+        column_name='site_link',
+        attribute='site_link',
+        widget=widgets.ForeignKeyWidget(Site, 'code')
+    )
+
     class Meta:
         model = Section
         fields = (
@@ -57,6 +63,7 @@ class SectionResource(resources.ModelResource):
             'g_suite_id',
             'course',
             'site',
+            'site_link',
             'room',
             'program',
             'seats',
@@ -81,7 +88,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
         "title",
         "WRU_ID",
         "program",
-        "site",
+        'site',
         "teacher",
         "get_days_str",
         "seats",
