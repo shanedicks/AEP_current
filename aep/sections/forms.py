@@ -198,7 +198,7 @@ class SectionSearchForm(Form):
         qst = queryset
         if self.cleaned_data['program']:
             qst = qst.filter(
-                site=self.cleaned_data['program']
+                program=self.cleaned_data['program']
             )
         if self.cleaned_data['site']:
             qst = qst.filter(
