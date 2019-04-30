@@ -33,7 +33,10 @@ class Site(models.Model):
     )
     zip_code = models.CharField(
         max_length=10,
-    ) 
+    )
+
+    def __str__(self):
+        return(self.name)
 
 class Section(models.Model):
 

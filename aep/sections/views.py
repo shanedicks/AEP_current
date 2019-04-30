@@ -585,7 +585,7 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
                 'student__first_name'
             ).prefetch_related('attendance')
         if 'summary' not in context:
-            context['summary'] = ['ELRN', 'ADMIN']
+            context['summary'] = ['ADMIN']
         return context
 
 
