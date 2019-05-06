@@ -230,6 +230,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
     )
 
     list_filter = (
+        'ccr_app',
+        'esl_app',
         'ace_app',
         'e_learn_app',
         'success_app',
