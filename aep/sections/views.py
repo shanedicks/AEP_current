@@ -217,7 +217,7 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
             students = students.filter(section__program=program)
             filename = "_".join([program, filename])
 
-        students = students.distinct().select_related('student__tests')
+        students = students.distinct('student').select_related('student__tests')
         data = self.get_student_data(students)
         return render_to_csv(data=data, filename=filename)
 
