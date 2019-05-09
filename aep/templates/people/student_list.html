@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% block head_title %}DCCAEP | Student List{% endblock head_title %}
 {% block content %}
-    <h1>Students <a href="{% url 'people:active student csv' %}" class="btn btn-default btn-sm">Student Lists</a></h1>
+    <h1>Students <a href="{% url 'sections:active student csv' %}" class="btn btn-default btn-sm">Student Lists</a></h1>
     {% if request.GET %}
         <form id='student-filter' class='form-inline' method='get' action="{% url 'people:student list' %}">
         <div class="form-group">
