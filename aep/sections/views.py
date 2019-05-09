@@ -143,6 +143,85 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
         return render_to_csv(data=data, filename=filename)
 
 
+class ActiveStudentCSV(LoginRequiredMixin, FormView):
+
+    model = Enrollment
+    form_class = SectionFilterForm
+    template_name = "sections/active_student_csv.html"
+
+    def get_student_data(self, students):
+        data = []
+        headers = [
+            "WRU Id",
+            "Last Name",
+            "First Name",
+            "Intake Date",
+            'Partner',
+            "DOB",
+            "Test Assignment",
+            "Gender",
+            "Address",
+            "City",
+            "State",
+            "Zip",
+            "Parish",
+            "Email",
+            "Phone",
+            "Alt Phone",
+            "Emergency Contact",
+            "Emergency Contact Phone"
+            "Notes"
+        ]
+        data.append(headers)
+        for student in students:
+            try:
+                test_assignment = student.student.tests.test_assignment
+            except ObjectDoesNotExist:
+                test_assignment = ''
+            s = [
+                student.student.WRU_ID,
+                student.student.last_name,
+                student.student.first_name,
+                str(student.student.intake_date),
+                student.student.partner,
+                str(student.student.dob),
+                test_assignment,
+                student.student.get_gender_display(),
+                " ".join([
+                    student.student.street_address_1,
+                    student.student.street_address_2
+                ]),
+                student.student.city,
+                student.student.state,
+                student.student.zip_code,
+                student.student.get_parish_display(),
+                student.student.email,
+                student.student.phone,
+                student.student.alt_phone,
+                student.student.emergency_contact,
+                student.student.ec_phone,
+                student.student.notes
+            ]
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        students = Enrollment.objects.filter(status="A")
+        filename = "student_list.csv"
+        if form.cleaned_data['site'] != "":
+            site = form.cleaned_data['site']
+            students = students.filter(section__site=site)
+            filename = "_".join([site, filename])
+        if form.cleaned_data['program'] != "":
+            program = form.cleaned_data['program']
+            students = students.filter(section__program=program)
+            filename = "_".join([program, filename])
+
+        students = students.distinct().select_related('student__tests')
+        data = self.get_student_data(students)
+        return render_to_csv(data=data, filename=filename)
+
+
 class ElearnAttendanceCSV(LoginRequiredMixin, FormView):
 
     model = ElearnRecord

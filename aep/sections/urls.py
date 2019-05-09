@@ -55,10 +55,18 @@ enrollment_patterns = [
         name='create admin attendance'),
 ]
 
+reports_patterns = [
+    url(r'^active-students$',
+        views.ActiveStudentCSV.as_view(),
+        name='active student csv'),
+]
+
 urlpatterns = [
     url(r'^$',
         views.ClassListView.as_view(),
         name='class list'),
+    url(r'^reports/',
+        include(reports_patterns)),
     url(r'^enrollments/',
         include(enrollment_patterns)),
     url(r'^teaching/',
