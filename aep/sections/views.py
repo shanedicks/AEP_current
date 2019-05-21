@@ -222,6 +222,106 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
         return render_to_csv(data=data, filename=filename)
 
 
+class AtriumCSV(LoginRequiredMixin, FormView):
+
+    model=Enrollment
+    form_class = SectionFilterForm
+    template_name = "sections/atrium_csv.html"
+
+    def get_student_data(self, students):
+        data = []
+        headers = [
+            "WRU Id",
+            "Last Name",
+            "First Name",
+            "DOB",
+            "Gender",
+            "Address",
+            "City",
+            "State",
+            "Zip",
+            "Parish",
+            "Email",
+            "Phone",
+            "Semester",
+            "Course End Date",
+            "FA_CRS",
+            "FB_CRS",
+            "FC_CRS",
+            "FD_CRS",
+            "FH_CRS",
+            "FI_CRS",
+            "FJ_CRS",
+            "RC01_156",
+            "RC01_217",
+            "RC01_223",
+            "RC01_241",
+            "RC01_246"
+        ]
+        data.append(headers)
+        for item in students:
+            if students[item]['sites'][6] == 'Y':
+                students[item]['sites'][6:] = ['Y','Y','Y','Y','Y','Y',]
+            s = []
+            s.extend(students[item]['info'])
+            s.extend(students[item]['sites'])
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        students = Enrollment.objects.filter(status="A", student__partner='').select_related('section__semester')
+        filename = "student_list.csv"
+        sites_dict = {
+            'CH': 1,
+            'WB': 2,
+            'JP': 3,
+            'SC': 5,
+            'RC': 6,
+        }
+        if form.cleaned_data['site'] != "":
+            site = form.cleaned_data['site']
+            students = students.filter(section__site=site)
+            filename = "_".join([site, filename])
+        if form.cleaned_data['program'] != "":
+            program = form.cleaned_data['program']
+            students = students.filter(section__program=program)
+            filename = "_".join([program, filename])
+        distinct = {}
+        for student in students:
+            site = student.section.site
+            site_index = 0
+            if site in sites_dict:
+                site_index = sites_dict[site]
+            if student.student.WRU_ID not in distinct:
+                distinct[student.student.WRU_ID] = {
+                    'info': [
+                        student.student.WRU_ID,
+                        student.student.last_name,
+                        student.student.first_name,
+                        str(student.student.dob),
+                        student.student.get_gender_display(),
+                        " ".join([
+                            student.student.street_address_1,
+                            student.student.street_address_2
+                        ]),
+                        student.student.city,
+                        student.student.state,
+                        student.student.zip_code,
+                        student.student.get_parish_display(),
+                        student.student.email,
+                        student.student.phone,
+                        "".join([str(student.section.semester.end_date.year),"50"]),
+                        str(student.section.semester.end_date),
+                    ],
+                    'sites': ['N','N','N','N','N','N','N','N','N','N','N','N',],
+                }
+                distinct[student.student.WRU_ID]['sites'][site_index] = 'Y'
+            else:
+                distinct[student.student.WRU_ID]['sites'][site_index] = 'Y'
+        data = self.get_student_data(distinct)
+        return render_to_csv(data=data, filename=filename)
+
+
 class ElearnAttendanceCSV(LoginRequiredMixin, FormView):
 
     model = ElearnRecord
@@ -508,6 +608,13 @@ class AddStudentView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         url = self.object.section.get_absolute_url()
         return url
+
+    def get_context_data(self, **kwargs):
+        context = super(AddStudentView, self).get_context_data(**kwargs)
+        if 'section' not in context:
+            context['section'] = Section.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
 
 
 class AddClassView(LoginRequiredMixin, CreateView):

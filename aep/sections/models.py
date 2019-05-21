@@ -176,9 +176,11 @@ class Section(models.Model):
             return self.seats - students
         return None
 
+    @property
     def is_full(self):
         return self.open_seats() < 1
 
+    @property
     def over_full(self):
         return self.get_waiting().count() > 4
 

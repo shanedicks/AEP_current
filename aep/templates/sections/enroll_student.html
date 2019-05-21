@@ -3,6 +3,10 @@
 {% block head_title %}DCCAEP | Enroll Student{% endblock head_title %}
 
 {% block content %}
+    {% if section.is_full %}
+    <h1 style='color:red'> {{ section.title }} is full.</h1>
+    <h3>Are you sure you want to add this student?</h3>
+    {% endif %}
 	<form class='form-inline' method='get'>
         <div class="form-group">
             <label class="sr-only" for="id_name">Student Name</label>
