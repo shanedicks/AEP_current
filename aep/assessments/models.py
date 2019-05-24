@@ -84,7 +84,7 @@ class TestEvent(models.Model):
     def open_seats(self):
         if self.seats:
             return self.seats - self.students.count()
-        return None
+        return 0
 
     def check_full(self):
         if self.open_seats() < 1:
