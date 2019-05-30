@@ -470,7 +470,7 @@ class Enrollment(models.Model):
 
     # Adds students to active roster if class space exists
     def add_from_waitlist(self):
-        if not self.section.is_full():
+        if not self.section.is_full:
             self.status = 'A'
             self.save()
             if self.student.email:

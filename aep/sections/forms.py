@@ -60,9 +60,8 @@ class ClassAddEnrollmentForm(ModelForm):
     def clean(self):
         data = super(ClassAddEnrollmentForm, self).clean()
         section = data.get('section')
-        full = section.is_full()
 
-        if full:
+        if section.is_full:
             raise ValidationError(
                 _('Sorry, this class is full. Please choose another'),
                 code='full class'
