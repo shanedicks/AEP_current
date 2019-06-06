@@ -24,8 +24,8 @@ class SkillResource(resources.ModelResource):
         model = Skill
         fields = (
             'id',
-            'title',
-            'ccrs',
+            'anchor_standard',
+            'code',
             'description',
             'resources'
         )
@@ -65,11 +65,11 @@ class SkillAdmin(ImportExportActionModelAdmin):
 
     resource_class = SkillResource
 
-    list_display = ('title',)
+    list_display = ('code',)
 
     search_fields = [
-        'title',
-        'ccrs',
+        'code',
+        'anchor_standard',
         'description'
     ]
 

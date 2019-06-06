@@ -21,11 +21,11 @@ class Resource(models.Model):
 
 class Skill(models.Model):
 
-    title = models.CharField(
-        max_length=100,
+    anchor_standard = models.TextField(
+        blank=True
     )
 
-    standard = models.CharField(
+    code = models.CharField(
         max_length=20,
         blank=True
     )
@@ -44,7 +44,7 @@ class Skill(models.Model):
         pass
 
     def __str__(self):
-        return self.title
+        return self.standard
 
 
 class Course(models.Model):
