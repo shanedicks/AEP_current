@@ -2,6 +2,9 @@
 {% block head_title %}DCCAEP | {{student}}{% endblock head_title %}
 {% block content %}
       <h1>{{ student }}</h1>
+      {% if student.partner != '' %}
+        <h3>Partner Student - {{student.partner}}</h3> 
+      {% endif %}
     <div class='col-md-7'>
       <div class="btn-group" role="group" aria-label="student links">
           <a type="button" class="btn btn-default" role="button" href="{% url 'people:edit student' slug=student.slug %}">Update</a>
@@ -114,9 +117,9 @@
     </div>
     <div class='col-md-5'>
       <h3>Office Tracking</h3>
-          <p>Office Paperwork: {{ student.get_paperwork_display }}</p>
           <p>Office Folder: {{ student.get_folder_display }}</p>
           <p>Orientation: {{ student.get_orientation_display }}</p>
+          <p>Office Paperwork: {{ student.get_paperwork_display }}</p>
           <a class="btn btn-default" href="{% url 'people:student compliance form' slug=student.slug %}" role="button">Update</a>
     </div>
     <div class='col-md-5'>

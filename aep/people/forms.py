@@ -68,9 +68,9 @@ class StudentComplianceForm(ModelForm):
         self.helper.help_text_inline = True
         self.helper.layout = Layout(
             Field(
-                'paperwork',
+                'folder',
                 'orientation',
-                'folder'
+                'paperwork'
             )
         )
 
