@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block head_title %}DCCAEP | {{student}} eLearn Record{% endblock head_title %}
+{% block content %}
+    <h1>eLearn Record for <a href="{% url 'people:student detail' slug=student.slug %}">{{student}}</a></h1>
+    <table class='table'>
+	  <tr>
+	    <td><h4>Status</h4></td>
+	    <td><p>{{ object.elearn_status }}</p></td>
+	  </tr>
+	  <tr>
+	  	<td><h4>Updated</h4></td>
+	  	<td><p>{{ object.status_updated }}</p></td>
+	  </tr>
+	  <tr>
+	  	<td><h4>Intake Date</h4></td>
+	  	<td><p>{{ object.intake_date }}</p></td>
+	  </tr>
+	  <tr>
+	  	<td><h4>G Suite Email</h4></td>
+	  	<td><p>{{ object.g_suite_email }}</p></td>
+	  </tr>
+	</table>
+{% endblock %}
