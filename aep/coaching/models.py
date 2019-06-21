@@ -752,7 +752,7 @@ class ElearnRecord(models.Model):
         )
 
     def save(self, **kwargs):
-        if self.elearn_status == 'InActive':
+        if self.elearn_status in ('InActive', 'Alumni'):
             try:
                 s = self.student.coaches.filter(coaching_type='elearn')
                 s.update(active=False)

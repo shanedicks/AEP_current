@@ -18,6 +18,10 @@ class TestEventAdmin(admin.ModelAdmin):
         'full'
     )
 
+    list_filter = (
+        'start',
+    )
+
     search_fields = [
         'title',
         'test',
@@ -104,6 +108,10 @@ class TestHistoryAdmin(admin.ModelAdmin):
         'last_test',
     )
 
+    list_filter = (
+        'last_test',
+    )
+
     search_fields = [
         'student__first_name',
         'student__last_name',
@@ -184,7 +192,10 @@ class TabeAdmin(ImportExportActionModelAdmin):
         'read_nrs',
         'math_nrs',
         'lang_nrs',
+    )
 
+    list_filter = (
+        'test_date',
     )
 
     search_fields = [
@@ -243,6 +254,10 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
         'student',
         'test_date',
         'read_nrs'
+    )
+
+    list_filter = (
+        'test_date',
     )
 
     search_fields = [
@@ -379,6 +394,10 @@ class Gain_Admin(ImportExportActionModelAdmin):
         'nrs'
     )
 
+    list_filter = (
+        'test_date',
+    )
+
     search_fields = [
         'student__student__first_name',
         'student__student__last_name',
@@ -428,6 +447,10 @@ class Hiset_Practice_Admin(ImportExportActionModelAdmin):
         'grade',
         'test_version',
         'reported_by'
+    )
+
+    list_filter = (
+        'test_date',
     )
 
     search_fields = [

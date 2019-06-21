@@ -225,6 +225,7 @@ class EnrollmentAdmin(ImportExportActionModelAdmin):
 
     list_filter = (
         'status',
+        'created'
     )
 
     search_fields = [
@@ -272,6 +273,11 @@ class AttendanceAdmin(ImportExportActionModelAdmin):
         '__str__',
         'attendance_date',
         'attendance_type',
+    )
+
+    list_filter = (
+        'attendance_date',
+        'attendance_type'
     )
 
     search_fields = (

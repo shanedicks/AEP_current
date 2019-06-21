@@ -7,6 +7,7 @@ from .models import Semester, Day
 class SemesterAdmin(admin.ModelAdmin):
 
     list_display = (
+        'id',
         'title',
         'start_date',
         'end_date',

@@ -69,6 +69,7 @@ class StudentResource(resources.ModelResource):
             "ec_email",
             "ec_relation",
             "paperwork",
+            "folder",
             "orientation"
         )
 
@@ -223,21 +224,31 @@ class StudentAdmin(ImportExportActionModelAdmin):
         "WRU_ID",
         "dob",
         "intake_date",
-        'ace_app',
-        'e_learn_app',
-        'success_app',
-        'partner'
+        'paperwork',
+        'folder',
+        'orientation',
+        'partner',
+    )
+
+    list_editable = (
+        'paperwork',
+        'folder',
+        'orientation',
     )
 
     list_filter = (
-        'ccr_app',
-        'esl_app',
-        'ace_app',
+        'intake_date',
+        'partner',
+        'paperwork',
+        'folder',
+        'orientation',
         'e_learn_app',
         'success_app',
         'accuplacer_app',
-        'partner',
-        'duplicate'
+        'ace_app',
+        'ccr_app',
+        'esl_app',
+        'duplicate',
     )
 
     search_fields = [
@@ -246,7 +257,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'email',
         'WRU_ID',
         'intake_date',
-        'partner'
+        'partner',
+        'dob'
     ]
 
     fields = [
@@ -269,7 +281,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
         ("street_address_1",
          "street_address_2"),
         "city",
-        "state",
+        ("state",
+         "zip_code"),
         ("duplicate",
          "dupl_date")
     ]
