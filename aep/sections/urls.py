@@ -59,6 +59,9 @@ reports_patterns = [
     url(r'^active-students$',
         views.ActiveStudentCSV.as_view(),
         name='active student csv'),
+    url(r'^student-enrollment$',
+        views.StudentEnrollmentCSV.as_view(),
+        name='student enrollment csv'),
     url(r'^atrium$',
         views.AtriumCSV.as_view(),
         name='atrium csv')

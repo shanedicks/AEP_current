@@ -125,6 +125,11 @@ class SectionFilterForm(Form):
         self.helper.disable_csrf = True
 
 
+class EnrollmentReportForm(SectionFilterForm):
+
+    semesters = ModelMultipleChoiceField(queryset=Semester.objects.all())
+
+
 class AttendanceReportForm(Form):
 
     from_date = DateField(
