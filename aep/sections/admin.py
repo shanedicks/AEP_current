@@ -98,7 +98,12 @@ class SectionAdmin(ImportExportActionModelAdmin):
         'slug',
     )
 
-    search_fields = ["title", "program", 'site', 'WRU_ID', 'semester__title']
+    list_filter = (
+        'site',
+        'program'
+    )
+
+    search_fields = ["title", "program", 'WRU_ID', 'semester__title']
 
     actions = [
         "begin",
