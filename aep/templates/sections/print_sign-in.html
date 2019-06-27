@@ -3,7 +3,7 @@
 {% block content %}
     <h1>{{ section.title }} Sign-in Sheet </h1>
     <h3>{{ section.teacher }} | {{ section.start_time }}-{{section.end_time}}</h3>
-    <h3>{{section.semester }} | {{ section.site }} | {{ attendance_date }}</h3>
+    <h3>{{section.semester }} | {{ section.site.code }} | {{ attendance_date }}</h3>
     <table class="table table-bordered">
         <tr>
             <th class="col-md-2">Student</th>

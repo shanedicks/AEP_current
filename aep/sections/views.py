@@ -367,10 +367,10 @@ class AtriumCSV(LoginRequiredMixin, FormView):
             'SC': 5,
             'RC': 6,
         }
-        if form.cleaned_data['site'] != "":
+        if form.cleaned_data['site'] is not None:
             site = form.cleaned_data['site']
             students = students.filter(section__site=site)
-            filename = "_".join([site, filename])
+            filename = "_".join([site.code, filename])
         if form.cleaned_data['program'] != "":
             program = form.cleaned_data['program']
             students = students.filter(section__program=program)
@@ -379,8 +379,8 @@ class AtriumCSV(LoginRequiredMixin, FormView):
         for student in students:
             site = student.section.site
             site_index = 0
-            if site in sites_dict:
-                site_index = sites_dict[site]
+            if site.code in sites_dict:
+                site_index = sites_dict[site.code]
             if student.student.WRU_ID not in distinct:
                 distinct[student.student.WRU_ID] = {
                     'info': [

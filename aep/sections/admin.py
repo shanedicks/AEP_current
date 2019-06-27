@@ -44,9 +44,9 @@ class SectionResource(resources.ModelResource):
         widget=widgets.ForeignKeyWidget(Course, 'code')
     )
 
-    site_link = fields.Field(
-        column_name='site_link',
-        attribute='site_link',
+    site = fields.Field(
+        column_name='site',
+        attribute='site',
         widget=widgets.ForeignKeyWidget(Site, 'code')
     )
 
@@ -63,7 +63,6 @@ class SectionResource(resources.ModelResource):
             'g_suite_id',
             'course',
             'site',
-            'site_link',
             'room',
             'program',
             'seats',
@@ -95,7 +94,8 @@ class SectionAdmin(ImportExportActionModelAdmin):
         "start_time",
         "end_time",
         'semester',
-        'g_suite_id'
+        'g_suite_id',
+        'slug',
     )
 
     search_fields = ["title", "program", 'site', 'WRU_ID', 'semester__title']

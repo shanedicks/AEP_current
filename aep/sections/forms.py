@@ -1,5 +1,7 @@
 import datetime
-from django.forms import ModelForm, Form, ChoiceField, modelformset_factory, ValidationError, CharField, DateField, ModelMultipleChoiceField
+from django.forms import (ModelForm, Form, ChoiceField, modelformset_factory,
+                         ValidationError, CharField, DateField,
+                         ModelChoiceField, ModelMultipleChoiceField)
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from core.forms import DateFilterForm
@@ -7,7 +9,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from people.models import Student
 from semesters.models import Semester
-from .models import Enrollment, Section, Attendance
+from .models import Enrollment, Section, Attendance, Site
 
 
 class StudentAddEnrollmentForm(ModelForm):
@@ -43,7 +45,7 @@ class ClassAddEnrollmentForm(ModelForm):
             semester__start_date__gte=limit
         ).order_by('site', 'title', 'start_time')
         if site and site[0] != '':
-            qst = qst.filter(site=site[0])
+            qst = qst.filter(site__code=site[0])
         if program and program[0] != '':
             qst = qst.filter(program=program[0])
         self.base_fields['section'].queryset = qst
@@ -88,21 +90,10 @@ class ClassAddFromListEnrollForm(ModelForm):
 
 class SectionFilterForm(Form):
 
-    site = ChoiceField(
-        choices=(
-            ('', 'Site'),
-            ('CP', 'City Park'),
-            ('MC', 'NOALC'),
-            ('WB', 'West Bank'),
-            ('JP', 'Jefferson Parish'),
-            ('SC', 'Sidney Collier'),
-            ('HC', 'Hispanic Chamber'),
-            ('WL', 'West Bank Library'),
-            ('J1', 'Job 1'),
-            ('CH', 'Charity'),
-            ('OL', 'Online')
-        ),
+    site = ModelChoiceField(
+        queryset=Site.objects.all(),
         required=False,
+        empty_label='Site'
     )
     program = ChoiceField(
         choices=(
@@ -171,22 +162,13 @@ class AttendanceReportForm(Form):
 class SectionSearchForm(Form):
 
     c_name = CharField(label=_('Class Name'), required=False)
-    site = ChoiceField(
-        choices=(
-            ('', 'Site'),
-            ('CP', 'City Park'),
-            ('MC', 'NOALC'),
-            ('WB', 'West Bank'),
-            ('JP', 'Jefferson Parish'),
-            ('SC', 'Sidney Collier'),
-            ('OL', 'Online Class'),
-            ('HC', 'Hispanic Chamber'),
-            ('WL', 'West Bank Library'),
-            ('J1', 'Job 1'),
-            ('CH', 'Charity')
-        ),
+
+    site = ModelChoiceField(
+        queryset=Site.objects.all(),
+        empty_label='Site',
         required=False
     )
+
     program = ChoiceField(
         choices=(
             ('', 'Program'),
@@ -214,6 +196,21 @@ class SectionSearchForm(Form):
                 title__icontains=self.cleaned_data['c_name']
             )
         return qst
+
+    def __init__(self, *args, **kwargs):
+        super(SectionSearchForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.disable_csrf = True
+        self.helper.form_show_labels = False
+        self.helper.layout = Layout(
+            Field('c_name', placeholder='Class Name'),
+            Field(
+                'site',
+                'program'
+            )
+        )
 
 
 class SingleAttendanceForm(ModelForm):

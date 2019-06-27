@@ -40,30 +40,6 @@ class Site(models.Model):
 
 class Section(models.Model):
 
-    CITY_PARK = 'CP'
-    MID_CITY = 'MC'
-    WEST_BANK = 'WB'
-    JEFFERSON_PARISH = 'JP'
-    SIDNEY_COLLIER = 'SC'
-    HISPANIC_CHAMBER = 'HC'
-    WEST_BANK_LIB = 'WL'
-    JOB_1 = 'J1'
-    CHARITY = 'CH'
-    ONLINE = 'OL'
-    RIVER_CITY = 'RC'
-    SITE_CHOICES = (
-        (CITY_PARK, 'City Park'),
-        (MID_CITY, 'NOALC'),
-        (WEST_BANK, 'West Bank'),
-        (JEFFERSON_PARISH, 'Jefferson Parish'),
-        (SIDNEY_COLLIER, 'Sidney Collier'),
-        (HISPANIC_CHAMBER, 'HCC'),
-        (WEST_BANK_LIB, 'West Bank Regional Library'),
-        (JOB_1, 'Job 1'),
-        (CHARITY, 'Charity'),
-        (ONLINE, 'Online Classes'),
-        (RIVER_CITY, 'River City')
-    )
     ESL = 'ESL'
     CCR = 'CCR'
     TRANS = 'TRANS'
@@ -76,7 +52,9 @@ class Section(models.Model):
         (ELEARN, 'eLearn'),
         (TRANS, 'Transitions')
     )
+
     title = models.CharField(max_length=50)
+    
     semester = models.ForeignKey(
         Semester,
         models.PROTECT,
@@ -102,18 +80,15 @@ class Section(models.Model):
         max_length=20,
         blank=True
     )
-    site = models.CharField(
-        max_length=2,
-        choices=SITE_CHOICES,
-        blank=True,
-    )
-    site_link = models.ForeignKey(
+
+    site = models.ForeignKey(
         Site,
         models.PROTECT,
         related_name='sections',
         null=True,
         blank=True
     )
+
     room = models.CharField(
         max_length=20,
         blank=True
@@ -139,7 +114,7 @@ class Section(models.Model):
 
 
     def __str__(self):
-        s = str(self.site)
+        s = str(self.site.code)
         n = str(self.title)
         t = str(self.teacher)
         d = self.get_days_str()
