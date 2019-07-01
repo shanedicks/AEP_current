@@ -2,10 +2,10 @@
 {% block head_title %}DCCAEP | {{student}} Test History{% endblock head_title %}
 {% block content %}
 	<h1>Testing Record for {{ history.student }} - {{ history.student.WRU_ID }}</h1>
-    <h2>Upcoming Testing Info</h2>
+    <h2>Test Appointments</h2>
     <div class='well'>
         <h4>Next Test Assignment: {{ history.test_assignment }}</h4>
-        <h4>Testing Appointments</h4>
+        <h4>Upcoming Appointments</h4>
         {% if appts %}
         {% for appt in appts %}
         	<p><a href="{% url 'assessments:test appointment detail' pk=appt.pk %}">{{ appt.event.title }} - {{appt.event.start }}</a></p>
@@ -13,9 +13,18 @@
         {% else %}
             <p>There are no upcoming testing appointments for {{ history.student }}. Would you like to create one?</p>
         {% endif %}
-            <a class="btn btn-default" href="{% url 'assessments:test signup' slug=history.student.slug %}" role="button">Testing Signup</a>
+        <a class="btn btn-default" href="{% url 'assessments:test signup' slug=history.student.slug %}" role="button">Testing Signup</a>
+        <h4>Recent Appointments</h4>
+        {% if recent_appts %}
+        {% for appt in recent_appts %}
+            <p><a href="{% url 'assessments:test appointment detail' pk=appt.pk %}">{{ appt.event.title }} - {{appt.event.start }}</a></p>
+        {% endfor %}
+        {% else %}
+            <p>There are no recent testing appointments for {{ history.student }}.</p>
+        {% endif %}
+            
     </div>
-    <h2>Prior Testing Info</h2>
+    <h2>Test Scores</h2>
     <div class='well'>
         <h3>NRS Reported Tests</h3>
         {% if history.last_test is None %}

@@ -1,13 +1,16 @@
 from django.conf.urls import url, include
-from sections.views import StudentClassListView, StudentScheduleView, AddClassView, StudentAttendanceView
+from sections.views import StudentCurrentClassListView, StudentPastClassListView, StudentScheduleView, AddClassView, StudentAttendanceView
 from . import views
 
 app_name = 'people'
 
 class_patterns = [
-    url(r'^$',
-        StudentClassListView.as_view(),
-        name='student classes'),
+    url(r'^current/$',
+        StudentCurrentClassListView.as_view(),
+        name='student current classes'),
+    url(r'^past/$',
+        StudentPastClassListView.as_view(),
+        name='student past classes'),
     url(r'^print-schedule/$',
         StudentScheduleView.as_view(),
         name='print schedule'),

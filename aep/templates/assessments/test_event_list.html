@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block head_title %}DCCAEP | {{tempus}} Test Events{% endblock head_title %}
 {% block content %}
-	<h1>{{ tempus }} Test Events</h1>
-	{% if tempus == "Past" %}
-		<a href="{% url 'assessments:current event list' %}" class="btn btn-default">Current Events</a>
-	{% else %}
+	{% if current %}
+		<h1>Current Test Events</h1>
 		<a href="{% url 'assessments:past event list' %}" class="btn btn-default">Past Events</a>
+	{% else %}
+		<h1>Past Test Events</h1>
+		<a href="{% url 'assessments:current event list' %}" class="btn btn-default">Current Events</a>
 	{% endif %}
 	<table class="table">
 		<tr>

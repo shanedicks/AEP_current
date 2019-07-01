@@ -629,6 +629,7 @@ class PrintSignInView(LoginRequiredMixin, DetailView):
         return context
 
 
+
 class StudentClassListView(LoginRequiredMixin, ListView):
 
     model = Enrollment
@@ -654,6 +655,48 @@ class StudentClassListView(LoginRequiredMixin, ListView):
                 "section__tuesday",
                 "section__start_time"
             ).prefetch_related('attendance')
+
+
+class StudentCurrentClassListView(StudentClassListView):
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentCurrentClassListView, self).get_context_data(**kwargs)
+        if 'current' not in context:
+            context['current'] = True
+            context.update(kwargs)
+        return context
+
+    def get_queryset(self):
+        slug = self.kwargs['slug']
+        return Student.objects.get(
+            slug=slug
+        ).current_classes().order_by(
+            "-section__semester__start_date",
+            "section__tuesday",
+            "section__start_time"
+        )
+
+
+class StudentPastClassListView(StudentClassListView):
+
+    paginate_by = 20
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentPastClassListView, self).get_context_data(**kwargs)
+        if 'current' not in context:
+            context['current'] = False
+            context.update(kwargs)
+        return context
+
+    def get_queryset(self):
+        slug = self.kwargs['slug']
+        return Student.objects.get(
+            slug=slug
+        ).past_classes().order_by(
+            "-section__semester__start_date",
+            "section__tuesday",
+            "section__start_time"
+        )
 
 
 class StudentScheduleView(StudentClassListView):
@@ -821,7 +864,7 @@ class EnrollmentDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         student = self.object.student
         return reverse_lazy(
-            'people:student classes',
+            'people:student current classes',
             kwargs={'slug': student.slug}
         )
 

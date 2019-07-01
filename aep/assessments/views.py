@@ -244,8 +244,8 @@ class CurrentEventListView(LoginRequiredMixin, ListView):
             CurrentEventListView,
             self
         ).get_context_data(*args, **kwargs)
-        if 'tempus' not in context:
-            context['tempus'] = "Current"
+        if 'current' not in context:
+            context['current'] = True
             context.update(kwargs)
         return context
 
@@ -267,8 +267,8 @@ class PastEventListView(LoginRequiredMixin, ListView):
             PastEventListView,
             self
         ).get_context_data(*args, **kwargs)
-        if 'tempus' not in context:
-            context['tempus'] = "Past"
+        if 'current' not in context:
+            context['current'] = False
             context.update(kwargs)
         return context
 
@@ -355,6 +355,12 @@ class StudentTestHistoryView(LoginRequiredMixin, DetailView):
                 event__start__gte=timezone.now()
             ).order_by('event__start')
             context.update(kwargs)
+        if 'recent_appts' not in context:
+            context['recent_appts'] = TestAppointment.objects.filter(
+                student__slug=self.kwargs['slug'],
+                event__start__lte=timezone.now(),
+                event__start__gte=timezone.now() - timedelta(days=30)
+            )
         return context
 
 

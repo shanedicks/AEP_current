@@ -520,7 +520,7 @@ class ExitExamCSV(LoginRequiredMixin, FormView):
                 completed.append(p.section.title)
             uri = "http://www.dccaep.org" + str(
                     reverse_lazy(
-                        'people:student classes',
+                        'people:student current classes',
                         kwargs={'slug': student.student.slug}
                     )
                 )
