@@ -14,3 +14,4 @@ class SemesterDetailView(LoginRequiredMixin, DetailView):
 
     model = Semester
     template_name = 'semesters/semester_detail.html'
+

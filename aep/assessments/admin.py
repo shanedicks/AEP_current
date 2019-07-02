@@ -11,6 +11,7 @@ class TestEventAdmin(admin.ModelAdmin):
         '__str__',
         'test',
         'proctor',
+        'site',
         'room',
         'seats',
         'start',
@@ -20,13 +21,15 @@ class TestEventAdmin(admin.ModelAdmin):
 
     list_filter = (
         'start',
+        'site'
     )
 
     search_fields = [
         'title',
         'test',
         'proctor',
-        'start'
+        'start',
+        'site'
     ]
 
     fields = (

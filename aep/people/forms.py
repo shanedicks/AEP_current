@@ -468,6 +468,8 @@ class StudentContactForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(StudentContactForm, self).__init__(*args, **kwargs)
+        self.fields['phone'].validators.append(phone_validator)
+        self.fields['alt_phone'].validators.append(phone_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'

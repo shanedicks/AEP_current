@@ -4,7 +4,7 @@ from core.tasks import send_mail_task
 from django.urls import reverse
 from django.db import models
 from people.models import Staff, Student
-from sections.models import Attendance
+from sections.models import Attendance, Site
 
 
 class TestEvent(models.Model):
@@ -47,6 +47,14 @@ class TestEvent(models.Model):
     seats = models.PositiveSmallIntegerField()
 
     start = models.DateTimeField()
+
+    site = models.ForeignKey(
+        Site,
+        models.PROTECT,
+        related_name="events",
+        blank=True,
+        null=True
+    )
 
     room = models.CharField(
         max_length=60,
