@@ -496,6 +496,9 @@ class TabeCSV(LoginRequiredMixin, FormView):
             date = test.test_date
             pre = test.test_date - timedelta(days=180)
             test_type = 'Pretest'
+            version = 'TABE'
+            if test.form in ('11', '12'):
+                version = 'TABE 11 & 12'
             if test.student.tabe_tests.filter(
                 test_date__lt=date).filter(
                 test_date__gte=pre).count() > 0:
@@ -514,8 +517,8 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     test.student.student.last_name,
                     test.student.student.first_name,
                     test_type,
-                    '2018-2019',
-                    'TABE',
+                    '2019-2020',
+                    version,
                     test.form,
                     test.read_level,
                     'READING',
@@ -542,8 +545,8 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     test.student.student.last_name,
                     test.student.student.first_name,
                     test_type,
-                    '2018-2019',
-                    'TABE',
+                    '2019-2020',
+                    version,
                     test.form,
                     test.math_level,
                     'TOTAL MATH',
@@ -570,8 +573,8 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     test.student.student.last_name,
                     test.student.student.first_name,
                     test_type,
-                    '2018-2019',
-                    'TABE',
+                    '2019-2020',
+                    version,
                     test.form,
                     test.lang_level,
                     'LANGUAGE',
