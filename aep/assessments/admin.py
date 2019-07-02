@@ -36,6 +36,7 @@ class TestEventAdmin(admin.ModelAdmin):
         'title',
         'test',
         'proctor',
+        'site',
         'room',
         'seats',
         'start',
