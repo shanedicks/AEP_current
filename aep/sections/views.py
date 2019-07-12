@@ -212,7 +212,7 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
         if form.cleaned_data['site'] != "":
             site = form.cleaned_data['site']
             students = students.filter(section__site=site)
-            filename = "_".join([site, filename])
+            filename = "_".join([site.code, filename])
         if form.cleaned_data['program'] != "":
             program = form.cleaned_data['program']
             students = students.filter(section__program=program)
@@ -301,7 +301,7 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
         if form.cleaned_data['site'] != "":
             site = form.cleaned_data['site']
             students = students.filter(section__site=site)
-            filename = "_".join([site, filename])
+            filename = "_".join([site.code, filename])
         if form.cleaned_data['program'] != "":
             program = form.cleaned_data['program']
             students = students.filter(section__program=program)
