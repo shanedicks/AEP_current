@@ -209,7 +209,7 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         students = Enrollment.objects.filter(status="A")
         filename = "student_list.csv"
-        if form.cleaned_data['site'] != "":
+        if form.cleaned_data['site'] is not None:
             site = form.cleaned_data['site']
             students = students.filter(section__site=site)
             filename = "_".join([site.code, filename])
@@ -298,7 +298,7 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
         if form.cleaned_data['semesters'] != "":
             semesters = form.cleaned_data['semesters']
             students = students.filter(section__semester__in=semesters)
-        if form.cleaned_data['site'] != "":
+        if form.cleaned_data['site'] is not None:
             site = form.cleaned_data['site']
             students = students.filter(section__site=site)
             filename = "_".join([site.code, filename])
