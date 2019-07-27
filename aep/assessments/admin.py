@@ -75,6 +75,8 @@ class TestAppointmentResource(resources.ModelResource):
             'id',
             'student',
             'event',
+            'attendance_type',
+            'attendance_date',
             'notes'
         )
 

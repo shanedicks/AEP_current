@@ -516,11 +516,7 @@ class Tabe(NRSTest):
         return level
 
     def assign(self):
-        if self.form == "9":
-            form = "10"
-        elif self.form == "10":
-            form = "9"
-        elif self.form == "11":
+        if self.form == "11":
             form = "12"
         else:
             form = "11"
