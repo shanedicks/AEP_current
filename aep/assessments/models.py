@@ -663,7 +663,7 @@ class Clas_E(NRSTest):
         elif self.read_ss <= a[3]:
             level = "4"
         else:
-            return "9 M"
+            return "11 M"
         return " ".join([level, form])
 
 
