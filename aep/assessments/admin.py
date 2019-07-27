@@ -186,6 +186,7 @@ class TabeAdmin(ImportExportActionModelAdmin):
     list_display = (
         'student',
         'test_date',
+        'form',
         'read_level',
         'math_level',
         'lang_level',

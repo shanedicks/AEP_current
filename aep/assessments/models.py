@@ -502,17 +502,24 @@ class Tabe(NRSTest):
         )
 
     @staticmethod
-    def get_level(score):
+    def get_level(score, level, subject):
+        table = {
+            "read":(501, 536, 576, 800),
+            "math":(496, 537, 596, 800),
+            "lang":(511, 547, 584, 800)
+        }
         if score is None:
             level = "-"
-        elif 6.0 > score >= 4.0:
+        elif score < table[subject][0]:
+            level = "E"
+        elif score < table[subject][1]:
             level = "M"
-        elif 9.0 > score >= 6.0:
+        elif score < table[subject][2]:
             level = "D"
-        elif score >= 9.0:
+        elif score < table[subject][3]:
             level = "A"
         else:
-            level = "E"
+            level = "*"
         return level
 
     def assign(self):
@@ -520,9 +527,9 @@ class Tabe(NRSTest):
             form = "12"
         else:
             form = "11"
-        r_level = self.get_level(self.read_ge)
-        m_level = self.get_level(self.total_math_ge)
-        l_level = self.get_level(self.lang_ge)
+        r_level = self.get_level(self.read_ss, self.read_level, 'read')
+        m_level = self.get_level(self.total_math_ss, self.math_level, 'math')
+        l_level = self.get_level(self.lang_ss, self.lang_level, 'lang')
 
         return " ".join([form, r_level, m_level, l_level])
 
