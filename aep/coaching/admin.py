@@ -155,8 +155,10 @@ class MeetingNoteResource(resources.ModelResource):
         model = MeetingNote
         fields = (
             'id',
-            'coaching__coach',
-            'coaching__coachee',
+            'coaching__coach__last_name',
+            'coaching__coachee__last_name',
+            'coaching__coachee__first_name',
+            'coaching__coachee__WRU_ID',
             'meeting_type',
             'meeting_date',
             'start_time',
@@ -464,12 +466,17 @@ class MeetingNoteAdmin(ImportExportActionModelAdmin):
         'start_time'
     )
 
+    list_filter = (
+        'meeting_date',
+        'meeting_type'
+    )
+
     search_fields = [
-        'coaching__coachee__student__last_name',
-        'coaching__coachee__student__first_name',
-        'coaching__coachee__student__WRU_ID',
-        'coaching__coach__staff__last_name',
-        'coaching__coach__staff__first_name',
+        'coaching__coachee__last_name',
+        'coaching__coachee__first_name',
+        'coaching__coachee__WRU_ID',
+        'coaching__coach__last_name',
+        'coaching__coach__first_name',
     ]
 
     fields = [
