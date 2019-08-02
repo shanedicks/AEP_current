@@ -45,7 +45,7 @@ class ClassAddEnrollmentForm(ModelForm):
             semester__start_date__gte=limit
         ).order_by('site', 'title', 'start_time')
         if site and site[0] != '':
-            qst = qst.filter(site__code=site[0])
+            qst = qst.filter(site=site[0])
         if program and program[0] != '':
             qst = qst.filter(program=program[0])
         self.base_fields['section'].queryset = qst
@@ -113,7 +113,7 @@ class SectionFilterForm(Form):
         self.helper.form_tag = False
         self.helper.help_text_inline = False
         self.helper.form_show_labels = False
-        self.helper.disable_csrf = True
+        self.helper.disable_csrf = True 
 
 
 class EnrollmentReportForm(SectionFilterForm):
