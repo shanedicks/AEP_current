@@ -808,9 +808,10 @@ class AddClassView(LoginRequiredMixin, CreateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        student = Student.objects.get(slug=self.kwargs['slug'])
-        url = student.get_absolute_url()
-        return url + "my-classes"
+        return reverse_lazy(
+            'people:student current classes',
+            kwargs={'slug': self.kwargs['slug']}
+        )
 
 
 class AddClassFromListView(LoginRequiredMixin, CreateView):
