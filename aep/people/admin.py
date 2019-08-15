@@ -355,6 +355,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
                 gain.update(student=t)
                 hiset = q[1].tests.hiset_practice_tests.all()
                 hiset.update(student=t)
+                if t.last_test == None:
+                    t.last_test = q[1].tests.last_test
                 q[1].tests.delete()
                 t.save()
         except ObjectDoesNotExist:
