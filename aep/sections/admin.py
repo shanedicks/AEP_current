@@ -8,6 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff, Student
 from academics.models import Course
 from .models import Site, Section, Enrollment, Attendance
+from .tasks import roster_to_classroom_task
 
 class SiteResource(resources.ModelResource):
 
@@ -109,7 +110,8 @@ class SectionAdmin(ImportExportActionModelAdmin):
         "begin",
         "enforce_attendance",
         'create_classroom_section',
-        'roster_to_classroom'
+        'roster_to_classroom',
+        'add_TA'
     ]
 
     def begin(self, request, queryset):
@@ -147,20 +149,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
                 obj.g_suite_id = post.get('id')
                 obj.save()
 
-    def assign_teacher(self, request, queryset):
-
-        scopes = ['https://www.googleapis.com/auth/classroom.rosters']
-
-        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-            keyfile_dict=settings.KEYFILE_DICT,
-            scopes=scopes
-        )
-
-        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
-        http_auth = shane.authorize(Http())
-        service = discovery.build('classroom', 'v1', http=http_auth)
-
-    def roster_to_classroom(self, request, queryset):
+    def add_TA(self, request, queryset):
 
         scopes = ['https://www.googleapis.com/auth/classroom.rosters']
 
@@ -174,17 +163,16 @@ class SectionAdmin(ImportExportActionModelAdmin):
         service = discovery.build('classroom', 'v1', http=http_auth)
 
         for obj in queryset:
-            students = obj.students.all().prefetch_related(
-                'student__elearn_record'
+            service.courses().teachers().create(
+                courseId=obj.g_suite_id,
+                body={"userId": "ta@elearnclass.org"}
             )
-            for student in students:
-                s = {
-                    "userId": student.student.elearn_record.g_suite_email
-                }
-                service.courses().students().create(
-                    courseId=obj.g_suite_id,
-                    body=s
-                ).execute()
+
+
+    def roster_to_classroom(self, request, queryset):
+
+        for obj in queryset:
+            obj.roster_to_classroom_task.delay(obj.id)
 
 
 admin.site.register(Section, SectionAdmin)

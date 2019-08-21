@@ -2,6 +2,7 @@ from apiclient import discovery
 from datetime import date, datetime, timedelta as td
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
+from googleapiclient.errors import HttpError
 from django.db import models, IntegrityError
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -166,6 +167,35 @@ class Section(models.Model):
     def end(self):
         for student in self.get_active():
             end_task.delay(enrollment_id=student.id)
+
+    def roster_to_classroom(self):
+
+        scopes = ['https://www.googleapis.com/auth/classroom.rosters']
+        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+            keyfile_dict=settings.KEYFILE_DICT,
+            scopes=scopes
+        )
+        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        http_auth = shane.authorize(Http())
+        service = discovery.build('classroom', 'v1', http=http_auth)
+
+        students = self.students.all().prefetch_related(
+            'student__elearn_record'
+        )
+        for student in students:
+            try:
+                s = {
+                    "userId": student.student.elearn_record.g_suite_email
+                }
+                try:
+                    service.courses().students().create(
+                        courseId=self.g_suite_id,
+                        body=s
+                    ).execute()
+                except HttpError as err:
+                    print(student.student.elearn_record.g_suite_email, err)
+            except ObjectDoesNotExist:
+                print(student.student, " has no elearn_record")
 
     def g_suite_attendance(self):
         scopes = ['https://www.googleapis.com/auth/classroom.coursework.students']
