@@ -172,7 +172,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
     def roster_to_classroom(self, request, queryset):
 
         for obj in queryset:
-            obj.roster_to_classroom_task.delay(obj.id)
+            roster_to_classroom_task.delay(obj.id)
 
 
 admin.site.register(Section, SectionAdmin)
