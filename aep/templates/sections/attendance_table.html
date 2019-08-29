@@ -45,6 +45,25 @@
             </tr>
         {% endfor %}
     {% endif %}
+    {% if section.get_withdrawn %}
+    <tr><td><h4>Withdrawn</h4></td></tr>
+        {% for student in withdrawn %}
+            <tr>
+                <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
+                {% for att in student.attendance.all %}
+                    <td>
+                        {% if att.attendance_type == "X" %}
+                            -
+                        {% elif att.attendance_type == 'C' %}
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                        {% else %}
+                            {{ att.hours }} 
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    {% endif %}
     {% if section.get_dropped %}
     <tr><td><h4>Dropped</h4></td></tr>
         {% for student in dropped %}

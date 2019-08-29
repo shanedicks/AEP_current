@@ -908,6 +908,12 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
                 'student__last_name',
                 'student__first_name'
             ).prefetch_related('attendance')
+        if 'withdrawn' not in context:
+            context['withdrawn'] = self.object.get_withdrawn(
+            ).order_by(
+                'student__last_name',
+                'student__first_name'
+            ).prefetch_related('attendance')
         if 'summary' not in context:
             context['summary'] = ['ADMIN']
         return context

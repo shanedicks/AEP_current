@@ -154,7 +154,11 @@ class Section(models.Model):
 
     @property
     def is_full(self):
-        return self.open_seats() < 1
+        try:
+            return self.open_seats() < 1
+        except TypeError:
+            return True
+
 
     @property
     def over_full(self):
@@ -440,12 +444,14 @@ class Enrollment(models.Model):
     def activate(self):
         if self.attendance.all().count() == 0:
             dates = self.section.get_class_dates()
+            online = self.section.program == 'ELRN'
             for day in dates:
                 a = Attendance.objects.create(
                     enrollment=self,
                     attendance_date=day,
                     time_in=self.section.start_time,
-                    time_out=self.section.end_time
+                    time_out=self.section.end_time,
+                    online=online
                 )
                 a.save()
 
