@@ -87,6 +87,11 @@ class Profile(models.Model):
         verbose_name=_("Email Address"),
         blank=True
     )
+    alt_email = models.EmailField(
+        max_length=60,
+        verbose_name=_("Alternate Email Address"),
+        blank=True
+    )
     phone = models.CharField(
         max_length=20,
         verbose_name=_("Phone Number"),

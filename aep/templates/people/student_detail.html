@@ -44,6 +44,12 @@
           <td>Email</td>
           <td>{{ student.email }}</td>
         </tr>
+        {% if student.alt_email != '' %}
+        <tr>
+          <td>Alternate Email</td>
+          <td>{{ student.alt_email }}</td>
+        </tr>
+        {% endif %}       
         {% if student.elearn_record %}
         <tr>
           <td>G-Suite Email</td>
@@ -55,7 +61,7 @@
           <td>{{ student.phone }}</td>
         </tr>
         <tr>
-          <td>Alternate</td>
+          <td>Alternate Phone Number</td>
           <td>{{ student.alt_phone }}</td>
         </tr>
         <tr>

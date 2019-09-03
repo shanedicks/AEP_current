@@ -596,7 +596,8 @@ class StudentForm(ModelForm):
                         required=True
                     ),
                 ),
-                'email'
+                'email',
+                'alt_email'
             ),
             Fieldset(
                 'What types of classes are you interested in taking with us?',
@@ -703,6 +704,7 @@ class StudentForm(ModelForm):
             "first_name",
             "last_name",
             "email",
+            "alt_email",
             "dob",
             "gender",
             "marital_status",
