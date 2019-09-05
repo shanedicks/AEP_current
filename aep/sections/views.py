@@ -34,6 +34,7 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
         headers = [
             "PROVIDERID",
             "SID",
+            "OTHER_ID",
             "LAST_NAME",
             "FIRST_NAME",
             "MIDDLE_INITIAL",
@@ -128,6 +129,7 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
                     enrollment = [
                         '9',
                         att.enrollment.student.WRU_ID,
+                        "",
                         att.enrollment.student.last_name,
                         att.enrollment.student.first_name,
                         '',
