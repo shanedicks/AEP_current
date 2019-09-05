@@ -37,19 +37,30 @@ class TestAppointmentAttendanceForm(ModelForm):
         self.helper.layout = Layout(
             Field(
                 'attendance_type',
+                'attendance_date',
                 wrapper_class="col-md-4",
                 required=True
             ),
             Field(
-                'time_in',
-                'time_out',
-                wrapper_class="col-md-4"
+                'att_hours',
+                wrapper_class="col-md-4",
+                required=True
             )
         )
 
     class Meta:
         model = TestAppointment
-        fields = ('attendance_type', 'time_in', 'time_out')
+        fields = (
+            'attendance_type',
+            'attendance_date',
+            'att_hours'
+        )
+
+        labels = {
+            'attendance_date': "Date",
+            'attendance_type': "Status",
+            'att_hours': "Hours"
+        }
 
 
 class TestSignupForm(ModelForm):

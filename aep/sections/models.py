@@ -554,7 +554,9 @@ class Attendance(models.Model):
     time_out = models.TimeField(
         blank=True
     )
-    att_hours = models.IntegerField(
+    att_hours = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
         blank=True,
         null=True
     )

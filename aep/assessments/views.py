@@ -127,7 +127,6 @@ class TestEventAttendanceView(LoginRequiredMixin, UpdateView):
 
     def get(self, request, *args, **kwargs):
         self.object = TestEvent.objects.get(pk=self.kwargs['pk'])
-        attendance_date = self.object.start.date()
         queryset = TestAppointment.objects.filter(
             event=self.object.pk
         ).order_by(
@@ -139,7 +138,6 @@ class TestEventAttendanceView(LoginRequiredMixin, UpdateView):
             self.get_context_data(
                 formset=formset,
                 event=self.object,
-                attendance_date=attendance_date
             )
         )
 
@@ -182,8 +180,8 @@ class TabeOnlineCSV(LoginRequiredMixin, View):
             except ObjectDoesNotExist:
                 g_suite_email = ""
             s = [
-                "1142370",
-                "1153531",
+                "LA23680",
+                "LA20001",
                 student.student.WRU_ID,
                 student.student.last_name,
                 student.student.first_name,

@@ -208,6 +208,12 @@ class TestAppointment(models.Model):
         blank=True,
         null=True
     )
+    att_hours = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Testing Appointment"
