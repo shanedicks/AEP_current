@@ -239,14 +239,14 @@ class AdminAttendanceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AdminAttendanceForm, self).__init__(*args, **kwargs)
+        self.fields['attendance_date'].initial = datetime.datetime.today().date()
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.help_text_inline = True
         self.helper.layout = Layout(
             Field(
                 'attendance_date',
-                'time_in',
-                'time_out',
+                'att_hours',
                 wrapper_class="col-md-4",
                 required=True
             )
@@ -254,7 +254,12 @@ class AdminAttendanceForm(ModelForm):
 
     class Meta:
         model = Attendance
-        fields = ('attendance_date', 'time_in', 'time_out')
+        fields = ('attendance_date', 'att_hours')
+
+        labels = {
+            'attendance_date': "Date",
+            'att_hours': "Hours"
+        }
 
 
 AttendanceFormSet = modelformset_factory(Attendance, form=SingleAttendanceForm, extra=0)
