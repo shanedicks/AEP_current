@@ -2,7 +2,11 @@
 {% load crispy_forms_tags %}
 {% block head_title %}DCCAEP | Attendance Form{% endblock head_title %}
 {% block content %}
+{% if student %}
+<h1>Attendance for {{ student }}</h1>
+{% else %}
 <h1>Attendance for {{ attendance.enrollment.student }} on {{ attendance.attendance_date }}</h1>
+{% endif %}
 <form class="form_group" method="post">
     {% crispy form %}
     <button type="submit" class="btn btn-success">Update Attendance</button>

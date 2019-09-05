@@ -940,6 +940,12 @@ class AdminAttendanceView(LoginRequiredMixin, CreateView):
     template_name = 'sections/attendance_form.html'
     form_class = AdminAttendanceForm
 
+    def get_context_data(self, **kwargs):
+        context = super(AdminAttendanceView, self).get_context_data()
+        if 'student' not in context:
+            context['student'] = Enrollment.objects.get(pk=self.kwargs['pk']).student
+        return context
+
     def form_valid(self, form):
         att = form.save(commit=False)
         enrollment = Enrollment.objects.get(pk=self.kwargs['pk'])
