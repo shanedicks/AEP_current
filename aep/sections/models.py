@@ -549,10 +549,12 @@ class Attendance(models.Model):
     )
     attendance_date = models.DateField()
     time_in = models.TimeField(
-        blank=True
+        blank=True,
+        null=True
     )
     time_out = models.TimeField(
-        blank=True
+        blank=True,
+        null=True
     )
     att_hours = models.DecimalField(
         max_digits=4,
