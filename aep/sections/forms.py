@@ -242,12 +242,10 @@ class AdminAttendanceForm(ModelForm):
         self.fields['attendance_date'].initial = datetime.datetime.today().date()
         self.helper = FormHelper()
         self.helper.form_tag = False
-        self.helper.help_text_inline = True
         self.helper.layout = Layout(
             Field(
                 'attendance_date',
                 'att_hours',
-                wrapper_class="col-md-4",
                 required=True
             )
         )

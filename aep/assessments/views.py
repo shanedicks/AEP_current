@@ -683,7 +683,7 @@ class ClasECSV(LoginRequiredMixin, FormView):
                 test.student.student.last_name,
                 test.student.student.first_name,
                 test_type,
-                '2018-2019',
+                '2019-2020',
                 'TABE CLAS-E',
                 test.form,
                 test.read_level,

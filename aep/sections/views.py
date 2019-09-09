@@ -821,45 +821,6 @@ class AddClassView(LoginRequiredMixin, CreateView):
         )
 
 
-class AddClassFromListView(LoginRequiredMixin, CreateView):
-
-    model = Enrollment
-    template_name = 'sections/check_enroll.html'
-    form_class = ClassAddFromListEnrollForm
-
-    def get_context_data(self, **kwargs):
-        context = super(AddClassFromListView, self).get_context_data(**kwargs)
-        if 'section' not in context:
-            context['section'] = Section.objects.get(pk=self.kwargs['pk'])
-        if 'student' not in context:
-            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
-        context.update(kwargs)
-        return context
-
-    def form_valid(self, form):
-        enrollment = form.save(commit=False)
-        section = Section.objects.get(pk=self.kwargs['pk'])
-        student = Student.objects.get(slug=self.kwargs['slug'])
-        creator = self.request.user
-        enrollment.section = section
-        enrollment.student = student
-        enrollment.creator = creator
-        try:
-            enrollment.save()
-            return super(AddClassFromListView, self).form_valid(form)
-        except IntegrityError:
-            form.add_error(
-                'section',
-                'This student is already enrolled in the selected class'
-            )
-            return self.form_invalid(form)
-
-    def get_success_url(self):
-        student = Student.objects.get(slug=self.kwargs['slug'])
-        url = student.get_absolute_url()
-        return url + "my-classes"
-
-
 class EnrollmentView(LoginRequiredMixin, DetailView):
 
     model = Enrollment
@@ -951,8 +912,17 @@ class AdminAttendanceView(LoginRequiredMixin, CreateView):
         enrollment = Enrollment.objects.get(pk=self.kwargs['pk'])
         att.attendance_type = 'P'
         att.enrollment = enrollment
-        att.save()
-        return super(AdminAttendanceView, self).form_valid(form)
+        att.time_in = enrollment.section.start_time
+        att.time_out = enrollment.section.end_time
+        try:
+            att.save()
+            return super(AdminAttendanceView, self).form_valid(form)
+        except IntegrityError:
+            form.add_error(
+                'att_hours',
+                'There is an error'
+            )
+            return self.form_invalid(form)
 
     def get_success_url(self):
         section = Enrollment.objects.get(pk=self.kwargs['pk']).section
@@ -960,7 +930,6 @@ class AdminAttendanceView(LoginRequiredMixin, CreateView):
             'sections:attendance overview',
             kwargs={'slug': section.slug}
         )
-
 
 class DailyAttendanceView(LoginRequiredMixin, UpdateView):
 

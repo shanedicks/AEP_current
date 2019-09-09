@@ -266,6 +266,7 @@ class AttendanceAdmin(ImportExportActionModelAdmin):
         '__str__',
         'attendance_date',
         'attendance_type',
+        'att_hours'
     )
 
     list_filter = (
@@ -285,7 +286,8 @@ class AttendanceAdmin(ImportExportActionModelAdmin):
         'attendance_type',
         'attendance_date',
         'time_in',
-        'time_out'
+        'time_out',
+        'att_hours'
     )
 
 admin.site.register(Attendance, AttendanceAdmin)

@@ -7,8 +7,8 @@
 {% else %}
 <h1>Attendance for {{ attendance.enrollment.student }} on {{ attendance.attendance_date }}</h1>
 {% endif %}
-<form class="form_group" method="post">
-    {% crispy form %}
+<form class="form-inline" action="" method="post">
+	{% crispy form %}
     <button type="submit" class="btn btn-success">Update Attendance</button>
 </form>
 {% endblock content %}
