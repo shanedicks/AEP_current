@@ -920,7 +920,7 @@ class AdminAttendanceView(LoginRequiredMixin, CreateView):
         except IntegrityError:
             form.add_error(
                 'att_hours',
-                'There is an error'
+                'These hours may already have been recorded'
             )
             return self.form_invalid(form)
 

@@ -327,6 +327,25 @@ class TestAppointmentAttendanceView(LoginRequiredMixin, UpdateView):
             kwargs={'pk': event.pk}
         )
 
+class TestAppointmentListView(LoginRequiredMixin, ListView):
+
+    model = TestAppointment
+    template_name = 'assessments/student_test_appointments.html'
+    paginate_by = 25
+
+    def get_context_data(self, **kwargs):
+        context = super(TestAppointmentListView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def get_queryset(self, **kwargs):
+        qst = TestAppointment.objects.filter(
+            student__slug=self.kwargs['slug']
+        ).order_by('-event__start')
+        return qst
+
 
 class StudentTestHistoryView(LoginRequiredMixin, DetailView):
 
