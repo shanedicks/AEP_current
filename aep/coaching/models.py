@@ -700,6 +700,9 @@ class ElearnRecord(models.Model):
     ACTIVE = 'Active'
     INACTIVE = 'InActive'
     ALUMNI = 'Alumni'
+    PARTNER = 'Partner'
+    PARTNER_ALUMNUS = 'Partner Alumnus'
+    CAMPUS = 'Campus'
     STATUS_CHOICES = (
         (NEW, 'New'),
         (APPLICANT, 'Applicant'),
@@ -707,7 +710,10 @@ class ElearnRecord(models.Model):
         (HOLD, 'On Hold'),
         (ACTIVE, 'Active'),
         (INACTIVE, 'InActive'),
-        (ALUMNI, 'Alumni')
+        (ALUMNI, 'Alumni'),
+        (PARTNER, 'Partner'),
+        (PARTNER_ALUMNUS, 'Partner Alumnus'),
+        (CAMPUS, 'Campus')
     )
 
     student = models.OneToOneField(
@@ -719,7 +725,7 @@ class ElearnRecord(models.Model):
     elearn_status = models.CharField(
         choices=STATUS_CHOICES,
         default="Applicant",
-        max_length=9,
+        max_length=15,
         blank=True
     )
 
