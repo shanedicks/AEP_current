@@ -397,7 +397,6 @@ class Student(Profile):
         default=PENDING
     )
 
-
     class Meta:
         ordering = ["last_name", "first_name"]
 
@@ -472,6 +471,8 @@ class Staff(Profile):
     active = models.BooleanField(default=True)
 
     full_time = models.BooleanField(default=False)
+
+    partner = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = 'staff'

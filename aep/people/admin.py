@@ -94,6 +94,8 @@ class StaffResource(resources.ModelResource):
             'full_time',
             'teacher',
             'coach',
+            'active',
+            'partner',
             "dob",
             "phone",
             "alt_phone",
@@ -459,28 +461,25 @@ class StaffAdmin(ImportExportActionModelAdmin):
         "__str__",
         "wru",
         "phone",
-        "get_email",
+        "email",
         "g_suite_email",
         'teacher',
-        'coach'
+        'coach',
+        'partner'
     )
 
     list_filter = (
         'active',
         'teacher',
         'full_time',
-        'coach'
+        'coach',
+        'partner'
     )
 
     search_fields = [
         "first_name",
         "last_name",
     ]
-
-    def get_email(self, obj):
-        return obj.email
-    get_email.admin_order_field = "Email"
-    get_email.short_description = "Email"
 
 
 admin.site.register(Staff, StaffAdmin)

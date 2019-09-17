@@ -586,6 +586,7 @@ class Attendance(models.Model):
             }
         )
 
+    @property
     def hours(self):
         if self.att_hours:
             return self.att_hours
