@@ -435,10 +435,10 @@ class Enrollment(models.Model):
         return self.attendance.order_by('attendance_date')
 
     def total_hours(self):
-        hours = 0
+        total = 0
         for att in self.attendance.filter(attendance_type='P'):
-            hours += att.hours()
-        return hours
+            total += att.hours
+        return total
 
     # Creates related attendance objects for student enrollment with correct dates and pending status
     def activate(self):
