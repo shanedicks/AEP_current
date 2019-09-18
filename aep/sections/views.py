@@ -18,9 +18,9 @@ from people.models import Student
 from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
-                    ClassAddFromListEnrollForm, StudentAddEnrollmentForm,
-                    SingleAttendanceForm, AttendanceFormSet, SectionSearchForm,
-                    AdminAttendanceForm, AttendanceReportForm, EnrollmentReportForm)
+                    StudentAddEnrollmentForm, SingleAttendanceForm,
+                    AttendanceFormSet, SectionSearchForm, AdminAttendanceForm,
+                    AttendanceReportForm, EnrollmentReportForm)
 
 
 class AttendanceCSV(LoginRequiredMixin, FormView):
@@ -597,9 +597,7 @@ class ClassRosterCSV(LoginRequiredMixin, View):
         section = Section.objects.get(
             slug=self.kwargs['slug'])
         filename = "student_list.csv"
-        students = section.students.prefetch_related(
-            'student', 'student__user'
-        )
+        students = section.students.prefetch_related('student')
         data = self.get_student_data(students)
         return render_to_csv(data=data, filename=filename)
 
@@ -661,7 +659,7 @@ class StudentClassListView(LoginRequiredMixin, ListView):
                 "-section__semester__start_date",
                 "section__tuesday",
                 "section__start_time"
-            ).prefetch_related('attendance')
+            )
 
 
 class StudentCurrentClassListView(StudentClassListView):
@@ -852,31 +850,31 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
             ).order_by(
                 'student__last_name',
                 'student__first_name'
-            ).prefetch_related('attendance')
+            )
         if 'dropped' not in context:
             context['dropped'] = self.object.get_dropped(
             ).order_by(
                 'student__last_name',
                 'student__first_name'
-            ).prefetch_related('attendance')
+            )
         if 'completed' not in context:
             context['completed'] = self.object.get_completed(
             ).order_by(
                 'student__last_name',
                 'student__first_name'
-            ).prefetch_related('attendance')
+            )
         if 'waitlist' not in context:
             context['waitlist'] = self.object.get_waiting(
             ).order_by(
                 'student__last_name',
                 'student__first_name'
-            ).prefetch_related('attendance')
+            )
         if 'withdrawn' not in context:
             context['withdrawn'] = self.object.get_withdrawn(
             ).order_by(
                 'student__last_name',
                 'student__first_name'
-            ).prefetch_related('attendance')
+            )
         if 'summary' not in context:
             context['summary'] = ['ADMIN']
         return context

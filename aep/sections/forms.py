@@ -74,20 +74,6 @@ class ClassAddEnrollmentForm(ModelForm):
         fields = ('section',)
 
 
-class ClassAddFromListEnrollForm(ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        pk = kwargs.pop('pk', None)
-        super(ClassAddFromListEnrollForm, self).__init__(*args, **kwargs)
-        if pk:
-            pk = pk[0]
-            self.fields['section'].queryset = Section.Objects.filter(pk=pk)
-
-    class Meta:
-        model = Enrollment
-        fields = ('section',)
-
-
 class SectionFilterForm(Form):
 
     site = ModelChoiceField(
