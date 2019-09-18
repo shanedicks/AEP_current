@@ -205,6 +205,7 @@ class SingleAttendanceForm(ModelForm):
         super(SingleAttendanceForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+        self.helper.disable_csrf = True
         self.helper.help_text_inline = True
         self.helper.layout = Layout(
             Field(

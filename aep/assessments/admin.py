@@ -27,9 +27,11 @@ class TestEventAdmin(admin.ModelAdmin):
     search_fields = [
         'title',
         'test',
-        'proctor',
         'start',
-        'site'
+        'proctor__last_name',
+        'proctor__first_name',
+        'site__code',
+        'site__name'
     ]
 
     fields = (
