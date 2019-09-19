@@ -106,7 +106,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
 
     search_fields = ["title", "program", 'WRU_ID', 'semester__title']
 
-    actions = [
+    actions = ImportExportActionModelAdmin.actions + [
         "begin",
         "enforce_attendance",
         'create_classroom_section',
@@ -233,7 +233,7 @@ class EnrollmentAdmin(ImportExportActionModelAdmin):
         'status',
     )
 
-    actions = ['activate']
+    actions = ImportExportActionModelAdmin.actions + ['activate']
 
     def activate(self, request, queryset):
         for obj in queryset:

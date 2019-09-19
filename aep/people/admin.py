@@ -291,7 +291,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
          "dupl_date")
     ]
 
-    actions = [
+    actions = ImportExportActionModelAdmin.actions + [
         'testify',
         'create_elearn_record',
         'create_ace_record',
@@ -569,7 +569,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
         "SID"
     )
 
-    actions = ['send_to_state', 'check_for_state_id']
+    actions = ImportExportActionModelAdmin.actions + ['send_to_state', 'check_for_state_id']
 
     def get_AEP_ID(self, obj):
         return obj.student.AEP_ID
