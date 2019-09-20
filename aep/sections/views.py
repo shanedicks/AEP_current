@@ -935,8 +935,7 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
     form_class = SingleAttendanceForm
     template_name = 'sections/daily_attendance.html'
 
-    def get(self, request, *args, **kwargs):
-        self.object = Section.objects.get(slug=self.kwargs['slug'])
+    def get_form_queryset(self):
         attendance_date = self.kwargs['attendance_date']
         queryset = Attendance.objects.filter(
             enrollment__section=self.object,
@@ -946,7 +945,12 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
             "enrollment__student__last_name",
             "enrollment__student__first_name"
         )
-        formset = AttendanceFormSet(queryset=queryset)
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        self.object = Section.objects.get(slug=self.kwargs['slug'])
+        attendance_date = self.kwargs['attendance_date']
+        formset = AttendanceFormSet(queryset=self.get_form_queryset())
         return self.render_to_response(
             self.get_context_data(
                 formset=formset,
@@ -957,7 +961,7 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         self.object = Section.objects.get(slug=self.kwargs['slug'])
-        formset = AttendanceFormSet(request.POST)
+        formset = AttendanceFormSet(request.POST, queryset=self.get_form_queryset())
         if formset.is_valid():
             formset.save()
             return HttpResponseRedirect(self.get_success_url())
