@@ -143,7 +143,13 @@ class TestEventAttendanceView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         self.object = TestEvent.objects.get(pk=self.kwargs['pk'])
-        formset = TestAttendanceFormSet(request.POST)
+        queryset = TestAppointment.objects.filter(
+            event=self.object.pk
+        ).order_by(
+            "student__last_name",
+            "student__first_name"
+        )
+        formset = TestAttendanceFormSet(request.POST, queryset=queryset)
         if formset.is_valid():
             formset.save()
             return HttpResponseRedirect(self.get_success_url())
@@ -293,9 +299,6 @@ class TestingSignupView(LoginRequiredMixin, CreateView):
         student = Student.objects.get(slug=self.kwargs['slug'])
         appt = form.save(commit=False)
         appt.student = student
-        appt.attendance_date = appt.event.start.date()
-        appt.time_in = appt.event.start.time()
-        appt.time_out = appt.event.end.time()
         try:
             appt.save()
             return super(TestingSignupView, self).form_valid(form)

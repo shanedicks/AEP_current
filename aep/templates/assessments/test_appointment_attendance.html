@@ -6,6 +6,7 @@
 <h3>WRU ID - {{ object.student.WRU_ID }}</h3>
 <h3>{{ object.student.tests.test_assignment }}</h3>
 <form class="form_group" method="post">
+	{% csrf_token %}
     {% crispy form %}
     <button type="submit" class="btn btn-success">Update Attendance</button>
 </form>

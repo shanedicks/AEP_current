@@ -79,6 +79,7 @@ class TestAppointmentResource(resources.ModelResource):
             'event',
             'attendance_type',
             'attendance_date',
+            'att_hours',
             'notes'
         )
 
@@ -96,7 +97,8 @@ class TestAppointmentAdmin(ImportExportActionModelAdmin):
         'student__last_name',
         'student__WRU_ID',
         'event__start',
-        'event__test'
+        'event__test',
+        'event__title'
 
     ]
 

@@ -121,7 +121,7 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
         for att in attendance:
             if att.PRESENT:
                 record = [
-                    att.hours(),
+                    att.hours,
                     att.attendance_date.strftime("%Y%m%d"),
                     el[att.online]
                 ]

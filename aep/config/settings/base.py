@@ -186,3 +186,6 @@ CELERY_RESULT_BACKEND = 'redis://'
 
 # WorkreadyU Settings
 LCTCS_PASS = get_env_variable('LCTCS_PASS')
+
+# Form field limit
+ DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
