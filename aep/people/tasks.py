@@ -89,7 +89,6 @@ def staff_report_task():
 
 			)
 
-
 	email = EmailMessage('Staff Report Test', "Let's just see how it goes shall we?.", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
 	email.attach_file('staff_report.csv')
 	email.send()
@@ -97,19 +96,29 @@ def staff_report_task():
 @shared_task
 def participation_report_task():
 	with open('participation_report.csv', 'w', newline='') as out:
-		writer = csv_writer(out)
+		writer = csv.writer(out)
 		Student = apps.get_model('people', 'Student')
 		students = Student.objects.filter(duplicate=False)
 
 		headers = [
-			'First Name'
-			'Last Name'
-			'Email'
+			'WRU ID',
+			'First Name',
+			'Last Name',
+			'Email',
+			'Partner',
+			'# Enrollments',
+			'Dropped Rate',
+			'Completed Rate',
+			'Last Attendance',
+			'Total Attendance',
+			'Attendance Rate',
+			'Total Hours',
 		]
 
 		writer.writerow(headers)
 
 		for student in students:
+			
 			record = {
 				'first_name': student.first_name,
 				'last_name': student.last_name,
@@ -118,3 +127,49 @@ def participation_report_task():
 				'wru': student.WRU_ID,
 				'num_classes': student.classes.count()
 			}
+			if record['num_classes'] > 0:
+				record['completed_rate'] = student.classes.filter(status='C').count() / record['num_classes']
+				record['dropped_rate'] = student.classes.filter(status='D').count() / record['num_classes']
+				attendance = apps.get_model('sections', 'Attendance').objects.filter(enrollment__student=student)
+				present = attendance.filter(attendance_type='P')
+				if present.count() > 0:
+					record['last_attended'] = present.latest('attendance_date').attendance_date
+					record['total_attendance'] = present.count()
+					record['attendance_rate'] = present.count() / attendance.count()
+					total_hours = 0
+					for att in present:
+						total_hours += att.hours
+					record['total_hours'] = total_hours
+				else:
+					record['last_attended'] = 'N/A'
+					record['total_attendance'] = 0
+					record['attendance_rate'] = 'N/A'
+					record['total_hours'] = 0
+
+			else:
+				record['completed_rate'] = 'N/A'
+				record['dropped_rate'] = 'N/A'
+				record['last_attended'] = 'N/A'
+				record['total_attendance'] = 0
+				record['attendance_rate'] = 'N/A'
+				record['total_hours'] = 0
+
+			writer.writerow(
+				[
+					record['wru'],
+					record['first_name'],
+					record['last_name'],
+					record['email'],
+					record['partner'],
+					record['num_classes'],
+					record['dropped_rate'],
+					record['completed_rate'],
+					record['last_attended'],
+					record['total_attendance'],
+					record['attendance_rate'],
+					record['total_hours'],
+				]
+			)
+	email = EmailMessage('Participation Report Test', "Missed a few things the first time. Second Attempt", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
+	email.attach_file('participation_report.csv')
+	email.send()

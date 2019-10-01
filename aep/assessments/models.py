@@ -145,13 +145,13 @@ class TestEvent(models.Model):
                 )
 
     def test_reminder(self):
-        for student in self.student.all():
+        for student in self.students.all():
             if student.student.email:
                 send_mail_task.delay(
                     subject="Testing Reminder from the Delgado "
                     "Community College Adult Education Program",
                     message="",
-                    html_message="<p>Hi, {student}</p><p>This message is "
+                    html_message="<p>Hi {student},</p><p>This message is "
                     "to remind you that you have signed up for a testing "
                     "appointment on {date:{dfmt}} at {time:{tfmt}}."
                     ". Please call 504-671-5434 or email adulted@dcc.edu "
