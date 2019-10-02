@@ -145,6 +145,14 @@ class TestEvent(models.Model):
                 )
 
     def test_reminder(self):
+        sites = {
+            'CP' : 'Building 7, Room 170',
+            'WB' : 'Building 1, Room 131',
+            'JP' : 'Building A, Room A31',
+            'SC' : 'Building 1, Room 103',
+            'CH' : 'the 4th Floor, Room 403',
+            'MC' : 'Classroom 1 or 2',
+        }
         for student in self.students.all():
             if student.student.email:
                 send_mail_task.delay(
@@ -152,10 +160,20 @@ class TestEvent(models.Model):
                     "Community College Adult Education Program",
                     message="",
                     html_message="<p>Hi {student},</p><p>This message is "
-                    "to remind you that you have signed up for a testing "
-                    "appointment on {date:{dfmt}} at {time:{tfmt}}."
-                    ". Please call 504-671-5434 or email adulted@dcc.edu "
-                    "if you have any questions or need to reschedule.</p>"
+                    "a reminder for your upcoming test appointment with "
+                    "Delgado Adult Education.</p><br><p>You signed up for "
+                    "testing on {date:{dfmt}} that will begin at {time:{tfmt}}."
+                    "</p><p>Your testing will take place at the {site} campus"
+                    ", and you can report to {room} to check-in.</p><br>"
+                    "<p><strong>Your attendance of this event is required"
+                    " in order to create a schedule and begin classes.</strong>"
+                    ".</p><p>If you have any questions or a problem with "
+                    " your appointment please <a href=https://docs.google.com/forms"
+                    "/d/e/1FAIpQLSc6Z-Zsq9zC962kd_3el0WoPTwCih-3-Qjxwq2HebvOXjRiYg/viewform>"
+                    "click here for assistance</a>.</p><p>Si tiene preguntas"
+                    " o problemas con su cita, haga <a href=https://docs.google.com/forms"
+                    "/d/e/1FAIpQLSc6Z-Zsq9zC962kd_3el0WoPTwCih-3-Qjxwq2HebvOXjRiYg/"
+                    "viewform>clic aquí para obtener ayuda</a></p>"
                     "<br><p>Thank you,</p>"
                     "<p>The Adult Education Program</p>"
                     "<p>Delgado Community College</p>".format(
@@ -163,7 +181,9 @@ class TestEvent(models.Model):
                         dfmt='%m-%d-%Y',
                         tfmt="%I:%M %p",
                         date=self.start.date(),
-                        time=self.start.time()
+                        time=self.start.time(),
+                        site=self.site,
+                        room=sites[self.site.code]
                     ),
                     from_email="reminder@dccaep.org",
                     recipient_list=[student.student.email],
