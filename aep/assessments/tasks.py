@@ -17,11 +17,13 @@ def event_attendance_report_task(event_id, email_address):
 		event = TestEvent.objects.get(id=event_id)
 		students = event.students.all()
 		headers = [
+			'appt_id'
 			'WRU ID',
 			'Last Name',
 			'First Name',
 			'Phone',
 			'Email',
+			'Date',
 			'Attendance',
 			'Hours'
 		]
@@ -35,6 +37,7 @@ def event_attendance_report_task(event_id, email_address):
 				student.first_name,
 				student.phone,
 				student.email,
+				appt.attendance_date,
 				appt.attendance_type,
 				appt.hours()
 			]
