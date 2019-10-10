@@ -89,6 +89,24 @@ report_patterns = [
         name='gain csv')
 ]
 
+single_event_patterns = [
+    url(r'^$',
+        views.TestEventDetailView.as_view(),
+        name="test event detail"),
+    url(r'^attendance$',
+        views.TestEventAttendanceView.as_view(),
+        name='test event attendance'),
+    url(r'^csv$',
+        views.TestEventCSV.as_view(),
+        name="test event csv"),
+    url(r'^TOLcsv$',
+        views.TabeOnlineCSV.as_view(),
+        name="tabe online csv"),
+    url(r'^attendance_report$',
+        views.TestEventAttendanceReport.as_view(),
+        name="test event attendance report")
+]
+
 urlpatterns = [
     url(r'^$',
         views.TestingHomeView.as_view(),
@@ -108,18 +126,8 @@ urlpatterns = [
     url(r'^events/past/$',
         views.PastEventListView.as_view(),
         name="past event list"),
-    url(r'^events/(?P<pk>[0-9]+)/$',
-        views.TestEventDetailView.as_view(),
-        name="test event detail"),
-    url(r'^events/(?P<pk>[0-9]+)/attendance$',
-        views.TestEventAttendanceView.as_view(),
-        name='test event attendance'),
-    url(r'^events/(?P<pk>[0-9]+)/csv$',
-        views.TestEventCSV.as_view(),
-        name="test event csv"),
-    url(r'^events/(?P<pk>[0-9]+)/TOLcsv$',
-        views.TabeOnlineCSV.as_view(),
-        name="tabe online csv"),
+    url(r'^events/(?P<pk>[0-9]+)/',
+       include(single_event_patterns)),
     url(r'^reports/',
         include(report_patterns)),
     url(r'(?P<slug>[a-zA-Z0-9]{5})/',

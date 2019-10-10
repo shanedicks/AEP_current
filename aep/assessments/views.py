@@ -19,6 +19,7 @@ from .forms import (
         GainForm, HiSet_Practice_Form, CSVImportForm,
         TestAppointmentAttendanceForm, TestAttendanceFormSet
     )
+from .tasks import event_attendance_report_task
 
 
 class TestingHomeView(LoginRequiredMixin, TemplateView):
@@ -42,6 +43,17 @@ class TestEventDetailView(LoginRequiredMixin, DetailView):
             )
             context.update(kwargs)
         return context
+
+
+class TestEventAttendanceReport(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        event = TestEvent.objects.get(
+            pk=self.kwargs['pk'])
+        user_email = request.user.email
+        event_attendance_report_task.delay(event.id, user_email)
+        return HttpResponseRedirect(reverse('assessments:test event detail', args=(event.pk,)))
+
 
 
 class TestEventCSV(LoginRequiredMixin, View):
