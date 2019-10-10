@@ -32,6 +32,7 @@ def event_attendance_report_task(event_id, email_address):
 		for appt in students:
 			student = appt.student
 			data = [
+				appt.id,
 				student.WRU_ID,
 				student.last_name,
 				student.first_name,
