@@ -17,7 +17,7 @@ def event_attendance_report_task(event_id, email_address):
 		event = TestEvent.objects.get(id=event_id)
 		students = event.students.all()
 		headers = [
-			'appt_id'
+			'appt_id',
 			'WRU ID',
 			'Last Name',
 			'First Name',
