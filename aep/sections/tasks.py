@@ -32,13 +32,67 @@ def drop_task(enrollment_id):
 	return enrollment.attendance_drop()
 
 @shared_task
-def report_task():
-	with open('out.csv', 'w', newline='') as out:
+def participation_detail_task():
+	enrollments = apps.get_model('sections', 'Enrollment').objects.all()
+	sites = apps.get_model('sections', 'Site').objects.all()
+	students = apps.get_model('people', 'Student').objects.filter(duplicate=False)
+	with open('participation_detail_report.csv', 'w', newline='') as out:
 		writer = csv.writer(out)
-		writer.writerow(['This', 'is', 'a', 'test'])
-		writer.writerow(['Obviously', 'not', 'real', 'data'])
-	email = EmailMessage('Async Reports Test', "Can a worker email a csv attachment? If you're reading this, it can.", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
-	email.attach_file('out.csv')
+
+		headers = [
+			'WRU_ID',
+			'Name',
+			'Total',
+			'completed',
+			'MW',
+			'completed',
+			'TR',
+			'completed',
+			'Morning',
+			'completed',
+			'Afternoon',
+			'completed',
+			'Evening',
+			'completed',
+		]
+		for site in sites:
+			headers.extend([site.code, 'completed'])
+		writer.writerow(headers)
+
+		for student in students:
+			enrolled = student.classes.all()
+			if enrolled.count() == 0:
+				continue
+			completed = enrolled.filter(status='C')
+			data = [
+				student.WRU_ID,
+				", ".join([student.last_name, student.first_name]),
+				enrolled.count(),
+				completed.count(),
+				enrolled.filter(section__monday=True).count(),
+				completed.filter(section__monday=True).count(),
+				enrolled.filter(section__tuesday=True).count(),
+				completed.filter(section__tuesday=True).count(),
+				enrolled.filter(section__start_time__lte='11:30').count(),
+				completed.filter(section__start_time__lte='11:30').count(),
+				enrolled.filter(section__start_time__gt='11:30', section__start_time__lt='16:00').count(),
+				completed.filter(section__start_time__gt='11:30', section__start_time__lt='16:00').count(),
+				enrolled.filter(section__start_time__gte='16:00').count(),
+				completed.filter(section__start_time__gte='16:00').count(),
+			]
+			for site in sites:
+				data.append(enrolled.filter(section__site=site).count())
+				data.append(completed.filter(section__site=site).count())
+
+			writer.writerow(data)
+
+	email = EmailMessage(
+		'Student Participation Report',
+		'Report on student enrollment and class completion for various days, times, and sites',
+		'reporter@dccaep.org',
+		['shane.dicks1@gmail.com']
+	)
+	email.attach_file('participation_detail_report.csv')
 	email.send()
 
 @shared_task
@@ -47,3 +101,7 @@ def roster_to_classroom_task(section_id):
 	section = Section.objects.get(id=section_id)
 	logger.info('Exporting roster for {0} to google classroom'.format(section))
 	return section.roster_to_classroom()
+
+@shared_task
+def missed_class_report_task():
+	pass

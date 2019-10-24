@@ -94,7 +94,7 @@ def staff_report_task():
 	email.send()
 
 @shared_task
-def participation_report_task():
+def participation_summary_task():
 	with open('participation_report.csv', 'w', newline='') as out:
 		writer = csv.writer(out)
 		Student = apps.get_model('people', 'Student')

@@ -1,6 +1,7 @@
 from django.apps import apps
 from django.db import models
 from django.urls import reverse
+from .tasks import enforce_attendance_task
 
 
 class Semester(models.Model):
@@ -72,7 +73,7 @@ class Semester(models.Model):
 
     def enforce_attendance(self):
         for section in self.get_sections():
-            section.enforce_attendance()
+            enforce_attendance_task.delay(section.id)
 
     def g_suite_attendance(self):
         for section in self.get_sections():

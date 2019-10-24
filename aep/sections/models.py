@@ -183,7 +183,7 @@ class Section(models.Model):
         http_auth = shane.authorize(Http())
         service = discovery.build('classroom', 'v1', http=http_auth)
 
-        students = self.students.all().prefetch_related(
+        students = self.students.filter(status='A').prefetch_related(
             'student__elearn_record'
         )
         for student in students:
