@@ -491,6 +491,8 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
     list_display = ("__str__", "get_WRU_ID")
 
+    list_filter = ("student__intake_date",)
+
     search_fields = [
         "student__first_name",
         "student__last_name",
