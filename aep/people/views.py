@@ -1,6 +1,7 @@
 from django.views.generic import (
     DetailView, ListView, UpdateView,
     CreateView, TemplateView, FormView)
+from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.http import HttpResponseRedirect, Http404
@@ -254,7 +255,7 @@ class StudentSignupWizard(SessionWizardView):
                 from_email="reminder@dccaep.org",
                 recipient_list=[student.email],
             )
-        return HttpResponseRedirect(reverse_lazy('people:signup success'))
+        return HttpResponseRedirect(reverse_lazy('people:signup success', kwargs={'event' : orientation.event.pk}))
 
 
 class NewStudentSignupView(CreateView):
@@ -277,6 +278,7 @@ class NewStudentSignupView(CreateView):
             context.update(kwargs)
         if 'orientation_form' not in context:
             context['orientation_form'] = OrientationSignupForm
+            context.update(kwargs)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -320,6 +322,17 @@ class StudentCreateSuccessView(TemplateView):
 class StudentSignupSuccessView(TemplateView):
 
     template_name = 'people/signup_success.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentSignupSuccessView, self).get_context_data(**kwargs)
+        if 'event' not in context:
+            Events = apps.get_model('assessments', 'TestEvent')
+            event = Events.objects.get(id=self.kwargs['pk'])
+            context['event'] = event
+            context.update(kwargs)
+        return context
+
+
 
 
 class ElearnSignupSuccessView(TemplateView):

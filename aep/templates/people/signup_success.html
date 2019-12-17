@@ -1,10 +1,17 @@
 {% extends "base.html" %}
 {% block head_title %}DCCAEP | Signup Success{% endblock head_title %}
 {% block content %}
-	<div class="col-md-4 col-md-offset-4">
+	<div class="col-md-6 col-md-offset-3">
     	<h1 class="text-center">Success!</h1>
     	<p class="text-center lead">You're successfully registered for the Delgado Adult Education Program</p>
-		<p class="text-center">In order to begin classes, you MUST attend orientation. If you miss your appointment or need to reschedule, please contact us at 504-671-5434</p>
-    	<p class="text-center">Orientation will take place in Building 7, Room 170 at Delgado's City Park Campus (615 City Park, New Orleans, LA 70119).  Click <a href="http://www.dcc.edu/about/locations/city-park/map-directions.aspx">here</a> for directions and click <a href="http://www.dcc.edu/documents/about/city-park-campus-map.pdf">here</a> for a map of the campus.   If you do not have a Delgado permit, you must park on the street.  You should NOT park in any of the campus parking lots.</p>
-        </div>
+		<p class="text-center">In order to begin classes, you MUST attend orientation. If you miss your appointment or need to reschedule, please contact us at 504-671-5434.</p>
+    	<p class="text-center">Orientation will take place <b>{{ event.start|date:'h:ia l m/d/Y' }}</b>, in Building 7, Room 170 at Delgado's City Park Campus (615 City Park, New Orleans, LA 70119).  Click <a href="http://www.dcc.edu/about/locations/city-park/map-directions.aspx">here</a> for directions and click <a href="http://www.dcc.edu/documents/about/city-park-campus-map.pdf">here</a> for a map of the campus.   If you do not have a Delgado permit, you must park on the street.  You should NOT park in any of the campus parking lots.</p>
+    </div>
+	<div class="col-md-6 col-md-offset-3">
+    	<h1 class="text-center">¡Éxito!</h1>
+    	<p class="text-center lead">Usted ha registrado con éxito para el programa de Adult Education en Delgado</p>
+		<p class="text-center">Para comenzar las clases, DEBE asistir a la orientación. Si pierde su cita o necesita reprogramarla, contáctenos al 504-671-5434
+		</p>
+    	<p class="text-center">La orientación será <b>{{ event.start|date:'h:ia l m/d/Y' }}</b> en el edificio 7, sala 170 en el campus de City Park (615 City Park, New Orleans, LA 70119).  <a href="http://www.dcc.edu/about/locations/city-park/map-directions.aspx">Haga clic aquí</a> para obtener instrucciones y <a href="http://www.dcc.edu/documents/about/city-park-campus-map.pdf">Haga clic aquí</a> para ver un mapa del campus. Si no tiene un permiso para estacionarse en el lote de Delgado, debe estacionarse en la calle. No debe estacionarse en ninguno de los estacionamientos del campus.</p>
+    </div>
 {% endblock content %}

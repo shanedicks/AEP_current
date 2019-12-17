@@ -97,7 +97,7 @@ urlpatterns = [
     url(r'^partners/$',
         views.PartnerStudentCreateView.as_view(),
         name='partner student create'),
-    url(r'^success/$',
+    url(r'^success/(?P<pk>[0-9]+)/$',
         views.StudentSignupSuccessView.as_view(),
         name='signup success'),
     url(r'^elearn-success/$',
