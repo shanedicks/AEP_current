@@ -423,6 +423,15 @@ class StaffListView(LoginRequiredMixin, ListView):
         if 'part_time' not in context:
             context['part_time'] = Staff.objects.filter(
                 full_time=False,
+                partner=False,
+                active=True
+            ).order_by(
+                'last_name',
+                'first_name'
+            )
+        if 'partners' not in context:
+            context['partners'] = Staff.objects.filter(
+                partner=True,
                 active=True
             ).order_by(
                 'last_name',

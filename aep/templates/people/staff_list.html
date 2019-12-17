@@ -8,6 +8,7 @@
     		<th>Name</th>
     		<th>Phone</th>
     		<th>Email</th>
+        </tr>
         {% for staff in full_time %}
         	<tr>
 	            <td><a href="{{ staff.get_absolute_url }}">{{ staff }}</a></td>
@@ -22,7 +23,22 @@
             <th>Name</th>
             <th>Phone</th>
             <th>Email</th>
+        </tr>
         {% for staff in part_time %}
+            <tr>
+                <td><a href="{{ staff.get_absolute_url }}">{{ staff }}</a></td>
+                <td>{{ staff.phone }}</td>
+                <td>{{ staff.email }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h3>Partners</h3>
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+        {% for staff in partners %}
             <tr>
                 <td><a href="{{ staff.get_absolute_url }}">{{ staff }}</a></td>
                 <td>{{ staff.phone }}</td>
