@@ -255,7 +255,7 @@ class StudentSignupWizard(SessionWizardView):
                 from_email="reminder@dccaep.org",
                 recipient_list=[student.email],
             )
-        return HttpResponseRedirect(reverse_lazy('people:signup success', kwargs={'event' : orientation.event.pk}))
+        return HttpResponseRedirect(reverse_lazy('people:signup success', kwargs={'pk' : orientation.event.pk}))
 
 
 class NewStudentSignupView(CreateView):
