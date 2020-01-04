@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
-from .models import Student, Staff, WIOA, CollegeInterest
+from .models import Student, Staff, WIOA, CollegeInterest, Paperwork
 from assessments.models import TestHistory
 from coaching.models import ElearnRecord, AceRecord
 from core.utils import state_session
@@ -216,6 +216,29 @@ class WIOAResource(resources.ModelResource):
         )
 
         export_order = fields
+
+
+class PaperworkResource(resources.ModelResource):
+
+    student = fields.Field(
+        column_name='student',
+        attribute='student',
+        widget=widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    class Meta:
+        model = Paperwork
+        fields = (
+            'id',
+            'student',
+            'ferpa',
+            'test_and_comp',
+            'contract',
+            'disclosure',
+            'lsi',
+            'writing',
+            'pic_id'
+        )
 
 
 class StudentAdmin(ImportExportActionModelAdmin):
@@ -429,6 +452,16 @@ class StudentAdmin(ImportExportActionModelAdmin):
         except ObjectDoesNotExist:
             pass
 
+    def copy_office_tracking(self, request, q):
+        n = q[1]
+        if n.paperwork != 'C' and q[0].paperwork != 'P':
+            n.paperwork = q[0].paperwork
+        if n.folder != 'C' and q[0].folder != 'P':
+            n.folder = q[0].folder
+        if n.orientation != 'C' and q[0].orientation != 'P':   
+            n.orientation = q[0].orientation
+        n.save()
+
     def full_merge(self, request, queryset):
         q = queryset.order_by('pk')
         self.move_test_history(request, q)
@@ -438,6 +471,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         self.move_coaching(request, q)
         self.move_ace_record(request, q)
         self.move_college_interest(request, q)
+        self.copy_office_tracking(request, q)
         n = q[1]
         o = q[0]
         n.intake_date = o.intake_date
@@ -445,6 +479,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         n.WRU_ID = o.WRU_ID
         n.save()
         o.WRU_ID = 'd' + nid.replace('x', '')
+        o.duplicate_of = n
         o.duplicate = True
         o.dupl_date = datetime.today().date()
         o.save()
@@ -483,6 +518,50 @@ class StaffAdmin(ImportExportActionModelAdmin):
 
 
 admin.site.register(Staff, StaffAdmin)
+
+
+class PaperworkAdmin(ImportExportActionModelAdmin):
+
+    resource_class = PaperworkResource
+
+    list_display = (
+        'student',
+        'ferpa',
+        'test_and_comp',
+        'contract',
+        'disclosure',
+        'lsi',
+        'writing',
+        'pic_id'
+    )
+
+    list_editable = (
+        'ferpa',
+        'test_and_comp',
+        'contract',
+        'disclosure',
+        'lsi',
+        'writing',
+        'pic_id'
+    )
+
+    search_fields = [
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID'
+    ]
+
+    fields = (
+        'ferpa',
+        'test_and_comp',
+        'contract',
+        'disclosure',
+        'lsi',
+        'writing',
+        'pic_id'  
+    )
+
+admin.site.register(Paperwork, PaperworkAdmin)
 
 
 class WIOAAdmin(ImportExportActionModelAdmin):
@@ -591,8 +670,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
     def send_to_state(self, request, queryset):
         session = state_session()
         for obj in queryset:
-            obj.send_to_state(session)
-
+            obj.send(session)
 
 admin.site.register(WIOA, WIOAAdmin)
 
