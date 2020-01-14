@@ -27,6 +27,12 @@ urlpatterns = [
         ),
         name='reports'
     ),
+    url(r'^privacy/$',
+        TemplateView.as_view(
+            template_name='pages/privacy.html'
+        ),
+        name='privacy'
+    ),
 
     # Django Admin Stuff
     url(r'^admin/', admin.site.urls),

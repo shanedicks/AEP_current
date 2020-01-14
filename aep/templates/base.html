@@ -15,15 +15,11 @@
         <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
 
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-        <style>
-            body {
-                padding-top: 50px;
-                padding-bottom: 20px;
-            }
-        </style>
+
         <link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}">
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
         <link rel="stylesheet" href="{% static 'css/main.css' %}">
+        <link rel="stylesheet" href="{% static 'css/sticky-footer-navbar.css' %}">
 
         <script src="{% static 'js/vendor/modernizr-2.8.3-respond-1.4.2.min.js' %}"></script>
         {% block head_css %}{% endblock head_css %}
@@ -68,14 +64,19 @@
         {% block content %}
         {% endblock content %}
     </div>
-   <!-- /container --><script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+    {% if request.user.is_authenticated %}
+        {% include 'components/staff_footer.html' %}
+    {% else %}
+        {% include 'components/footer.html' %}
+    {% endif %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
 
-        <script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
-        <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
 
-        {% block footer_javascript %}
-        {% endblock footer_javascript %}
+    {% block footer_javascript %}
+    {% endblock footer_javascript %}
     </body>
 </html>
