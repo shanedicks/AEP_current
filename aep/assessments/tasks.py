@@ -5,16 +5,16 @@ from django.core.mail.message import EmailMessage
 from django.db.models import Sum
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from .models import TestEvent
 
 logger = get_task_logger(__name__)
+
 
 @shared_task
 def event_attendance_report_task(event_id, email_address):
 	filename = '{0}_attendance_report.csv'.format(event_id)
 	with open(filename, 'w', newline='') as out:
 		writer = csv.writer(out)
-		event = TestEvent.objects.get(id=event_id)
+		event = apps.get_model('assessments', 'TestEvent').objects.get(id=event_id)
 		students = event.students.all()
 		headers = [
 			'appt_id',
@@ -52,3 +52,9 @@ def event_attendance_report_task(event_id, email_address):
 	)
 	email.attach_file(filename)
 	email.send()
+
+@shared_task
+def orientation_status_task(student_id):
+	student = apps.get_model('people', 'Student').objects.get(id=student_id)
+	student.orientation = 'C'
+	student.save()
