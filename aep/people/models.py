@@ -445,6 +445,13 @@ class Student(Profile):
     def all_classes(self):
         return self.classes.all()
 
+    def latest_class_start(self):
+        return self.classes.latest('section__semester__start_date').section.semester.start_date
+
+    def last_attendance(self):
+        attendance = apps.get_model('sections', 'Attendance').objects.filter(enrollment__student=self, attendance_type='P')
+        return attendance.latest('attendance_date').attendance_date
+
     def testify(self):
         TestHistory = apps.get_model('assessments', 'TestHistory')
         if TestHistory.objects.filter(student=self).exists():

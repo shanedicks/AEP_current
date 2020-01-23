@@ -27,6 +27,12 @@ urlpatterns = [
         ),
         name='reports'
     ),
+    url(r'^report-success/$',
+        TemplateView.as_view(
+            template_name='pages/report_success.html'
+        ),
+        name='report success'
+    ),
     url(r'^privacy/$',
         TemplateView.as_view(
             template_name='pages/privacy.html'

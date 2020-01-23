@@ -22,6 +22,7 @@ from .forms import (
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
     StudentComplianceForm
     )
+from .tasks import intake_retention_report_task
 
 
 class UserCreateView(CreateView):
@@ -60,6 +61,21 @@ class StudentListView(LoginRequiredMixin, ListView, FormView):
         return self.render_to_response(
             self.get_context_data(form=form, object_list=self.object_list)
         )
+
+
+class IntakeRetentionCSV(LoginRequiredMixin, FormView):
+
+    model = Student
+    form_class = DateFilterForm
+    template_name = "people/intake_retention_csv.html"
+    success_url = reverse_lazy('report success')
+
+    def form_valid(self, form):
+        from_date = form.cleaned_data['from_date']
+        to_date = form.cleaned_data['to_date']
+        email = self.request.user.email
+        intake_retention_report_task.delay(from_date, to_date, email)
+        return super().form_valid(form)
 
 
 class NewStudentCSV(LoginRequiredMixin, FormView):
