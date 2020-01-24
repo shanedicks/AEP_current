@@ -5,7 +5,9 @@
 <div class='col-md-7'>
     <h3>Coach: {{coaching.coach}}</h3>
     <h3>Coachee: <a href="{% url 'people:student detail' slug=coaching.coachee.slug %}">{{ student }}</a></h3>
-    <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:update profile' slug=student.slug %}">Update Info</a>
+    {% if student.coaching_profile %}
+      <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:update profile' slug=student.slug %}">Update Info</a>
+    {% endif %}
     <table class='table'>
       {% if coaching.coaching_type == 'elearn' %}
           {% if student.elearn_record %}
