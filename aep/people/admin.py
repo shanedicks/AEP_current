@@ -462,6 +462,14 @@ class StudentAdmin(ImportExportActionModelAdmin):
             n.orientation = q[0].orientation
         n.save()
 
+    def move_paperwork(self, request, q):
+        try:
+            p = q[0].student_paperwork
+            p.student = q[1]
+            p.save()
+        except ObjectDoesNotExist:
+            pass
+
     def full_merge(self, request, queryset):
         q = queryset.order_by('pk')
         self.move_test_history(request, q)
