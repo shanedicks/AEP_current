@@ -475,6 +475,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         n = q[1]
         o = q[0]
         n.intake_date = o.intake_date
+        n.notes = o.notes
         nid = n.WRU_ID
         n.WRU_ID = o.WRU_ID
         n.save()
