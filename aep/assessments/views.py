@@ -36,7 +36,8 @@ class TestEventDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(TestEventDetailView, self).get_context_data(**kwargs)
         if 'students' not in context:
-            context['students'] = self.object.students.all(
+            context['students'] = self.object.students.filter(
+                student__duplicate=False
             ).order_by(
                 'student__last_name',
                 'student__first_name'
