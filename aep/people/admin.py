@@ -462,11 +462,22 @@ class StudentAdmin(ImportExportActionModelAdmin):
             n.orientation = q[0].orientation
         n.save()
 
-    def move_paperwork(self, request, q):
+    def move_or_copy_paperwork(self, request, q):
         try:
             p = q[0].student_paperwork
             p.student = q[1]
-            p.save()
+            try:
+                p.save()
+            except IntegrityError:
+                np = q[1].student_paperwork
+                np.ferpa = max(p.ferpa, np.ferpa)
+                np.test_and_comp = max(p.test_and_comp , np.test_and_comp)
+                np.contract = max(p.contract , np.contract)
+                np.disclosure = max(p.disclosure , np.disclosure)
+                np.lsi = max(p.lsi , np.lsi)
+                np.writing = max(p.writing , np.writing)
+                np.pic_id = max(p.pic_id , np.pic_id)
+                np.save()
         except ObjectDoesNotExist:
             pass
 
@@ -480,6 +491,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         self.move_ace_record(request, q)
         self.move_college_interest(request, q)
         self.copy_office_tracking(request, q)
+        self.move_or_copy_paperwork(request, q)
         n = q[1]
         o = q[0]
         n.intake_date = o.intake_date

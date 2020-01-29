@@ -349,8 +349,6 @@ class StudentSignupSuccessView(TemplateView):
         return context
 
 
-
-
 class ElearnSignupSuccessView(TemplateView):
 
     template_name = 'people/elearn_success.html'
