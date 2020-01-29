@@ -288,7 +288,6 @@ class StudentAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = [
-        "user",
         "notes",
         "first_name",
         "last_name",
