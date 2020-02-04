@@ -3,12 +3,51 @@ import csv
 from datetime import datetime
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.db.models import Sum, Min, Max
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
+
+@shared_task
+def orientation_email_task(name, email_address, appt_id):
+    orientation = apps.get_model('assessments', 'TestAppointment').objects.get(id=appt_id)
+    logger.info('Sent oritentation confirmation to {0}.'.format(email_address))
+    return send_mail(
+        subject="Thank you for registering for the Delgado "
+                "Community College Adult Education Program!",
+        message="",
+        html_message="<p>Hi, {student}</p><p>You have selected "
+                "to attend Orientation on {date:{dfmt}} at {time:{tfmt}} "
+                "at the City Park Campus (615 City Park Ave,"
+                " New Orleans, LA 70119), though you can "
+                "later choose to attend classes at other locations. "
+                "For orientation and testing, please come to Building "
+                "7, Room 170. Click <a href='http://www.dcc.edu/about/"
+                "locations/city-park/map-directions.aspx'>here</a>"
+                " for directions and click <a href='http://www.dcc.edu/"
+                "documents/about/city-park-campus-map.pdf'>here</a>"
+                " for a map of the campus.</p>"
+                "<br>"
+                "<p><strong>Attendance is required"
+                " to move forward in the registration process</strong>"
+                ". Please call 504-671-5434 or email adulted@dcc.edu "
+                "if you have any questions or need to reschedule.</p>"
+                "<br><p>Thank you,</p>"
+                "<p>The Adult Education Program</p>"
+                "<p>Delgado Community College</p>".format(
+                    student=name,
+                    dfmt="%A, %B %d",
+                    tfmt="%I:%M %p",
+                    date=orientation.event.start.date(),
+                    time=orientation.event.start.time(),
+                ),
+        from_email="reminder@dccaep.org",
+        recipient_list=[email_address]
+    )
+
 
 @shared_task
 def intake_retention_report_task(from_date, to_date, email_address):
@@ -82,6 +121,11 @@ def intake_retention_report_task(from_date, to_date, email_address):
     )
     email.attach_file(filename)
     email.send()
+    return True
+
+@shared_task
+def new_student_report_task(from_date, to_date, email_address):
+    pass
 
 @shared_task
 def staff_report_task():
@@ -167,6 +211,7 @@ def staff_report_task():
     email = EmailMessage('Staff Report Test', "Let's just see how it goes shall we?.", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
     email.attach_file('staff_report.csv')
     email.send()
+    return True
 
 @shared_task
 def participation_summary_task():
@@ -247,3 +292,4 @@ def participation_summary_task():
     email = EmailMessage('Participation Report Test', "Missed a few things the first time. Second Attempt", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
     email.attach_file('participation_report.csv')
     email.send()
+    return True
