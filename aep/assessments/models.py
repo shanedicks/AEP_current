@@ -216,7 +216,7 @@ class TestAppointment(models.Model):
     TYPE_CHOICES = (
         (PRESENT, 'Present'),
         (ABSENT, 'Absent'),
-        (PENDING, 'Pending'),
+        (PENDING, '-----'),
     )
     attendance_type = models.CharField(
         max_length=1,
