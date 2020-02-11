@@ -29,6 +29,8 @@ SECRET_KEY = get_env_variable("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+ADMINS = [('Shane', 'shane.dicks@gmail.com')]
+
 ALLOWED_HOSTS = []
 
 EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
