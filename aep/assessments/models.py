@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.db import models
 from people.models import Staff, Student
 from sections.models import Attendance, Site
+from .tasks import orientation_status_task
 
 
 class TestEvent(models.Model):
@@ -215,7 +216,7 @@ class TestAppointment(models.Model):
     TYPE_CHOICES = (
         (PRESENT, 'Present'),
         (ABSENT, 'Absent'),
-        (PENDING, 'Pending'),
+        (PENDING, '-----'),
     )
     attendance_type = models.CharField(
         max_length=1,
@@ -269,6 +270,8 @@ class TestAppointment(models.Model):
 
     def save(self, *args, **kwargs):
         self.event.check_full()
+        if self.event.test == 'Orientation' and self.attendance_type == 'P':
+            orientation_status_task.delay(self.student.id)
         super(TestAppointment, self).save(*args, **kwargs)
 
 

@@ -310,7 +310,7 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
             filename = "_".join([program, filename])
         students = students.distinct('student').select_related('student__tests')
         data = self.get_student_data(students)
-        return render_to_csv(data=data, filename=filename)   
+        return render_to_csv(data=data, filename=filename)
 
 
 class AtriumCSV(LoginRequiredMixin, FormView):

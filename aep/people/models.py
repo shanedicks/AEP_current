@@ -355,6 +355,13 @@ class Student(Profile):
         max_length=40,
         blank=True
     )
+    duplicate_of = models.ForeignKey(
+        'self',
+        models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='duplicated_by'
+    )
     duplicate = models.BooleanField(
         default=False
     )
@@ -438,6 +445,13 @@ class Student(Profile):
     def all_classes(self):
         return self.classes.all()
 
+    def latest_class_start(self):
+        return self.classes.latest('section__semester__start_date').section.semester.start_date
+
+    def last_attendance(self):
+        attendance = apps.get_model('sections', 'Attendance').objects.filter(enrollment__student=self, attendance_type='P')
+        return attendance.latest('attendance_date').attendance_date
+
     def testify(self):
         TestHistory = apps.get_model('assessments', 'TestHistory')
         if TestHistory.objects.filter(student=self).exists():
@@ -445,6 +459,14 @@ class Student(Profile):
         else:
             if self.WRU_ID not in [None, 'No ID']:
                 TestHistory.objects.create(student=self, student_wru=self.WRU_ID)
+
+    def track(self):
+        Paperwork = apps.get_model('people', 'Paperwork')
+        try: 
+            Paperwork.objects.create(student=self)
+        except:
+            pass
+
 
 
 class Staff(Profile):
@@ -499,6 +521,56 @@ class Staff(Profile):
             '-monday',
             'start_time'
         )
+
+class Paperwork(models.Model):
+
+    student = models.OneToOneField(
+        Student,
+        models.CASCADE,
+        related_name='student_paperwork'
+    )
+
+    ferpa = models.BooleanField(
+        default = False,
+        verbose_name = 'FERPA'
+    )
+
+    test_and_comp = models.BooleanField(
+        default = False,
+        verbose_name = 'Test and Computer Usage Policy'
+    )
+
+    contract = models.BooleanField(
+        default = False,
+        verbose_name = 'Student Contract'
+    )
+
+    disclosure = models.BooleanField(
+        default = False,
+        verbose_name = 'Self-Disclosure Form'
+    )
+
+    lsi = models.BooleanField(
+        default = False,
+        verbose_name = 'Learning Style Inventory'
+    )
+
+    writing = models.BooleanField(
+        default = False,
+        verbose_name = 'Writing Sample'
+    )
+
+    pic_id = models.BooleanField(
+        default = False,
+        verbose_name = 'Picture ID'
+    )
+
+    class Meta:
+        verbose_name_plural = 'paperwork'
+        ordering = ['student__last_name', 'student__first_name']
+
+    def __str__(self):
+        return '{0} Paperwork'.format(self.student)
 
 def convert_date_format(date_string):
     date_input = datetime.strptime(date_string, "%m/%d/%y")
@@ -1418,6 +1490,7 @@ class WIOA(models.Model):
         self.student.WRU_ID = wru
         self.student.save()
         self.student.testify()
+        self.student.track()
 
     def send(self, session):
         self.check_for_state_id(session)

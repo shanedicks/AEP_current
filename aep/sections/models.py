@@ -534,7 +534,7 @@ class Attendance(models.Model):
     TYPE_CHOICES = (
         (PRESENT, 'Present'),
         (ABSENT, 'Absent'),
-        (PENDING, 'Pending'),
+        (PENDING, '-----'),
         (CANCELLED, 'Cancelled'),
     )
     enrollment = models.ForeignKey(

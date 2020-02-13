@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}DCCAEP | New Student Report{% endblock head_title %}
+
+{% block content %}
+    <h1>Intake Retention Report</h1>
+    <div class="well">
+        <form class="form-inline" action="" method="post">
+            {% csrf_token %}
+            {% crispy form %}
+            <button type="submit" class="btn btn-default" value"filter">Email Report</button>
+        </form>
+    <p>This tool reports on student participation in orientation, testing, and scheduling. Choose a 'From Date' and a 'To Date' to include students with intake between those dates.</p> 
+    </div>
+{% endblock content %}
