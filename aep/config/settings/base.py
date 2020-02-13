@@ -18,7 +18,7 @@ path.append(PROJECT_ROOT)
 
 def get_env_variable(var_name):
     try:
-        return os.environ[var_name]
+        return os.environ.pop(var_name)
     except KeyError:
         error_msg = 'Set the {} environment variable'.format(var_name)
         raise ImproperlyConfigured(error_msg)
@@ -33,11 +33,14 @@ ADMINS = [('Shane', 'shane.dicks1@gmail.com')]
 
 ALLOWED_HOSTS = []
 
-EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
-MAILGUN_ACCESS_KEY = get_env_variable('MAILGUN_ACCESS_KEY')
-MAILGUN_SERVER_NAME = 'dccaep.org'
+ANYMAIL = {
+    "MAILGUN_API_KEY": get_env_variable('MAILGUN_ACCESS_KEY')
+}
+
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 
 DEFAULT_FROM_EMAIL = 'robot@dccaep.org'
+SERVER_EMAIL = 'server@dccaep.org'
 
 # Application definition
 
@@ -55,7 +58,8 @@ THIRD_PARTY_APPS = [
     'crispy_forms',
     'import_export',
     'formtools',
-    'rules.apps.AutodiscoverRulesConfig'
+    'rules.apps.AutodiscoverRulesConfig',
+    'anymail'
 ]
 
 LOCAL_APPS = [
