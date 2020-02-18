@@ -1,10 +1,11 @@
 import requests
 import bs4
-from datetime import date, datetime
+from datetime import datetime
 from django.apps import apps
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from core.utils import make_slug, make_AEP_ID, state_session
 
@@ -268,7 +269,7 @@ class Student(Profile):
     intake_date = models.DateField(
         null=True,
         blank=True,
-        default=date.today
+        default=timezone.localdate()
     )
     WRU_ID = models.CharField(
         null=True,
@@ -412,7 +413,7 @@ class Student(Profile):
 
     def future_appts(self):
         return self.test_appointments.filter(
-            event__start__gte=datetime.today()
+            event__start__gte=timezone.now()
         ).order_by('event__start')
 
     def active_classes(self):
@@ -431,11 +432,11 @@ class Student(Profile):
         ).order_by('-section__semester__end_date')
 
     def current_classes(self):
-        today = date.today()
+        today = timezone.localdate()
         return self.classes.filter(section__semester__end_date__gte=today)
 
     def past_classes(self):
-        today = date.today()
+        today = timezone.localdate()
         return self.classes.filter(
             section__semester__end_date__lt=today
         ).order_by(
