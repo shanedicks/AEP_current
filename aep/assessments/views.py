@@ -141,6 +141,7 @@ class TestEventAttendanceView(LoginRequiredMixin, UpdateView):
     def get(self, request, *args, **kwargs):
         self.object = TestEvent.objects.get(pk=self.kwargs['pk'])
         queryset = TestAppointment.objects.filter(
+            student__duplicate=False,
             event=self.object.pk
         ).order_by(
             "student__last_name",
@@ -157,6 +158,7 @@ class TestEventAttendanceView(LoginRequiredMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         self.object = TestEvent.objects.get(pk=self.kwargs['pk'])
         queryset = TestAppointment.objects.filter(
+            student__duplicate=False,
             event=self.object.pk
         ).order_by(
             "student__last_name",
