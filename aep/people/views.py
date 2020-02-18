@@ -239,7 +239,10 @@ class StudentSignupWizard(SessionWizardView):
         orientation.student = student
         orientation.save()
         if student.email:
-            orientation_email_task.delay(student.first_name, student.email, orientation.id)
+            try:
+                orientation_email_task.delay(student.first_name, student.email, orientation.id)
+            except ConnectionError:
+                pass
         return HttpResponseRedirect(reverse_lazy('people:signup success', kwargs={'pk' : orientation.event.pk}))
 
 
