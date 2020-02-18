@@ -98,11 +98,7 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
 
 
     def form_valid(self, form):
-        attendance = Attendance.objects.select_related(
-            'enrollment__student'
-        ).prefetch_related(
-            'enrollment__student__coaches'
-        )
+        attendance = Attendance.objects.filter(attendance_type='P')
         filename = "attendance_report.csv"
         if form.cleaned_data['semesters'] != "":
             semesters = form.cleaned_data['semesters']
@@ -119,28 +115,27 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
         }
         att_dict = {}
         for att in attendance:
-            if att.PRESENT:
-                record = [
-                    att.hours,
-                    att.attendance_date.strftime("%Y%m%d"),
-                    el[att.online]
+            record = [
+                att.hours,
+                att.attendance_date.strftime("%Y%m%d"),
+                el[att.online]
+            ]
+            if att.enrollment.id not in att_dict:
+                enrollment = [
+                    '9',
+                    att.enrollment.student.WRU_ID,
+                    "",
+                    att.enrollment.student.last_name,
+                    att.enrollment.student.first_name,
+                    '',
+                    att.enrollment.section.WRU_ID,
+                    att.enrollment.section.title,
+                    att.enrollment.student.partner,
                 ]
-                if att.enrollment not in att_dict:
-                    enrollment = [
-                        '9',
-                        att.enrollment.student.WRU_ID,
-                        "",
-                        att.enrollment.student.last_name,
-                        att.enrollment.student.first_name,
-                        '',
-                        att.enrollment.section.WRU_ID,
-                        att.enrollment.section.title,
-                        att.enrollment.student.partner,
-                    ]
-                    att_dict[att.enrollment] = enrollment
-                    att_dict[att.enrollment].extend(record)
-                else:
-                    att_dict[att.enrollment].extend(record)
+                att_dict[att.enrollment.id] = enrollment
+                att_dict[att.enrollment.id].extend(record)
+            else:
+                att_dict[att.enrollment.id].extend(record)
         data = self.get_data(att_dict)
         return render_to_csv(data=data, filename=filename)
 
