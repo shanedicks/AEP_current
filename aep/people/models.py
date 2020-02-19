@@ -505,7 +505,7 @@ class Staff(Profile):
         return reverse('people:staff detail', kwargs={'slug': self.slug})
 
     def current_classes(self):
-        today = date.today()
+        today = timezone.localdate()
         return self.classes.filter(
             semester__end_date__gte=today
         ).order_by(
@@ -514,7 +514,7 @@ class Staff(Profile):
         )
 
     def past_classes(self):
-        today = date.today()
+        today = timezone.localdate()
         return self.classes.filter(
             semester__end_date__lt=today
         ).order_by(
