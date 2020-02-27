@@ -98,7 +98,7 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
 
 
     def form_valid(self, form):
-        attendance = Attendance.objects.filter(attendance_type='P')
+        attendance = Attendance.objects.all()
         filename = "attendance_report.csv"
         if form.cleaned_data['semesters'] != "":
             semesters = form.cleaned_data['semesters']
