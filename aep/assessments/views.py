@@ -19,7 +19,7 @@ from .forms import (
         GainForm, HiSet_Practice_Form, CSVImportForm,
         TestAppointmentAttendanceForm, TestAttendanceFormSet
     )
-from .tasks import event_attendance_report_task
+from .tasks import event_attendance_report_task, accelerated_coaching_report_task
 
 
 class TestingHomeView(LoginRequiredMixin, TemplateView):
@@ -55,6 +55,19 @@ class TestEventAttendanceReport(LoginRequiredMixin, View):
         event_attendance_report_task.delay(event.id, user_email)
         return HttpResponseRedirect(reverse('assessments:test event detail', args=(event.pk,)))
 
+
+class AcceleratedCoachingReport(LoginRequiredMixin, FormView):
+
+    form_class = DateFilterForm
+    template_name = "assessments/accelerated_coaching_report.html"
+    success_url = reverse_lazy('report success')
+
+    def form_valid(self, form):
+        from_date = form.cleaned_data['from_date']
+        to_date = form.cleaned_data['to_date']
+        email = self.request.user.email
+        accelerated_coaching_report_task.delay(from_date, to_date, email)
+        return super().form_valid(form)
 
 
 class TestEventCSV(LoginRequiredMixin, View):

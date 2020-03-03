@@ -86,7 +86,10 @@ report_patterns = [
         name='clas-e import'),
     url(r'^gain/$',
         views.GainCSV.as_view(),
-        name='gain csv')
+        name='gain csv'),
+    url(r'^accelerated-coaching/$',
+        views.AcceleratedCoachingReport.as_view(),
+        name='accelerated coaching')
 ]
 
 single_event_patterns = [

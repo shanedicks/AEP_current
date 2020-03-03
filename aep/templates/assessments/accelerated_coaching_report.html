@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}DCCAEP | Accelerated Coaching Report{% endblock head_title %}
+
+{% block content %}
+    <h1>Accelerated Coaching Report</h1>
+    <div class="well">
+        <form class="form-inline" action="" method="post">
+            {% csrf_token %}
+            {% crispy form %}
+            <button type="submit" class="btn btn-default" value="filter">Email Report</button>
+        </form>
+    <p>The attached report includes a list of all students with NRS Level 4 or above on any of the subtests (Reading, Language, Math) based on the date range selected when the report was run.</p> 
+    </div>
+ {% endblock content %}
