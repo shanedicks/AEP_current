@@ -957,13 +957,18 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         self.object = Section.objects.get(slug=self.kwargs['slug'])
+        attendance_date = self.kwargs['attendance_date']
         formset = AttendanceFormSet(request.POST, queryset=self.get_form_queryset())
         if formset.is_valid():
             formset.save()
             return HttpResponseRedirect(self.get_success_url())
         else:
             return self.render_to_response(
-                self.get_context_data(formset=formset)
+                self.get_context_data(
+                    formset=formset,
+                    section=self.object,
+                    attendance_date=attendance_date
+                )
             )
 
     def get_success_url(self):
