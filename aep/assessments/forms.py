@@ -85,7 +85,8 @@ class TestSignupForm(ModelForm):
         super(TestSignupForm, self).__init__(*args, **kwargs)
         limit = datetime.datetime.today()
         events = TestEvent.objects.filter(
-            start__date__gte=limit
+            start__date__gte=limit,
+            full=False
         ).order_by('title')
         self.fields['event'].queryset = events
         self.helper = FormHelper()
