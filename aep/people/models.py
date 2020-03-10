@@ -1322,6 +1322,8 @@ class WIOA(models.Model):
             "hdnInactiveStateKey": ",2,3,4,5,",
             "hdnInactiveProg": ",7,13,",
             "hdnInactiveEmpStat": ",4_UNL, 5_NLF,",
+            "IntakeOnlyProgram": "19",
+            "IsIntakeOnly": "true",
             "EnrollPStat.IntakeDate": self.student.intake_date,
             "FY": "7",
             "lblCurrentFY": "5",
