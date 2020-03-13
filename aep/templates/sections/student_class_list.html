@@ -4,7 +4,7 @@
 {% block content %}
 {% load rules %}
     <h1>{{student}}'s Classes {{today}}</h1>
-    {% if student.tests %}
+    <!-- {% if student.tests %}
         {% test_rule 'pretested' student as pretested %}
             {% if not pretested %}
             <h2>No Valid Prestest!</h2>
@@ -13,7 +13,7 @@
     {% else %}
         <h2>Student has no Testing History</h2>
         <h4>Please contact a Site Leader to correct this issue</h4>
-    {% endif %}
+    {% endif %} -->
     {% if current %}
     <h3>Current Classes <a href="{% url 'people:student past classes'  slug=student.slug %}" class="btn btn-default">Past</a></h3>
     {% else %}
@@ -50,9 +50,9 @@
         </tr>
     {% endfor %}
     </table>
-    {% if pretested %}
+    <!--{% if pretested %} -->
     <p><a class="btn btn-default" href="{% url 'people:add class' slug=student.slug %}" role="button">Add New Class &raquo;</a>
-    {% endif %}
+    <!-- {% endif %} -->
     <a class="btn btn-default" href="{%url 'people:print schedule' slug=student.slug %}" role="button">Print Schedule &raquo;</a>
     </p>
 {% endblock %}
