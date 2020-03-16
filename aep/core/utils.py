@@ -1,5 +1,8 @@
 import csv
 import requests
+from apiclient import discovery
+from httplib2 import Http
+from oauth2client.service_account import ServiceAccountCredentials
 from django.utils.crypto import get_random_string
 from django.http import HttpResponse
 from django.conf import settings
@@ -37,5 +40,16 @@ def state_session():
     }
 
     session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login)
-
     return session
+
+def g_suite_service():
+    scopes = ['https://www.googleapis.com/auth/admin.directory.user']
+
+    credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+        keyfile_dict=settings.KEYFILE_DICT,
+        scopes=scopes
+    )
+
+    shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+    http_auth = shane.authorize(Http())
+    return discovery.build('admin', 'directory_v1', http=http_auth)

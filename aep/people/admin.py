@@ -328,13 +328,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
 
     def create_elearn_record(self, request, queryset):
         for obj in queryset:
-            if ElearnRecord.objects.filter(student=obj).exists():
-                continue
-            else:
-                ElearnRecord.objects.create(
-                    student=obj,
-                    intake_date=datetime.today()
-                )
+            obj.create_elearn_record()
 
     def create_ace_record(self, request, queryset):
         sem = {

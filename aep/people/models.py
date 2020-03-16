@@ -468,6 +468,15 @@ class Student(Profile):
         except:
             pass
 
+    def create_elearn_record(self):
+        Elearn = apps.get_model('coaching', 'ElearnRecord')
+        if Elearn.objects.filter(student=self).exists():
+            pass
+        else:
+            Elearn.objects.create(
+                student=self,
+                intake_date=datetime.today()
+            )
 
 
 class Staff(Profile):

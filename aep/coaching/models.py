@@ -744,6 +744,50 @@ class ElearnRecord(models.Model):
         blank=True,
     )
 
+    def create_g_suite_account(self, service):
+        if self.g_suite_email:
+            pass
+        else:
+            first = self.student.first_name.split()[0]
+            last = self.student.last_name.split()[0]
+            name = ".".join([first, last]).lower()
+            def check_email(name, x): # check g_suite for email, add numbers incrementally if email in use until email is valid
+                if x == 0:
+                    email = "@".join([name, 'elearnclass.org'])
+                    try:
+                        user = service.users().get(userKey=email).execute()
+                        return check_email(name, x + 1)
+                    except:
+                        return email
+                else:
+                    new_name = "{0}{1}".format(name, x)
+                    new_email = "@".join([new_name, 'elearnclass.org'])
+                    try:
+                        user = service.users().get(userKey=new_email).execute()
+                        return check_email(name, x + 1)
+                    except:
+                        return new_email
+            email = check_email(name, 0)
+
+            record = {
+                "primaryEmail": email,
+                "name": {
+                    "givenName": first,
+                    "familyName": last
+                },
+                "password": "123456789",
+                "externalIds": [
+                    {
+                        "value": self.student.WRU_ID,
+                        "type": "custom",
+                        "customType": "wru"
+                    }
+                ],
+            }
+            service.users().insert(body=record).execute()
+            self.g_suite_email = email
+            self.save()
+
     def get_absolute_url(self):
         return reverse(
             'coaching:elearn record detail',
