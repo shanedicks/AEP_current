@@ -8,12 +8,14 @@
     		<th>Name</th>
     		<th>Phone</th>
     		<th>Email</th>
+            <th>G Suite Email</th>
         </tr>
         {% for staff in full_time %}
         	<tr>
 	            <td><a href="{% url 'people:staff home' slug=staff.slug %}">{{ staff }}</a></td>
 	            <td>{{ staff.phone }}</td>
 	            <td>{{ staff.email }}</td>
+                <td>{{ staff.g_suite_email }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -23,12 +25,14 @@
             <th>Name</th>
             <th>Phone</th>
             <th>Email</th>
+            <th>G Suite Email</th>
         </tr>
         {% for staff in part_time %}
             <tr>
                 <td><a href="{% url 'people:staff home' slug=staff.slug %}">{{ staff }}</a></td>
                 <td>{{ staff.phone }}</td>
                 <td>{{ staff.email }}</td>
+                <td>{{ staff.g_suite_email }}</td>
             </tr>
         {% endfor %}
     </table>
