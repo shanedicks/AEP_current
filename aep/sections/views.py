@@ -790,14 +790,14 @@ class AddClassView(LoginRequiredMixin, CreateView):
         creator = self.request.user
         enrollment.student = student
         enrollment.creator = creator
-        if student.tests.last_test is None and enrollment.section.program != 'TRANS':
-            form.add_error(
-                None,
-                'This student has no pre-test on record,'
-                ' and cannot be enrolled at this time.'
-                ' Please talk to a Site Team Leader about next steps.'
-            )
-            return self.form_invalid(form)
+        #if student.tests.last_test is None and enrollment.section.program != 'TRANS':
+        #    form.add_error(
+        #        None,
+        #        'This student has no pre-test on record,'
+        #        ' and cannot be enrolled at this time.'
+        #        ' Please talk to a Site Team Leader about next steps.'
+        #    )
+        #    return self.form_invalid(form)
         try:
             enrollment.save()
             return super(AddClassView, self).form_valid(form)
