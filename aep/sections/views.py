@@ -533,11 +533,6 @@ class ClassDetailView(LoginRequiredMixin, DetailView):
                 'student__last_name',
                 'student__first_name'
             )
-        if 'elearn' not in context:
-            if self.object.program == 'ELRN':
-                context['elearn'] = True
-            else:
-                context['elearn'] = False
         return context
 
 
