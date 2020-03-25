@@ -167,7 +167,10 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
             "Phone",
             "Alt Phone",
             "Emergency Contact",
-            "Emergency Contact Phone"
+            "Emergency Contact Phone",
+            "Paperwork",
+            "Folder",
+            "Orientation",
             "Notes"
         ]
         data.append(headers)
@@ -199,6 +202,9 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
                 student.student.alt_phone,
                 student.student.emergency_contact,
                 student.student.ec_phone,
+                student.student.get_paperwork_display(),
+                student.student.get_folder_display(),
+                student.student.get_orientation_display(),
                 student.student.notes
             ]
             data.append(s)
@@ -249,6 +255,9 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
             "Email",
             "Phone",
             "Alt Phone",
+            "Paperwork",
+            "Folder",
+            "Orientation",
             "Notes"
         ]
         data.append(headers)
@@ -285,6 +294,9 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
                 student.student.email,
                 student.student.phone,
                 student.student.alt_phone,
+                student.student.get_paperwork_display(),
+                student.student.get_folder_display(),
+                student.student.get_orientation_display(),
                 student.student.notes
             ]
             data.append(s)
