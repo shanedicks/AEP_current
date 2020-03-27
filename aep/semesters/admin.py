@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Semester, Day
+from .tasks import send_g_suite_info_task
 
 # Register your models here.
 
@@ -21,7 +22,8 @@ class SemesterAdmin(admin.ModelAdmin):
         "begin",
         "end",
         "enforce_attendance",
-        "waitlist"
+        "waitlist",
+        "send_g_suite_info"
     ]
 
     def attendance_reminder(self, request, queryset):
@@ -43,6 +45,10 @@ class SemesterAdmin(admin.ModelAdmin):
     def waitlist(self, request, queryset):
         for obj in queryset:
             obj.waitlist()
+
+    def send_g_suite_info(self, request, queryset):
+        for obj in queryset:
+            send_g_suite_info_task.delay(obj.id)
 
 
 admin.site.register(Semester, SemesterAdmin)

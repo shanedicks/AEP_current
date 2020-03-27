@@ -12,3 +12,12 @@ def enforce_attendance_task(section_id):
 	logger.info('Enforcing Attendance for Section {0}'.format(section_id))
 	section = apps.get_model('sections', 'Section').objects.get(id=section_id)
 	return section.enforce_attendance()
+
+@shared_task
+def send_g_suite_info_task(semester_id):
+	ElearnRecord = apps.get_model('coaching', 'ElearnRecord')
+	students = ElearnRecord.objects.filter(student__classes__section__semester__id=semester_id).distinct()
+	logger.info('Sending G Suite Account Info to roster for semester {0}'.format(semester_id))
+	for student in students:
+		student.send_g_suite_info()
+	return True

@@ -8,7 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff, Student
 from academics.models import Course
 from .models import Site, Section, Enrollment, Attendance
-from .tasks import roster_to_classroom_task
+from .tasks import roster_to_classroom_task, send_g_suite_info_task
 
 class SiteResource(resources.ModelResource):
 
@@ -111,6 +111,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
         "enforce_attendance",
         'create_classroom_section',
         'roster_to_classroom',
+        'send_g_suite_info',
         'add_TA'
     ]
 
@@ -168,11 +169,13 @@ class SectionAdmin(ImportExportActionModelAdmin):
                 body={"userId": "ta@elearnclass.org"}
             )
 
-
     def roster_to_classroom(self, request, queryset):
-
         for obj in queryset:
             roster_to_classroom_task.delay(obj.id)
+
+    def send_g_suite_info(self, request, queryset):
+        for obj in queryset:
+            send_g_suite_info_task.delay(obj.id)
 
 
 admin.site.register(Section, SectionAdmin)

@@ -2,7 +2,9 @@ from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from core.tasks import send_mail_task
 from people.models import Staff, Student
+
 
 
 class Profile(models.Model):
@@ -787,6 +789,48 @@ class ElearnRecord(models.Model):
             service.users().insert(body=record).execute()
             self.g_suite_email = email
             self.save()
+
+    def send_g_suite_info(self):
+        if self.student.email:
+            g_suite = self.g_suite_email
+            if self.student.alt_email:
+                recipient_list = [self.student.email, self.student.alt_email]
+            else:
+                recipient_list = [self.student.email] 
+            send_mail_task.delay(
+                subject="Welcome to Delgado Adult Education Online!",
+                message="",
+                html_message="<p>Hello!</p><p>You have been invited"
+                    " to online classes. You can login with your new email address"
+                    " now, which is:</p><ul><li><strong>Username:</strong> {g_suite}"
+                    "</li><li><strong>Password:</strong> 123456789</li></ul>"
+                    "<p>This is a Google account that can be used with Gmail, "
+                    "Drive, Calendar, and more. To get started, <strong>go to "
+                    "<a href='http://classroom.google.com'>Google Classroom</a>"
+                    " now and login with this new account.</strong>"
+                    "</p><p>And for more tips, "
+                    "<a href='https://docs.google.com/document/d/1M0ODyAMGGk6q4SfnEcdPUhiGYTLUxsWnI8Q7QYJGbJw/edit'>"
+                    "click here to read the guide to get started!</a></p>"
+                    "<p>If you have any questions, please contact coach@elearnclass.org</p>"
+                    "<br><p>¡Bienvenido a Delgado Adult Education en línea!</p>"
+                    "<p>Hola!</p><p>Ha sido invitado a clases en línea. Puede iniciar "
+                    "sesión con su nueva dirección de correo electrónico ahora, "
+                    "que es:</p><ul><li><strong>Nombre de usario:</strong> {g_suite}</li>"
+                    "<li><strong>Password:</strong> 123456789</li></ul><p>Esta es una "
+                    "cuenta de Google que se puede usar con Gmail, Drive, Calendar y más."
+                    " Para comenzar, <strong>vaya a <a href='http://classroom.google.com'>Google Classroom</a>"
+                    " ahora e inicie sesión con esta nueva cuenta.</strong></p><p>"
+                    "<a href='https://docs.google.com/document/d/1cK3b8gArFICmYPB-gH15ke75uhCwCpORwoXUuDPJUj8/edit'>"
+                    "¡Haga clic aquí para leer la guía para comenzar!</a><p>"
+                    "Si tiene alguna pregunta, comuníquese con coach@elearnclass.org.</p>".format(
+                    g_suite=g_suite
+                ),
+                from_email='robot@dccaep.org',
+                recipient_list=recipient_list
+            )
+            return True
+        return False
+
 
     def get_absolute_url(self):
         return reverse(

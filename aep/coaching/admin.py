@@ -261,7 +261,11 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
         'g_suite_email'
     ]
 
-    actions = ImportExportActionModelAdmin.actions + ['DLA_email', 'create_g_suite_account']
+    actions = ImportExportActionModelAdmin.actions + [
+        'DLA_email', 
+        'create_g_suite_account',
+        'send_g_suite_info'
+    ]
 
     def DLA_email(self, request, queryset):
         for obj in queryset:
@@ -359,6 +363,10 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
                 service.users().insert(body=record).execute()
                 obj.g_suite_email = email
                 obj.save()
+
+    def send_g_suite_info(self, request, queryset):
+        for obj in queryset:
+            obj.send_g_suite_info()
 
 
 admin.site.register(ElearnRecord, ElearnRecordAdmin)

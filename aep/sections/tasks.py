@@ -103,5 +103,14 @@ def roster_to_classroom_task(section_id):
 	return section.roster_to_classroom()
 
 @shared_task
+def send_g_suite_info_task(section_id):
+	ElearnRecord = apps.get_model('coaching', 'ElearnRecord')
+	students = ElearnRecord.objects.filter(student__classes__section__id=section_id).distinct()
+	logger.info('Sending G Suite Account Info to roster for section {0}'.format(section_id))
+	for student in students:
+		student.send_g_suite_info()
+	return True
+
+@shared_task
 def missed_class_report_task():
 	pass
