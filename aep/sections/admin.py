@@ -92,6 +92,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
         "teacher",
         "get_days_str",
         "seats",
+        "get_active_enrollment_count",
         "start_time",
         "end_time",
         'semester',
@@ -114,6 +115,11 @@ class SectionAdmin(ImportExportActionModelAdmin):
         'send_g_suite_info',
         'add_TA'
     ]
+
+    def get_active_enrollment_count(self, obj):
+        return obj.students.filter(status="A").count()
+    get_active_enrollment_count.admin_order_field = "Students"
+    get_active_enrollment_count.short_description = "Students"
 
     def begin(self, request, queryset):
         for obj in queryset:
