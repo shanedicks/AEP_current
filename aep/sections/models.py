@@ -444,7 +444,7 @@ class Enrollment(models.Model):
     def activate(self):
         if self.attendance.all().count() == 0:
             dates = self.section.get_class_dates()
-            online = self.section.program == 'ELRN'
+            online = self.section.program == 'ELRN' or self.section.site.code == 'OL'
             for day in dates:
                 a = Attendance.objects.create(
                     enrollment=self,
