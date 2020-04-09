@@ -29,7 +29,7 @@ SECRET_KEY = get_env_variable("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ADMINS = [('Shane', 'shane.dicks1@gmail.com')]
+ADMINS = [('Shane', 'shane.dicks1@gmail.com'), ('Joey', 'jalehrman@gmail.com')]
 
 ALLOWED_HOSTS = []
 
