@@ -7,9 +7,12 @@ app_name = 'coaching'
 
 single_student_patterns = [
     url(r'^$',
+        views.StudentCoachingView.as_view(),
+        name='student coaching'),
+    url(r'^profile/$',
         views.ProfileDetailView.as_view(),
         name='profile detail'),
-    url(r'^new/$',
+    url(r'^profile/new/$',
         views.ProfileCreateWizard.as_view(),
         name='create profile'),
     url(r'^edit/$',
@@ -72,7 +75,10 @@ ace_patterns = [
         name='ace record detail'),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/new/$',
         views.AceRecordCreateView.as_view(),
-        name='ace record create')
+        name='ace record create'),
+    url(r'^(?P<slug>[a-zA-Z0-9]{5})/edit/$',
+        views.AceRecordUpdateView.as_view(),
+        name='ace record update')
 ]
 
 e_learn_patterns = [

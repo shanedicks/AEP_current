@@ -544,7 +544,17 @@ class AceRecordForm(ModelForm):
             'hsd',
             'hsd_date',
             'media_release',
-            'third_party_release'
+            'third_party_release',
+            'five_for_six',
+            'five_for_six_year',
+            'five_for_six_semester',
+            'reading_exit',
+            'writing_exit',
+            'math_exit',
+            'nccer_cert',
+            'bls_cert',
+            'servsafe_cert',
+            'microsoft_cert'
         )
 
 

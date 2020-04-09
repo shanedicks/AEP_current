@@ -11,11 +11,7 @@
           <a type="button" class="btn btn-default" href="{% url 'people:student current classes' slug=student.slug %}" role="button">Classes</a>
           <a type="button" class="btn btn-default" href="{% url 'people:student attendance' slug=student.slug %}" role="button">Attendance</a>
           <a type="button" class="btn btn-default" href="{% url 'assessments:student test history' slug=student.slug %}" role="button">Testing</a>
-          {% if student.coaching_profile %}
-            <a type="button" class="btn btn-default" href="{% url 'coaching:profile detail' slug=student.slug %}">Coaching Profile</a>
-          {% else %}
-            <a type="button" class="btn btn-default" href="{% url 'coaching:create profile' slug=student.slug %}">Coaching Profile</a>
-          {% endif %}
+          <a type="button" class="btn btn-default" href="{% url 'coaching:student coaching' slug=student.slug %}">Coaching</a>
       </div>
 
       <table class='table'>

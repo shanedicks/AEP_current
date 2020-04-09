@@ -2,33 +2,94 @@
 {% block head_title %}DCCAEP | {{student}} ACE Record{% endblock head_title %}
 {% block content %}
     <h1>ACE Record for <a href="{% url 'people:student detail' slug=student.slug %}">{{student}}</a></h1>
-    <h4>LOLA Number</h4>
-        {% if record.lola != "" %}
-        <p>{{ record.lola }}</p>
-        {% else %}
-        <p>No LOLA number has been recorded for this student</p>
+    <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:ace record update' slug=student.slug %}">Update</a>
+    <table class='table'>
+        <tr><td><h4>General Info</h4></td><td></td></tr>
+        <tr>
+            <td>LOLA Number</td>
+            {% if record.lola != "" %}
+            <td>{{ record.lola }}</td>>
+            {% else %}
+            <td>No LOLA number has been recorded for this student</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>DCC Email</td>
+            {% if record.dcc_email != "" %}
+            <td>{{record.dcc_email}}</td>
+            {% else %}
+            <td>No DCC email has been recorded for this student</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>ACE Pathway</td>        
+            {% if record.ace_pathway != "" %}
+            <td>{{ record.ace_pathway }}</td>
+            {% else %}
+            <td>No ACE Pathway has been selected for this student</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>Program</td>
+            {% if record.program != "" %}
+            <td>{{record.program }}</td>
+            {% else %}
+            <td>No Program has been recorded for this student</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>High School Diploma / Equivalency</td>
+            <td>{{ record.get_hsd_display }} {% if record.hsd_date != None %} - {{ record.hsd_date }}{% endif %}</td>
+        </tr>
+        <tr><td><h4>Releases Granted</h4></td><td></td></tr>
+        <tr>
+            <td>Media</td>
+            <td>{{ record.media_release }}</td>
+        </tr>
+        <tr>
+            <td>Third Party</td>
+            <td>{{ record.third_party_release}}</td>
+        </tr>
+        {%if record.five_for_six %}
+        <tr><td><h4>5 for 6 Scholarship</h4></td><td></td></tr>
+        <tr>
+            <td>Year</td>
+            <td>{{record.five_for_six_year}}</td>
+        </tr>
+        <tr>
+            <td>Semester</td>
+            <td>{{record.get_five_for_sex_semester_display}}</td>
+        </tr>
         {% endif %}
-    <h4>Dcc Email</h4>
-        {% if record.dcc_email != "" %}
-        <p>{{record.dcc_email}}</p>
-        {% else %}
-        <p>No DCC email has been recorded for this student</p>
-        {% endif %}
-    <h4>ACE Pathway</h4>        
-        {% if record.ace_pathway != "" %}
-        <p>{{ record.ace_pathway }}</p>
-        {% else %}
-        <p>No ACE Pathway has been selected for this student</p>
-        {% endif %}
-    <h4>Program</h4>
-        {% if record.program != "" %}
-        <p>{{record.program }}</p>
-        {% else %}
-        <p>No Program has been recorded for this student</p>
-        {% endif %}
-    <h4>High School Diploma / Equivalency</h4>
-        <p>{{ record.get_hsd_display }} {% if record.hsd_date != None %} - {{ record.hsd_date }}{% endif %}</p>
-    <h4>Releases Granted</h4>
-        <p>Media: {{ record.media_release }}</p>
-        <p>Third Party: {{ record.third_party_release}}</p>
+        <tr><td><h4>Exit Exams</h4></td><td></td></tr>
+        <tr>
+            <td>Reading</td>
+            <td>{{record.reading_exit}}</td>
+        </tr>
+        <tr>
+            <td>Writing</td>
+            <td>{{record.writing_exit}}</td>
+        </tr>
+        <tr>
+            <td>Math</td>
+            <td>{{record.math_exit}}</td>
+        </tr>
+        <tr><td><h4>Industry Based Certifications</h4></td><td></td></tr>
+        <tr>
+            <td>NCCER</td>
+            <td>{{record.nccer_cert}}</td>
+        </tr>
+        <tr>
+            <td>Basic Life Support</td>
+            <td>{{record.bsl_cert}}</td>
+        </tr>
+        <tr>
+            <td>ServSafe</td>
+            <td>{{record.servsafe_cert}}</td>
+        </tr>
+        <tr>
+            <td>Microsoft</td>
+            <td>{{record.microsoft_cert}}</td>
+        </tr>
+    </table>
 {% endblock %}

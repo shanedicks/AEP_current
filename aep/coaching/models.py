@@ -644,12 +644,15 @@ class AceRecord(models.Model):
         max_length=7,
         choices=HSD_CHOICES,
         default='Neither',
-        blank=True
+        blank=True,
+        verbose_name='Diploma'
     )
 
     hsd_date = models.DateField(
         blank=True,
-        null=True)
+        null=True,
+        verbose_name='Diploma Date'
+    )
 
     media_release = models.BooleanField(
         default=False
@@ -679,6 +682,56 @@ class AceRecord(models.Model):
         verbose_name='Passed MATH 098'
     )
 
+    five_for_six = models.BooleanField(
+        default=False,
+        verbose_name='5 for 6 Scholarship'
+    )
+
+    five_for_six_year = models.CharField(
+        max_length=4,
+        blank=True
+    )
+
+    five_for_six_semester = models.CharField(
+        choices=SEMESTER_CHOICES,
+        max_length=6,
+        blank=True   
+    )
+
+    reading_exit = models.BooleanField(
+        default=False,
+        verbose_name='Passed Reading Exit Exam'
+    )
+
+    writing_exit = models.BooleanField(
+        default=False,
+        verbose_name='Passed Writing Exit Exam'
+    )
+
+    math_exit = models.BooleanField(
+        default=False,
+        verbose_name='Passed Math Exit Exam'
+    )
+
+    nccer_cert = models.BooleanField(
+        default = False,
+        verbose_name = 'NCCER Cert'
+    )
+
+    bls_cert = models.BooleanField(
+        default = False,
+        verbose_name = 'Basic Life Support Cert'
+    )
+
+    servsafe_cert = models.BooleanField(
+        default = False,
+        verbose_name = 'ServSafe Cert'
+    )
+
+    microsoft_cert = models.BooleanField(
+        default = False,
+        verbose_name = 'Microsoft Cert'
+    )
     def get_absolute_url(self):
         return reverse(
             'coaching:ace record detail',

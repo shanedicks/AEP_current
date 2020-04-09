@@ -18,6 +18,10 @@ from .forms import (
     GeneralInfoForm)
 import rules
 
+class StudentCoachingView(LoginRequiredMixin, DetailView):
+
+    model = Student
+    template_name = 'coaching/student_coaching.html'
 
 class ProfileCreateWizard(LoginRequiredMixin, SessionWizardView):
 
@@ -364,6 +368,23 @@ class AceRecordDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(AceRecordDetailView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+
+class AceRecordUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = AceRecord
+    form_class = AceRecordForm
+    template_name = 'coaching/ace_record_update.html'
+
+    def get_object(self):
+        return AceRecord.objects.get(student__slug=self.kwargs['slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super(AceRecordUpdateView, self).get_context_data(**kwargs)
         if 'student' not in context:
             context['student'] = Student.objects.get(slug=self.kwargs['slug'])
             context.update(kwargs)

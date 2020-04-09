@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}} Coaching{% endblock head_title %}
+{% block content %}
+    <h1>{{ student }}</h1>
+      {% if student.partner != '' %}
+        <h3>Partner Student - {{student.partner}}</h3> 
+      {% endif %}
+    <div class='col-md-7'>
+      <div class="btn-group" role="group" aria-label="student links">
+      	{% if student.ace_record %}
+          <a type="button" class="btn btn-default" href="{% url 'coaching:ace record detail' slug=student.slug %}" role="button">Ace Record</a>
+        {% else %}
+          <a type="button" class="btn btn-default" href="{% url 'coaching:ace record create' slug=student.slug %}" role="button">Create Ace</a>
+        {% endif %}
+        {% if student.elearn_record %}
+          <a type="button" class="btn btn-default" href="{% url 'coaching:elearn record detail' slug=student.slug %}" role="button">Elearn Record</a>
+        {% else %}
+       	  <a type="button" class="btn btn-default" href="{% url 'coaching:elearn record create' slug=student.slug %}" role="button">Create Elearn</a>
+        {% endif %}
+        {% if student.coaching_profile %}
+          <a type="button" class="btn btn-default" href="{% url 'coaching:profile detail' slug=student.slug %}" role="button">Coaching Profile</a>
+        {% else %}
+          <a type="button" class="btn btn-default" href="{% url 'coaching:create profile' slug=student.slug %}" role="button">Create Profile</a>
+        {% endif %}
+      </div>
+      <table class='table'>
+    	<tr>
+    		<td>Last Test</td>
+    		{% if student.tests %}
+    		  <td>{{ student.tests.last_test }}</td>
+    		{% else %}
+    		  <td>No Test History</td>
+    		{% endif %}
+    	</tr>
+    	<tr>
+    		<td>Last Attendance</td>
+    		<td>{{ student.last_attendance }}</td>
+    	</tr>
+        <tr>
+          <td><h4>Student Contact</h4></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>{{ student.email }}</td>
+        </tr>
+        {% if student.alt_email != '' %}
+        <tr>
+          <td>Alternate Email</td>
+          <td>{{ student.alt_email }}</td>
+        </tr>
+        {% endif %}       
+        
+        <tr>
+          <td>G-Suite Email</td>
+          <td>
+          	{% if student.elearn_record %}
+          	{{ student.elearn_record.g_suite_email }}
+          	{% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td>Phone Number</td>
+          <td>{{ student.phone }}</td>
+        </tr>
+        <tr>
+          <td>Alternate Phone Number</td>
+          <td>{{ student.alt_phone }}</td>
+        </tr>
+        <tr>
+          <td>Address</td>
+          <td>{{ student.street_address_1 }}{{ student.street_address_2 }}</td>
+        </tr>
+        <tr>
+          <td>City</td>
+          <td>{{ student.city }}</td>
+        </tr>
+    	<tr>
+          <td><h4>Emergency Contact</h4></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Name</td>
+          <td>{{student.emergency_contact}}</td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>{{ student.ec_email }}</td>
+        </tr>
+        <tr>
+          <td>Phone</td>
+          <td>{{ student.ec_phone }}</td>
+        </tr>
+   	  </table>
+   	</div>
+    <div class='col-md-5'>
+      <h3>Coaches</h3>
+          {% if student.coaches.count > 0 %}
+            <ul>
+            {% for coach in student.coaches.all %}
+                <li><a href="{% url 'coaching:coaching detail' pk=coach.pk %}">{{ coach.coach }} - {{ coach.get_coaching_type_display }} - since {{ coach.start_date.date }}</a></li>
+            {% endfor %}
+            </ul>
+              <p>
+                <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
+              </p>
+          {% else %}
+              <p>{{ student }} is not assigned to any coaches.</p>
+              <p>
+                <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
+              </p>
+          {% endif %}
+    </div>
+
+{%endblock content %}
