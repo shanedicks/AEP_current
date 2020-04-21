@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block head_title %}DCCAEP | {{student}} Coaching{% endblock head_title %}
 {% block content %}
-    <h1>{{ student }}</h1>
+    <h1>Coaching for {{ student }} </h1>
       {% if student.partner != '' %}
         <h3>Partner Student - {{student.partner}}</h3> 
       {% endif %}
     <div class='col-md-7'>
+      {% include 'components/student_nav.html' %}
+      <br>
       <div class="btn-group" role="group" aria-label="student links">
       	{% if student.ace_record %}
           <a type="button" class="btn btn-default" href="{% url 'coaching:ace record detail' slug=student.slug %}" role="button">Ace Record</a>

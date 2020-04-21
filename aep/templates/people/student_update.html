@@ -2,6 +2,11 @@
 {% load crispy_forms_tags %}
 {% block head_title %}DCCAEP | Edit {{student}} info{% endblock head_title %}
 {% block content %}
+<h1>Update Info for {{ student }}</h1>
+	{% if student.partner != '' %}
+	<h3>Partner Student - {{student.partner}}</h3> 
+	{% endif %}
+	{%include 'components/student_nav.html' %}
 <form class="form_group" method="post">
     {% csrf_token %}
     {% crispy form %}

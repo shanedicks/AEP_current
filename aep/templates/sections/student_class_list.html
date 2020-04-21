@@ -14,6 +14,7 @@
         <h2>Student has no Testing History</h2>
         <h4>Please contact a Site Leader to correct this issue</h4>
     {% endif %} -->
+    {% include 'components/student_nav.html' %}
     {% if current %}
     <h3>Current Classes <a href="{% url 'people:student past classes'  slug=student.slug %}" class="btn btn-default">Past</a></h3>
     {% else %}

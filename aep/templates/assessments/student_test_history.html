@@ -2,6 +2,9 @@
 {% block head_title %}DCCAEP | {{history.student}} Test History{% endblock head_title %}
 {% block content %}
 	<h1>Testing History for {{ history.student }} - {{ history.student.WRU_ID }}</h1>
+    {% with student=history.student %}
+    {%include 'components/student_nav.html' %}
+    {% endwith %}
     <h2>Appointments</h2>
     <div class='well'>
         <h4>Upcoming</h4>
@@ -147,3 +150,4 @@
         {% endif %}
     </div>
 {% endblock %}
+
