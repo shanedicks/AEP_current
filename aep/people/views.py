@@ -20,7 +20,7 @@ from .forms import (
     StudentInterestForm, StudentContactForm, SSNForm, REForm,
     EETForm, AdditionalDetailsForm, DisabilityForm, StudentForm,
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
-    StudentComplianceForm
+    StudentComplianceForm, StudentNotesForm
     )
 from .tasks import intake_retention_report_task, orientation_email_task
 
@@ -364,6 +364,12 @@ class CollegeInterestDetailView(LoginRequiredMixin, DetailView):
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 
+
+class NotesUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = Student
+    form_class = StudentNotesForm
+    template_name = 'people/edit_notes.html'
 
 # <<<<< Staff Views >>>>>
 

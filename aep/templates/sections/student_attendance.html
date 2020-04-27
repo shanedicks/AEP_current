@@ -5,6 +5,7 @@
     <p></p>
     <img src="{% static 'logo.png' %}" alt="Logo">
     <h1>Official Attendance Record for {{student}}</h1>
+    {%include 'components/student_nav.html' %}
     {% for enrollment in object_list %}
         <table class="table">
             <tr>

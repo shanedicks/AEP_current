@@ -31,6 +31,10 @@ single_student_patterns = [
         views.StudentUpdateView.as_view(),
         name='edit student'
         ),
+    url(r'^edit-notes/$',
+        views.NotesUpdateView.as_view(),
+        name='edit notes'
+    ),
     url(r'^college-interest/$',
         views.CollegeInterestDetailView.as_view(),
         name='college interest detail'

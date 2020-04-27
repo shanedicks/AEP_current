@@ -1737,3 +1737,18 @@ class StaffForm(ModelForm):
             "ec_relation",
             "bio",
         )
+
+
+class StudentNotesForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(StudentNotesForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            'notes'
+        )
+
+    class Meta:
+        model = Student
+        fields = ('notes',)

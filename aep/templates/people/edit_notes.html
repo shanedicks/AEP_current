@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Edit Notes{% endblock head_title %}
+{% block content %}
+<h1>Edit Notes for {{student}}</h1>
+<div class="well">
+    <form method="post">
+            {% crispy form %}
+        <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Submit</button>
+    </form>
+{% endblock content %}

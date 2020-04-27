@@ -1,5 +1,6 @@
 <div class="btn-group" role="group" aria-label="student links">
   <a type="button" class="btn btn-default" role="button" href="{% url 'people:edit student' slug=student.slug %}">Update</a>
+  <a type="button" class="btn btn-default" role="button" href="{% url 'people:student detail' slug=student.slug %}">Student</a>
   <a type="button" class="btn btn-default" href="{% url 'people:student current classes' slug=student.slug %}" role="button">Classes</a>
   <a type="button" class="btn btn-default" href="{% url 'assessments:student test history' slug=student.slug %}" role="button">Testing</a>
   <a type="button" class="btn btn-default" href="{% url 'coaching:student coaching' slug=student.slug %}">Coaching</a>
