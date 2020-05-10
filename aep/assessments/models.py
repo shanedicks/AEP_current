@@ -107,39 +107,41 @@ class TestEvent(models.Model):
         for student in self.students.all():
             if student.student.email:
                 send_mail_task.delay(
-                    subject="Your Orientation Reminder for the Delgado "
-                    "Community College Adult Education Program!",
+                    subject="Orientation for the Delgado Adult Education Program!",
                     message="",
-                    html_message="<p>Hi {student},</p><p>You have selected "
-                    "to attend Orientation on {date:{dfmt}} at {time:{tfmt}} "
-                    "at the City Park Campus (615 City Park Ave,"
-                    " New Orleans, LA 70119).</p> <p>Later on, you can "
-                    "choose to attend classes at other locations -- but for "
-                    "New Student events you will need to come to the City Park"
-                    " location.</p> <p>Please come to Building "
-                    "7, Room 170.<a href='http://www.dcc.edu/about/locations"
-                    "/city-park/map-directions.aspx'>Click here</a>"
-                    " for directions and <a href='http://www.dcc."
-                    "edu/documents/about/city-park-campus-map.pdf'>click here</a>"
-                    " for a map of the campus.</p>"
-                    "<br>"
-                    "<p><strong>Your attendance of this event is required"
-                    " to move forward in the registration process</strong>"
-                    ".</p> <p>If you have any questions or a problem with "
-                    " your appointment please <a href=https://docs.google.com/"
-                    "forms/d/e/1FAIpQLSefXcnufXkaqnS5OAyTnCREC7dFA6AbviiPCdZQyy2krMAW4g/viewform>"
-                    "click here for assistance</a>.</p><p>Si tiene preguntas"
-                    " o problemas con su cita, haga <a href=https://docs.google.com/"
-                    "forms/d/e/1FAIpQLSefXcnufXkaqnS5OAyTnCREC7dFA6AbviiPCdZQyy2krMAW4g/"
-                    "viewform>clic aquí para obtener ayuda</a></p>"
-                    "<br><p>Thank you,</p>"
-                    "<p>The Adult Education Program</p>"
-                    "<p>Delgado Community College</p>".format(
+                    html_message="<p>Hello {student},</p><p>Welcome to the Delgado"
+                    "Community College Adult Education Program! We are writing"
+                    "today with an update on new student orientation</p><p>"
+                    "<strong>Due to the COVID-19 pandemic, all Delgado Community"
+                    " College Campuses are closed.</strong> So orientation for all"
+                    "new student will now be held online. You can get started now"
+                    "with the self-paced orientation using the link below</p>"
+                    "<p><a href='https://sites.google.com/elearnclass.org/dccaepporientation/new-student-process'>"
+                    "Click here to get started with the Adult Education Program"
+                    "Orientation!</a></p><p>In this orientation you can learn"
+                    "about:<ul><li>The different subjects you can take</li>"
+                    "<li>Online and in-person class options</li><li>How to "
+                    "connect with a coach</li><li>And the testing process</li></ul>"
+                    "</p><p>You can work through the Orientation website anywhere"
+                    " and at your own pace. There are a few articles to read and "
+                    "videos to watch, so take your time!</p><p><strong>Finishing "
+                    "the Orientation is required in order to begin classes with "
+                    "Delgado.</strong> You will need your student ID number in "
+                    "order to complete the process on the website.</p><p>Your "
+                    "student number is <span style='font-size: 24px'><strong>{wru}"
+                    "</strong></span></p><p><strong>If "
+                    "you need help,</strong> you can send an email to <a href='"
+                    "mailto:coach@elearnclass.org'>coach@elearnclass.org</a>, "
+                    "and a coach will get back to you in 1-2 business days.</p>"
+                    "<p>Welcome again to the Adult Education Program at Delgado;"
+                    " we are excited to work with you soon!</p><p>Best,</p><p>"
+                    "DCCAEP Team</p>".format(
                         student=student.student.first_name,
-                        dfmt='%m-%d-%Y',
-                        tfmt="%I:%M %p",
-                        date=self.start.date(),
-                        time=self.start.time()
+                        wru=('', student.student.WRU_ID)[student.student.WRU_ID is not None],
+                        #dfmt='%m-%d-%Y',
+                        #tfmt="%I:%M %p",
+                        #date=self.start.date(),
+                        #time=self.start.time()
                     ),
                     from_email="reminder@dccaep.org",
                     recipient_list=[student.student.email],
