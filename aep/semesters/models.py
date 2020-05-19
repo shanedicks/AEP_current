@@ -27,33 +27,29 @@ class Semester(models.Model):
     def get_sections(self):
         return self.sections.all()
 
-    @property
-    def section_count(self):
-        return self.sections.all().count()
- 
-    def get_enrollments(self):
-        sections = self.sections.all()
-        students = []
-        for section in sections:
-            for student in section.students.all():
-                students.append(student)
-        return students
-
     def get_enrollment_queryset(self):
         Enrollment = apps.get_model('sections', 'Enrollment')
         return Enrollment.objects.filter(section__semester=self)
 
     @property
+    def section_count(self):
+        return self.sections.all().count()
+
+    @property
+    def unique_student_count(self):
+        return self.get_enrollment_queryset().distinct('student').count()   
+
+    @property
     def enrollment_count(self):
-        return len(self.get_enrollments())
+        return self.get_enrollment_queryset().count()
 
     @property
     def completed_enrollment_count(self):
-        return(len(self.get_enrollment_queryset().filter(status='C')))
+        return self.get_enrollment_queryset().filter(status='C').count()
 
     @property
     def dropped_enrollment_count(self):
-        return(len(self.get_enrollment_queryset().filter(status='D')))
+        return self.get_enrollment_queryset().filter(status='D').count()
 
     def begin(self):
         for section in self.get_sections():

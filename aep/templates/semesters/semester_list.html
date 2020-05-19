@@ -11,6 +11,7 @@
       		<td>Semester</td>
       		<td>Dates</td>
       		<td>Sections</td>
+          <td>Unique Students</td>
       		<td>Total Enrollments</td>
           <td>Completed</td>
           <td>Dropped</td>
@@ -20,6 +21,7 @@
 	          <td><a href="{{ semester.get_absolute_url }}">{{ semester.title }}</a></td>
 	          <td>{{ semester.start_date }} - {{ semester.end_date }}</td>
 	          <td>{{ semester.section_count }}</td>
+            <td>{{ semester.unique_student_count }}</td>
 	          <td>{{ semester.enrollment_count }}</td>
             <td>{{ semester.completed_enrollment_count }}</td>
             <td>{{ semester.dropped_enrollment_count }}</td>
