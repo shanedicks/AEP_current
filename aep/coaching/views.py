@@ -144,12 +144,14 @@ class CoacheeExportCSV(LoginRequiredMixin, ListView):
             'Personal Email',
             'G Suite Email',
             'Phone',
+            'Native Language (if not English)',
             'Date of Last Note',
             'Last Note Content',
             'Date of Last Attendance',
             'Last Attendance Section',
             'Last Tabe',
-            'Last Hiset Practice'
+            'Last Hiset Practice',
+            "Current Classes",
         ]
         data.append(headers)
         for coaching in coachings:
@@ -192,19 +194,28 @@ class CoacheeExportCSV(LoginRequiredMixin, ListView):
             except ObjectDoesNotExist:
                 last_tabe = 'Student has no Test History'
                 last_hiset = 'Student has no Test History'
-
+            try:
+                language = coaching.coachee.WIOA.native_language
+            except ObjectDoesNotExist:
+                language = "Student has no WIOA Record"
+            classes = []
+            for i in coaching.coachee.current_classes():
+                j = "{0} ({1})".format(i.section, i.status)
+                classes.append(j)
             s = [
                 coaching.coachee.last_name,
                 coaching.coachee.first_name,
                 coaching.coachee.email,
                 g_suite_email,
                 coaching.coachee.phone,
+                language,
                 last_note_date,
                 last_note_note,
                 last_attendance_date,
                 section,
                 last_tabe,
-                last_hiset
+                last_hiset,
+                classes
             ]
             data.append(s)
         return data
