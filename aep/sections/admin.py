@@ -113,7 +113,8 @@ class SectionAdmin(ImportExportActionModelAdmin):
         'create_classroom_section',
         'roster_to_classroom',
         'send_g_suite_info',
-        'add_TA'
+        'send_course_welcome_email',
+        'add_TA',
     ]
 
     def get_active_enrollment_count(self, obj):
@@ -182,6 +183,11 @@ class SectionAdmin(ImportExportActionModelAdmin):
     def send_g_suite_info(self, request, queryset):
         for obj in queryset:
             send_g_suite_info_task.delay(obj.id)
+
+    def send_course_welcome_email(self, request, queryset):
+        for obj in queryset:
+            for student in obj.students.all():
+                student.welcome_email()
 
 
 admin.site.register(Section, SectionAdmin)

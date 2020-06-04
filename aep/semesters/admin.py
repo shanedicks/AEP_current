@@ -23,7 +23,8 @@ class SemesterAdmin(admin.ModelAdmin):
         "end",
         "enforce_attendance",
         "waitlist",
-        "send_g_suite_info"
+        "send_g_suite_info",
+        "send_course_welcome_email"
     ]
 
     def attendance_reminder(self, request, queryset):
@@ -49,6 +50,11 @@ class SemesterAdmin(admin.ModelAdmin):
     def send_g_suite_info(self, request, queryset):
         for obj in queryset:
             send_g_suite_info_task.delay(obj.id)
+
+    def send_course_welcome_email(self, request, queryset):
+        for obj in queryset:
+            for student in obj.get_enrollment_queryset().distinct('student'):
+                student.welcome_email()
 
 
 admin.site.register(Semester, SemesterAdmin)

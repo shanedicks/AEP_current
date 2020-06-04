@@ -524,6 +524,50 @@ class Enrollment(models.Model):
                     recipient_list=[self.student.email]
                 )
 
+    def welcome_email(self):
+        try:
+            g_suite_email = self.student.elearn_record.g_suite_email
+        except ObjectDoesNotExist:
+            g_suite_email = ''
+        if g_suite_email != '':
+            recipients = [self.student.email, g_suite_email]
+        else:
+            recipients = [self.student.email]
+        if self.student.email:
+            send_mail_task.delay(
+                subject="Delgado Adult Education - Welcome to the new session! ¡Bienvenido a la nueva sesión!",
+                message="",
+                html_message="<p>Dear Students,</p><p>We are excited to have you back "
+                "online with us for another session. If you’re joining us for the first "
+                "time, welcome!</p><p>As an update, classes are live now. You can login "
+                "to <a href='http://classroom.google.com'>Google Classroom</a> to get "
+                "started with your new classes.</p><p><strong>How to login</strong><br>"
+                "You can use your school account to login to Google Classroom: "
+                "<strong>{g_suite_email}</strong></p><p><strong>Questions?</strong><br>"
+                "If you have any questions, including how to reset your password, "
+                "please reach out to your teachers or coach. You can also email our help "
+                "desk anytime at <a href='mailto:coach@elearnclass.org'>coach@elearnclass.org"
+                "</a></p><p>We look forward to working with you this session</p><p>"
+                "Be safe and stay healthy!</p><p>All the very best,<br>Delgado Adult "
+                "Education Program</p><hr>"
+                "<p>Queridos estudiantes,</p><p>Estamos emocionados de tenerles nuevamente en"
+                " línea con nosotros para otra sesión. Si te unes a nosotros por la primera "
+                "vez, ¡Bienvenido!</p><p>Las clases están en vivo ahora. Puede iniciar su sesión en "
+                "<a href='http://classroom.google.com'>Google Classroom</a> para comenzar con sus "
+                "nuevas clases.</p><p><strong>Cómo iniciar sesión</strong><br>"
+                "Puede usar su cuenta del colegio para iniciar sesión en Google Classroom: "
+                "<strong>{g_suite_email}</strong></p><p><strong>Preguntas?</strong><br>"
+                "Si tiene alguna pregunta, incluido cómo restablecer su contraseña, comuníquese "
+                "con sus maestros o entrenador. También puede enviar un correo electrónico a "
+                "nuestro servicio de asistencia en cualquier momento a "
+                "<a href='mailto:coach@elearnclass.org'>coach@elearnclass.org"
+                "</a></p><p>Esperamos con interés trabajar con usted en esta sesión.</p><p>"
+                "¡Esté seguro y manténgase saludable!</p><p>Todo lo mejor,<br>Programa de "
+                "educación para adultos Delgado</p>".format(g_suite_email=g_suite_email),
+                from_email="welcome@dccaep.org",
+                recipient_list=recipients,
+            )
+
 
 class Attendance(models.Model):
 
