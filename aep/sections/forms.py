@@ -20,7 +20,7 @@ class StudentAddEnrollmentForm(ModelForm):
         if name:
             name = name[0]
             qst = Student.objects.filter(
-                Q(first_name__icontains=name) | Q(last_name__icontains=name),
+                Q(first_name__icontains=name) | Q(last_name__icontains=name) | Q(WRU_ID__icontains=name),
                 duplicate=False
             )
         self.base_fields['student'].queryset = qst
