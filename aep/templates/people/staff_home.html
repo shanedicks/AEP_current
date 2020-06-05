@@ -53,23 +53,101 @@
     {% if staff.coachees.count > 0 %}
         <h3>My Coachees</h3>
         <a type="button" class="btn btn-default" href="{% url 'coaching:coachee export' slug=staff.slug %}">Coachee Export</a>
-        <table class="table">
-        <tr>
-            <th>Student</th>
-            <th>Times Met</th>
-            <th>Last Meeting Date</th>
-        <tr>
-        {% for coachee in coachees %}
-        <tr>
-            <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
-            <td>{{ coachee.notes.count }}</td>
-            {% if coachee.notes.count > 0 %}
-                <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
-            {% else %}
-                <td>Never</td>
-            {% endif %}
-        </tr>
-        {% endfor %}
+            <h4>Active</h4>
+                <table class="table">
+                <tr>
+                    <th>Student</th>
+                    <th>Times Met</th>
+                    <th>Last Meeting Date</th>
+                </tr>
+                {% for coachee in active %}
+                <tr>
+                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
+                    <td>{{ coachee.notes.count }}</td>
+                    {% if coachee.notes.count > 0 %}
+                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
+                    {% else %}
+                        <td>Never</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </table>
+            <h4>On Hold</h4>
+                <table class="table">
+                <tr>
+                    <th>Student</th>
+                    <th>Times Met</th>
+                    <th>Last Meeting Date</th>
+                </tr>
+                {% for coachee in hold %}
+                <tr>
+                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
+                    <td>{{ coachee.notes.count }}</td>
+                    {% if coachee.notes.count > 0 %}
+                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
+                    {% else %}
+                        <td>Never</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </table>
+            <h4>Inactive</h4>
+                <table class="table">
+                <tr>
+                    <th>Student</th>
+                    <th>Times Met</th>
+                    <th>Last Meeting Date</th>
+                </tr>
+                {% for coachee in inactive %}
+                <tr>
+                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
+                    <td>{{ coachee.notes.count }}</td>
+                    {% if coachee.notes.count > 0 %}
+                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
+                    {% else %}
+                        <td>Never</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </table>
+            <h4>ESL > CCR</h4>
+                <table class="table">
+                <tr>
+                    <th>Student</th>
+                    <th>Times Met</th>
+                    <th>Last Meeting Date</th>
+                </tr>
+                {% for coachee in esl_ccer %}
+                <tr>
+                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
+                    <td>{{ coachee.notes.count }}</td>
+                    {% if coachee.notes.count > 0 %}
+                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
+                    {% else %}
+                        <td>Never</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </table>
+            <h4>Completed Hiset</h4>
+                <table class="table">
+                <tr>
+                    <th>Student</th>
+                    <th>Times Met</th>
+                    <th>Last Meeting Date</th>
+                </tr>
+                {% for coachee in hiset %}
+                <tr>
+                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
+                    <td>{{ coachee.notes.count }}</td>
+                    {% if coachee.notes.count > 0 %}
+                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
+                    {% else %}
+                        <td>Never</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </table>
     {% endif %}
 
 {%endblock content %}

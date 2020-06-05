@@ -39,6 +39,9 @@ single_coaching_patterns = [
     url(r'^meeting/$',
         views.MeetingNoteCreateView.as_view(),
         name='meeting note create'),
+    url(r'^update-status/$',
+        views.UpdateCoachingStatusFormView.as_view(),
+        name='update coaching status')
 ]
 
 coaches_patterns = [

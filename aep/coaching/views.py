@@ -15,7 +15,7 @@ from .forms import (
     ProfileForm, NewMeetingNoteForm,
     AssignCoach, AceRecordForm, ElearnRecordForm,
     AcademicQuestionaireForm, PersonalQuestionaireForm,
-    GeneralInfoForm)
+    GeneralInfoForm, UpdateCoachingStatusForm)
 import rules
 
 class StudentCoachingView(LoginRequiredMixin, DetailView):
@@ -268,9 +268,9 @@ class CoachingDetailView(LoginRequiredMixin, DetailView):
         if 'student' not in context:
             context['student'] = self.object.coachee
             context.update(kwargs)
-        if 'status' not in context:
+        if 'warnings' not in context:
             if self.object.notes.count() > 0:
-                context['status'] = [
+                context['warnings'] = [
                     ('Concern: Low Grades',
                         self.object.latest_note().low_grades),
                     ('Concern: Class Absences',
@@ -283,9 +283,16 @@ class CoachingDetailView(LoginRequiredMixin, DetailView):
                         self.object.latest_note().ace_withdrawl)
                 ]
             else:
-                context['status'] = []
+                context['warnings'] = []
             context.update(kwargs)
         return context
+
+
+class UpdateCoachingStatusFormView(LoginRequiredMixin, UpdateView):
+
+    model = Coaching
+    form_class = UpdateCoachingStatusForm
+    template_name = 'coaching/update_coaching_status.html'
 
 
 class MeetingNoteCreateView(LoginRequiredMixin, CreateView):

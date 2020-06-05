@@ -54,6 +54,10 @@
         <td>Personal Cell </td>
         <td>{{ student.phone }}</td>
       </tr>
+      <tr>
+        <td>Status <a class='btn btn-default' href="{% url 'coaching:update coaching status' pk=coaching.pk %}">Update Status</a></td>
+        <td>{{coaching.status}}</td>
+      </tr>
       {% if student.coaching_profile %}
         {% with profile=student.coaching_profile %}
           <tr>
@@ -110,7 +114,7 @@
     </table>
 </div>
 <div class='col-md-5'>
-    {% for item in status %}
+    {% for item in warnings %}
       {% if item.1 %}
         <h4>{{ item.0 }}</h4>
       {% endif %}

@@ -386,9 +386,20 @@ class StaffHomeView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(StaffHomeView, self).get_context_data(**kwargs)
+        coachees = self.object.coachees.filter(active=True)
         if 'coachees' not in context:
-            context['coachees'] = self.object.coachees.filter(active=True)
-            context.update(kwargs)
+            context['coachees'] = coachees
+        if 'active' not in context:
+            context['active'] = coachees.filter(status='Active')
+        if 'hold' not in context:
+            context['hold'] = coachees.filter(status='On Hold')
+        if 'inactive' not in context:
+            context['inactive'] = coachees.filter(status='Inactive')
+        if 'esl_ccr' not in context:
+            context['esl_ccr'] = coachees.filter(status='ESL > CCR')
+        if 'hiset' not in context:
+            context['hiset'] = coachees.filter(status='Completed HiSET')
+        context.update(kwargs)
         return context
 
 

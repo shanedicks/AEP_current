@@ -97,6 +97,7 @@ class CoachingResource(resources.ModelResource):
             'coachee__first_name',
             'coaching_type',
             'active',
+            'status',
             'start_date',
             'end_date',
         )
@@ -379,6 +380,7 @@ class CoachingAdmin(ImportExportActionModelAdmin):
     list_display = (
         '__str__',
         'coaching_type',
+        'status',
         'active',
         'start_date',
         'end_date',
@@ -386,7 +388,12 @@ class CoachingAdmin(ImportExportActionModelAdmin):
 
     list_filter = (
         'coaching_type',
+        'status',
         'active'
+    )
+
+    list_editable = (
+        'status',
     )
 
     search_fields = [
@@ -400,11 +407,26 @@ class CoachingAdmin(ImportExportActionModelAdmin):
     fields = [
         'coach',
         'coaching_type',
+        'status',
         'active',
         'start_date',
         'end_date',
     ]
 
+    actions = ImportExportActionModelAdmin.actions + [
+        'merge'
+    ]
+
+    def merge(self, request, queryset):
+        q = queryset.order_by('pk')
+        n = q[1]
+        o = q[0]
+        if n.coaching_type == o.coaching_type and n.coach == o.coach:
+            n.start_date = min(o.start_date, n.start_date)
+            o.notes.update(coaching=n)
+            o.active=False
+            o.save()
+            n.save()
 
 admin.site.register(Coaching, CoachingAdmin)
 

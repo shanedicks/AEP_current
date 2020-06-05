@@ -346,6 +346,19 @@ class Coaching(models.Model):
         (OPEN, 'Open Coaching')
     )
 
+    ACTIVE = 'Active'
+    ON_HOLD = 'On Hold'
+    INACTIVE = 'Inactive'
+    ESL_CCR = 'ESL > CCR'
+    COMPLETED_HISET = 'Completed HiSET'
+    STATUS_CHOICES = (
+        (ACTIVE, 'Active'),
+        (ON_HOLD, 'On Hold'),
+        (INACTIVE, 'Inactive'),
+        (ESL_CCR, 'ESL > CCR'),
+        (COMPLETED_HISET, 'Completed HiSET')
+    )
+
     coachee = models.ForeignKey(
         Student,
         models.CASCADE,
@@ -367,6 +380,12 @@ class Coaching(models.Model):
 
     active = models.BooleanField(
         default=True
+    )
+
+    status = models.CharField(
+        max_length=20,
+        default='Active',
+        choices=STATUS_CHOICES,
     )
 
     start_date = models.DateTimeField(
