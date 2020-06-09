@@ -1,5 +1,5 @@
 from django.contrib.admin import widgets
-from django.forms import ModelForm, widgets, MultipleChoiceField
+from django.forms import ModelForm, widgets, MultipleChoiceField, modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Row, Column, HTML
@@ -538,6 +538,8 @@ class UpdateCoachingStatusForm(ModelForm):
         fields = (
             'status',
         )
+
+UpdateCoachingStatusFormSet = modelformset_factory(Coaching, form=UpdateCoachingStatusForm, extra=0)
 
 
 class AceRecordForm(ModelForm):

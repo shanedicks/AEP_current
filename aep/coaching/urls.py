@@ -29,7 +29,10 @@ single_coach_patterns = [
         name='coachee list'),
     url(r'^export$',
         views.CoacheeExportCSV.as_view(),
-        name='coachee export')
+        name='coachee export'),
+    url(r'^update-coachings/$',
+        views.UpdateCoachingStatusFormsetView.as_view(),
+        name='update coachings')
 ]
 
 single_coaching_patterns = [

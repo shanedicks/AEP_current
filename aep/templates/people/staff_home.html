@@ -53,6 +53,7 @@
     {% if staff.coachees.count > 0 %}
         <h3>My Coachees</h3>
         <a type="button" class="btn btn-default" href="{% url 'coaching:coachee export' slug=staff.slug %}">Coachee Export</a>
+        <a type="button" class="btn btn-default" href="{% url 'coaching:update coachings' slug=staff.slug %}">Update Statuses</a>
             <h4>Active</h4>
                 <table class="table">
                 <tr>

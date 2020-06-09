@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Update Coaching Statuses{% endblock head_title %}
+
+{% block content %}
+<h2>Coachees for {{ object }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table>
+        {% for form in formset %}
+        <tr>
+        	{{ form.id }}
+	        <td>{{ form.instance.coachee}}</td>
+	        <td>{% crispy form %}</td>
+	    </tr>
+        {% endfor %}
+    </table>
+    <button type="submit" class="btn btn-success">Update Status</button>
+</form>
+{% endblock content %}

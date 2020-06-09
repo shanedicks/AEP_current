@@ -15,7 +15,7 @@ from .forms import (
     ProfileForm, NewMeetingNoteForm,
     AssignCoach, AceRecordForm, ElearnRecordForm,
     AcademicQuestionaireForm, PersonalQuestionaireForm,
-    GeneralInfoForm, UpdateCoachingStatusForm)
+    GeneralInfoForm, UpdateCoachingStatusForm, UpdateCoachingStatusFormSet)
 import rules
 
 class StudentCoachingView(LoginRequiredMixin, DetailView):
@@ -293,6 +293,50 @@ class UpdateCoachingStatusFormView(LoginRequiredMixin, UpdateView):
     model = Coaching
     form_class = UpdateCoachingStatusForm
     template_name = 'coaching/update_coaching_status.html'
+
+class UpdateCoachingStatusFormsetView(LoginRequiredMixin, UpdateView):
+
+    model = Coaching
+    form_class = UpdateCoachingStatusForm
+    template_name = 'coaching/update_coachings.html'
+
+
+    def get(self, request, *args, **kwargs):
+        self.object = apps.get_model('people', 'Staff').objects.get(slug=self.kwargs['slug'])
+        formset = UpdateCoachingStatusFormSet(queryset=self.get_form_queryset())
+        return self.render_to_response(
+            self.get_context_data(
+                formset=formset,
+            )
+        )
+
+    def post(self, request, *args, **kwargs):
+        self.object = apps.get_model('people', 'Staff').objects.get(slug=self.kwargs['slug'])
+        formset = UpdateCoachingStatusFormSet(request.POST, queryset=self.get_form_queryset())
+        if formset.is_valid():
+            formset.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render_to_response(
+                self.get_context_data(
+                    formset=formset,
+                )
+            )
+
+    def get_form_queryset(self):
+        queryset = self.object.coachees.filter(
+            active=True
+            ).order_by(
+            'coachee__last_name',
+            'coachee__first_name'
+        )
+        return queryset
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'people:staff home',
+            kwargs={'slug': self.kwargs['slug']}
+        )
 
 
 class MeetingNoteCreateView(LoginRequiredMixin, CreateView):
