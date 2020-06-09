@@ -89,9 +89,9 @@
     </div>
     <div class='col-md-5'>
       <h3>Student Coaching</h3>
-          {% if student.coaches.count > 0 %}
+          {% if coaches.count > 0 %}
             <ul>
-            {% for coach in student.coaches.all %}
+            {% for coach in coaches %}
                 <li><a href="{% url 'coaching:coaching detail' pk=coach.pk %}">{{ coach.coach }} - {{ coach.get_coaching_type_display }} - since {{ coach.start_date.date }}</a></li>
             {% endfor %}
             </ul>

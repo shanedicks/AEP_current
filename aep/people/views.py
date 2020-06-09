@@ -38,6 +38,13 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 
     model = Student
 
+    def get_context_data(self, **kwargs):
+        context = super(StudentDetailView, self).get_context_data(**kwargs)
+        if 'coaches' not in context:
+            context['coaches'] = self.object.coaches.filter(active=True)
+            context.update(kwargs)
+        return context
+
 
 class StudentListView(LoginRequiredMixin, ListView, FormView):
 
