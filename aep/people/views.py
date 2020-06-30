@@ -311,7 +311,7 @@ class StudentCreateSuccessView(TemplateView):
 
 class StudentSignupSuccessView(TemplateView):
 
-    template_name = 'people/signup_success.html'
+    template_name = 'people/temp_signup_success.html'
 
     def get_context_data(self, **kwargs):
         context = super(StudentSignupSuccessView, self).get_context_data(**kwargs)
