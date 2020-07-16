@@ -7,7 +7,6 @@ from django.views.generic import (DetailView, ListView, CreateView,
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.db import IntegrityError
