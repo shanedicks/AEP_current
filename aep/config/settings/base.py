@@ -60,8 +60,6 @@ THIRD_PARTY_APPS = [
     'formtools',
     'rules.apps.AutodiscoverRulesConfig',
     'anymail',
-    'import_export_celery',
-    'author'
 ]
 
 LOCAL_APPS = [
@@ -175,9 +173,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # import_export settings
 IMPORT_EXPORT_USE_TRANSACTIONS = True
-
-#import_export_celery settings
-IMPORT_EXPORT_CELERY_INIT_MODULE = 'config.celery'
 
 # Google Classroom settings
 KEYFILE_DICT = {

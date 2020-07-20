@@ -8,7 +8,6 @@ from django.contrib.auth.admin import UserAdmin
 from django.core.exceptions import ObjectDoesNotExist
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
-from import_export_celery.admin_actions import create_export_job_action
 from .models import (
     Student, Staff, WIOA, 
     CollegeInterest, Paperwork,
@@ -320,7 +319,6 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'create_elearn_record',
         'create_ace_record',
         'full_merge',
-        create_export_job_action
     ]
 
     ordering = ['-id']
@@ -667,7 +665,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
         "SID"
     )
 
-    actions = ImportExportActionModelAdmin.actions + ['send_to_state', 'check_for_state_id', create_export_job_action]
+    actions = ImportExportActionModelAdmin.actions + ['send_to_state', 'check_for_state_id']
 
     def get_AEP_ID(self, obj):
         return obj.student.AEP_ID

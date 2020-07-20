@@ -4,7 +4,6 @@ from datetime import datetime
 from django.apps import apps
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -478,13 +477,6 @@ class Student(Profile):
                 student=self,
                 intake_date=datetime.today()
             )
-
-    @classmethod
-    def export_resource_classes(cls):
-        from .admin import StudentResource
-        return {
-            'students': ('Students Resource', StudentResource)
-        }
 
 
 class Staff(Profile):
@@ -1302,13 +1294,6 @@ class WIOA(models.Model):
     def __str__(self):
         return self.student.__str__()
 
-    @classmethod
-    def export_resource_classes(cls):
-        from .admin import WIOAResource
-        return {
-            'wioa': ('WIOA Resource', WIOAResource)
-        }
-
     def check_for_state_id(self, session):
 
         search = {
@@ -1798,6 +1783,3 @@ class CollegeInterest(models.Model):
 
     def get_absolute_url(self):
         return reverse('people:college interest detail', kwargs={'slug': self.student.slug})
-
-
-
