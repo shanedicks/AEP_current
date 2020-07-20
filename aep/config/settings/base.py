@@ -59,7 +59,9 @@ THIRD_PARTY_APPS = [
     'import_export',
     'formtools',
     'rules.apps.AutodiscoverRulesConfig',
-    'anymail'
+    'anymail',
+    'import_export_celery',
+    'author'
 ]
 
 LOCAL_APPS = [
@@ -82,6 +84,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'author.middlewares.AuthorDefaultBackendMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -172,6 +175,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # import_export settings
 IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+#import_export_celery settings
+IMPORT_EXPORT_CELERY_INIT_MODULE = 'config.celery'
 
 # Google Classroom settings
 KEYFILE_DICT = {
