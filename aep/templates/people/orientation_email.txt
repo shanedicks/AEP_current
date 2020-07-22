@@ -1,0 +1,25 @@
+                "<p>Hi, {student}</p><p>You have selected "
+                "to attend Orientation on {date:{dfmt}} at {time:{tfmt}} "
+                "at the City Park Campus (615 City Park Ave,"
+                " New Orleans, LA 70119), though you can "
+                "later choose to attend classes at other locations. "
+                "For orientation and testing, please come to Building "
+                "7, Room 170. Click <a href='http://www.dcc.edu/about/"
+                "locations/city-park/map-directions.aspx'>here</a>"
+                " for directions and click <a href='http://www.dcc.edu/"
+                "documents/about/city-park-campus-map.pdf'>here</a>"
+                " for a map of the campus.</p>"
+                "<br>"
+                "<p><strong>Attendance is required"
+                " to move forward in the registration process</strong>"
+                ". Please call 504-671-5434 or email adulted@dcc.edu "
+                "if you have any questions or need to reschedule.</p>"
+                "<br><p>Thank you,</p>"
+                "<p>The Adult Education Program</p>"
+                "<p>Delgado Community College</p>".format(
+                    student=name,
+                    dfmt="%A, %B %d",
+                    tfmt="%I:%M %p",
+                    date=orientation.event.start.date(),
+                    time=orientation.event.start.time(),
+                )

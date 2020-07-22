@@ -14,35 +14,30 @@ logger = get_task_logger(__name__)
 @shared_task
 def orientation_email_task(name, email_address, appt_id):
     orientation = apps.get_model('assessments', 'TestAppointment').objects.get(id=appt_id)
-    logger.info('Sent oritentation confirmation to {0}.'.format(email_address))
+    logger.info('Sent orientation confirmation to {0}.'.format(email_address))
     return send_mail(
         subject="Thank you for registering for the Delgado "
                 "Community College Adult Education Program!",
         message="",
-        html_message="<p>Hi, {student}</p><p>You have selected "
-                "to attend Orientation on {date:{dfmt}} at {time:{tfmt}} "
-                "at the City Park Campus (615 City Park Ave,"
-                " New Orleans, LA 70119), though you can "
-                "later choose to attend classes at other locations. "
-                "For orientation and testing, please come to Building "
-                "7, Room 170. Click <a href='http://www.dcc.edu/about/"
-                "locations/city-park/map-directions.aspx'>here</a>"
-                " for directions and click <a href='http://www.dcc.edu/"
-                "documents/about/city-park-campus-map.pdf'>here</a>"
-                " for a map of the campus.</p>"
-                "<br>"
-                "<p><strong>Attendance is required"
-                " to move forward in the registration process</strong>"
-                ". Please call 504-671-5434 or email adulted@dcc.edu "
-                "if you have any questions or need to reschedule.</p>"
-                "<br><p>Thank you,</p>"
-                "<p>The Adult Education Program</p>"
-                "<p>Delgado Community College</p>".format(
+        html_message="<p>Hi, {student}</p><p>You have successfully registered for Delgado’s Adult Education Program!</p>"
+        "<p><strong>Your next step is to complete the program’s Online Orientation.</strong></p>"
+        "<p>Be on the lookout for the <strong>{event}</strong>, so please check your email on that day!"
+        " (You may also want to check your spam folder too, just in case.)</p>"
+        "<p>Once you get your email invitation, it will give instructions on how to complete your Orientation. "
+        "Students need to finish their Orientation before they can begin classes.</p>"
+        "<p>If you have any difficulties, you can also reach out to our coaching staff for help at coach@elearnclass.org</p>"
+        "<p>Thank you,<br>The Adult Education Program<br>Delgado Community College</p>"
+        "<hr>"
+        "<p>Hola {student},</p><p>¡Te has registrado con éxito en el Programa de educación para adultos de Delgado!</p>"
+        "<p><strong>El siguiente paso es completar la orientación en línea del programa.</strong></p>"
+        "<p>Esté atento a su <strong>{event}</strong>, así que revise su correo electrónico ese día."
+        " (También puede consultar su carpeta de correo no deseado, por si acaso).</p>"
+        "<p>Una vez que reciba su invitación por correo electrónico, le dará instrucciones sobre cómo completar su Orientación."
+        " Los estudiantes necesitan terminar su Orientación antes de que puedan comenzar las clases.</p>"
+        "Si tiene alguna dificultad, también puede comunicarse con nuestro personal de coaching para obtener ayuda en coach@elearnclass.org "
+        "<p>Gracias,<br>The Adult Education Program<br>Delgado Community College</p>".format(
                     student=name,
-                    dfmt="%A, %B %d",
-                    tfmt="%I:%M %p",
-                    date=orientation.event.start.date(),
-                    time=orientation.event.start.time(),
+                    event=orientation.event
                 ),
         from_email="reminder@dccaep.org",
         recipient_list=[email_address]
@@ -293,3 +288,58 @@ def participation_summary_task():
     email.attach_file('participation_report.csv')
     email.send()
     return True
+
+@shared_task
+def summary_report_task(from_date, to_date, email):
+
+    from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S').date()
+    to_date = datetime.strptime(to_date, '%Y-%m-%dT%H:%M:%S').date()
+
+    Student = apps.get_model('people', 'Student')
+    Attendance = apps.get_model('sections', 'Attendance')
+    Tabe = apps.get_model('assessments', 'Tabe')
+    Clas_E = apps.get_model('assessments', 'Clas_E')
+
+    students = Student.objects.filter(duplicate=False)
+    attendance = Attendance.objects.filter(attendance_type='P', attendance_date__gte=from_date)
+    tabe_tests = Tabe.objects.filter(test_date__gte=from_date)
+    clas_e_tests = Clas_E.objects.filter(test_date__gte=from_date)
+
+    min_id = students.filter(intake_date=from_date).aggregate(Min('id'))['id__min']
+    max_id = students.filter(intake_date=to_date).aggregate(Max('id'))['id__max']
+    new_students = students.filter(id__gte=min_id)
+
+    attended_students = students.filter(classes__attendance__in=attendance).distinct()
+    
+    clas_e_tested = students.filter(tests__clas_e_tests__in=clas_e_tests).distinct()
+    tabe_tested = students.filter(tests__tabe_tests__in=tabe_tests).distinct()
+    tested_students = clas_e_tested.union(tabe_tested)
+
+    all_students = new_students.union(attended_students, tested_students)
+
+    with open('summary_report.csv', 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            'WRU ID',
+            'First Name',
+            'Last Name',
+            'Email',
+            'Partner',
+            '# Enrollments',
+            'Last Attendance',
+            'Total Attendance',
+            'Total Hours',
+        ]
+        writer.writerow(headers)
+
+        for student in all_students:
+            enrollments = student.classes.filter(attendance__in=attendance)
+            record = {
+                'first_name': student.first_name,
+                'last_name': student.last_name,
+                'email': student.email,
+                'partner': student.partner,
+                'wru': student.WRU_ID,
+                'num_classes': enrollments.count()
+            }
+
