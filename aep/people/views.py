@@ -4,6 +4,7 @@ from django.views.generic import (
 from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, Http404
 from django.template.loader import get_template
 from django.template import Context
@@ -107,6 +108,7 @@ class NewStudentCSV(LoginRequiredMixin, FormView):
             "Zip",
             "Parish",
             "Email",
+            "G Suite",
             "Phone",
             "Alt Phone",
             "Emergency Contact",
@@ -115,6 +117,10 @@ class NewStudentCSV(LoginRequiredMixin, FormView):
         ]
         data.append(headers)
         for student in students:
+            try:
+                g_suite = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite = "No elearn record found"
             s = [
                 student.WRU_ID,
                 student.last_name,
@@ -132,6 +138,7 @@ class NewStudentCSV(LoginRequiredMixin, FormView):
                 student.zip_code,
                 student.get_parish_display(),
                 student.email,
+                g_suite,
                 student.phone,
                 student.alt_phone,
                 student.emergency_contact,

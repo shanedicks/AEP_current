@@ -62,6 +62,7 @@ def intake_retention_report_task(from_date, to_date, email_address):
             "First Name",
             'Partner',
             "Email",
+            "G Suite",
             "Phone",
             "Alt Phone",
             "City",
@@ -88,12 +89,17 @@ def intake_retention_report_task(from_date, to_date, email_address):
                 last_attended = str(student.last_attendance())
             except ObjectDoesNotExist:
                 last_attended = "No Attendance"
+            try:
+                g_suite = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite = "No elearn record found"
             s = [
                 student.WRU_ID,
                 student.last_name,
                 student.first_name,
                 student.partner,
                 student.email,
+                g_suite,
                 student.phone,
                 student.alt_phone,
                 student.city,
@@ -220,6 +226,7 @@ def participation_summary_task():
             'First Name',
             'Last Name',
             'Email',
+            'G Suite',
             'Partner',
             '# Enrollments',
             'Dropped Rate',
@@ -241,6 +248,10 @@ def participation_summary_task():
                 'wru': student.WRU_ID,
                 'num_classes': student.classes.count()
             }
+            try:
+                record['g_suite'] = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                record['g_suite'] = "No elearn record found"
             if record['num_classes'] > 0:
                 record['completed_rate'] = student.classes.filter(status='C').count() / record['num_classes']
                 record['dropped_rate'] = student.classes.filter(status='D').count() / record['num_classes']
@@ -274,6 +285,7 @@ def participation_summary_task():
                     record['first_name'],
                     record['last_name'],
                     record['email'],
+                    record['g_suite'],
                     record['partner'],
                     record['num_classes'],
                     record['dropped_rate'],
@@ -324,6 +336,7 @@ def summary_report_task(from_date, to_date, email):
             'First Name',
             'Last Name',
             'Email',
+            'G Suite',
             'Partner',
             '# Enrollments',
             'Last Attendance',
@@ -334,10 +347,15 @@ def summary_report_task(from_date, to_date, email):
 
         for student in all_students:
             enrollments = student.classes.filter(attendance__in=attendance)
+            try:
+                g_suite = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite = "No elearn record found"
             record = {
                 'first_name': student.first_name,
                 'last_name': student.last_name,
                 'email': student.email,
+                'g_suite': g_suite,
                 'partner': student.partner,
                 'wru': student.WRU_ID,
                 'num_classes': enrollments.count()

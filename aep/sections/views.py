@@ -163,6 +163,7 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
             "Zip",
             "Parish",
             "Email",
+            'G Suite Email',
             "Phone",
             "Alt Phone",
             "Emergency Contact",
@@ -179,6 +180,10 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
                 test_assignment = student.student.tests.test_assignment
             except ObjectDoesNotExist:
                 test_assignment = ''
+            try:
+                g_suite = student.student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite = "No elearn record found"
             s = [
                 student.student.WRU_ID,
                 student.student.last_name,
@@ -197,6 +202,7 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
                 student.student.zip_code,
                 student.student.get_parish_display(),
                 student.student.email,
+                g_suite,
                 student.student.phone,
                 student.student.alt_phone,
                 student.student.emergency_contact,
@@ -252,6 +258,7 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
             "Zip",
             "Parish",
             "Email",
+            'G Suite Email',
             "Phone",
             "Alt Phone",
             "Paperwork",
@@ -269,6 +276,10 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
             except ObjectDoesNotExist:
                 assignment = 'No Test History'
                 last_test = ''
+            try:
+                g_suite = student.student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite = "No elearn record found"
 
             s = [
                 student.student.WRU_ID,
@@ -291,6 +302,7 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
                 student.student.zip_code,
                 student.student.get_parish_display(),
                 student.student.email,
+                g_suite,
                 student.student.phone,
                 student.student.alt_phone,
                 student.student.get_paperwork_display(),
@@ -430,6 +442,7 @@ class ElearnAttendanceCSV(LoginRequiredMixin, FormView):
         data = []
         headers = [
             "WRU_ID",
+            'G Suite',
             "Last Name",
             "First Name",
             "Coach",
@@ -444,6 +457,7 @@ class ElearnAttendanceCSV(LoginRequiredMixin, FormView):
         for student in students:
             s = [
                 student['wru'],
+                student['g_suite'],
                 student['last'],
                 student['first'],
                 student['coach'],
@@ -482,6 +496,7 @@ class ElearnAttendanceCSV(LoginRequiredMixin, FormView):
                     attendance = e.attendance.filter(attendance_date__lte=to_date)
                 s = {
                     'wru': record.student.WRU_ID,
+                    'g_suite': record.g_suite_email,
                     'last': record.student.last_name,
                     'first': record.student.first_name,
                     'coach': coach,
