@@ -32,7 +32,7 @@ def drop_task(enrollment_id):
 	return enrollment.attendance_drop()
 
 @shared_task
-def participation_detail_task():
+def participation_detail_task(email_address):
 	enrollments = apps.get_model('sections', 'Enrollment').objects.all()
 	sites = apps.get_model('sections', 'Site').objects.all()
 	students = apps.get_model('people', 'Student').objects.filter(duplicate=False)
@@ -90,7 +90,7 @@ def participation_detail_task():
 		'Student Participation Report',
 		'Report on student enrollment and class completion for various days, times, and sites',
 		'reporter@dccaep.org',
-		['shane.dicks1@gmail.com']
+		[email_address]
 	)
 	email.attach_file('participation_detail_report.csv')
 	email.send()

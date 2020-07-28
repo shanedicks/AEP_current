@@ -64,7 +64,10 @@ reports_patterns = [
         name='student enrollment csv'),
     url(r'^atrium$',
         views.AtriumCSV.as_view(),
-        name='atrium csv')
+        name='atrium csv'),
+    url(r'^participation$',
+        views.ParticipationReport.as_view(),
+        name='participation report')
 ]
 
 urlpatterns = [

@@ -20,6 +20,7 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     StudentAddEnrollmentForm, SingleAttendanceForm,
                     AttendanceFormSet, SectionSearchForm, AdminAttendanceForm,
                     AttendanceReportForm, EnrollmentReportForm)
+from .tasks import participation_detail_task
 
 
 class AttendanceCSV(LoginRequiredMixin, FormView):
@@ -1045,3 +1046,11 @@ class GSuiteAttendanceView(LoginRequiredMixin, DetailView):
         if 'scores' not in context:
             context['scores'] = scores
         return context
+
+
+class ParticipationReport(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        email = request.user.email
+        participation_detail_task.delay(email)
+        return HttpResponseRedirect(reverse_lazy('report success'))
