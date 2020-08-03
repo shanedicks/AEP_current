@@ -31,6 +31,10 @@ class Semester(models.Model):
         Enrollment = apps.get_model('sections', 'Enrollment')
         return Enrollment.objects.filter(section__semester=self)
 
+    def get_attendance_queryset(self):
+        Attendance = apps.get_model('sections', 'Attendance')
+        return Attendance.objects.filter(enrollment__section__semester=self)
+
     @property
     def section_count(self):
         return self.sections.all().count()
@@ -50,6 +54,30 @@ class Semester(models.Model):
     @property
     def dropped_enrollment_count(self):
         return self.get_enrollment_queryset().filter(status='D').count()
+
+    @property
+    def total_attendance_count(self):
+        return self.get_attendance_queryset().count()
+
+    @property
+    def present_attendance_count(self):
+        return self.get_attendance_queryset().filter(attendance_type='P').count()
+
+    @property
+    def absent_attendance_count(self):
+        return self.get_attendance_queryset().filter(attendance_type='A').count()
+
+    @property
+    def cancelled_attendance_count(self):
+        return self.get_attendance_queryset().filter(attendance_type='C').count()
+
+    @property
+    def total_enrolled_hours(self):
+        return sum([att.enrolled_hours for att in self.get_attendance_queryset()])
+
+    @property
+    def total_attended_hours(self):
+        return sum([att.hours for att in self.get_attendance_queryset()])
 
     def begin(self):
         for section in self.get_sections():

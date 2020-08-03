@@ -5,7 +5,6 @@
         {% if is_paginated %}
             {% include 'components/pagination.html' %}
         {% endif %}
-    <div class='col-md-8'>
       <table class='table'>
       	<tr>
       		<td>Semester</td>
@@ -15,6 +14,9 @@
       		<td>Total Enrollments</td>
           <td>Completed</td>
           <td>Dropped</td>
+          <td>Total Attendance Days</td>
+          <td>Days Present</td>
+          <td>Days Absent</td>
 		</tr>
 		{% for semester in object_list %}
 	      	<tr>
@@ -25,9 +27,11 @@
 	          <td>{{ semester.enrollment_count }}</td>
             <td>{{ semester.completed_enrollment_count }}</td>
             <td>{{ semester.dropped_enrollment_count }}</td>
+            <td>{{ semester.total_attendance_count }}</td>
+            <td>{{ semester.present_attendance_count }}</td>
+            <td>{{ semester.absent_attendance_count }}</td>
           </tr>
 	    	</tr>
     	{% endfor %}
       </table>
-    </div>   
 {% endblock content %}
