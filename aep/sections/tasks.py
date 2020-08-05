@@ -112,5 +112,27 @@ def send_g_suite_info_task(section_id):
 	return True
 
 @shared_task
+def enrollment_notification_task(enrollment_id):
+	enrollment = apps.get_model('sections', 'Enrollment').objects.get(id=enrollment_id)
+	title = enrollment.section.title
+	if enrollment.status is enrollment.ACTIVE:
+		change = 'added to'
+	else:
+		change = 'removed from'
+	email = EmailMessage(
+		'Roster change for {section}'.format(section=title),
+		'{student} has been {change} {section} on {date}'.format(
+			student=enrollment.student,
+			change=change,
+			section=title,
+			date=enrollment.last_modified.date()
+		),
+		'enrollment_bot@dccaep.org',
+		[enrollment.section.teacher.user.email]
+	)
+	email.send()
+	return True
+
+@shared_task
 def missed_class_report_task():
 	pass

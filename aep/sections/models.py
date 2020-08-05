@@ -12,7 +12,7 @@ from core.tasks import send_mail_task
 from academics.models import Course
 from people.models import Staff, Student
 from semesters.models import Semester
-from .tasks import activate_task, end_task, drop_task
+from .tasks import activate_task, end_task, drop_task, enrollment_notification_task
 
 
 class Site(models.Model):
@@ -568,6 +568,11 @@ class Enrollment(models.Model):
                 recipient_list=recipients,
             )
 
+    def save(self, *args, **kwargs):
+        super(Enrollment, self).save()
+        if self.last_modified.date() > self.section.semester.start_date and self.status is not self.COMPLETED:
+            enrollment_notification_task.delay(self.id)
+
 
 class Attendance(models.Model):
 
@@ -642,3 +647,11 @@ class Attendance(models.Model):
                 hours = delta.total_seconds() / 3600
                 return float("{0:.2f}".format(hours))
             return 0
+
+    @property
+    def enrolled_hours(self):
+        d1 = datetime.combine(self.attendance_date, self.time_in)
+        d2 = datetime.combine(self.attendance_date, self.time_out)
+        delta = d2 - d1
+        hours = delta.total_seconds() / 3600
+        return float("{0:.2f}".format(hours))
