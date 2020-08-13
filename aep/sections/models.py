@@ -100,6 +100,8 @@ class Section(models.Model):
         null=True,
         blank=True
     )
+    starting = models.DateField(null=True, blank=True)
+    ending = models.DateField(null=True, blank=True)
     seats = models.IntegerField(null=True, blank=True)
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -163,6 +165,20 @@ class Section(models.Model):
     @property
     def over_full(self):
         return self.get_waiting().count() > 4
+
+    @property
+    def start_date(self):
+        if self.starting is not None:
+            return self.starting
+        else:
+            return self.semester.start_date
+
+    @property
+    def end_date(self):
+        if self.ending is not None:
+            return self.ending
+        else:
+            return self.semester.end_date
 
     def begin(self):
         for student in self.get_active():
@@ -353,7 +369,14 @@ class Section(models.Model):
 
     def get_class_dates(self):
         weekdays = [i[2] for i in self.get_days()]
-        start, end = self.semester.start_date, self.semester.end_date
+        if self.starting is not None:
+            start = self.starting
+        else:
+            start = self.semester.start_date
+        if self.ending is not None:
+            end = self.ending
+        else:
+            start = self.semester.end_date
         class_dates = []
         date_range = end - start
         for j in range(date_range.days + 1):
@@ -570,7 +593,11 @@ class Enrollment(models.Model):
 
     def save(self, *args, **kwargs):
         super(Enrollment, self).save()
-        if self.last_modified.date() > self.section.semester.start_date and self.status is not self.COMPLETED:
+        if self.section.starting is not None:
+            start = self.section.starting
+        else:
+            start = self.section.semester.start_date
+        if self.last_modified.date() > start and self.status is not self.COMPLETED:
             enrollment_notification_task.delay(self.id)
 
 

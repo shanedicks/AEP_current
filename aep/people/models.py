@@ -419,27 +419,46 @@ class Student(Profile):
     def active_classes(self):
         return self.classes.filter(
             status="A"
-        ).order_by('-section__semester__end_date')
+        ).order_by(
+            '-section__ending',
+            '-section__semester__end_date'
+        )
 
     def completed_classes(self):
         return self.classes.filter(
             status="C"
-        ).order_by('-section__semester__end_date')
+        ).order_by(
+            '-section__ending',
+            '-section__semester__end_date'
+        )
 
     def dropped_classes(self):
         return self.classes.filter(
             status="D"
-        ).order_by('-section__semester__end_date')
+        ).order_by(
+        '-section__ending',
+        '-section__semester__end_date'
+        )
 
     def current_classes(self):
         today = timezone.localdate()
-        return self.classes.filter(section__semester__end_date__gte=today)
+        classes = self.classes.filter(
+            section__semester__end_date__gte=today
+        ) | self.classes.filter(
+            section__ending__gte=today
+        )
+        return classes.order_by(
+            '-section__semester__end_date'
+        )
 
     def past_classes(self):
         today = timezone.localdate()
-        return self.classes.filter(
+        classes = self.classes.filter(
             section__semester__end_date__lt=today
-        ).order_by(
+        ) | self.classes.filter(
+            section__ending__lt=today
+        )
+        return classes.order_by(
             '-section__semester__end_date'
         )
 
@@ -447,7 +466,12 @@ class Student(Profile):
         return self.classes.all()
 
     def latest_class_start(self):
-        return self.classes.latest('section__semester__start_date').section.semester.start_date
+        semester_start = self.classes.latest('section__semester__start_date').section.semester.start_date
+        section_start = self.classes.latest('section__starting').section.starting
+        if section_start is not None:
+            return max(section_start, semester_start)
+        else:
+            return semester_start
 
     def last_attendance(self):
         attendance = apps.get_model('sections', 'Attendance').objects.filter(enrollment__student=self, attendance_type='P')
@@ -515,18 +539,26 @@ class Staff(Profile):
 
     def current_classes(self):
         today = timezone.localdate()
-        return self.classes.filter(
+        classes = self.classes.filter(
             semester__end_date__gte=today
-        ).order_by(
+        ) | self.classes.filter(
+            ending__gte=today
+        )
+        return classes.order_by(
+            '-ending',
             '-monday',
             'start_time'
         )
 
     def past_classes(self):
         today = timezone.localdate()
-        return self.classes.filter(
+        classes = self.classes.filter(
             semester__end_date__lt=today
-        ).order_by(
+        ) | self.classes.filter(
+            ending__lt=today
+        )
+        return classes.order_by(
+            '-ending',
             '-semester__end_date',
             '-monday',
             'start_time'

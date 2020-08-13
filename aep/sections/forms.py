@@ -43,7 +43,10 @@ class ClassAddEnrollmentForm(ModelForm):
         limit = datetime.datetime.today() - datetime.timedelta(days=7)
         qst = Section.objects.filter(
             semester__start_date__gte=limit
-        ).order_by('site', 'title', 'start_time')
+        ) | Section.objects.filter(
+            starting__gte=limit
+        )
+        qst.order_by('site', 'title', 'start_time')
         if site and site[0] != '':
             qst = qst.filter(site=site[0])
         if program and program[0] != '':

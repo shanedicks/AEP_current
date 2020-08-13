@@ -15,7 +15,7 @@
                 {% endfor %}
             </tr>
             <tr>
-                <td>{{ enrollment.section.semester.start_date|date:"m-d-y" }} to {{ enrollment.section.semester.end_date|date:"m-d-y" }}</td>
+                <td>{{ enrollment.section.start_date|date:"m-d-y" }} to {{ enrollment.section.end_date|date:"m-d-y" }}</td>
                 {% for att in enrollment.attendance.all %}
                     <td>
                         {% if att.attendance_type == "X" %}

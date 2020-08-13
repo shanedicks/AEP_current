@@ -55,13 +55,17 @@ def needs_post_test(student):
 @rules.predicate
 def has_post_tested(student):
     last_test = student.tests.last_test
-    last_class = student.completed_classes().exclude(
+    classes = student.completed_classes().exclude(
         section__program='ADMIN'
     ).exclude(
         section__program='TRANS'
-    ).latest('section__semester__end_date')
-    last_class_end = last_class.section.semester.end_date
-    return last_test > last_class_end
+    )
+    semester_end = classes.latest('section__semester__end_date').section.semester.end_date
+    section_end = classes.latest('section__ending').section.ending
+    if section_end is not None:
+        return last_test > section_end
+    else:
+        return last_test > semester_end
 
 
 has_post_test = ~needs_post_test | has_post_tested

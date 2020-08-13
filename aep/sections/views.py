@@ -674,6 +674,7 @@ class StudentClassListView(LoginRequiredMixin, ListView):
             return Enrollment.objects.filter(
                 student__slug=slug
             ).order_by(
+                "-section__starting",
                 "-section__semester__start_date",
                 "section__tuesday",
                 "section__start_time"
@@ -694,6 +695,7 @@ class StudentCurrentClassListView(StudentClassListView):
         return Student.objects.get(
             slug=slug
         ).current_classes().order_by(
+            "-section__starting",
             "-section__semester__start_date",
             "section__tuesday",
             "section__start_time"
@@ -716,6 +718,7 @@ class StudentPastClassListView(StudentClassListView):
         return Student.objects.get(
             slug=slug
         ).past_classes().order_by(
+            "-section__starting",
             "-section__semester__start_date",
             "section__tuesday",
             "section__start_time"

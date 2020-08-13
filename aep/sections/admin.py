@@ -67,6 +67,8 @@ class SectionResource(resources.ModelResource):
             'room',
             'program',
             'seats',
+            'starting',
+            'ending',
             'start_time',
             'end_time',
             'WRU_ID',
