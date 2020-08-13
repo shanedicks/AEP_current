@@ -376,7 +376,7 @@ class Section(models.Model):
         if self.ending is not None:
             end = self.ending
         else:
-            start = self.semester.end_date
+            end = self.semester.end_date
         class_dates = []
         date_range = end - start
         for j in range(date_range.days + 1):
