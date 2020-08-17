@@ -693,9 +693,10 @@ admin.site.register(WIOA, WIOAAdmin)
 class CustomUserAdmin(ImportExportMixin, UserAdmin):
     resource_class = UserResource
 
-    list_display = ("last_name", "first_name", "email", "username")
+    list_display = ("username", "last_name", "first_name", "email")
 
     search_fields = [
+        "username",
         "last_name",
         "first_name",
         "email"
