@@ -128,7 +128,7 @@ def enrollment_notification_task(enrollment_id):
 			date=enrollment.last_modified.date()
 		),
 		'enrollment_bot@dccaep.org',
-		[enrollment.section.teacher.user.email]
+		[enrollment.section.teacher.email]
 	)
 	email.send()
 	return True
