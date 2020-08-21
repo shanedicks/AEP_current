@@ -7,6 +7,7 @@
     	<tr>
     		<th>Name</th>
     		<th>Phone</th>
+            <th>For Students</th>
     		<th>Email</th>
             <th>G Suite Email</th>
         </tr>
@@ -14,6 +15,7 @@
         	<tr>
 	            <td><a href="{% url 'people:staff home' slug=staff.slug %}">{{ staff }}</a></td>
 	            <td>{{ staff.phone }}</td>
+                <td>{{ staff.alt_phone }}</td>
 	            <td>{{ staff.email }}</td>
                 <td>{{ staff.g_suite_email }}</td>
             </tr>
@@ -24,6 +26,7 @@
         <tr>
             <th>Name</th>
             <th>Phone</th>
+            <th>For Students</th>
             <th>Email</th>
             <th>G Suite Email</th>
         </tr>
@@ -31,6 +34,7 @@
             <tr>
                 <td><a href="{% url 'people:staff home' slug=staff.slug %}">{{ staff }}</a></td>
                 <td>{{ staff.phone }}</td>
+                <td>{{ staff.alt_phone }}</td>
                 <td>{{ staff.email }}</td>
                 <td>{{ staff.g_suite_email }}</td>
             </tr>
@@ -41,11 +45,13 @@
         <tr>
             <th>Name</th>
             <th>Phone</th>
+            <th>For Students</th>
             <th>Email</th>
         {% for staff in partners %}
             <tr>
                 <td><a href="{% url 'people:staff home' slug=staff.slug %}">{{ staff }}</a></td>
                 <td>{{ staff.phone }}</td>
+                <td>{{ staff.alt_phone }}</td>
                 <td>{{ staff.email }}</td>
             </tr>
         {% endfor %}

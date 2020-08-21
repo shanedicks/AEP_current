@@ -515,6 +515,7 @@ class MeetingNoteAdmin(ImportExportActionModelAdmin):
         'meeting_date',
         'start_time',
         'end_time',
+        'meeting_topic',
         'progress',
         'next_steps',
         'notes'

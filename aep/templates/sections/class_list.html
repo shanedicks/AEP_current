@@ -11,6 +11,7 @@
     <table class="table">
 	    <tr>
 	    	<th>Site</th>
+	    	<th>Program</th>
 	    	<th>Class</th>
             <th>Active Students</th>
 	    	<th>Open Seats</th>
@@ -24,7 +25,8 @@
         {% endif %}
 	    {% for section in object_list %}
 	    <tr>
-	    	<td>{{ section.site }}</td>   
+	    	<td>{{ section.site }}</td> 
+	    	<td>{{ section.program }}</td>  
 	        <td><a href="{{ section.get_absolute_url }}">{{ section.title }}</a></td>
             <td>{{ section.get_active.count }}</td>
 	        <td>{{ section.open_seats }}</td>

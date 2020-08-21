@@ -420,8 +420,10 @@ class NewMeetingNoteForm(ModelForm):
     RETENTION = 'Retention'
     NEXT_STEPS = 'Plan Next Steps'
     COLLEGE = 'Discuss College Options'
+    CHECK_IN = 'Standard check-in'
 
     MEETING_TOPIC_CHOICES = (
+        (CHECK_IN, 'Standard check-in'),
         (PERSONAL, 'Personal'),
         (CLASSWORK, 'Classwork/Tutoring'),
         (HISET, 'Official HiSET Registration/Prep'),
