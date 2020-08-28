@@ -6,7 +6,7 @@ from .tasks import enforce_attendance_task
 
 class Semester(models.Model):
 
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=40)
     start_date = models.DateField()
     end_date = models.DateField()
 

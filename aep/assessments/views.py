@@ -900,3 +900,116 @@ class GainCSV(LoginRequiredMixin, FormView):
 
         data = self.get_data(tests)
         return render_to_csv(data=data, filename=filename)
+
+class EventAttendanceCSV(LoginRequiredMixin, FormView):
+
+    model = TestAppointment
+    form_class = DateFilterForm
+    template_name = "assessments/event_attendance_csv.html"
+
+    def get_data(self, student_dict):
+        data = []
+        headers = [
+            "PROVIDERID",
+            "SID",
+            "OTHER_ID",
+            "LAST_NAME",
+            "FIRST_NAME",
+            "MIDDLE_INITIAL",
+            "COURSE_ID",
+            "COURSE_NAME",
+            "Partner",
+            "HOURS_1", "HOURS_DATE_1", "HOURS_DL_1",
+            "HOURS_2", "HOURS_DATE_2", "HOURS_DL_2",
+            "HOURS_3", "HOURS_DATE_3", "HOURS_DL_3",
+            "HOURS_4", "HOURS_DATE_4", "HOURS_DL_4", 
+            "HOURS_5", "HOURS_DATE_5", "HOURS_DL_5",
+            "HOURS_6", "HOURS_DATE_6", "HOURS_DL_6",
+            "HOURS_7", "HOURS_DATE_7", "HOURS_DL_7",
+            "HOURS_8", "HOURS_DATE_8", "HOURS_DL_8",
+            "HOURS_9", "HOURS_DATE_9", "HOURS_DL_9",
+            "HOURS_10", "HOURS_DATE_10", "HOURS_DL_10",
+            "HOURS_11", "HOURS_DATE_11", "HOURS_DL_11",
+            "HOURS_12", "HOURS_DATE_12", "HOURS_DL_12",
+            "HOURS_13", "HOURS_DATE_13", "HOURS_DL_13",
+            "HOURS_14", "HOURS_DATE_14", "HOURS_DL_14",
+            "HOURS_15", "HOURS_DATE_15", "HOURS_DL_15",
+            "HOURS_16", "HOURS_DATE_16", "HOURS_DL_16",
+            "HOURS_17", "HOURS_DATE_17", "HOURS_DL_17", 
+            "HOURS_18", "HOURS_DATE_18", "HOURS_DL_18", 
+            "HOURS_19", "HOURS_DATE_19", "HOURS_DL_19",
+            "HOURS_20", "HOURS_DATE_20", "HOURS_DL_20",
+            "HOURS_21", "HOURS_DATE_21", "HOURS_DL_21",
+            "HOURS_22", "HOURS_DATE_22", "HOURS_DL_22",
+            "HOURS_23", "HOURS_DATE_23", "HOURS_DL_23",
+            "HOURS_24", "HOURS_DATE_24", "HOURS_DL_24",
+            "HOURS_25", "HOURS_DATE_25", "HOURS_DL_25",
+            "HOURS_26", "HOURS_DATE_26", "HOURS_DL_26",
+            "HOURS_27", "HOURS_DATE_27", "HOURS_DL_27",
+            "HOURS_28", "HOURS_DATE_28", "HOURS_DL_28",
+            "HOURS_29", "HOURS_DATE_29", "HOURS_DL_29",
+            "HOURS_30", "HOURS_DATE_30", "HOURS_DL_30",
+            "HOURS_31", "HOURS_DATE_31", "HOURS_DL_31",
+            "HOURS_32", "HOURS_DATE_32", "HOURS_DL_32",
+            "HOURS_33", "HOURS_DATE_33", "HOURS_DL_33",
+            "HOURS_34", "HOURS_DATE_34", "HOURS_DL_34",
+            "HOURS_35", "HOURS_DATE_35", "HOURS_DL_35",
+            "HOURS_36", "HOURS_DATE_36", "HOURS_DL_36",
+            "HOURS_37", "HOURS_DATE_37", "HOURS_DL_37",
+            "HOURS_38", "HOURS_DATE_38", "HOURS_DL_38",
+            "HOURS_39", "HOURS_DATE_39", "HOURS_DL_39",
+            "HOURS_40", "HOURS_DATE_40", "HOURS_DL_40",
+            "HOURS_41", "HOURS_DATE_41", "HOURS_DL_41",
+            "HOURS_42", "HOURS_DATE_42", "HOURS_DL_42",
+            "HOURS_43", "HOURS_DATE_43", "HOURS_DL_43",
+            "HOURS_44", "HOURS_DATE_44", "HOURS_DL_44", 
+            "HOURS_45", "HOURS_DATE_45", "HOURS_DL_45",
+            "HOURS_46", "HOURS_DATE_46", "HOURS_DL_46",
+            "HOURS_47", "HOURS_DATE_47", "HOURS_DL_47",
+            "HOURS_48", "HOURS_DATE_48", "HOURS_DL_48"
+        ]
+        data.append(headers)
+        for item in student_dict:
+            s = student_dict[item]
+            data.append(s)
+        return data
+
+    def form_valid(self, form):
+        appts = TestAppointment.objects.filter(attendance_type='P')
+        filename = 'event_attendance.csv'
+        if form.cleaned_data['from_date'] != "":
+            from_date = form.cleaned_data['from_date']
+            appts = appts.filter(event__start__gte=from_date)
+        if form.cleaned_data['to_date'] != "":
+            to_date = form.cleaned_data['to_date']
+            appts = appts.filter(event__start__lte=to_date)
+        student_dict = {}
+        for appt in appts:
+            if appt.attendance_date is not None:
+                date = appt.attendance_date
+            else:
+                date = appt.event.start.date()
+            record = [
+                appt.att_hours,
+                date.strftime("%Y%m%d"),
+                "N"
+            ]
+            if appt.student.WRU_ID not in student_dict:
+                student = [
+                    '9',
+                    appt.student.WRU_ID,
+                    "",
+                    appt.student.last_name,
+                    appt.student.first_name,
+                    '',
+                    '',
+                    '',
+                    appt.student.partner,
+                ]
+                student_dict[appt.student.WRU_ID] = student
+                student_dict[appt.student.WRU_ID].extend(record)
+            else:
+                student_dict[appt.student.WRU_ID].extend(record)
+        data = self.get_data(student_dict)
+        return render_to_csv(data=data, filename=filename)
+

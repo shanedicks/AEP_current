@@ -89,7 +89,10 @@ report_patterns = [
         name='gain csv'),
     url(r'^accelerated-coaching/$',
         views.AcceleratedCoachingReport.as_view(),
-        name='accelerated coaching')
+        name='accelerated coaching'),
+    url(r'^event-attendance/$',
+        views.EventAttendanceCSV.as_view(),
+        name='event attendance csv')
 ]
 
 single_event_patterns = [
