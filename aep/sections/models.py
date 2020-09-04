@@ -593,11 +593,16 @@ class Enrollment(models.Model):
 
     def save(self, *args, **kwargs):
         super(Enrollment, self).save()
+        mod = self.last_modified.date()
         if self.section.starting is not None:
             start = self.section.starting
         else:
             start = self.section.semester.start_date
-        if self.last_modified.date() > start and self.status is not self.COMPLETED:
+        if self.section.ending is not None:
+            end = self.section.ending
+        else:
+            end = self.section.semester.end_date
+        if mod > start and mod < end and self.status is not self.COMPLETED:
             enrollment_notification_task.delay(self.id)
 
 
