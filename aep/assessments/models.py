@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from django.conf import settings
 from core.tasks import send_mail_task
+from core.utils import get_fiscal_year_start_date
 from django.urls import reverse
 from django.db import models
 from people.models import Staff, Student
@@ -313,9 +314,6 @@ class TestHistory(models.Model):
             kwargs={'slug': self.student.slug}
         )
 
-    def has_pretest(self):
-        return self.last_test > date.today() - timedelta(days=150)
-
     def update_status(self, test):
         if not self.last_test:
             self.last_test = test.test_date
@@ -325,18 +323,22 @@ class TestHistory(models.Model):
         self.test_assignment = test.assign()
         self.save()
 
+    @property
     def active_hours(self):
-        attendance_set = Attendance.objects.filter(
-            enrollment__student=self.student,
-            attendance_date__gte=self.last_test,
-            attendance_type='P'
-        )
+        if self.last_test is None:
+            return 0
+        else:
+            attendance_set = Attendance.objects.filter(
+                enrollment__student=self.student,
+                attendance_date__gte=self.last_test,
+                attendance_type='P'
+            )
 
-        total_hours = 0
+            total_hours = 0
 
-        for attendance in attendance_set:
-            total_hours += attendance.hours()
-        return total_hours
+            for attendance in attendance_set:
+                total_hours += attendance.hours
+            return total_hours
 
     @property
     def latest_tabe(self):

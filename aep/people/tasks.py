@@ -360,4 +360,3 @@ def summary_report_task(from_date, to_date, email):
                 'wru': student.WRU_ID,
                 'num_classes': enrollments.count()
             }
-

@@ -32,6 +32,8 @@
             <a class="btn btn-default" href="{% url 'assessments:appointment history' slug=history.student.slug %}">View All Appointments</a>
         </div>
     </div>
+    <h4>Attendance Since Last Test</h4>
+        <p>{{ history.active_hours }}
     <h2>Scores</h2>
     <div class='well'>
         <h3>NRS Reported Tests</h3>

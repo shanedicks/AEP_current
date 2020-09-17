@@ -1,9 +1,11 @@
 import csv
+import datetime
 import requests
 from apiclient import discovery
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
 from django.utils.crypto import get_random_string
+from django.utils import timezone
 from django.http import HttpResponse
 from django.conf import settings
 
@@ -27,6 +29,15 @@ def render_to_csv(data, filename):
         writer.writerow(row)
 
     return response
+
+def get_fiscal_year_start_date():
+    today = timezone.now()
+    if today.month >= 7:
+        year = today.year
+    else:
+        year = today.year - 1
+    return timezone.make_aware(datetime.date(year, 7, 1))
+
 
 def state_session():
     session = requests.Session()
