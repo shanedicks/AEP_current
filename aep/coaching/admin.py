@@ -156,6 +156,7 @@ class MeetingNoteResource(resources.ModelResource):
         model = MeetingNote
         fields = (
             'id',
+            'coaching',
             'coaching__coach__last_name',
             'coaching__coachee__last_name',
             'coaching__coachee__first_name',
