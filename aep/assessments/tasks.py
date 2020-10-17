@@ -65,6 +65,44 @@ def orientation_status_task(student_id):
     student.save()
 
 @shared_task
+def test_process_task(test_history_id, test_type, test_id):
+    test_history = apps.get_model('assessments', 'TestHistory').objects.get(id=test_history_id)
+    tests = apps.get_model('assessments', test_type)
+    test = tests.objects.get(id=test_id)
+    test_history.update_status(test)
+
+    PoP = apps.get_model('people', 'PoP')
+    pretest_limit = test.test_date - timedelta(days=180)
+    pops = PoP.objects.filter(
+        student=test_history.student,
+        pretest_date__gte=pretest_limit
+    )
+    if pops.count() == 2:
+        pop = pops[1]
+        newer = pops[0]
+        newer.pretest_date = test_history.last_test_date
+        newer.pretest_type = test_history.last_test_type
+        newer.save()
+    else:
+        try:
+            pop = pops[0]
+        except IndexError:
+            return False
+    if test_type == pop.pretest_type:
+        pretest = tests.objects.get(
+            student=test_history,
+            test_date=pop.pretest_date
+        )
+    else:
+        pretest = apps.get_model('assessments', pop.pretest_type).objects.get(
+                student=test_history,
+                test_date=pop.pretest_date
+            )
+    pop.made_gain = test.check_gain(pretest)
+    pop.save()
+    return True
+
+@shared_task
 def accelerated_coaching_report_task(from_date, to_date, email_address):
     filename = 'accelerated_coaching_report.csv'
     from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S').date()

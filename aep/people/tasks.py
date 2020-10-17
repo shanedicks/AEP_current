@@ -376,10 +376,21 @@ def pop_update_task(student_id, date):
             pop.last_service_date=date
             pop.save()
     except PoP.DoesNotExist:
+        PoP.objects.filter(student=student).update(active=False)
         pop = PoP(
             student=student,
             start_date=date,
             last_service_date=date
         )
+        try:
+            tests=student.tests
+            pretest_limit = date - timedelta(days=180)
+            if (tests.last_test_date is not None and
+                pop.start_date > tests.last_test_date and
+                tests.last_test_date > pretest_limit):
+                pop.pretest_date = tests.last_test_date
+                pop.pretest_type = tests.last_test_type
+        except ObjectDoesNotExist:
+            pass
         pop.save()
     return True

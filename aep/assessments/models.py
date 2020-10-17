@@ -8,7 +8,7 @@ from core.utils import get_fiscal_year_start_date
 from people.models import Staff, Student, PoP
 from sections.models import Attendance, Site
 from people.tasks import pop_update_task
-from .tasks import orientation_status_task
+from .tasks import orientation_status_task, test_process_task
 
 
 class TestEvent(models.Model):
@@ -327,6 +327,8 @@ class TestHistory(models.Model):
     def update_status(self, test):
         if not self.last_test_date:
             self.last_test_date = test.test_date
+            self.last_test_type = test.get_test_type()
+            self.test_assignment = test.assign()
         else:
             if self.last_test_date <= test.test_date:
                 self.last_test_date = test.test_date
@@ -404,7 +406,7 @@ class NRSTest(Test):
 
     def save(self, *args, **kwargs):
         super(Test, self).save(*args, **kwargs)
-        self.student.update_status(self)
+        test_process_task.delay(self.student.id, self.get_test_type(), self.id)
 
 
 class Tabe(NRSTest):
@@ -593,6 +595,29 @@ class Tabe(NRSTest):
 
         return " ".join([form, r_level, m_level, l_level])
 
+    def check_gain(self, pretest):
+        if pretest.get_test_type() == 'Clas_E':
+            if pretest.read_level == '4' and self.read_level == 'M':
+                return True
+            else:
+                return False
+        try:
+            read = self.read_nrs > pretest.read_nrs
+        except TypeError:
+            read = False
+        try:
+            math = self.math_nrs > pretest.math_nrs
+        except TypeError:
+            math = False
+        try:
+            lang = self.lang_nrs > pretest.lang_nrs
+        except TypeError:
+            lang = False
+        if any([read, math, lang]):
+            return True
+        else:
+            return False
+
 
 class Tabe_Loc(NRSTest):
 
@@ -725,6 +750,14 @@ class Clas_E(NRSTest):
         else:
             return "11 M"
         return " ".join([level, form])
+
+    def check_gain(self, pretest):
+        if pretest.get_test_type() == 'Tabe':
+            return False
+        try:
+            return self.read_nrs > pretest.read_nrs
+        except TypeError:
+            return False
 
 
 class Clas_E_Loc(NRSTest):

@@ -34,16 +34,28 @@
     </div>
     <h2>History</h2>
     <div class='well'>
-        <h4>Last Tested</h4>
         {% if history.last_test_date is None %}
-            <p>{{history.student.first_name}} doesn't seem to have any tests on record</p>
+            <h4>{{history.student.first_name}} doesn't seem to have any tests on record</h4>
         {% else %}
-            <p>{{ history.last_test_date }}</p>
+        <table class='table'>
+          <tr>
+            <td><h4>Last Tested</h4></td>
+            <td><p>{{ history.last_test_date }}</p></td>
+          </tr>
+          <tr>
+            <td><h4>Last Test Type</h4></td>
+            <td><p>{{ history.last_test_type }}</p></td>
+          </tr>
+          <tr>
+            <td><h4>Attendance Since Last Test</h4></td>
+            <td><p>{{ history.active_hours }}</p></td>
+          </tr>
+          <tr>
+            <td><h4>Next Test Assignment</h4></td>
+            <td><p>{{ history.test_assignment }}</p></td>
+          </tr>
+        </table>
         {%endif%}
-        <h4>Attendance Since Last Test</h4>
-            <p>{{ history.active_hours }}
-        <h4>Next Test Assignment</h4>
-            <p>{{ history.test_assignment }}</p>
     </div>
     <h2>Scores</h2>
     <div class='well'>

@@ -521,7 +521,6 @@ class Student(Profile):
         dates = sorted(dates)
         for date in dates:
             exit = date - timedelta(days=90)
-            pretest = date - timedelta(days=180)
             try:
                 pop = PoP.objects.filter(
                     student=self,
@@ -538,9 +537,10 @@ class Student(Profile):
                 )
                 try:
                     tests = self.tests
+                    pretest_limit = date - timedelta(days=180)
                     if (tests.last_test_date is not None and
                         pop.start_date > tests.last_test_date and
-                        tests.last_test_date > pretest):
+                        tests.last_test_date > pretest_limit):
                         pop.pretest_date = tests.last_test_date
                         pop.pretest_type = tests.last_test_type
                 except ObjectDoesNotExist:
@@ -1896,6 +1896,7 @@ class PoP(models.Model):
     )
 
     class Meta:
+        verbose_name = "Period of Participation"
         verbose_name_plural = "Periods of Participation"
         unique_together = ['student', 'start_date']
         ordering = ['-start_date', 'student']
