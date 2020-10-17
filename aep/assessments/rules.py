@@ -25,7 +25,7 @@ has_pretest = has_tabe | has_clas_e | has_gain
 
 @rules.predicate
 def within_six_months(student):
-    if student.tests.last_test == None:
+    if student.tests.last_test_date == None:
         return False
     else:
         target = timezone.now().date() - timedelta(days=150)    
