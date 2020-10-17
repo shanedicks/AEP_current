@@ -814,7 +814,7 @@ class ElearnRecord(models.Model):
     )
 
     g_suite_email = models.EmailField(
-        max_length=40,
+        max_length=60,
         blank=True,
     )
 

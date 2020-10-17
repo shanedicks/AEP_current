@@ -19,7 +19,9 @@ from .forms import (
         GainForm, HiSet_Practice_Form, CSVImportForm,
         TestAppointmentAttendanceForm, TestAttendanceFormSet
     )
-from .tasks import event_attendance_report_task, accelerated_coaching_report_task
+from .tasks import (event_attendance_report_task,
+        accelerated_coaching_report_task, testing_eligibility_report
+    )
 
 
 class TestingHomeView(LoginRequiredMixin, TemplateView):
@@ -54,6 +56,12 @@ class TestEventAttendanceReport(LoginRequiredMixin, View):
         user_email = request.user.email
         event_attendance_report_task.delay(event.id, user_email)
         return HttpResponseRedirect(reverse('assessments:test event detail', args=(event.pk,)))
+
+
+class TestingEligibilityReportView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        user_email = request.user.email
 
 
 class AcceleratedCoachingReport(LoginRequiredMixin, FormView):

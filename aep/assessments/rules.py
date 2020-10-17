@@ -29,7 +29,7 @@ def within_six_months(student):
         return False
     else:
         target = timezone.now().date() - timedelta(days=150)    
-        return student.tests.last_test > target
+        return student.tests.last_test_date > target
 
 
 has_current_pretest = has_pretest & within_six_months
@@ -54,7 +54,7 @@ def needs_post_test(student):
 
 @rules.predicate
 def has_post_tested(student):
-    last_test = student.tests.last_test
+    last_test = student.tests.last_test_date
     classes = student.completed_classes().exclude(
         section__program='ADMIN'
     ).exclude(
@@ -63,9 +63,9 @@ def has_post_tested(student):
     semester_end = classes.latest('section__semester__end_date').section.semester.end_date
     section_end = classes.latest('section__ending').section.ending
     if section_end is not None:
-        return last_test > section_end
+        return last_test_date > section_end
     else:
-        return last_test > semester_end
+        return last_test_date > semester_end
 
 
 has_post_test = ~needs_post_test | has_post_tested

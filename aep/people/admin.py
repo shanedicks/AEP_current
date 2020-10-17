@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
 from .models import (
-    Student, Staff, WIOA, 
+    Student, Staff, WIOA, PoP,
     CollegeInterest, Paperwork,
     )
 from coaching.models import ElearnRecord, AceRecord
@@ -242,6 +242,51 @@ class PaperworkResource(resources.ModelResource):
         )
 
 
+class PopResource(resources.ModelResource):
+
+    student = fields.Field(
+        column_name='student',
+        attribute='student',
+        widget=widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    class Meta:
+        model = PoP
+        fields = (
+            'id',
+            'student',
+            'start_date',
+            'last_service_date',
+            'active',
+            'made_gain',
+            'pretest_date',
+            'pretest_type',
+        )
+
+
+class PopAdmin(ImportExportActionModelAdmin):
+
+    resource_class = PopResource
+
+    list_display = (
+        '__str__',
+        'pretest_type',
+        'pretest_date',
+        'active',
+        'made_gain',
+    )
+
+    fields = [
+        ('start_date',
+        'last_service_date'),
+        ('active',
+        'made_gain'),
+        'pretest_date',
+        'pretest_type'
+    ]
+
+admin.site.register(PoP, PopAdmin)
+
 class StudentAdmin(ImportExportActionModelAdmin):
 
     resource_class = StudentResource
@@ -376,8 +421,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
                 gain.update(student=t)
                 hiset = q[1].tests.hiset_practice_tests.all()
                 hiset.update(student=t)
-                if t.last_test == None:
-                    t.last_test = q[1].tests.last_test
+                if t.last_test_date == None:
+                    t.last_test_date = q[1].tests.last_test
                 q[1].tests.delete()
                 t.save()
         except ObjectDoesNotExist:

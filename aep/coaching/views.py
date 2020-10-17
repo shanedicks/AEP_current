@@ -535,9 +535,9 @@ class ElearnRecordCSV(LoginRequiredMixin, FormView):
 
         for student in students:
             try:
-                last_test = student.student.tests.last_test
+                last_test_date = student.student.tests.last_test_date
             except ObjectDoesNotExist:
-                last_test = 'No test on record'
+                last_test_date = 'No test on record'
             try:
                 coach = student.student.coaches.filter(active=True).latest('id').coach
             except ObjectDoesNotExist:
@@ -545,7 +545,7 @@ class ElearnRecordCSV(LoginRequiredMixin, FormView):
             s = [
                 student.student.last_name,
                 student.student.first_name,
-                last_test,
+                last_test_date,
                 coach,
                 student.g_suite_email,
                 student.student.partner,

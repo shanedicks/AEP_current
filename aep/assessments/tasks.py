@@ -1,10 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.apps import apps
 from django.core.mail.message import EmailMessage
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum, Q
+from django.utils import timezone
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -133,7 +134,7 @@ def accelerated_coaching_report_task(from_date, to_date, email_address):
                 coach,
                 last_attended,
                 last_hp,
-                student.tests.last_test,
+                student.tests.last_test_date,
                 "".join(["dccaep.org",
                     student.tests.get_absolute_url()])
             ]
@@ -148,3 +149,62 @@ def accelerated_coaching_report_task(from_date, to_date, email_address):
     email.attach_file(filename)
     email.send()
     return True
+
+@shared_task
+def testing_eligibility_report(email_address):
+    filename = 'testing_eligibility_report.csv'
+    records = apps.get_model('assessments', 'TestHistory').objects.all()
+    today = timezone.now().date()
+
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            "WRU_ID",
+            "Last Name",
+            "First Name",
+            "DOB",
+            "G Suite Email",
+            "Email",
+            "Phone",
+            "Native Language",
+            "Active Pretest",
+            "Last Test Type",
+            "Last Test Date",
+            "Test Assignment",
+            "Accumulated Hours",
+            "Current Enrollments",
+            "Current Teachers"
+
+        ]
+        writer.writerow(headers)
+        for record in records:
+
+            student = record.student
+            try:
+                g_suite_email = record.student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite_email = ''
+            try:
+                lang = student.WIOA.native_language
+            except ObjectDoesNotExist:
+                lang = ''
+            s = [
+                student.WRU_ID,
+                student.last_name,
+                student.first_name,
+                student.dob,
+                g_suite_email,
+                student.email,
+                native_language,
+
+            ]
+            writer.writerow(s)
+    email = EmailMessage(
+        'Testing Eligibility Report'
+        'The attached report includes a list of all student Testing Histories with contact information',
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+    pass

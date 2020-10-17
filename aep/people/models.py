@@ -1,9 +1,10 @@
 import requests
 import bs4
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.apps import apps
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -269,7 +270,7 @@ class Student(Profile):
     intake_date = models.DateField(
         null=True,
         blank=True,
-        default=timezone.localdate()
+        default=timezone.now
     )
     WRU_ID = models.CharField(
         null=True,
@@ -473,9 +474,11 @@ class Student(Profile):
         else:
             return semester_start
 
+    def all_attendance(self):
+        return apps.get_model('sections', 'Attendance').objects.filter(enrollment__student=self)
+
     def last_attendance(self):
-        attendance = apps.get_model('sections', 'Attendance').objects.filter(enrollment__student=self, attendance_type='P')
-        return attendance.latest('attendance_date').attendance_date
+        return self.all_attendance().filter(attendance_type='P').latest('attendance_date').attendance_date
 
     def testify(self):
         TestHistory = apps.get_model('assessments', 'TestHistory')
@@ -501,6 +504,48 @@ class Student(Profile):
                 student=self,
                 intake_date=datetime.today()
             )
+
+    def create_pops(self):
+        dates = list(self.test_appointments.exclude(
+            attendance_date=None
+        ).filter(
+            attendance_type='P'
+        ).values_list('attendance_date', flat=True))
+
+        dates.extend(list(self.all_attendance().exclude(
+            attendance_date=None
+        ).filter(
+            attendance_type='P'
+        ).values_list('attendance_date', flat=True)))
+
+        dates = sorted(dates)
+        for date in dates:
+            exit = date - timedelta(days=90)
+            pretest = date - timedelta(days=180)
+            try:
+                pop = PoP.objects.filter(
+                    student=self,
+                    last_service_date__gte=exit,
+                ).latest()
+                if date > pop.last_service_date:
+                    pop.last_service_date=date
+                    pop.save()
+            except PoP.DoesNotExist:
+                pop = PoP(
+                    student=self,
+                    start_date=date,
+                    last_service_date=date,
+                )
+                try:
+                    tests = self.tests
+                    if (tests.last_test_date is not None and
+                        pop.start_date > tests.last_test_date and
+                        tests.last_test_date > pretest):
+                        pop.pretest_date = tests.last_test_date
+                        pop.pretest_type = tests.last_test_type
+                except ObjectDoesNotExist:
+                    pass
+                pop.save()
 
 
 class Staff(Profile):
@@ -1815,3 +1860,67 @@ class CollegeInterest(models.Model):
 
     def get_absolute_url(self):
         return reverse('people:college interest detail', kwargs={'slug': self.student.slug})
+
+
+class PoP(models.Model):
+
+    student = models.ForeignKey(
+        Student,
+        models.CASCADE,
+        related_name='pop'
+    )
+
+    start_date = models.DateField(
+        verbose_name='Start Date'
+    )
+
+    last_service_date = models.DateField(
+        verbose_name='Date of last service',
+    )
+
+    active = models.BooleanField(
+        default=True
+    )
+
+    made_gain = models.BooleanField(
+        default=False
+    )
+
+    pretest_date = models.DateField(
+        null=True
+    )
+
+    pretest_type = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name_plural = "Periods of Participation"
+        unique_together = ['student', 'start_date']
+        ordering = ['-start_date', 'student']
+        get_latest_by = 'last_service_date'
+
+    def total_hours(self):
+        att_set = apps.get_model('sections', 'Attendance').objects.filter(
+            enrollment__student=self.student,
+            attendance_date__gte=self.start_date,
+            attendance_date__lte=self.last_service_date,
+            attendance_type='P'
+        )
+        appt_set = apps.get_model('assessments', 'TestAppointment').objects.filter(
+            student=self.student,
+            attendance_date__gte=self.start_date,
+            attendance_date__lte=self.last_service_date,
+            attendance_type='P'
+        )
+        hours = 0.0
+        for att in att_set:
+            hours += att.hours
+        for appt in appt_set:
+            hours += float(appt.hours())
+        return hours
+
+    def __str__(self):
+        period = " - ".join([self.start_date.strftime('%m/%d/%Y'), self.last_service_date.strftime('%m/%d/%Y')])
+        return " | ".join([self.student.WRU_ID, self.student.__str__(), period])

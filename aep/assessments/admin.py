@@ -121,22 +121,25 @@ class TestHistoryAdmin(admin.ModelAdmin):
     list_display = (
         'student',
         'student_wru',
-        'last_test',
+        'last_test_type',
+        'last_test_date',
     )
 
     list_filter = (
-        'last_test',
+        'last_test_date',
     )
 
     search_fields = [
         'student__first_name',
         'student__last_name',
         'student_wru',
-        'last_test'
+        'last_test_date'
     ]
 
     fields = (
         'student_wru',
+        'last_test_type',
+        'last_test_date',
         'test_assignment'
     )
 

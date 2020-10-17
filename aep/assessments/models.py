@@ -1,11 +1,13 @@
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
+from django.apps import apps
 from django.conf import settings
-from core.tasks import send_mail_task
-from core.utils import get_fiscal_year_start_date
 from django.urls import reverse
 from django.db import models
-from people.models import Staff, Student
+from core.tasks import send_mail_task
+from core.utils import get_fiscal_year_start_date
+from people.models import Staff, Student, PoP
 from sections.models import Attendance, Site
+from people.tasks import pop_update_task
 from .tasks import orientation_status_task
 
 
@@ -272,10 +274,12 @@ class TestAppointment(models.Model):
             return 0
 
     def save(self, *args, **kwargs):
+        super(TestAppointment, self).save(*args, **kwargs)
         self.event.check_full()
         if self.event.test == 'Orientation' and self.attendance_type == 'P':
             orientation_status_task.delay(self.student.id)
-        super(TestAppointment, self).save(*args, **kwargs)
+        if self.attendance_date is not None:
+            pop_update_task.delay(self.student.id, self.attendance_date)
 
 
 class TestHistory(models.Model):
@@ -291,9 +295,15 @@ class TestHistory(models.Model):
         blank=True
     )
 
-    last_test = models.DateField(
+    last_test_date = models.DateField(
         blank=True,
         null=True
+    )
+
+    last_test_type = models.CharField(
+        max_length=20,
+        blank=True,
+        default="No Test"
     )
 
     test_assignment = models.CharField(
@@ -315,22 +325,28 @@ class TestHistory(models.Model):
         )
 
     def update_status(self, test):
-        if not self.last_test:
-            self.last_test = test.test_date
+        if not self.last_test_date:
+            self.last_test_date = test.test_date
         else:
-            if self.last_test <= test.test_date:
-                self.last_test = test.test_date
-        self.test_assignment = test.assign()
+            if self.last_test_date <= test.test_date:
+                self.last_test_date = test.test_date
+                self.last_test_type = test.get_test_type()
+                self.test_assignment = test.assign()
         self.save()
 
     @property
     def active_hours(self):
-        if self.last_test is None:
+        if self.last_test_date is None:
             return 0
         else:
             attendance_set = Attendance.objects.filter(
                 enrollment__student=self.student,
-                attendance_date__gte=self.last_test,
+                attendance_date__gte=self.last_test_date,
+                attendance_type='P'
+            )
+            appointment_set = TestAppointment.objects.filter(
+                student=self.student,
+                attendance_date__gte=self.last_test_date,
                 attendance_type='P'
             )
 
@@ -338,6 +354,8 @@ class TestHistory(models.Model):
 
             for attendance in attendance_set:
                 total_hours += attendance.hours
+            for appt in appointment_set:
+                total_hours += float(appt.hours())
             return total_hours
 
     @property
@@ -380,6 +398,9 @@ class NRSTest(Test):
 
     class Meta:
         abstract = True
+
+    def get_test_type(self):
+        return type(self).__name__
 
     def save(self, *args, **kwargs):
         super(Test, self).save(*args, **kwargs)

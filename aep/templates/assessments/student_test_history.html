@@ -32,17 +32,23 @@
             <a class="btn btn-default" href="{% url 'assessments:appointment history' slug=history.student.slug %}">View All Appointments</a>
         </div>
     </div>
-    <h4>Attendance Since Last Test</h4>
-        <p>{{ history.active_hours }}
+    <h2>History</h2>
+    <div class='well'>
+        <h4>Last Tested</h4>
+        {% if history.last_test_date is None %}
+            <p>{{history.student.first_name}} doesn't seem to have any tests on record</p>
+        {% else %}
+            <p>{{ history.last_test_date }}</p>
+        {%endif%}
+        <h4>Attendance Since Last Test</h4>
+            <p>{{ history.active_hours }}
+        <h4>Next Test Assignment</h4>
+            <p>{{ history.test_assignment }}</p>
+    </div>
     <h2>Scores</h2>
     <div class='well'>
         <h3>NRS Reported Tests</h3>
-        {% if history.last_test is None %}
-            <p>{{history.student.first_name}} doesn't seem to have any tests on record</p>
-        {% else %}
-            <p>Last Tested: {{ history.last_test }}</p>
-        {%endif%}
-            <p>Next Test Assignment: {{ history.test_assignment }}</p>
+
             {% if history.tabe_tests.count > 0 %}
                 <h4><a href="{% url 'assessments:student tabe list' slug=history.student.slug %}">TABE</a></h4>
                     {% with test=history.latest_tabe %}

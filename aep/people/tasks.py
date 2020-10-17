@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
@@ -78,9 +78,9 @@ def intake_retention_report_task(from_date, to_date, email_address):
         writer.writerow(headers)
         for student in new_students:
             try:
-                last_test = str(student.tests.last_test)
+                last_test_date = str(student.tests.last_test_date)
             except ObjectDoesNotExist:
-                last_test = "No Test History"
+                last_test_date = "No Test History"
             try:
                 latest_class_start = str(student.latest_class_start())
             except ObjectDoesNotExist:
@@ -108,7 +108,7 @@ def intake_retention_report_task(from_date, to_date, email_address):
                     student.get_absolute_url()]),
                 str(student.intake_date),
                 student.get_orientation_display(),
-                last_test,
+                last_test_date,
                 latest_class_start,
                 last_attended,
             ]
@@ -360,3 +360,26 @@ def summary_report_task(from_date, to_date, email):
                 'wru': student.WRU_ID,
                 'num_classes': enrollments.count()
             }
+
+@shared_task
+def pop_update_task(student_id, date):
+    date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S').date()
+    student = apps.get_model('people', 'Student').objects.get(id=student_id)
+    PoP = apps.get_model('people', 'PoP')
+    exit = date - timedelta(days=90)
+    try:
+        pop = PoP.objects.filter(
+            student=student,
+            last_service_date__gte=exit,
+        ).latest()
+        if date > pop.last_service_date:
+            pop.last_service_date=date
+            pop.save()
+    except PoP.DoesNotExist:
+        pop = PoP(
+            student=student,
+            start_date=date,
+            last_service_date=date
+        )
+        pop.save()
+    return True

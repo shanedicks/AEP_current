@@ -11,6 +11,7 @@ from core.utils import make_slug
 from core.tasks import send_mail_task
 from academics.models import Course
 from people.models import Staff, Student
+from people.tasks import pop_update_task
 from semesters.models import Semester
 from .tasks import activate_task, end_task, drop_task, enrollment_notification_task
 
@@ -592,7 +593,7 @@ class Enrollment(models.Model):
             )
 
     def save(self, *args, **kwargs):
-        super(Enrollment, self).save()
+        super(Enrollment, self).save(*args, **kwargs)
         mod = self.last_modified.date()
         if self.section.starting is not None:
             start = self.section.starting
@@ -687,3 +688,7 @@ class Attendance(models.Model):
         delta = d2 - d1
         hours = delta.total_seconds() / 3600
         return float("{0:.2f}".format(hours))
+
+    def save(self, *args, **kwargs):
+        super(Attendance, self).save(*args, **kwargs)
+        pop_update_task.delay(self.enrollment.student.id, self.attendance_date)

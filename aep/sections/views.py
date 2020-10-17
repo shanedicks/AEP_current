@@ -273,10 +273,10 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
             try:
                 tests = student.student.tests
                 assignment = tests.test_assignment
-                last_test = tests.last_test
+                last_test_date = tests.last_test_date
             except ObjectDoesNotExist:
                 assignment = 'No Test History'
-                last_test = ''
+                last_test_date = ''
             try:
                 g_suite = student.student.elearn_record.g_suite_email
             except ObjectDoesNotExist:
@@ -290,7 +290,7 @@ class StudentEnrollmentCSV(LoginRequiredMixin, FormView):
                 student.section.semester,
                 student.get_status_display(),
                 assignment,
-                last_test,
+                last_test_date,
                 student.student.partner,
                 str(student.student.dob),
                 student.student.get_gender_display(),
@@ -815,7 +815,7 @@ class AddClassView(LoginRequiredMixin, CreateView):
         creator = self.request.user
         enrollment.student = student
         enrollment.creator = creator
-        #if student.tests.last_test is None and enrollment.section.program != 'TRANS':
+        #if student.tests.last_test_date is None and enrollment.section.program != 'TRANS':
         #    form.add_error(
         #        None,
         #        'This student has no pre-test on record,'
