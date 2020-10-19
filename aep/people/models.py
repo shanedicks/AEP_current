@@ -1020,6 +1020,10 @@ class WIOA(models.Model):
         ("french", "French"),
         ("korean", "Korean"),
         ("japanese", "Japanese"),
+        ("creole", "Creole"),
+        ("portugese", "Portugese"),
+        ("turkish", "Turkish"),
+        ("russian", "Russian"),
         ("other", "Other")
     )
 
@@ -1060,7 +1064,6 @@ class WIOA(models.Model):
     native_language = models.CharField(
         max_length=20,
         choices=NATIVE_LANGUAGE_CHOICES,
-        default='english',
         blank=True,
         verbose_name=_("Native Language")
     )
