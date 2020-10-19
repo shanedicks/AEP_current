@@ -346,6 +346,7 @@ class Student(Profile):
     gender = models.CharField(
         max_length=1,
         choices=GENDER_CHOICES,
+        verbose_name=_('Sex')
     )
     marital_status = models.CharField(
         max_length=1,
@@ -1010,6 +1011,18 @@ class WIOA(models.Model):
         ("2", "Non-US Based"),
     )
 
+    NATIVE_LANGUAGE_CHOICES = (
+        ("english", "English"),
+        ("spanish", "Spanish"),
+        ("vietnamese", "Vietnamese"),
+        ("arabic", "Arabic"),
+        ("chinese", "Chinese"),
+        ("french", "French"),
+        ("korean", "Korean"),
+        ("japanese", "Japanese"),
+        ("other", "Other")
+    )
+
     student = models.OneToOneField(
         Student,
         models.CASCADE,
@@ -1046,8 +1059,10 @@ class WIOA(models.Model):
     )
     native_language = models.CharField(
         max_length=20,
+        choices=NATIVE_LANGUAGE_CHOICES,
+        default='english',
         blank=True,
-        verbose_name=_("Native Language - if not English")
+        verbose_name=_("Native Language")
     )
     country = models.CharField(
         max_length=20,
