@@ -1,6 +1,6 @@
 import requests
 import bs4
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import IntegrityError
 from django.contrib import admin
 from django.contrib.auth.models import User
@@ -268,6 +268,12 @@ class PopAdmin(ImportExportActionModelAdmin):
 
     resource_class = PopResource
 
+    search_fields = [
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID'
+    ]
+
     list_display = (
         '__str__',
         'pretest_type',
@@ -283,6 +289,18 @@ class PopAdmin(ImportExportActionModelAdmin):
         'made_gain'),
         'pretest_date',
         'pretest_type'
+    ]
+
+    list_filter = [
+        'active',
+        'made_gain',
+        'pretest_type',
+        'pretest_date'
+    ]
+
+    list_editable = [
+        "made_gain",
+        "active"
     ]
 
 admin.site.register(PoP, PopAdmin)
@@ -401,8 +419,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
                     intake_semester=sem[str(datetime.today().month)]
                 )
 
-    def move_test_history(self, request, queryset):
-        q = queryset.order_by('pk')
+    def move_test_history(self, request, q):
         try:
             t = q[0].tests
             t.student = q[1]
@@ -422,7 +439,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
                 hiset = q[1].tests.hiset_practice_tests.all()
                 hiset.update(student=t)
                 if t.last_test_date == None:
-                    t.last_test_date = q[1].tests.last_test
+                    t.last_test_date = q[1].tests.last_test_date
                 q[1].tests.delete()
                 t.save()
         except ObjectDoesNotExist:
@@ -431,7 +448,10 @@ class StudentAdmin(ImportExportActionModelAdmin):
     def move_classes(self, request, q):
         for c in q[0].classes.all():
             c.student = q[1]
-            c.save()
+            try:
+                c.save()
+            except IntegrityError:
+                pass
 
     def move_appointments(self, request, q):
         for a in q[0].test_appointments.all():
@@ -520,6 +540,41 @@ class StudentAdmin(ImportExportActionModelAdmin):
         except ObjectDoesNotExist:
             pass
 
+    def merge_pops(self, pop, pop2):
+            pop2.last_service_date = max(pop.last_service_date, pop2.last_service_date)
+            pop2.active = max(pop.active, pop2.active)
+            pop2.made_gain = max(pop.made_gain, pop2.made_gain)
+            if pop2.pretest_date is not None and pop.pretest_date is not None:
+                pop2.pretest_date = min(pop.pretest_date, pop2.pretest_date)
+            elif pop.pretest_date is not None:
+                pop2.pretest_date = pop.pretest_date
+            pop2.pretest_type = max(pop.pretest_type, pop2.pretest_type)
+            pop2.save()
+            pop.delete()
+
+    def move_or_merge_pops(self, request, q):
+        og_pops = q[0].pop.all()
+        for pop in og_pops:
+            try:
+                pop.student = q[1]
+                pop.save()
+            except IntegrityError:
+                conflict = q[1].pop.get(
+                    start_date=pop.start_date
+                )
+                self.merge_pops(pop, conflict)
+
+        new_pops = q[1].pop.all()
+        i, j = 0, 1
+        while j < new_pops.count():
+            older = new_pops[i]
+            newer = new_pops[j]
+            exit = older.last_service_date + timedelta(days=90)
+            if newer.start_date <= exit:
+                self.merge_pops(newer, older)
+            i += 1
+            j += 1
+
     def full_merge(self, request, queryset):
         q = queryset.order_by('pk')
         self.move_test_history(request, q)
@@ -531,6 +586,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         self.move_college_interest(request, q)
         self.copy_office_tracking(request, q)
         self.move_or_copy_paperwork(request, q)
+        self.move_or_merge_pops(request, q)
         n = q[1]
         o = q[0]
         n.intake_date = o.intake_date
