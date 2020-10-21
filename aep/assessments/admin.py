@@ -3,7 +3,7 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from people.models import Student
 from .models import *
-from .tasks import event_attendance_report_task
+from .tasks import event_attendance_report_task, test_process_task
 
 
 class TestEventAdmin(admin.ModelAdmin):
@@ -247,6 +247,13 @@ class TabeAdmin(ImportExportActionModelAdmin):
         'lang_nrs',
     ]
 
+    actions = ImportExportActionModelAdmin.actions + [
+        'process_tests'
+    ]
+
+    def process_tests(self, request, queryset):
+        for obj in queryset:
+            test_process_task.delay(obj.student.id, obj.get_test_type(), obj.id)
 
 admin.site.register(Tabe, TabeAdmin)
 
@@ -293,6 +300,15 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
         'read_ss',
         'read_nrs'
     )
+
+    actions = ImportExportActionModelAdmin.actions + [
+        'process_tests'
+    ]
+
+    def process_tests(self, request, queryset):
+        for obj in queryset:
+            test_process_task.delay(obj.student.id, obj.get_test_type(), obj.id)
+
 
 
 admin.site.register(Clas_E, Clas_E_Admin)

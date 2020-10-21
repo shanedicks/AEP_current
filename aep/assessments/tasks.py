@@ -66,28 +66,45 @@ def orientation_status_task(student_id):
 
 @shared_task
 def test_process_task(test_history_id, test_type, test_id):
-    test_history = apps.get_model('assessments', 'TestHistory').objects.get(id=test_history_id)
     tests = apps.get_model('assessments', test_type)
-    test = tests.objects.get(id=test_id)
-    test_history.update_status(test)
-
+    try:
+        test = tests.objects.get(id=test_id)
+    except ObjectDoesNotExist:
+        logger.info("Couldn't find {0} test {1}".format(test_type, test_id))
+        return False
+    logger.info("Processing {0} test {1}".format(test_type, test_id))
+    test_history = apps.get_model('assessments', 'TestHistory').objects.get(id=test_history_id)
     PoP = apps.get_model('people', 'PoP')
+    student_pops = PoP.objects.filter(student=test_history.student)
+    test_history.update_status(test)
+    if student_pops.count() == 0:
+        logger.info("{0} has no PoP records".format(test_history))
+        return False
     pretest_limit = test.test_date - timedelta(days=180)
-    pops = PoP.objects.filter(
-        student=test_history.student,
+    pops = student_pops.filter(
         pretest_date__gte=pretest_limit
     )
     if pops.count() == 2:
         pop = pops[1]
         newer = pops[0]
-        newer.pretest_date = test_history.last_test_date
-        newer.pretest_type = test_history.last_test_type
+        newer.pretest_date = test.test_date
+        newer.pretest_type = test.get_test_type()
         newer.save()
-    else:
-        try:
-            pop = pops[0]
-        except IndexError:
-            return False
+    elif pops.count() == 1:
+        pop = pops[0]
+    elif pops.count() == 0:
+        start_limit = test.test_date + timedelta(days=180)
+        pops = student_pops.filter(
+            pretest_date=None,
+            start_date__gte=pretest_limit,
+            start_date__lte=start_limit,
+            )
+        pops.update(
+            pretest_date=test.test_date,
+            pretest_type=test.get_test_type()
+        )
+        logger.info("{0} logged as pretest for {1}".format(test, pops))
+        return False
     if test_type == pop.pretest_type:
         pretest = tests.objects.get(
             student=test_history,
@@ -99,6 +116,7 @@ def test_process_task(test_history_id, test_type, test_id):
                 test_date=pop.pretest_date
             )
     pop.made_gain = test.check_gain(pretest)
+    logger.info("gains checked for {0} with pretest {1} and postest {2}".format(pop, pretest, test))
     pop.save()
     return True
 

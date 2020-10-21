@@ -404,10 +404,6 @@ class NRSTest(Test):
     def get_test_type(self):
         return type(self).__name__
 
-    def save(self, *args, **kwargs):
-        super(Test, self).save(*args, **kwargs)
-        test_process_task.delay(self.student.id, self.get_test_type(), self.id)
-
 
 class Tabe(NRSTest):
 
@@ -443,16 +439,19 @@ class Tabe(NRSTest):
     read_level = models.CharField(
         max_length=1,
         choices=LEVEL_CHOICES,
+        blank=True
     )
 
     math_level = models.CharField(
         max_length=1,
         choices=LEVEL_CHOICES,
+        blank=True
     )
 
     lang_level = models.CharField(
         max_length=1,
         choices=LEVEL_CHOICES,
+        blank=True
     )
 
     read_ss = models.PositiveSmallIntegerField(
@@ -618,6 +617,10 @@ class Tabe(NRSTest):
         else:
             return False
 
+    def save(self, *args, **kwargs):
+        super(Tabe, self).save(*args, **kwargs)
+        test_process_task.delay(self.student.id, self.get_test_type(), self.id)
+
 
 class Tabe_Loc(NRSTest):
 
@@ -758,6 +761,10 @@ class Clas_E(NRSTest):
             return self.read_nrs > pretest.read_nrs
         except TypeError:
             return False
+
+    def save(self, *args, **kwargs):
+        super(Clas_E, self).save(*args, **kwargs)
+        test_process_task.delay(self.student.id, self.get_test_type(), self.id)
 
 
 class Clas_E_Loc(NRSTest):

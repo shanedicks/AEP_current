@@ -44,6 +44,9 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         if 'coaches' not in context:
             context['coaches'] = self.object.coaches.filter(active=True)
             context.update(kwargs)
+        if 'pops' not in context:
+            context['pops'] = self.object.pop.all()
+            context.update(kwargs)
         return context
 
 
