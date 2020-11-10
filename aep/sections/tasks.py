@@ -94,6 +94,7 @@ def participation_detail_task(email_address):
 	)
 	email.attach_file('participation_detail_report.csv')
 	email.send()
+	return True
 
 @shared_task
 def roster_to_classroom_task(section_id):

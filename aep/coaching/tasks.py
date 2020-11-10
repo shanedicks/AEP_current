@@ -15,3 +15,4 @@ def elearn_status_task(elearn_record_id):
 	elearn_record.elearn_status = 'Pending'
 	elearn_record.status_updated = datetime.today()
 	elearn_record.save()
+	return True
