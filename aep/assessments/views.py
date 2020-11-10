@@ -62,6 +62,8 @@ class TestingEligibilityReportView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         user_email = request.user.email
+        testing_eligibility_report.delay(user_email)
+        return HttpResponseRedirect(reverse_lazy('report success'))
 
 
 class AcceleratedCoachingReport(LoginRequiredMixin, FormView):

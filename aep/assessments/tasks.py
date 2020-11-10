@@ -57,12 +57,14 @@ def event_attendance_report_task(event_id, email_address):
     )
     email.attach_file(filename)
     email.send()
+    return True
 
 @shared_task
 def orientation_status_task(student_id):
     student = apps.get_model('people', 'Student').objects.get(id=student_id)
     student.orientation = 'C'
     student.save()
+    return True
 
 @shared_task
 def test_process_task(test_history_id, test_type, test_id):
@@ -195,7 +197,6 @@ def accelerated_coaching_report_task(from_date, to_date, email_address):
                     student.tests.get_absolute_url()])
             ]
             writer.writerow(s)
-
     email = EmailMessage(
         'Accelerated Coaching Report',
         'The attached report includes a list of all students with NRS Level 4 or above on any of the subtests (Reading, Language, Math) based on the date range selected when the report was run.',
@@ -223,27 +224,30 @@ def testing_eligibility_report(email_address):
             "Email",
             "Phone",
             "Native Language",
-            "Active Pretest",
+            "Program Area",
             "Last Test Type",
             "Last Test Date",
             "Test Assignment",
             "Accumulated Hours",
+            "Coach(es)",
             "Current Enrollments",
             "Current Teachers"
-
         ]
         writer.writerow(headers)
-        for record in records:
 
+        for record in records:
             student = record.student
+            coaches = [c.coach for c in student.coaches.filter(active=True)]
+            sections = [s.section for s in student.current_classes()]
+            teachers = [s.teacher for s in sections]
             try:
                 g_suite_email = record.student.elearn_record.g_suite_email
             except ObjectDoesNotExist:
                 g_suite_email = ''
             try:
-                lang = student.WIOA.native_language
+                native_language = student.WIOA.native_language
             except ObjectDoesNotExist:
-                lang = ''
+                native_language = ''
             s = [
                 student.WRU_ID,
                 student.last_name,
@@ -251,16 +255,25 @@ def testing_eligibility_report(email_address):
                 student.dob,
                 g_suite_email,
                 student.email,
+                student.phone,
                 native_language,
-
+                student.program,
+                record.last_test_type,
+                record.last_test_date,
+                record.test_assignment,
+                record.active_hours,
+                coaches,
+                sections,
+                teachers
             ]
             writer.writerow(s)
+    logger.info("Report Complete, composing email to {0}".format(email_address))
     email = EmailMessage(
-        'Testing Eligibility Report'
+        'Testing Eligibility Report',
         'The attached report includes a list of all student Testing Histories with contact information',
         'reporter@dccaep.org',
         [email_address]
     )
     email.attach_file(filename)
     email.send()
-    pass
+    return True
