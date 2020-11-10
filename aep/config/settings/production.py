@@ -1,8 +1,8 @@
 from .base import *
 
 # Celery Configuration
-broker_url = get_env_variable('CLOUDAMQP_URL')
-result_backend = get_env_variable('REDIS_URL')
+CELERY_BROKER_URL = get_env_variable('CLOUDAMQP_URL')
+CELERY_RESULT_BACKEND = get_env_variable('REDIS_URL')
 
 # Database Configuration
 import dj_database_url
