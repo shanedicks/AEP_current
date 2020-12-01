@@ -203,7 +203,6 @@ class Section(models.Model):
         shane = credentials.create_delegated('shane.dicks@elearnclass.org')
         http_auth = shane.authorize(Http())
         service = discovery.build('classroom', 'v1', http=http_auth)
-        print("Service built successfully")
 
         roster = service.courses().students().list(
             courseId=self.g_suite_id,
@@ -259,7 +258,6 @@ class Section(models.Model):
                     response.get('profile').get('emailAddress')))
 
         batch = service.new_batch_http_request(callback=callback)
-        print("Batch request created successfully")
 
         for email in new_emails:
             s = {
