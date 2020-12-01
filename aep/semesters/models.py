@@ -103,6 +103,9 @@ class Semester(models.Model):
         for section in self.get_sections():
             section.g_suite_attendance()
 
+    def roster_to_classroom(self):
+        for section in self.get_sections():
+            roster_to_classroom_task.delay(section.id)
 
 class Day(models.Model):
 

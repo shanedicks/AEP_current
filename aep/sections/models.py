@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta as td
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.errors import HttpError
+from django.apps import apps
 from django.db import models, IntegrityError
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -191,7 +192,10 @@ class Section(models.Model):
 
     def roster_to_classroom(self):
 
-        scopes = ['https://www.googleapis.com/auth/classroom.rosters']
+        scopes = [
+            'https://www.googleapis.com/auth/classroom.rosters',
+            'https://www.googleapis.com/auth/classroom.profile.emails'
+        ]
         credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
             keyfile_dict=settings.KEYFILE_DICT,
             scopes=scopes
@@ -199,24 +203,74 @@ class Section(models.Model):
         shane = credentials.create_delegated('shane.dicks@elearnclass.org')
         http_auth = shane.authorize(Http())
         service = discovery.build('classroom', 'v1', http=http_auth)
+        print("Service built successfully")
 
-        students = self.students.filter(status='A').prefetch_related(
-            'student__elearn_record'
-        )
-        for student in students:
-            try:
-                s = {
-                    "userId": student.student.elearn_record.g_suite_email
-                }
-                try:
-                    service.courses().students().create(
-                        courseId=self.g_suite_id,
-                        body=s
-                    ).execute()
-                except HttpError as err:
-                    print(student.student.elearn_record.g_suite_email, err)
-            except ObjectDoesNotExist:
-                print(student.student, " has no elearn_record")
+        roster = service.courses().students().list(
+            courseId=self.g_suite_id,
+        ).execute()
+        print("Roster page found with {} students".format(len(roster['students'])))
+        rostered_emails = [
+            x['profile'].get('emailAddress')
+            for x
+            in roster['students']
+            if x['profile'].get('emailAddress')
+        ]
+        print("{} emails added to rostered emails".format(len(rostered_emails)))
+        token = roster.get('nextPageToken')
+        print("Token {}".format(token))
+        while token is not None:
+            roster = service.courses().students().list(
+                courseId=self.g_suite_id,
+                pageToken=token
+            ).execute()
+            print("Roster page found with {} students".format(len(roster['students'])))
+            current_emails = [
+                x['profile'].get('emailAddress')
+                for x
+                in roster['students']
+                if x['profile'].get('emailAddress')
+            ]
+            rostered_emails.extend(current_emails)
+            print("{} emails added to rostered emails".format(len(current_emails)))
+            token = roster.get('nextPageToken')
+            print("Token {}".format(token))
+        print("Rostered email list: {}".format(rostered_emails))
+
+        students = self.students.filter(status='A')
+        Elearn = apps.get_model('coaching', 'ElearnRecord')
+        new_emails = [
+            elearn.g_suite_email
+            for elearn
+            in Elearn.objects.filter(
+                student__classes__in=students
+            )
+            if elearn.g_suite_email not in rostered_emails
+        ]
+        print("{} new emails found".format(len(new_emails)))
+
+        def callback(request_id, response, exception):
+            if exception is not None:
+                print("Error adding {0} to course: {1}".format(
+                    request_id,
+                    exception
+                ))
+            else:
+                print("User {0} added successfully".format(
+                    response.get('profile').get('emailAddress')))
+
+        batch = service.new_batch_http_request(callback=callback)
+        print("Batch request created successfully")
+
+        for email in new_emails:
+            s = {
+                "userId": email
+            }
+            request = service.courses().students().create(
+                courseId=self.g_suite_id,
+                body=s
+            )
+            batch.add(request, request_id=email)
+        batch.execute()
 
     def g_suite_attendance(self):
         scopes = ['https://www.googleapis.com/auth/classroom.coursework.students']

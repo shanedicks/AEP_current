@@ -1,4 +1,5 @@
 from django.contrib import admin
+from sections.tasks import roster_to_classroom_task
 from .models import Semester, Day
 from .tasks import send_g_suite_info_task
 
@@ -24,7 +25,8 @@ class SemesterAdmin(admin.ModelAdmin):
         "enforce_attendance",
         "waitlist",
         "send_g_suite_info",
-        "send_course_welcome_email"
+        "send_course_welcome_email",
+        "roster_to_classroom"
     ]
 
     def attendance_reminder(self, request, queryset):
@@ -55,6 +57,10 @@ class SemesterAdmin(admin.ModelAdmin):
         for obj in queryset:
             for student in obj.get_enrollment_queryset().distinct('student'):
                 student.welcome_email()
+
+    def roster_to_classroom(self,request, queryset):
+        for obj in queryset:
+            obj.roster_to_classroom()
 
 
 admin.site.register(Semester, SemesterAdmin)
