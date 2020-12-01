@@ -1943,4 +1943,4 @@ class PoP(models.Model):
     def __str__(self):
         WRU_ID = getattr(self.student, 'WRU_ID', '')
         period = " - ".join([self.start_date.strftime('%m/%d/%Y'), self.last_service_date.strftime('%m/%d/%Y')])
-        return " | ".join([self.student.WRU_ID, self.student.__str__(), period])
+        return " | ".join([WRU_ID, self.student.__str__(), period])
