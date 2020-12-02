@@ -743,4 +743,5 @@ class Attendance(models.Model):
 
     def save(self, *args, **kwargs):
         super(Attendance, self).save(*args, **kwargs)
-        pop_update_task.delay(self.enrollment.student.id, self.attendance_date)
+        if self.attendance_type == 'P':
+            pop_update_task.delay(self.enrollment.student.id, self.attendance_date)

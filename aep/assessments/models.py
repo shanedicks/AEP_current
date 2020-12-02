@@ -278,7 +278,7 @@ class TestAppointment(models.Model):
         self.event.check_full()
         if self.event.test == 'Orientation' and self.attendance_type == 'P':
             orientation_status_task.delay(self.student.id)
-        if self.attendance_date is not None:
+        if self.attendance_date is not None and self.attendance_type == 'P':
             pop_update_task.delay(self.student.id, self.attendance_date)
 
 
