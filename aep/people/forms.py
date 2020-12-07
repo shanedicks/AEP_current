@@ -78,6 +78,7 @@ class StudentSearchForm(Form):
     f_name = CharField(label=_('First Name'), required=False)
     l_name = CharField(label=_('Last Name'), required=False)
     stu_id = CharField(label=_('Student ID'), required=False)
+    dob = CharField(label=_('Date of Birth'), required=False)
 
     def filter_queryset(self, request, queryset):
         qst = queryset
@@ -93,6 +94,12 @@ class StudentSearchForm(Form):
             qst = qst.filter(
                 WRU_ID__contains=self.cleaned_data['stu_id']
             )
+        if self.cleaned_data['dob']:
+            try:
+                date = datetime.strptime(self.cleaned_data['dob'], "%Y-%m-%d")
+                qst = qst.filter(dob=date)
+            except ValueError:
+                pass
         return qst
 
 
