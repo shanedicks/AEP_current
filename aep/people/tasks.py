@@ -394,3 +394,100 @@ def pop_update_task(student_id, date):
             pass
         pop.save()
     return True
+
+@shared_task
+def coachee_export_task(staff_id, email):
+    Attendance = apps.get_model('sections', 'Attendance')
+    coach = apps.get_model('people', 'Staff').objects.get(id=staff_id)
+    coachings = coach.coachees.filter(active=True)
+    with open('coachees_export.csv', 'w', newline='') as out:
+        writer = csv.writer(out)        
+        headers = [
+            'WRU_ID',
+            'Last Name',
+            'First Name',
+            'Personal Email',
+            'G Suite Email',
+            'Phone',
+            'Native Language (if not English)',
+            'Status',
+            'Date of Last Note',
+            'Last Note Content',
+            'Date of Last Attendance',
+            'Last Attendance Section',
+            'Last Tabe',
+            'Last Hiset Practice',
+            "Current Classes",
+        ]
+        writer.writerow(headers)
+
+        for coaching in coachings:
+            try:
+                last_note = coaching.notes.latest('meeting_date')
+                last_note_date = last_note.meeting_date
+                last_note_note = last_note.notes
+            except ObjectDoesNotExist:
+                last_note_date ="No notes found"
+                last_note_note = ""
+            try:
+                attendance = Attendance.objects.filter(
+                    enrollment__student=coaching.coachee,
+                    attendance_type = 'P'
+                )
+                last_attendance = attendance.latest('attendance_date', 'time_in')
+                last_attendance_date = last_attendance.attendance_date
+                section = last_attendance.enrollment.section
+            except ObjectDoesNotExist:
+                last_attendance_date = "No attendance found"
+                section = ""
+            try:
+                elearn_record = coaching.coachee.elearn_record
+                if elearn_record.g_suite_email != '':
+                    g_suite_email = elearn_record.g_suite_email
+                else:
+                    g_suite_email = 'Student has no g_suite_email'
+            except ObjectDoesNotExist:
+                g_suite_email = 'Student has no elearn_record'
+            try:
+                tests = coaching.coachee.tests
+                try:
+                    last_tabe = tests.latest_tabe.test_date
+                except ObjectDoesNotExist:
+                    last_tabe = 'Student has no TABE'
+                try:
+                    last_hiset = tests.latest_hiset_practice[0].test_date
+                except ObjectDoesNotExist:
+                    last_hiset = 'Student has no Practice Test'
+            except ObjectDoesNotExist:
+                last_tabe = 'Student has no Test History'
+                last_hiset = 'Student has no Test History'
+            try:
+                language = coaching.coachee.WIOA.native_language
+            except ObjectDoesNotExist:
+                language = "Student has no WIOA Record"
+            classes = []
+            for i in coaching.coachee.current_classes():
+                j = "{0} ({1})".format(i.section, i.status)
+                classes.append(j)
+            s = [
+                coaching.coachee.WRU_ID,
+                coaching.coachee.last_name,
+                coaching.coachee.first_name,
+                coaching.coachee.email,
+                g_suite_email,
+                coaching.coachee.phone,
+                language,
+                coaching.status,
+                last_note_date,
+                last_note_note,
+                last_attendance_date,
+                section,
+                last_tabe,
+                last_hiset,
+                classes
+            ]
+            writer.writerow(s)
+
+    email = EmailMessage('Coachee Export', "Here is the coachee export your requested", 'reporter@dccaep.org', [email])
+    email.attach_file('coachees_export.csv')
+    email.send()

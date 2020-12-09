@@ -2,14 +2,15 @@ from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, Http404
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
-    DetailView, ListView, UpdateView,
+    View, DetailView, ListView, UpdateView,
     CreateView, TemplateView, FormView)
 from formtools.wizard.views import SessionWizardView
 from core.forms import DateFilterForm
 from core.utils import render_to_csv
 from people.models import Student
+from people.tasks import coachee_export_task
 from .models import Profile, Coaching, MeetingNote, AceRecord, ElearnRecord
 from .forms import (
     ProfileForm, NewMeetingNoteForm,
@@ -132,112 +133,13 @@ class CoacheeListView(LoginRequiredMixin, ListView):
     model = Coaching
 
 
-class CoacheeExportCSV(LoginRequiredMixin, ListView):
-    model = Coaching
-
-    def get_student_data(self, coachings):
-        Attendance = apps.get_model('sections', 'Attendance')
-        data = []
-        headers = [
-            'Last Name',
-            'First Name',
-            'Personal Email',
-            'G Suite Email',
-            'Phone',
-            'Native Language (if not English)',
-            'Status',
-            'Date of Last Note',
-            'Last Note Content',
-            'Date of Last Attendance',
-            'Last Attendance Section',
-            'Last Tabe',
-            'Last Hiset Practice',
-            "Current Classes",
-        ]
-        data.append(headers)
-        for coaching in coachings:
-            try:
-                last_note = coaching.notes.latest('meeting_date')
-                last_note_date = last_note.meeting_date
-                last_note_note = last_note.notes
-            except ObjectDoesNotExist:
-                last_note_date ="No notes found"
-                last_note_note = ""
-            try:
-                attendance = Attendance.objects.filter(
-                    enrollment__student=coaching.coachee,
-                    attendance_type = 'P'
-                )
-                last_attendance = attendance.latest('attendance_date', 'time_in')
-                last_attendance_date = last_attendance.attendance_date
-                section = last_attendance.enrollment.section
-            except ObjectDoesNotExist:
-                last_attendance_date = "No attendance found"
-                section = ""
-            try:
-                elearn_record = coaching.coachee.elearn_record
-                if elearn_record.g_suite_email != '':
-                    g_suite_email = elearn_record.g_suite_email
-                else:
-                    g_suite_email = 'Student has no g_suite_email'
-            except ObjectDoesNotExist:
-                g_suite_email = 'Student has no elearn_record'
-            try:
-                tests = coaching.coachee.tests
-                try:
-                    last_tabe = tests.latest_tabe.test_date
-                except ObjectDoesNotExist:
-                    last_tabe = 'Student has no TABE'
-                try:
-                    last_hiset = tests.latest_hiset_practice[0].test_date
-                except ObjectDoesNotExist:
-                    last_hiset = 'Student has no Practice Test'
-            except ObjectDoesNotExist:
-                last_tabe = 'Student has no Test History'
-                last_hiset = 'Student has no Test History'
-            try:
-                language = coaching.coachee.WIOA.native_language
-            except ObjectDoesNotExist:
-                language = "Student has no WIOA Record"
-            classes = []
-            for i in coaching.coachee.current_classes():
-                j = "{0} ({1})".format(i.section, i.status)
-                classes.append(j)
-            s = [
-                coaching.coachee.last_name,
-                coaching.coachee.first_name,
-                coaching.coachee.email,
-                g_suite_email,
-                coaching.coachee.phone,
-                language,
-                coaching.status,
-                last_note_date,
-                last_note_note,
-                last_attendance_date,
-                section,
-                last_tabe,
-                last_hiset,
-                classes
-            ]
-            data.append(s)
-        return data
+class CoacheeExportCSV(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
-        filename = 'coachee_export.csv'
-        coachings = Coaching.objects.filter(
-            coach__slug=kwargs['slug'],
-            active=True
-        ).prefetch_related(
-            'coachee__tests'
-        ).prefetch_related(
-            'coachee__classes__attendance'
-        ).prefetch_related(
-            'notes'
-        )
-        data = self.get_student_data(coachings)
-        return render_to_csv(data=data, filename=filename)
-
-
+        staff = apps.get_model('people', 'Staff').objects.get(slug = kwargs['slug'])
+        user_email = request.user.email
+        coachee_export_task.delay(staff.id, user_email)
+        return HttpResponseRedirect(reverse('report success'))
 
 
 class CoachingCreateView(LoginRequiredMixin, CreateView):
