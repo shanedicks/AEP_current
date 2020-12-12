@@ -207,33 +207,29 @@ class Section(models.Model):
         roster = service.courses().students().list(
             courseId=self.g_suite_id,
         ).execute()
-        print("Roster page found with {} students".format(len(roster['students'])))
-        rostered_emails = [
-            x['profile'].get('emailAddress')
-            for x
-            in roster['students']
-            if x['profile'].get('emailAddress')
-        ]
-        print("{} emails added to rostered emails".format(len(rostered_emails)))
-        token = roster.get('nextPageToken')
-        print("Token {}".format(token))
-        while token is not None:
-            roster = service.courses().students().list(
-                courseId=self.g_suite_id,
-                pageToken=token
-            ).execute()
-            print("Roster page found with {} students".format(len(roster['students'])))
-            current_emails = [
+        if 'students' in roster:
+            rostered_emails = [
                 x['profile'].get('emailAddress')
                 for x
                 in roster['students']
                 if x['profile'].get('emailAddress')
             ]
-            rostered_emails.extend(current_emails)
-            print("{} emails added to rostered emails".format(len(current_emails)))
             token = roster.get('nextPageToken')
-            print("Token {}".format(token))
-        print("Rostered email list: {}".format(rostered_emails))
+            while token is not None:
+                roster = service.courses().students().list(
+                    courseId=self.g_suite_id,
+                    pageToken=token
+                ).execute()
+                current_emails = [
+                    x['profile'].get('emailAddress')
+                    for x
+                    in roster['students']
+                    if x['profile'].get('emailAddress')
+                ]
+                rostered_emails.extend(current_emails)
+                token = roster.get('nextPageToken')
+        else:
+            rostered_emails = []
 
         students = self.students.filter(status='A')
         Elearn = apps.get_model('coaching', 'ElearnRecord')
@@ -245,7 +241,6 @@ class Section(models.Model):
             )
             if elearn.g_suite_email not in rostered_emails
         ]
-        print("{} new emails found".format(len(new_emails)))
 
         def callback(request_id, response, exception):
             if exception is not None:
