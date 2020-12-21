@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 import csv
 from datetime import datetime, timedelta
 from django.apps import apps
+from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum, Q
@@ -67,7 +68,43 @@ def orientation_status_task(student_id):
     return True
 
 @shared_task
-def test_process_task(test_history_id, test_type, test_id):
+def test_notification_task(test_type, test_id):
+    tests = apps.get_model('assessments', test_type)
+    try:
+        test = tests.objects.get(id=test_id)
+    except ObjectDoesNotExist:
+        logger.info("Couldn't find {0} test {1}".format(test_type, test_id))
+        return False
+    student = test.student.student
+    coaches = student.coaches.filter(active=True)
+    emails = [
+        coach.coach.email
+        for coach
+        in coaches
+        if coach.coach.email is not None
+    ]
+    if len(emails) > 0:
+        test_history_url = 'www.dccaep.org' + test.student.get_absolute_url()
+        send_mail(
+            "New Test Notification",
+            "",
+            'reporter@dccaep.org',
+            emails,
+            html_message="<p>A new test record has been created for {0}, "
+            "WRU_ID: {1}. Here are the details:</p><ul><li>Date of Test:{2}"
+            "</li><li>Assessment Type: {3}</li></ul><p>You can view the test"
+            " results <a href={4}>here</a>".format(
+                student,
+                student.WRU_ID,
+                test.test_date,
+                test.get_test_type(),
+                test_history_url
+            )
+        )
+    return True
+
+@shared_task
+def test_process_task(test_type, test_id):
     tests = apps.get_model('assessments', test_type)
     try:
         test = tests.objects.get(id=test_id)
@@ -75,51 +112,51 @@ def test_process_task(test_history_id, test_type, test_id):
         logger.info("Couldn't find {0} test {1}".format(test_type, test_id))
         return False
     logger.info("Processing {0} test {1}".format(test_type, test_id))
-    test_history = apps.get_model('assessments', 'TestHistory').objects.get(id=test_history_id)
-    PoP = apps.get_model('people', 'PoP')
-    student_pops = PoP.objects.filter(student=test_history.student)
+    test_history = test.student
     test_history.update_status(test)
-    if student_pops.count() == 0:
-        logger.info("{0} has no PoP records".format(test_history))
-        return False
-    pretest_limit = test.test_date - timedelta(days=180)
-    pops = student_pops.filter(
-        pretest_date__gte=pretest_limit
-    )
-    if pops.count() == 2:
-        pop = pops[1]
-        newer = pops[0]
-        newer.pretest_date = test.test_date
-        newer.pretest_type = test.get_test_type()
-        newer.save()
-    elif pops.count() == 1:
-        pop = pops[0]
-    elif pops.count() == 0:
-        start_limit = test.test_date + timedelta(days=180)
-        pops = student_pops.filter(
-            pretest_date=None,
-            start_date__gte=pretest_limit,
-            start_date__lte=start_limit,
-            )
-        pops.update(
-            pretest_date=test.test_date,
-            pretest_type=test.get_test_type()
-        )
-        logger.info("{0} logged as pretest for {1}".format(test, pops))
-        return False
-    if test_type == pop.pretest_type:
-        pretest = tests.objects.get(
-            student=test_history,
-            test_date=pop.pretest_date
-        )
-    else:
-        pretest = apps.get_model('assessments', pop.pretest_type).objects.get(
-                student=test_history,
-                test_date=pop.pretest_date
-            )
-    pop.made_gain = test.check_gain(pretest)
-    logger.info("gains checked for {0} with pretest {1} and postest {2}".format(pop, pretest, test))
-    pop.save()
+#    PoP = apps.get_model('people', 'PoP')
+#    student_pops = PoP.objects.filter(student=test_history.student)
+#    if student_pops.count() == 0:
+#        logger.info("{0} has no PoP records".format(test_history))
+#        return False
+#    pretest_limit = test.test_date - timedelta(days=180)
+#    pops = student_pops.filter(
+#        pretest_date__gte=pretest_limit
+#    )
+#    if pops.count() == 2:
+#        pop = pops[1]
+#        newer = pops[0]
+#        newer.pretest_date = test.test_date
+#        newer.pretest_type = test.get_test_type()
+#        newer.save()
+#    elif pops.count() == 1:
+#        pop = pops[0]
+#    elif pops.count() == 0:
+#        start_limit = test.test_date + timedelta(days=180)
+#        pops = student_pops.filter(
+#            pretest_date=None,
+#            start_date__gte=pretest_limit,
+#            start_date__lte=start_limit,
+#            )
+#        pops.update(
+#            pretest_date=test.test_date,
+#            pretest_type=test.get_test_type()
+#        )
+#        logger.info("{0} logged as pretest for {1}".format(test, pops))
+#        return False
+#    if test_type == pop.pretest_type:
+#        pretest = tests.objects.get(
+#            student=test_history,
+#            test_date=pop.pretest_date
+#        )
+#    else:
+#        pretest = apps.get_model('assessments', pop.pretest_type).objects.get(
+#                student=test_history,
+#                test_date=pop.pretest_date
+#            )
+#    pop.made_gain = test.check_gain(pretest)
+#    logger.info("gains checked for {0} with pretest {1} and postest {2}".format(pop, pretest, test))
+#    pop.save()
     return True
 
 @shared_task

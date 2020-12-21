@@ -8,7 +8,7 @@ from core.utils import get_fiscal_year_start_date
 from people.models import Staff, Student, PoP
 from sections.models import Attendance, Site
 from people.tasks import pop_update_task
-from .tasks import orientation_status_task, test_process_task
+from .tasks import orientation_status_task, test_process_task, test_notification_task
 
 
 class TestEvent(models.Model):
@@ -391,6 +391,13 @@ class Test(models.Model):
     class Meta:
         abstract = True
 
+    def get_test_type(self):
+        return type(self).__name__
+
+    def save(self, *args, **kwargs):
+        super(Test, self).save(*args, **kwargs)
+        test_notification_task.delay(self.get_test_type(), self.id)
+
 
 class NRSTest(Test):
 
@@ -401,8 +408,9 @@ class NRSTest(Test):
     class Meta:
         abstract = True
 
-    def get_test_type(self):
-        return type(self).__name__
+    def save(self, *args, **kwargs):
+        super(NRSTest, self).save(*args, **kwargs)
+        test_process_task.delay(self.get_test_type(), self.id)
 
 
 class Tabe(NRSTest):
@@ -617,10 +625,6 @@ class Tabe(NRSTest):
         else:
             return False
 
-    def save(self, *args, **kwargs):
-        super(Tabe, self).save(*args, **kwargs)
-        test_process_task.delay(self.student.id, self.get_test_type(), self.id)
-
 
 class Tabe_Loc(NRSTest):
 
@@ -761,10 +765,6 @@ class Clas_E(NRSTest):
             return self.read_nrs > pretest.read_nrs
         except TypeError:
             return False
-
-    def save(self, *args, **kwargs):
-        super(Clas_E, self).save(*args, **kwargs)
-        test_process_task.delay(self.student.id, self.get_test_type(), self.id)
 
 
 class Clas_E_Loc(NRSTest):
