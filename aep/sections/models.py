@@ -241,6 +241,7 @@ class Section(models.Model):
             )
             if elearn.g_suite_email not in rostered_emails
         ]
+        print(new_emails)
 
         def callback(request_id, response, exception):
             if exception is not None:
@@ -252,18 +253,23 @@ class Section(models.Model):
                 print("User {0} added successfully".format(
                     response.get('profile').get('emailAddress')))
 
-        batch = service.new_batch_http_request(callback=callback)
-
-        for email in new_emails:
-            s = {
-                "userId": email
-            }
-            request = service.courses().students().create(
-                courseId=self.g_suite_id,
-                body=s
-            )
-            batch.add(request, request_id=email)
-        batch.execute()
+        batch_list = [
+            new_emails[i:i + 50] 
+            for i 
+            in range(0, len(new_emails), 50)
+        ]
+        for email_batch in batch_list:
+            batch = service.new_batch_http_request(callback=callback)
+            for email in email_batch:
+                s = {
+                    "userId": email
+                }
+                request = service.courses().students().create(
+                    courseId=self.g_suite_id,
+                    body=s
+                )
+                batch.add(request, request_id=email)
+            batch.execute()
 
     def g_suite_attendance(self):
         scopes = ['https://www.googleapis.com/auth/classroom.coursework.students']

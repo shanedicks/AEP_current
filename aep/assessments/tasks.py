@@ -211,7 +211,9 @@ def accelerated_coaching_report_task(from_date, to_date, email_address):
 def testing_eligibility_report(email_address):
     filename = 'testing_eligibility_report.csv'
     records = apps.get_model('assessments', 'TestHistory').objects.all()
+    Attendance = apps.get_model('sections', "Attendance")
     today = timezone.now().date()
+    target = today - timedelta(days=180)
 
     with open(filename, 'w', newline='') as out:
         writer = csv.writer(out)
@@ -228,7 +230,8 @@ def testing_eligibility_report(email_address):
             "Last Test Type",
             "Last Test Date",
             "Test Assignment",
-            "Accumulated Hours",
+            "Hours since last test",
+            "Hours last 180 days",
             "Coach(es)",
             "Current Enrollments",
             "Current Teachers"
@@ -237,6 +240,11 @@ def testing_eligibility_report(email_address):
 
         for record in records:
             student = record.student
+            attendance = Attendance.objects.filter(
+                enrollment__student=student,
+                attendance_date__gte=target
+            )
+            hours = sum([a.hours for a in attendance])
             coaches = [c.coach for c in student.coaches.filter(active=True)]
             sections = [s.section for s in student.current_classes()]
             teachers = [s.teacher for s in sections]
@@ -262,6 +270,7 @@ def testing_eligibility_report(email_address):
                 record.last_test_date,
                 record.test_assignment,
                 record.active_hours,
+                hours,
                 coaches,
                 sections,
                 teachers
