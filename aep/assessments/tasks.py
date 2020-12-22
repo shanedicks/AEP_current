@@ -84,14 +84,14 @@ def test_notification_task(test_type, test_id):
         if coach.coach.email is not None
     ]
     if len(emails) > 0:
-        test_history_url = 'www.dccaep.org' + test.student.get_absolute_url()
+        test_history_url = ''.join(['http://www.dccaep.org', test.student.get_absolute_url()])
         send_mail(
             "New Test Notification",
             "",
             'reporter@dccaep.org',
             emails,
             html_message="<p>A new test record has been created for {0}, "
-            "WRU_ID: {1}. Here are the details:</p><ul><li>Date of Test:{2}"
+            "WRU_ID: {1}. Here are the details:</p><ul><li>Date of Test: {2}"
             "</li><li>Assessment Type: {3}</li></ul><p>You can view the test"
             " results <a href={4}>here</a>".format(
                 student,
