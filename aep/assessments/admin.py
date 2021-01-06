@@ -253,7 +253,7 @@ class TabeAdmin(ImportExportActionModelAdmin):
 
     def process_tests(self, request, queryset):
         for obj in queryset:
-            test_process_task.delay(obj.student.id, obj.get_test_type(), obj.id)
+            test_process_task.delay(obj.get_test_type(), obj.id)
 
 admin.site.register(Tabe, TabeAdmin)
 
@@ -307,7 +307,7 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
 
     def process_tests(self, request, queryset):
         for obj in queryset:
-            test_process_task.delay(obj.student.id, obj.get_test_type(), obj.id)
+            test_process_task.delay(obj.get_test_type(), obj.id)
 
 
 
