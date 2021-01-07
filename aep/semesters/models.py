@@ -1,6 +1,7 @@
 from django.apps import apps
 from django.db import models
 from django.urls import reverse
+from sections.tasks import roster_to_classroom_task
 from .tasks import enforce_attendance_task
 
 

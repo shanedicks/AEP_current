@@ -1,5 +1,4 @@
 from django.contrib import admin
-from sections.tasks import roster_to_classroom_task
 from .models import Semester, Day
 from .tasks import send_g_suite_info_task
 
