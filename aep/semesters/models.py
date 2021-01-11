@@ -117,10 +117,10 @@ class Semester(models.Model):
         )
         cutoff = datetime.today().date() - timedelta(days=180)
         to_hold = students.filter(student__tests__last_test_date__lte=cutoff)
-        to_hold.update(status='H')
+        to_hold.update(status='W')
 
     def refresh_enrollments(self):
-        students = self.get_enrollment_queryset().filter(status='H')
+        students = self.get_enrollment_queryset().filter(status='W')
         cutoff = datetime.today().date() - timedelta(days=180)
         to_refresh = students.filter(student__tests__last_test_date__gte=cutoff)
         to_refresh.update(status='A')
