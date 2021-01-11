@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.apps import apps
 from django.db import models
 from django.urls import reverse
@@ -107,6 +108,19 @@ class Semester(models.Model):
     def roster_to_classroom(self):
         for section in self.get_sections():
             roster_to_classroom_task.delay(section.id)
+
+    def validate_enrollments(self):
+        students = self.get_enrollment_queryset().filter(status='A')
+        cutoff = datetime.today().date() - timedelta(days=180)
+        to_hold = students.filter(student__tests__last_test_date__lte=cutoff)
+        to_hold.update(status='H')
+
+    def refresh_enrollments(self):
+        students = self.get_enrollment_queryset().filter(status='H')
+        cutoff = datetime.today().date() - timedelta(days=180)
+        to_refresh = students.filter(student__tests__last_test_date__gte=cutoff)
+        to_refresh.update(status='A')
+
 
 class Day(models.Model):
 

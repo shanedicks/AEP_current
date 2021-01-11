@@ -21,3 +21,15 @@ def send_g_suite_info_task(semester_id):
 	for student in students:
 		student.send_g_suite_info()
 	return True
+
+@shared_task
+def validate_enrollments_task(semester_id):
+	Semester = apps.get_model('semesters', 'Semester')
+	s = Semester.objects.get(id=semester_id)
+	s.validate_enrollments()
+
+@shared_task
+def refresh_enrollments_task(semester_id):
+	Semester = apps.get_model('semesters', 'Semester')
+	s = Semester.objects.get(id=semester_id)
+	s.refresh_enrollments()

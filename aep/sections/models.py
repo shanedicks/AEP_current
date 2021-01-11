@@ -14,7 +14,8 @@ from academics.models import Course
 from people.models import Staff, Student
 from people.tasks import pop_update_task
 from semesters.models import Semester
-from .tasks import activate_task, end_task, drop_task, enrollment_notification_task
+from .tasks import (activate_task, end_task, drop_task,
+    enrollment_notification_task)
 
 
 class Site(models.Model):
@@ -447,12 +448,14 @@ class Enrollment(models.Model):
     WITHDRAWN = 'R'
     DROPPED = 'D'
     COMPLETED = 'C'
+    HOLD = 'H'
     STATUS_CHOICES = (
         (ACTIVE, 'Active'),
         (WAITING, 'Waitlist'),
         (WITHDRAWN, 'Withdrawn'),
         (DROPPED, 'Dropped'),
         (COMPLETED, 'Completed'),
+        (HOLD, 'Testing Hold')
     )
     student = models.ForeignKey(
         Student,
