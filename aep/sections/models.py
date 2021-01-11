@@ -448,14 +448,12 @@ class Enrollment(models.Model):
     WITHDRAWN = 'R'
     DROPPED = 'D'
     COMPLETED = 'C'
-    HOLD = 'H'
     STATUS_CHOICES = (
         (ACTIVE, 'Active'),
         (WAITING, 'Waitlist'),
         (WITHDRAWN, 'Withdrawn'),
         (DROPPED, 'Dropped'),
         (COMPLETED, 'Completed'),
-        (HOLD, 'Testing Hold')
     )
     student = models.ForeignKey(
         Student,

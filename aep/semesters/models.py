@@ -110,7 +110,11 @@ class Semester(models.Model):
             roster_to_classroom_task.delay(section.id)
 
     def validate_enrollments(self):
-        students = self.get_enrollment_queryset().filter(status='A')
+        partner_check = ['', 'Job1', 'JeffPar']
+        students = self.get_enrollment_queryset().filter(
+            status='A',
+            student__partner__in=partner_check
+        )
         cutoff = datetime.today().date() - timedelta(days=180)
         to_hold = students.filter(student__tests__last_test_date__lte=cutoff)
         to_hold.update(status='H')
