@@ -648,7 +648,7 @@ class Enrollment(models.Model):
 
     def save(self, *args, **kwargs):
         super(Enrollment, self).save(*args, **kwargs)
-        mod = self.last_modified.date()
+        mod = datetime.today().date()
         if self.section.starting is not None:
             start = self.section.starting
         else:
