@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from import_export import resources
+from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin
-
-from .models import Course, Resource, Skill
-# Register your models here.
+from people.models import Student, Staff
+from .models import (Course, Resource, Skill, 
+    Credential, CourseCompletion, Certificate)
 
 
 class ResourceResource(resources.ModelResource):
@@ -46,6 +46,60 @@ class CourseResource(resources.ModelResource):
         )
 
 
+class CredentialResource(resources.ModelResource):
+
+    class Meta:
+        model = Credential
+        fields = (
+            'id',
+            'title',
+            'description'
+        )
+
+class CourseCompletionResource(resources.ModelResource):
+
+    student = fields.Field(
+        column_name = 'student',
+        attribute = 'student',
+        widget = widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    course = fields.Field(
+        column_name = 'course',
+        attribute = 'course',
+        widget = widgets.ForeignKeyWidget(Course, 'code')
+    )
+
+    class Meta:
+        model = CourseCompletion
+        fields = (
+            'id',
+            'student',
+            'cert_date',
+            'certifier',
+            'course'
+        )
+
+
+class CertificateResource(resources.ModelResource):
+
+    student = fields.Field(
+        column_name = 'student',
+        attribute = 'student',
+        widget = widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    class Meta:
+        model = Certificate
+        fields = (
+            'id',
+            'student',
+            'cert_date',
+            'certifier',
+            'credential'
+        )
+
+
 class ResourceAdmin(ImportExportActionModelAdmin):
 
     resource_class = ResourceResource
@@ -56,7 +110,6 @@ class ResourceAdmin(ImportExportActionModelAdmin):
         'title',
         'description'
     ]
-
 
 admin.site.register(Resource, ResourceAdmin)
 
@@ -72,7 +125,6 @@ class SkillAdmin(ImportExportActionModelAdmin):
         'anchor_standard',
         'description'
     ]
-
 
 admin.site.register(Skill, SkillAdmin)
 
@@ -92,5 +144,56 @@ class CourseAdmin(ImportExportActionModelAdmin):
         'description'
     ]
 
-
 admin.site.register(Course, CourseAdmin)
+
+
+class CredenitalAdmin(ImportExportActionModelAdmin):
+
+    resource_class = CredentialResource
+
+    list_display = (
+        'title',
+    )
+
+    fields = (
+        'title',
+        'description',
+    )
+
+admin.site.register(Credential, CredenitalAdmin)
+
+
+class CourseCompletionAdmin(ImportExportActionModelAdmin):
+
+    resource_class = CourseCompletionResource
+
+    list_display = (
+        'student',
+        'course',
+        'cert_date',
+        'certifier'
+    )
+
+    fields = (
+        'cert_date',
+    )
+
+admin.site.register(CourseCompletion, CourseCompletionAdmin)
+
+
+class CertificateAdmin(ImportExportActionModelAdmin):
+
+    resource_class = CertificateResource
+
+    list_display = (
+        'student',
+        'credential',
+        'cert_date',
+        'certifier'
+    )
+
+    fields = (
+        'cert_date',
+    )
+
+admin.site.register(Certificate, CertificateAdmin)
