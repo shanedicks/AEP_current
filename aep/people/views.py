@@ -50,6 +50,22 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
+class StudentTranscriptView(LoginRequiredMixin, DetailView):
+
+    model = Student
+    template_name = 'people/student_transcript.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentTranscriptView, self).get_context_data(**kwargs)
+        if 'course_completions' not in context:
+            context['course_completions'] = self.object.coursecompletions.all()
+            context.update(kwargs)
+        if 'certificates' not in context:
+            context['certificates'] = self.object.certificates.all()
+            context.update(kwargs)
+        return context
+
+
 class StudentListView(LoginRequiredMixin, ListView, FormView):
 
     form_class = StudentSearchForm

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}} Transcripts{% endblock head_title %}
+{% block content %}
+      <h1>{{ student }}</h1>
+      {% if student.partner != '' %}
+        <h3>Partner Student - {{student.partner}}</h3> 
+      {% endif %}
+    <div class='col-md-12'>
+      {%include 'components/student_nav.html' %}
+      <h2>Courses Completed</h2>
+      <table class='table'>
+          <tr>
+            <th>Course</th>
+            <th>Date Completed</th>
+          </tr>
+        {% for item in course_completions %}
+          <tr>
+            <td>{{item.course.title}}</td>
+            <td>{{item.cert_date}}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <h2>Credentials</h3>
+        <table class="table">
+          <tr>
+            <th>Credential</th>
+            <th>Date Earned</th>
+          </tr>
+        {% for item in certificates %}
+          <tr>
+            <td>{{item.credential.title}}</td>
+            <td>{{item.cert_date}}</td>
+          </tr>
+        {% endfor %}
+        </table>
+    </div>
+{%endblock content %}

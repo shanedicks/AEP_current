@@ -105,7 +105,7 @@ class Certification(models.Model):
     student = models.ForeignKey(
         Student,
         models.PROTECT,
-        related_name = "%(class)ss_earned"
+        related_name = "%(class)ss"
     )
 
     cert_date = models.DateField()
@@ -113,7 +113,7 @@ class Certification(models.Model):
     certifier = models.ForeignKey(
         Staff,
         models.PROTECT,
-        related_name = "%(class)s_issued"
+        related_name = "%(class)ss"
     )
 
     class Meta:

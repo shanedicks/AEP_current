@@ -46,6 +46,9 @@ single_student_patterns = [
     url(r'^compliance/$',
         views.StudentComplianceFormView.as_view(),
         name='student compliance form'),
+    url(r'^transcript/$',
+        views.StudentTranscriptView.as_view(),
+        name='student transcript'),
     url(r'^my-classes/', include(class_patterns))
 ]
 
