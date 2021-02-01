@@ -2,6 +2,7 @@ from apiclient import discovery
 from datetime import datetime, date
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
+from django.apps import apps
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView, FormView, View)
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -862,10 +863,33 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
     model = Section
     template_name = 'sections/attendance_overview.html'
 
+    def get_daily_totals(self, **kwargs):
+        Attendance = apps.get_model('sections', 'Attendance')
+        section = self.object
+        att = Attendance.objects.filter(
+            enrollment__section=section,
+        )
+        dates = self.object.get_class_dates()
+        present = [
+            att.filter(attendance_date=date, attendance_type='P').count()
+            for date
+            in dates 
+        ]
+        absent = [
+            att.filter(attendance_date=date, attendance_type='A').count()
+            for date
+            in dates 
+        ]
+        return [present, absent]
+
     def get_context_data(self, **kwargs):
         context = super(AttendanceOverview, self).get_context_data()
         if 'days' not in context:
             context['days'] = self.object.get_class_dates()
+        if 'daily_present' not in context:
+            context['daily_present'] = self.get_daily_totals()[0]
+        if 'daily_absent' not in context:
+            context['daily_absent'] = self.get_daily_totals()[1]
         if 'active' not in context:
             context['active'] = self.object.get_active(
             ).order_by(

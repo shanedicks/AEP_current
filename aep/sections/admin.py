@@ -241,6 +241,7 @@ class EnrollmentAdmin(ImportExportActionModelAdmin):
     search_fields = [
         "student__first_name",
         "student__last_name",
+        "student__WRU_ID",
         "section__title",
         "student__partner",
         "section__semester__title"

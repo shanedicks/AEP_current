@@ -108,4 +108,19 @@
             </tr>
         {% endfor %}
     {% endif %}
+    <tr><td><h4>Totals</h4></td></tr>
+    <tr>
+        <td>Students Present</td>
+        <td></td>
+        {% for total in daily_present %}
+        <td>{{total}}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <td>Students Absent</td>
+        <td></td>
+        {% for total in daily_absent %}
+        <td>{{total}}</td>
+        {% endfor %}
+    </tr>
 </table>

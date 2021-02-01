@@ -151,7 +151,12 @@ class CredenitalAdmin(ImportExportActionModelAdmin):
 
     resource_class = CredentialResource
 
+    search_fields = [
+        'title'
+    ]
+
     list_display = (
+        'id',
         'title',
     )
 
@@ -166,6 +171,14 @@ admin.site.register(Credential, CredenitalAdmin)
 class CourseCompletionAdmin(ImportExportActionModelAdmin):
 
     resource_class = CourseCompletionResource
+
+    search_fields = [
+        'course__title',
+        'course__code',
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID'
+    ]
 
     list_display = (
         'student',
@@ -184,6 +197,13 @@ admin.site.register(CourseCompletion, CourseCompletionAdmin)
 class CertificateAdmin(ImportExportActionModelAdmin):
 
     resource_class = CertificateResource
+
+    search_fields = [
+        'credential__title',
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID'
+    ]
 
     list_display = (
         'student',
