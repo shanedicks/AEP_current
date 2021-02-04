@@ -99,6 +99,23 @@ class CertificateResource(resources.ModelResource):
             'credential'
         )
 
+class SkillMasteryResource(resources.ModelResource):
+
+    student = fields.Field(
+        column_name = 'student',
+        attribute = 'student',
+        widget = widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    class Meta:
+        model = SkillMastery
+        fields = (
+            'id',
+            'student',
+            'cert_date',
+            'certifier',
+            'skill'
+        )
 
 class ResourceAdmin(ImportExportActionModelAdmin):
 
@@ -217,3 +234,25 @@ class CertificateAdmin(ImportExportActionModelAdmin):
     )
 
 admin.site.register(Certificate, CertificateAdmin)
+
+class SkillMasteryAdmin(ImportExportActionModelAdmin):
+
+    resource_class = SkillMasteryResource
+
+    search_fields = [
+        'skill__title',
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID'
+    ]
+
+    list_display = (
+        'student',
+        'credential',
+        'cert_date',
+        'certifier'
+    )
+
+    fields = (
+        'cert_date',
+    )

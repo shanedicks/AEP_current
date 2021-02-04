@@ -22,6 +22,10 @@ class Resource(models.Model):
 
 class Skill(models.Model):
 
+    title = models.CharField(
+        max_length = 100
+    )
+
     anchor_standard = models.TextField(
         blank=True
     )
@@ -146,3 +150,16 @@ class Certificate(Certification):
         credential = self.credential.title
         student = self.student.__str__()
         return "{0} earned {1}".format(student, credential)
+
+class SkillMastery(Certification):
+
+    skill = models.ForeignKey(
+        Skill,
+        models.PROTECT,
+        related_name = "students"
+    )
+
+    def __str__(self):
+        skill = self.skill.title
+        student = self.student.__str__()
+        return "{0} mastered {1}".format(student, skill)
