@@ -4,7 +4,7 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin
 from people.models import Student, Staff
 from .models import (Course, Resource, Skill, 
-    Credential, CourseCompletion, Certificate)
+    Credential, CourseCompletion, Certificate, SkillMastery)
 
 
 class ResourceResource(resources.ModelResource):
