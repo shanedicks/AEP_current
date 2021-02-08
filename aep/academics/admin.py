@@ -248,7 +248,7 @@ class SkillMasteryAdmin(ImportExportActionModelAdmin):
 
     list_display = (
         'student',
-        'credential',
+        'skill',
         'cert_date',
         'certifier'
     )
@@ -256,3 +256,5 @@ class SkillMasteryAdmin(ImportExportActionModelAdmin):
     fields = (
         'cert_date',
     )
+
+admin.site.register(SkillMastery, SkillMasteryAdmin)    

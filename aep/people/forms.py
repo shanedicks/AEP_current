@@ -52,13 +52,17 @@ class StudentComplianceForm(ModelForm):
         fields = (
             'paperwork',
             'folder',
-            'orientation'
+            'orientation',
+            'intake_form',
+            'intake_quiz'
         )
 
         labels = {
             'paperwork': 'Intake Paperwork Completed',
             'orientation': 'Attended Orientation',
-            'folder': ' Office Folder Completed'
+            'folder': ' Office Folder Completed',
+            'intake_form': 'Intake Form Completed',
+            'intake_quiz': 'Orientation Quiz Completed'
         }
 
     def __init__(self, *args, **kwargs):
@@ -70,7 +74,9 @@ class StudentComplianceForm(ModelForm):
             Field(
                 'folder',
                 'orientation',
-                'paperwork'
+                'paperwork',
+                'intake_form',
+                'intake_quiz'
             )
         )
 

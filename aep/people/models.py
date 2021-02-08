@@ -407,6 +407,14 @@ class Student(Profile):
         default=PENDING
     )
 
+    intake_form = models.BooleanField(
+        default = False
+    )
+
+    intake_quiz = models.BooleanField(
+        default = False
+    )
+
     class Meta:
         ordering = ["last_name", "first_name"]
 
