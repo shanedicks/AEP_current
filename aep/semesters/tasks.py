@@ -8,6 +8,14 @@ from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 
 @shared_task
+def semester_begin_task(semester_id):
+	semester = apps.get_model('semesters', 'Semester').get(id=semester_id)
+	logger.info('Beginning Semester{0}'.format(semester.title))
+	for section in semester.sections.all():
+		section.begin()
+	return True
+
+@shared_task
 def enforce_attendance_task(section_id):
 	logger.info('Enforcing Attendance for Section {0}'.format(section_id))
 	section = apps.get_model('sections', 'Section').objects.get(id=section_id)

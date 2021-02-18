@@ -210,7 +210,7 @@ class Section(models.Model):
         ).execute()
         if 'students' in roster:
             rostered_emails = [
-                x['profile'].get('emailAddress')
+                x['profile'].get('emailAddress').lower()
                 for x
                 in roster['students']
                 if x['profile'].get('emailAddress')

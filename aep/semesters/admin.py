@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Semester, Day
-from .tasks import (send_g_suite_info_task,
+from .tasks import (send_g_suite_info_task, semester_begin_task,
     validate_enrollments_task, refresh_enrollments_task)
 
 # Register your models here.
@@ -37,7 +37,7 @@ class SemesterAdmin(admin.ModelAdmin):
 
     def begin(self, request, queryset):
         for obj in queryset:
-            obj.begin()
+            semester_begin_task.delay(obj.id)
 
     def end(self, request, queryset):
         for obj in queryset:
