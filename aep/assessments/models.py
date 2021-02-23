@@ -112,7 +112,9 @@ class TestEvent(models.Model):
                 send_mail_task.delay(
                     subject="Orientation for the Delgado Adult Education Program!",
                     message="",
-                    html_message="<p>Hello {student},</p><p>Welcome to the Delgado"
+                    html_message="<a href='https://docs.google.com/document/d/e/2PACX-1vSP_kxLYr7CRPlcd2KaL1UqF7ehmE139vo45Hflzcg81lVCNgVy2bI1mkZ2Bh3AYBau_LTIx1PhEdaP/pub'>"
+                    "Haga clic aquí para leer una versión en ESPAÑOL</a>"
+                    "<p>Hello {student},</p><p>Welcome to the Delgado"
                     "Community College Adult Education Program! We are writing"
                     "today with an update on new student orientation</p><p>"
                     "<strong>Due to the COVID-19 pandemic, all Delgado Community"
@@ -134,8 +136,10 @@ class TestEvent(models.Model):
                     "student number is <span style='font-size: 24px'><strong>{wru}"
                     "</strong></span></p><p><strong>If "
                     "you need help,</strong> you can send an email to <a href='"
-                    "mailto:coach@elearnclass.org'>coach@elearnclass.org</a>, "
-                    "and a coach will get back to you in 1-2 business days.</p>"
+                    "mailto:intake@elearnclass.org'>coach@elearnclass.org</a>, "
+                    "and our intake team will get back to you in 1-3 business days. "
+                    "<em>To better help us find you in our system, please include your"
+                    " full name, date of birth, and student ID number in any message you send!</p>"
                     "<p>Welcome again to the Adult Education Program at Delgado;"
                     " we are excited to work with you soon!</p><p>Best,</p><p>"
                     "DCCAEP Team</p>".format(
