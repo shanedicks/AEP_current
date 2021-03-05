@@ -1075,6 +1075,52 @@ class GSuiteAttendanceView(LoginRequiredMixin, DetailView):
         return context
 
 
+class SkillsOverview(LoginRequiredMixin, DetailView):
+
+    model = Section
+    template_name = 'sections/skills_overview.html'
+
+    def get_context_data(self, **kwargs):
+        context=super(SkillsOverview, self).get_context_data(**kwargs)
+        if 'skills' not in context:
+            context['skills'] = self.object.course.skills.all()
+        if 'active' not in context:
+            context['active'] = self.object.get_active(
+            ).order_by(
+                'student__last_name',
+                'student__first_name'
+            )
+        if 'dropped' not in context:
+            context['dropped'] = self.object.get_dropped(
+            ).order_by(
+                'student__last_name',
+                'student__first_name'
+            )
+        if 'completed' not in context:
+            context['completed'] = self.object.get_completed(
+            ).order_by(
+                'student__last_name',
+                'student__first_name'
+            )
+        if 'waitlist' not in context:
+            context['waitlist'] = self.object.get_waiting(
+            ).order_by(
+                'student__last_name',
+                'student__first_name'
+            )
+        if 'withdrawn' not in context:
+            context['withdrawn'] = self.object.get_withdrawn(
+            ).order_by(
+                'student__last_name',
+                'student__first_name'
+            )
+        return context
+
+
+class SingleSkillView(LoginRequiredMixin, FormView):
+    pass
+
+
 class ParticipationReport(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):

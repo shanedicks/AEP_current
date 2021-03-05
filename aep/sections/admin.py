@@ -89,6 +89,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
     list_display = (
         "title",
         "WRU_ID",
+        "course",
         "program",
         'site',
         "teacher",

@@ -21,6 +21,15 @@ single_class_attendance_patterns = [
         name='sign in'),
 ]
 
+single_class_skills_patterns = [
+    url(r'^$',
+        views.SkillsOverview.as_view(),
+        name='skills overview'),
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.SingleSkillView.as_view(),
+        name='single skill'),
+]
+
 
 single_class_patterns = [
     url(r'^$',
@@ -34,6 +43,8 @@ single_class_patterns = [
     url(r'^testing-preview/$',
         views.ClassTestingPreview.as_view(),
         name='testing preview'),
+    url(r'^skills/',
+        include(single_class_skills_patterns)),
     url(r'^csv/$',
         views.ClassRosterCSV.as_view(),
         name='class roster csv')

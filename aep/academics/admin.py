@@ -114,7 +114,8 @@ class SkillMasteryResource(resources.ModelResource):
             'student',
             'cert_date',
             'certifier',
-            'skill'
+            'skill',
+            'mastered'
         )
 
 class ResourceAdmin(ImportExportActionModelAdmin):
@@ -246,15 +247,28 @@ class SkillMasteryAdmin(ImportExportActionModelAdmin):
         'student__WRU_ID'
     ]
 
+    list_filter = [
+        'mastered'
+    ]
+
+    list_editable = [
+        'cert_date',
+        'certifier',
+        'mastered'
+    ]
+
     list_display = (
         'student',
         'skill',
         'cert_date',
-        'certifier'
+        'certifier',
+        'mastered'
     )
 
     fields = (
         'cert_date',
+        'certifier',
+        'mastered'
     )
 
 admin.site.register(SkillMastery, SkillMasteryAdmin)    

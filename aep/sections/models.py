@@ -550,10 +550,17 @@ class Enrollment(models.Model):
             total += att.hours
         return total
 
+    def get_skill_masteries(self):
+        masteries = apps.get_model('academics', 'SkillMastery').objects.filter(
+            student=self.student, 
+            skill__in=self.section.course.skills.all()
+        )
+        return masteries
+
     # Creates related attendance objects for student enrollment with correct dates and pending status
     def activate(self):
+        dates = self.section.get_class_dates()
         if self.attendance.all().count() == 0:
-            dates = self.section.get_class_dates()
             online = self.section.program == 'ELRN' or self.section.site.code == 'OL'
             for day in dates:
                 a = Attendance.objects.create(
@@ -564,7 +571,15 @@ class Enrollment(models.Model):
                     online=online
                 )
                 a.save()
-
+        sm = apps.get_model('academics', 'SkillMastery')
+        for skill in self.section.course.skills.all():
+            if sm.objects.filter(skill=skill, student=self.student).count() == 0:
+                sm.objects.create(
+                    skill=skill,
+                    student=self.student,
+                    certifier=self.section.teacher,
+                    cert_date=dates[0]
+                )
 
     # Drops students who have missed first two class periods
     def waitlist_drop(self):

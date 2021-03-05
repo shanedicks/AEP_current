@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{section}} Skills Overview{% endblock head_title %}
+{% block content %}
+
+<table class="table">
+    <tr>
+        <th>Student</th>
+        {% for skill in skills %}
+        <th><a href="">{{ skill }}</a></th>
+        {% endfor %}
+    </tr>
+    {% if section.get_active %}
+    <tr><th><h4>Active</h4></th></tr>
+    {% for student in active %}
+        <tr>
+            <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
+            {% for skill in student.get_skill_masteries %}
+                <td>
+                    {% if skill.mastered %}
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span>
+                    {% else %}
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span> 
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    {% endif %}
+    {% if section.get_completed %}
+    <tr><th><h4>Completed</h4></th></tr>
+    {% for student in completed %}
+        <tr>
+            <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
+            {% for skill in student.get_skill_masteries %}
+                <td>
+                    {% if skill.mastered %}
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    {% else %}
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    {% endif %}
+
+{% endblock content %}

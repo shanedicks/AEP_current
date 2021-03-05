@@ -46,10 +46,10 @@ class Skill(models.Model):
     )
 
     class Meta:
-        pass
+        ordering = ["title"]
 
     def __str__(self):
-        return self.standard
+        return self.title
 
 
 class Course(models.Model):
@@ -132,6 +132,10 @@ class CourseCompletion(Certification):
         related_name = "students"
     )
 
+    class Meta:
+        unique_together = ('student', 'course')
+        verbose_name_plural = "Course Completions"
+
     def __str__(self):
         course = self.course.title
         student = self.student.__str__()
@@ -146,6 +150,9 @@ class Certificate(Certification):
         related_name = "students"
     )
 
+    class Meta:
+        unique_together = ('student', 'credential')
+
     def __str__(self):
         credential = self.credential.title
         student = self.student.__str__()
@@ -158,6 +165,15 @@ class SkillMastery(Certification):
         models.PROTECT,
         related_name = "students"
     )
+
+    mastered = models.BooleanField(
+        default=False
+    )
+
+    class Meta:
+        verbose_name_plural = "Skill Masteries"
+        unique_together = ('student', 'skill')
+        ordering = ['skill']
 
     def __str__(self):
         skill = self.skill.title
