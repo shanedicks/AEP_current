@@ -232,19 +232,51 @@ class Section(models.Model):
         else:
             rostered_emails = []
 
-        students = self.students.filter(status='A')
         Elearn = apps.get_model('coaching', 'ElearnRecord')
+
+        dropped_students = self.students.filter(status='D')
+        dropped_emails = [
+            elearn.g_suite_email
+            for elearn
+            in Elearn.objects.filter(
+                student__classes__in=dropped_students
+            )
+            if elearn.g_suite_email in rostered_emails
+        ]
+
+        def drop_callback(request_id, response, exception):
+            if exception is not None:
+                print("Error removing {0} from course:{1}".format(
+                    request_id,
+                    exception
+                ))
+            else:
+                print("User {0} removed successfully".format(
+                    response.get('profile').get('emailAddress')))
+
+        drop_batch = service.new_batch_http_request(callback=drop_callback)
+        for email in dropped_emails:
+            s = {
+                "userId": email
+            }
+            request = service.courses().students().delete(
+                courseId=self.g_suite_id,
+                body=s
+                )
+            drop_batch.add(request, request_id=email)
+            drop_batch.execute()
+
+        active_students = self.students.filter(status='A')
         new_emails = [
             elearn.g_suite_email
             for elearn
             in Elearn.objects.filter(
-                student__classes__in=students
+                student__classes__in=active_students
             )
             if elearn.g_suite_email not in rostered_emails
         ]
-        print(new_emails)
 
-        def callback(request_id, response, exception):
+        def add_callback(request_id, response, exception):
             if exception is not None:
                 print("Error adding {0} to course: {1}".format(
                     request_id,
@@ -260,7 +292,7 @@ class Section(models.Model):
             in range(0, len(new_emails), 50)
         ]
         for email_batch in batch_list:
-            batch = service.new_batch_http_request(callback=callback)
+            batch = service.new_batch_http_request(callback=add_callback)
             for email in email_batch:
                 s = {
                     "userId": email
