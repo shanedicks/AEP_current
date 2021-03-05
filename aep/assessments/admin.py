@@ -460,6 +460,10 @@ class Hiset_Practice_Resource(TestResource):
         fields = (
             'id',
             'student',
+            'student__student__last_name',
+            'student__student__first_name',
+            'student__student__email',
+            'student__student__elearn_record__g_suite_email',
             'test_date',
             'subject',
             'test_version',
