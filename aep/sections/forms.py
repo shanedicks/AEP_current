@@ -9,6 +9,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from people.models import Student
 from semesters.models import Semester
+from academics.models import SkillMastery
 from .models import Enrollment, Section, Attendance, Site
 
 
@@ -225,6 +226,9 @@ class SingleAttendanceForm(ModelForm):
         fields = ('attendance_type', 'time_in', 'time_out')
 
 
+AttendanceFormset = modelformset_factory(Attendance, form=SingleAttendanceForm, extra=0)
+
+
 class AdminAttendanceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -250,4 +254,28 @@ class AdminAttendanceForm(ModelForm):
         }
 
 
-AttendanceFormSet = modelformset_factory(Attendance, form=SingleAttendanceForm, extra=0)
+class SingleSkillMasteryForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(SingleSkillMasteryForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+            Field(
+                'mastered',
+                'cert_date',
+                wrapper_class="col-md-4"
+            )
+        )
+
+    class Meta:
+        model = SkillMastery
+        fields = ('cert_date', 'mastered')
+
+        labels = {
+            'cert_date': 'Date'
+        }
+
+SkillMasteryFormset = modelformset_factory(SkillMastery, form=SingleSkillMasteryForm, extra=0)

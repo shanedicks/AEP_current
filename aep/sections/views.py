@@ -19,8 +19,9 @@ from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     StudentAddEnrollmentForm, SingleAttendanceForm,
-                    AttendanceFormSet, SectionSearchForm, AdminAttendanceForm,
-                    AttendanceReportForm, EnrollmentReportForm)
+                    AttendanceFormset, SectionSearchForm, AdminAttendanceForm,
+                    AttendanceReportForm, EnrollmentReportForm,
+                    SingleSkillMasteryForm, SkillMasteryFormset)
 from .tasks import participation_detail_task
 
 
@@ -995,7 +996,7 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
     def get(self, request, *args, **kwargs):
         self.object = Section.objects.get(slug=self.kwargs['slug'])
         attendance_date = self.kwargs['attendance_date']
-        formset = AttendanceFormSet(queryset=self.get_form_queryset())
+        formset = AttendanceFormset(queryset=self.get_form_queryset())
         return self.render_to_response(
             self.get_context_data(
                 formset=formset,
@@ -1007,7 +1008,7 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         self.object = Section.objects.get(slug=self.kwargs['slug'])
         attendance_date = self.kwargs['attendance_date']
-        formset = AttendanceFormSet(request.POST, queryset=self.get_form_queryset())
+        formset = AttendanceFormset(request.POST, queryset=self.get_form_queryset())
         if formset.is_valid():
             formset.save()
             return HttpResponseRedirect(self.get_success_url())
@@ -1117,8 +1118,62 @@ class SkillsOverview(LoginRequiredMixin, DetailView):
         return context
 
 
-class SingleSkillView(LoginRequiredMixin, FormView):
-    pass
+class SingleSkillUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = Section
+    form_class = SingleSkillMasteryForm
+    template_name = 'sections/single_skill_update.html'
+
+    def get_form_queryset(self):
+        SkillMastery = apps.get_model('academics', 'SkillMastery')
+        students = [
+            enrollment.student
+            for enrollment
+            in self.object.get_all_students()
+        ]
+        queryset = SkillMastery.objects.filter(
+            student__in=students,
+            skill=self.skill
+        ).order_by(
+            "student__last_name",
+            "student__first_name"
+        )
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        self.object = Section.objects.get(slug=self.kwargs['slug'])
+        self.skill = apps.get_model('academics', 'Skill').objects.get(pk=self.kwargs['pk'])
+        formset = SkillMasteryFormset(queryset=self.get_form_queryset())
+        return self.render_to_response(
+            self.get_context_data(
+                formset=formset,
+                section=self.object,
+                skill=self.skill
+            )
+        )
+
+    def post(self, request, *args, **kwargs):
+        self.object = Section.objects.get(slug=self.kwargs['slug'])
+        self.skill = apps.get_model('academics', 'Skill').objects.get(pk=self.kwargs['pk'])
+        formset = SkillMasteryFormset(request.POST, queryset=self.get_form_queryset())
+        if formset.is_valid():
+            formset.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render_to_response(
+                self.get_context_data(
+                    formset=formset,
+                    section=self.object,
+                    skill=self.skill
+                )
+            )
+
+    def get_success_url(self):
+        section = self.object
+        return reverse_lazy(
+            'sections:skills overview',
+            kwargs={'slug': section.slug}
+        )
 
 
 class ParticipationReport(LoginRequiredMixin, View):

@@ -37,6 +37,9 @@
     <a class="btn btn-default btn-sm" href="{% url 'sections:add student' slug=section.slug %}" role="button">Add Student &raquo;</a>
     <a class="btn btn-default btn-sm" href="{% url 'sections:attendance overview' slug=section.slug %}" role="button">Attendance &raquo;</a>
     <a class="btn btn-default btn-sm" href="{% url 'sections:testing preview' slug=section.slug %}" role="button">Testing Preview &raquo;</a>
+    {% if section.course.skills_view %}
+    <a class="btn btn-default btn-sm" href="{% url 'sections:skills overview' slug=section.slug %}" role="button">Skills Overview &raquo;</a>
+    {% endif %}
     {% if section.g_suite_id %}
     <br></br>
     <p> G Suite ID: {{ section.g_suite_id }}</p>

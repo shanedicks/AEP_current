@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Skill Update{% endblock head_title %}
+
+{% block content %}
+<h2>Update {{skill}} Masteries for {{ section.title }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table>
+        {% for form in formset %}
+        <tr>
+        	{{ form.id }}
+	        <td class='col-md-4'>{{ form.instance.student }}</td>
+	        <td class='col-md-8'>{% crispy form %}</td>
+	    </tr>
+        {% endfor %}
+    </table>
+    <button type="submit" class="btn btn-success">Update Masteries</button>
+</form>
+{% endblock content %}

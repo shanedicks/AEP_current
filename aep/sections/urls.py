@@ -26,8 +26,8 @@ single_class_skills_patterns = [
         views.SkillsOverview.as_view(),
         name='skills overview'),
     url(r'^(?P<pk>[0-9]+)/$',
-        views.SingleSkillView.as_view(),
-        name='single skill'),
+        views.SingleSkillUpdateView.as_view(),
+        name='single skill update'),
 ]
 
 

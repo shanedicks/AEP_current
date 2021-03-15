@@ -6,7 +6,7 @@
     <tr>
         <th>Student</th>
         {% for skill in skills %}
-        <th><a href="">{{ skill }}</a></th>
+        <th><a href="{% url 'sections:single skill update' slug=section.slug pk=skill.pk %}">{{ skill }}</a></th>
         {% endfor %}
     </tr>
     {% if section.get_active %}

@@ -88,6 +88,10 @@ class Course(models.Model):
         blank=True
     )
 
+    skills_view = models.BooleanField(
+        default=False
+    )
+
     class Meta:
         pass
 
