@@ -234,14 +234,26 @@ class Section(models.Model):
 
         Elearn = apps.get_model('coaching', 'ElearnRecord')
 
-        dropped_students = self.students.filter(status='D')
-        dropped_emails = [
+        active_students = self.students.filter(status='A')
+        active_emails = [
             elearn.g_suite_email
             for elearn
             in Elearn.objects.filter(
-                student__classes__in=dropped_students
+                student__classes__in=active_students
             )
-            if elearn.g_suite_email in rostered_emails
+        ]
+        inactive_emails = [
+            email
+            for email
+            in rostered_emails
+            if email not in active_emails
+        ]
+
+        new_emails = [
+            email
+            for email
+            in active_emails
+            if email not in rostered_emails
         ]
 
         def drop_callback(request_id, response, exception):
@@ -255,7 +267,7 @@ class Section(models.Model):
                     response.get('profile').get('emailAddress')))
 
         drop_batch = service.new_batch_http_request(callback=drop_callback)
-        for email in dropped_emails:
+        for email in inactive_emails:
             s = {
                 "userId": email
             }
@@ -265,16 +277,6 @@ class Section(models.Model):
                 )
             drop_batch.add(request, request_id=email)
             drop_batch.execute()
-
-        active_students = self.students.filter(status='A')
-        new_emails = [
-            elearn.g_suite_email
-            for elearn
-            in Elearn.objects.filter(
-                student__classes__in=active_students
-            )
-            if elearn.g_suite_email not in rostered_emails
-        ]
 
         def add_callback(request_id, response, exception):
             if exception is not None:
