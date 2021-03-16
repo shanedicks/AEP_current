@@ -268,13 +268,10 @@ class Section(models.Model):
 
         drop_batch = service.new_batch_http_request(callback=drop_callback)
         for email in inactive_emails:
-            s = {
-                "userId": email
-            }
             request = service.courses().students().delete(
                 courseId=self.g_suite_id,
-                body=s
-                )
+                userId=email
+            )
             drop_batch.add(request, request_id=email)
             drop_batch.execute()
 
@@ -573,15 +570,16 @@ class Enrollment(models.Model):
                     online=online
                 )
                 a.save()
-        sm = apps.get_model('academics', 'SkillMastery')
-        for skill in self.section.course.skills.all():
-            if sm.objects.filter(skill=skill, student=self.student).count() == 0:
-                sm.objects.create(
-                    skill=skill,
-                    student=self.student,
-                    certifier=self.section.teacher,
-                    cert_date=dates[0]
-                )
+        if self.section.course is not None:
+            sm = apps.get_model('academics', 'SkillMastery')
+            for skill in self.section.course.skills.all():
+                if sm.objects.filter(skill=skill, student=self.student).count() == 0:
+                    sm.objects.create(
+                        skill=skill,
+                        student=self.student,
+                        certifier=self.section.teacher,
+                        cert_date=dates[0]
+                    )
 
     # Drops students who have missed first two class periods
     def waitlist_drop(self):
