@@ -8,5 +8,8 @@
     <h4>Status: {{ enrollment.get_status_display }}</h4>
     <h4>Enrolled: {{enrollment.created.date }}</h4>
     <h4>Enrolled by: {{enrollment.creator.get_full_name }}</h4>
+    <h4>Click the <strong>"Remove"</strong> button to delete this enrollment (before classes start)</h4>
     <a class="btn btn-default btn-sm" href="{% url 'sections:delete enrollment' pk=enrollment.pk %}">Remove</a>
+    <h4>Click the <strong>"Update"</strong> button to change the enrollment status (to drop a student after classes begin)</h4>
+    <a class="btn btn-default btn-sm" href="{% url 'sections:enrollment update' pk=enrollment.pk %}">Update</a>
 {% endblock content %}

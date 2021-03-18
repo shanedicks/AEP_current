@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Enrollment Update Form{% endblock head_title %}
+{% block content %}
+<h1>{{ enrollment }}</h1>
+<form class="form-inline" action="" method="post">
+	{% csrf_token %}
+	{% crispy form %}
+	<br>
+    <button type="submit" class="btn btn-success">Update Enrollment Status</button>
+</form>
+{% endblock content %}

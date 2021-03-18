@@ -21,7 +21,8 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     StudentAddEnrollmentForm, SingleAttendanceForm,
                     AttendanceFormset, SectionSearchForm, AdminAttendanceForm,
                     AttendanceReportForm, EnrollmentReportForm,
-                    SingleSkillMasteryForm, SkillMasteryFormset)
+                    SingleSkillMasteryForm, SkillMasteryFormset,
+                    EnrollmentUpdateForm)
 from .tasks import participation_detail_task
 
 
@@ -845,6 +846,13 @@ class AddClassView(LoginRequiredMixin, CreateView):
 class EnrollmentView(LoginRequiredMixin, DetailView):
 
     model = Enrollment
+
+
+class EnrollmentUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = Enrollment
+    form_class = EnrollmentUpdateForm
+    template_name = "sections/enrollment_update.html"
 
 
 class EnrollmentDeleteView(LoginRequiredMixin, DeleteView):

@@ -279,3 +279,26 @@ class SingleSkillMasteryForm(ModelForm):
         }
 
 SkillMasteryFormset = modelformset_factory(SkillMastery, form=SingleSkillMasteryForm, extra=0)
+
+
+class EnrollmentUpdateForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(EnrollmentUpdateForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+            Field(
+                'status'
+            )
+        )
+
+    class Meta:
+        model = Enrollment
+        fields = ('status',)
+
+        labels = {
+            'status': 'Enrollment Status'
+        }
