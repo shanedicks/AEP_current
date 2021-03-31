@@ -9,7 +9,7 @@ logger = get_task_logger(__name__)
 
 @shared_task
 def semester_begin_task(semester_id):
-	semester = apps.get_model('semesters', 'Semester').get(id=semester_id)
+	semester = apps.get_model('semesters', 'Semester').objects.get(id=semester_id)
 	logger.info('Beginning Semester{0}'.format(semester.title))
 	for section in semester.sections.all():
 		section.begin()

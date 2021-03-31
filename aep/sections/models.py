@@ -236,7 +236,7 @@ class Section(models.Model):
 
         active_students = self.students.filter(status='A')
         active_emails = [
-            elearn.g_suite_email
+            elearn.g_suite_email.lower()
             for elearn
             in Elearn.objects.filter(
                 student__classes__in=active_students
@@ -248,7 +248,7 @@ class Section(models.Model):
             in rostered_emails
             if email not in active_emails
         ]
-
+        print(inactive_emails)
         new_emails = [
             email
             for email
@@ -263,8 +263,7 @@ class Section(models.Model):
                     exception
                 ))
             else:
-                print("User {0} removed successfully".format(
-                    response.get('profile').get('emailAddress')))
+                print("User {0} removed successfully".format(request_id))
 
         drop_batch = service.new_batch_http_request(callback=drop_callback)
         for email in inactive_emails:
