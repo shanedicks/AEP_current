@@ -231,6 +231,7 @@ class Section(models.Model):
                 token = roster.get('nextPageToken')
         else:
             rostered_emails = []
+        print("roster: {0}".format(rostered_emails))
 
         Elearn = apps.get_model('coaching', 'ElearnRecord')
 
@@ -242,13 +243,14 @@ class Section(models.Model):
                 student__classes__in=active_students
             )
         ]
+        print("active: {0}".format(active_emails))
         inactive_emails = [
             email
             for email
             in rostered_emails
             if email not in active_emails
         ]
-        print(inactive_emails)
+        print("inactive: {0}".format(inactive_emails))
         new_emails = [
             email
             for email
