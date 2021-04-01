@@ -267,14 +267,14 @@ class Section(models.Model):
             else:
                 print("User {0} removed successfully".format(request_id))
 
-        drop_batch = service.new_batch_http_request(callback=drop_callback)
-        for email in inactive_emails:
-            request = service.courses().students().delete(
-                courseId=self.g_suite_id,
-                userId=email
-            )
-            drop_batch.add(request, request_id=email)
-            drop_batch.execute()
+#        drop_batch = service.new_batch_http_request(callback=drop_callback)
+#        for email in inactive_emails:
+#            request = service.courses().students().delete(
+#                courseId=self.g_suite_id,
+#                userId=email
+#            )
+#            drop_batch.add(request, request_id=email)
+#        drop_batch.execute()
 
         def add_callback(request_id, response, exception):
             if exception is not None:
