@@ -387,6 +387,24 @@ class StudentPersonalInfoForm(ModelForm):
                         required=True
                     ),
                 ),
+                HTML(
+                    """<strong><p>Optional (opcional)</p></strong>
+                    <p>Please let us know how to better address you (Háganos saber cómo dirigirnos mejor a usted)</p>"""
+                ),
+                Row(
+                    Field(
+                    'title',
+                    wrapper_class="col-md-3"
+                    ),
+                    Field(
+                    'nickname',
+                    wrapper_class="col-md-6"
+                    ),
+                    Field(
+                    'pronoun',
+                    wrapper_class="col-md-3"
+                    ),
+                ),
                 'email',
                 Row(
                     Field(
@@ -417,6 +435,9 @@ class StudentPersonalInfoForm(ModelForm):
         fields = (
             "first_name",
             "last_name",
+            "pronoun",
+            "nickname",
+            "title",
             "email",
             "dob",
             "gender",
@@ -427,7 +448,10 @@ class StudentPersonalInfoForm(ModelForm):
         )
         labels = {
             'first_name': "First Name (primer y segundo nombre)",
-            'last_name': "Last Name (primer y segundo apellido)"
+            'last_name': "Last Name (primer y segundo apellido)",
+            'title': "Title (titulo)",
+            'nickname': "Preferred Name or Nickname (nombre o apodo preferido)",
+            'pronoun': "Pronouns (pronombres)"
         }
 
 
@@ -609,6 +633,20 @@ class StudentForm(ModelForm):
                         required=True
                     ),
                 ),
+                Row(
+                    Field(
+                    'title',
+                    wrapper_class="col-md-3"
+                    ),
+                    Field(
+                    'nickname',
+                    wrapper_class="col-md-6"
+                    ),
+                    Field(
+                    'pronoun',
+                    wrapper_class="col-md-3"
+                    ),
+                ),
                 'email',
                 'alt_email'
             ),
@@ -716,6 +754,9 @@ class StudentForm(ModelForm):
         fields = (
             "first_name",
             "last_name",
+            'title',
+            'nickname',
+            'pronoun',
             "email",
             "alt_email",
             "dob",

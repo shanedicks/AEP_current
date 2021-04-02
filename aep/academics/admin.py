@@ -137,9 +137,14 @@ class SkillAdmin(ImportExportActionModelAdmin):
 
     resource_class = SkillResource
 
-    list_display = ('code',)
+    list_display = (
+        'title',
+        'code',
+        'anchor_standard'
+    )
 
     search_fields = [
+        'title',
         'code',
         'anchor_standard',
         'description'

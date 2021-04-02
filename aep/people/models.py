@@ -74,6 +74,22 @@ class Profile(models.Model):
         ("G", "Legal Guardian"),
         ("O", "Other")
     )
+    PRONOUN_CHOICES = (
+        ("He/Him/His", "He/Him/His"),
+        ("She/Her/Hers", "She/Her/Hers"),
+        ("They/Them/Theirs", "They/Them/Theirs"),
+        ("Ze/Hir/Hirs", "Ze/Hir/Hirs"),
+        ("I do not use a pronoun", "I do not use a pronoun"),
+        ("Other, please ask", "Other, please ask"),
+        ("I use all gender pronouns", "I use all gender pronouns")
+    )
+    TITLE_CHOICES = (
+        ("Mx.", "Mx."),
+        ("Miss", "Miss"),
+        ("Ms.", "Ms."),
+        ("Mrs.", "Mrs."),
+        ("Mr.", "Mr.")
+    )
     first_name = models.CharField(
         max_length=30,
         verbose_name=_("First Name"),
@@ -146,6 +162,23 @@ class Profile(models.Model):
         choices=EC_RELATIONS_CHOICES,
         default='O',
         verbose_name=_("Their Relationship to You")
+    )
+    nickname = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name=_("Preferred Name or Nickname")
+    )
+    pronoun = models.CharField(
+        max_length=25,
+        blank=True,
+        choices=PRONOUN_CHOICES,
+        verbose_name=_("Pronouns")
+    )
+    title = models.CharField(
+        max_length=5,
+        blank=True,
+        choices=TITLE_CHOICES,
+        verbose_name=_("Title")
     )
     # make_slug here creates a 5 character string for use in absolute urls
     slug = models.CharField(
