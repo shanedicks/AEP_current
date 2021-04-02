@@ -24,6 +24,7 @@ class SkillResource(resources.ModelResource):
         model = Skill
         fields = (
             'id',
+            'title',
             'anchor_standard',
             'code',
             'description',
