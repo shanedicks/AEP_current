@@ -922,8 +922,8 @@ def voc_rehab(input):
 
 
 def wru_search(session, search_dict):
-    s = session.get(
-        'https://workreadyu.lctcs.edu/Student',
+    s = session.post(
+        'https://workreadyu.lctcs.edu/Student/',
         data=search_dict
     )
     p = bs4.BeautifulSoup(
@@ -931,7 +931,7 @@ def wru_search(session, search_dict):
         "html.parser"
     )
     try:
-        return p.select("table.Webgrid > tbody > tr > td")[11].text.encode('utf-8')
+        return p.select("table.Webgrid > tbody > tr > td")[9].text.encode('utf-8')
     except IndexError:
         return 'No ID'
 
@@ -1032,19 +1032,19 @@ class WIOA(models.Model):
         ("22", "COMPLETED 12 YEARS (HS DIPLOMA EARNED)"),
     )
     COMPLETED_AT_ENTRY_CHOICES = (
-        ("1", "NO SCHOOL GRADE COMPLETED"),
-        ("2", "COMPLETED 1 YEAR"),
-        ("3", "COMPLETED 2 YEARS"),
-        ("4", "COMPLETED 3 YEARS"),
-        ("5", "COMPLETED 4 YEARS"),
-        ("6", "COMPLETED 5 YEARS"),
-        ("7", "COMPLETED 6 YEARS"),
-        ("8", "COMPLETED 7 YEARS"),
-        ("9", "COMPLETED 8 YEARS"),
-        ("10", "COMPLETED 9 YEARS"),
-        ("11", "COMPLETED 10 YEARS"),
-        ("12", "COMPLETED 11 YEARS"),
-        ("13", "COMPLETED 12 YEARS"),
+        ("0", "NO SCHOOL GRADE COMPLETED"),
+        ("1", "COMPLETED 1 YEAR"),
+        ("2", "COMPLETED 2 YEARS"),
+        ("3", "COMPLETED 3 YEARS"),
+        ("4", "COMPLETED 4 YEARS"),
+        ("5", "COMPLETED 5 YEARS"),
+        ("6", "COMPLETED 6 YEARS"),
+        ("7", "COMPLETED 7 YEARS"),
+        ("8", "COMPLETED 8 YEARS"),
+        ("9", "COMPLETED 9 YEARS"),
+        ("10", "COMPLETED 10 YEARS"),
+        ("11", "COMPLETED 11 YEARS"),
+        ("12", "COMPLETED 12 YEARS"),
     )
     SCHOOL_LOCATION_CHOICES = (
         ("", "Please Select"),
@@ -1464,16 +1464,16 @@ class WIOA(models.Model):
 
         student = {
             "hdnRoleType": "2",
-            "hdnInactiveStateKey": ",2,3,4,5,",
-            "hdnInactiveProg": ",7,13,",
+            "hdnInactiveStateKey": ",2,3,4,5,7,18",
+            "hdnInactiveProg": "2,5,7,13,",
             "hdnInactiveEmpStat": ",4_UNL, 5_NLF,",
             "IntakeOnlyProgram": "19",
             "IsIntakeOnly": "true",
             "EnrollPStat.IntakeDate": self.student.intake_date,
             "FY": "9",
-            "lblCurrentFY": "5",
-            "FYBginDate": "7/1/2019",
-            "FYEndDate": "6/30/2020",
+            "lblCurrentFY": "9",
+            "FYBginDate": "7/1/2020 12:00:00 AM",
+            "FYEndDate": "6/30/2021 12:00:00 AM",
             "hdnProviderId": "DELGADO COMMUNITY COLLEGE",
             "StudentId": "0",
             "SSN": get_SID(self.SID),
@@ -1487,6 +1487,7 @@ class WIOA(models.Model):
             "Gender": gender(self.student.gender),
             "OtherID": "",
             "Suffix": "",
+            "EnrollmentDate": self.student.intake_date,
             "Address.Street1": self.student.street_address_1,
             "Address.Street2": self.student.street_address_2,
             "Address.City": self.student.city,
@@ -1497,7 +1498,7 @@ class WIOA(models.Model):
             "Address.Status": "false",
             "Address.VTCountyId": self.student.parish,
             "Telephone.PrimaryPhoneNumber": self.student.phone,
-            "Telephone.PrimaryPhoneTypeId": "3",
+            "Telephone.PrimaryPhoneTypeId": "",
             "Telephone.PrimaryPhoneStatus": "true",
             "Telephone.PrimaryPhoneStatus": "false",
             "Telephone.AlternativePhoneNumber1": "",
@@ -1523,9 +1524,9 @@ class WIOA(models.Model):
             "Ethnicity_3": true_false(self.black),
             "Ethnicity_5": true_false(self.white),
             "Ethnicity_4": true_false(self.pacific_islander),
-            "Program.ProgramTypeId": primary_program(self.student),
+            "Program.ProgramTypeId": "19",
             "Program.StateKeyword": "",
-            "Program.SecondaryProgram1TypeId": secondary_program(self.student),
+            "Program.SecondaryProgram1TypeId": "",
             "ESLStudent": esl(self.student),
             "Program.Keyword": "",
             "Program.SecondaryProgram2TypeId": "",
@@ -1537,6 +1538,7 @@ class WIOA(models.Model):
             "Program.PastEnrollCollege": "",
             "EmploymentStatusId": employment_status(self.current_employment_status),
             "EnrollPStat.EmploymentLocation": self.employer,
+            "EnrollPStat.EmploymentDate": "",
             "EnrollPStat.Occupation": self.occupation,
             "EnrollSStat.PublicAssistance": true_false(self.recieves_public_assistance),
             "EnrollSStat.RuralArea": true_false(self.rural_area),
@@ -1608,6 +1610,7 @@ class WIOA(models.Model):
             "Dislearning_1": true_false(self.neurological_impairments),
             "HighestId": self.highest_level_completed,
             "HighLocId": self.school_location,
+            "StudentWIOADetail.HighestSchCompletedEntry": 0,
             "GoalId": "",
             "ReferralDate": "",
             "ReferralTo": "",
