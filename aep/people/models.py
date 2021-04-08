@@ -921,21 +921,6 @@ def voc_rehab(input):
     return v[input]
 
 
-def wru_search(session, search_dict):
-    s = session.post(
-        'https://workreadyu.lctcs.edu/Student/',
-        data=search_dict
-    )
-    p = bs4.BeautifulSoup(
-        s.text,
-        "html.parser"
-    )
-    try:
-        return p.select("table.Webgrid > tbody > tr > td")[9].text.encode('utf-8')
-    except IndexError:
-        return 'No ID'
-
-
 class WIOA(models.Model):
 
     EMPLOYMENT_STATUS_CHOICES = (
@@ -1430,19 +1415,41 @@ class WIOA(models.Model):
     def __str__(self):
         return self.student.__str__()
 
+    def wru_search(self, session, search_dict):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
+        }
+        s = session.get(
+            'https://workreadyu.lctcs.edu/Student/',
+            data=search_dict,
+            headers=headers
+        )
+        p = bs4.BeautifulSoup(
+            s.text,
+            "html.parser"
+        )
+        try:
+            return p.select("table.Webgrid > tbody > tr > td")[9].text.encode('utf-8')
+        except IndexError:
+            return 'No ID'
+
     def check_for_state_id(self, session):
 
         search = {
             'LastNameTextBox': self.student.last_name,
             'FirstNameTextBox': self.student.first_name,
+            'SSNTextBox': '',
+            'SIDTextBox': '',
             'Status': -1,
+            'ProviderId': 9,
+            'ParishId': 0,
             'AgeSearchType': 1,
             'AgeFromInequality': 4,
             'AgeFromTextBox': get_age_at_intake(self.student.dob, self.student.intake_date),
             'btnFilter': 'Filter List'
         }
 
-        wru = wru_search(session, search)
+        wru = self.wru_search(session, search)
 
         if wru == 'No ID':
             if self.SID:
@@ -1461,6 +1468,10 @@ class WIOA(models.Model):
         self.student.save()
 
     def send_to_state(self, session):
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
+        }
 
         student = {
             "hdnRoleType": "2",
@@ -1621,7 +1632,8 @@ class WIOA(models.Model):
 
         session.post(
             'https://workreadyu.lctcs.edu/Student/CreateWithWIOA/CreateLink',
-            data=student
+            data=student,
+            headers=headers
         )
 
         search = {
@@ -1632,7 +1644,7 @@ class WIOA(models.Model):
             'btnFilter': 'Filter List'
         }
 
-        wru = wru_search(session, search)
+        wru = self.wru_search(session, search)
         try:
             wru = wru.decode('ascii')
         except AttributeError:
