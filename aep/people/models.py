@@ -931,7 +931,7 @@ def wru_search(session, search_dict):
         "html.parser"
     )
     try:
-        return p.select("table.Webgrid > tbody > tr > td")[9].text.encode('utf-8')
+        return p.select("table.Webgrid > tbody > tr > td")[11].text.encode('utf-8')
     except IndexError:
         return 'No ID'
 
@@ -1470,7 +1470,7 @@ class WIOA(models.Model):
             "IntakeOnlyProgram": "19",
             "IsIntakeOnly": "true",
             "EnrollPStat.IntakeDate": self.student.intake_date,
-            "FY": "7",
+            "FY": "9",
             "lblCurrentFY": "5",
             "FYBginDate": "7/1/2019",
             "FYEndDate": "6/30/2020",
