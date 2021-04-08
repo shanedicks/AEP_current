@@ -1458,7 +1458,7 @@ class WIOA(models.Model):
                     'Status': -1,
                     'btnFilter': 'Filter List'
                 }
-                wru = wru_search(session, search)
+                wru = self.wru_search(session, search)
 
         if wru != 'No ID':
             wru = b'x' + wru
