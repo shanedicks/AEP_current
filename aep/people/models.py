@@ -1419,10 +1419,12 @@ class WIOA(models.Model):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
         }
+
         s = session.get(
             'https://workreadyu.lctcs.edu/Student/',
             data=search_dict,
-            headers=headers
+            headers=headers,
+            proxies=settings.PROXIE_DICT
         )
         p = bs4.BeautifulSoup(
             s.text,
@@ -1633,7 +1635,8 @@ class WIOA(models.Model):
         session.post(
             'https://workreadyu.lctcs.edu/Student/CreateWithWIOA/CreateLink',
             data=student,
-            headers=headers
+            headers=headers,
+            proxies=settings.PROXIE_DICT
         )
 
         search = {

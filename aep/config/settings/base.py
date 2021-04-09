@@ -18,7 +18,7 @@ path.append(PROJECT_ROOT)
 
 def get_env_variable(var_name):
     try:
-        return os.environ.pop(var_name)
+        return os.environ.get(var_name)
     except KeyError:
         error_msg = 'Set the {} environment variable'.format(var_name)
         raise ImproperlyConfigured(error_msg)
@@ -194,6 +194,12 @@ CELERY_WORKER_MAX_TASKS_PER_CHILD = 1
 
 # WorkreadyU Settings
 LCTCS_PASS = get_env_variable('LCTCS_PASS')
+
+# Fixie Settings
+PROXIE_DICT = {
+        'http': get_env_variable('FIXIE_URL'),
+        'https': get_env_variable('FIXIE_URL')
+    }
 
 # Form field limit
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000

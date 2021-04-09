@@ -54,7 +54,8 @@ def state_session():
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
     }
 
-    session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login, headers=headers)
+    session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login, headers=headers, proxies=settings.PROXIE_DICT)
+
     return session
 
 def g_suite_service():
