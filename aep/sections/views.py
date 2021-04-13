@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.db import IntegrityError
 from core.forms import DateFilterForm
 from core.utils import render_to_csv
@@ -23,7 +23,7 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     AttendanceReportForm, EnrollmentReportForm,
                     SingleSkillMasteryForm, SkillMasteryFormset,
                     EnrollmentUpdateForm)
-from .tasks import participation_detail_task
+from .tasks import participation_detail_task, section_skill_mastery_report_task
 
 
 class AttendanceCSV(LoginRequiredMixin, FormView):
@@ -1190,3 +1190,12 @@ class ParticipationReport(LoginRequiredMixin, View):
         email = request.user.email
         participation_detail_task.delay(email)
         return HttpResponseRedirect(reverse_lazy('report success'))
+
+
+class SectionSkillMasteryCSV(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        section = Section.objects.get(slug = kwargs['slug'])
+        user_email = request.user.email
+        section_skill_mastery_report_task.delay(section.id, user_email)
+        return HttpResponseRedirect(reverse('report success'))

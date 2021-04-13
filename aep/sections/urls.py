@@ -28,6 +28,9 @@ single_class_skills_patterns = [
     url(r'^(?P<pk>[0-9]+)/$',
         views.SingleSkillUpdateView.as_view(),
         name='single skill update'),
+    url(r'^csv/$',
+        views.SectionSkillMasteryCSV.as_view(),
+        name='section skill mastery csv')
 ]
 
 

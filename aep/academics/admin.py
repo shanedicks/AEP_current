@@ -257,12 +257,6 @@ class SkillMasteryAdmin(ImportExportActionModelAdmin):
         'mastered'
     ]
 
-    list_editable = [
-        'cert_date',
-        'certifier',
-        'mastered'
-    ]
-
     list_display = (
         'student',
         'skill',

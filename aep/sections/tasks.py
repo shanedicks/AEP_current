@@ -131,3 +131,48 @@ def enrollment_notification_task(enrollment_id):
 @shared_task
 def missed_class_report_task():
 	pass
+
+@shared_task
+def section_skill_mastery_report_task(section_id, email_address):
+	section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+	students = apps.get_model('people', 'Student').objects.filter(classes__section=section)
+	skills = section.course.skills.all()
+	SM = apps.get_model('academics', 'SkillMastery')
+	skill_masteries = SM.objects.filter(skill__in=skills, student__in=students)
+
+	filename = "skill_mastery_report_{0}.csv".format(section.slug)
+
+	with open(filename, 'w', newline='') as out:
+		writer = csv.writer(out)
+
+		headers = [
+			'student',
+			'id',
+			'cert_date',
+			'certifier',
+			'skill_title',
+			'mastered'
+		]
+		writer.writerow(headers)
+
+		for sm in skill_masteries:
+			data = [
+				sm.student.WRU_ID,
+				sm.id,
+				sm.cert_date,
+				sm.certifier.id,
+				sm.skill.title,
+				int(sm.mastered)
+			]
+
+			writer.writerow(data)
+
+	email = EmailMessage(
+		'Skill Mastery Report',
+		'Report on student enrollment and class completion for various days, times, and sites',
+		'reporter@dccaep.org',
+		[email_address]
+	)
+	email.attach_file(filename)
+	email.send()
+	return True

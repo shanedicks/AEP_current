@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block head_title %}DCCAEP | {{section}} Skills Overview{% endblock head_title %}
 {% block content %}
-
+<h1> Skills Overview</h1>
+<h3>{{section}}</h3>
+<a type="button" class="btn btn-default" href="{% url 'sections:section skill mastery csv' slug=section.slug %}"> SkillMastery Export</a>
 <table class="table">
     <tr>
         <th>Student</th>
@@ -43,5 +45,6 @@
         </tr>
     {% endfor %}
     {% endif %}
+</table>
 
 {% endblock content %}
