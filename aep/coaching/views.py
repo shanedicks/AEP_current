@@ -131,6 +131,97 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
 class CoacheeListView(LoginRequiredMixin, ListView):
 
     model = Coaching
+    paginate_by = 20
+    template_name = 'coaching/coachee_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CoacheeListView, self).get_context_data(**kwargs)
+        context['coach'] = apps.get_model(
+            'people', 'Staff').objects.get(slug=self.kwargs['slug'])
+        context['status'] = "All"
+        return context
+
+    def get_queryset(self, **kwargs):
+        coach = apps.get_model('people', 'Staff').objects.get(slug=self.kwargs['slug'])
+        queryset = coach.coachees.all().order_by('coachee__last_name', 'coachee__first_name')
+        return queryset
+
+
+class ActiveCoacheeListView(CoacheeListView):
+
+    def get_context_data(self, **kwargs):
+        context = super(ActiveCoacheeListView, self).get_context_data(**kwargs)
+        context['status'] = "Active"
+        return context
+
+    def get_queryset(self, **kwargs):
+        queryset = super(ActiveCoacheeListView, self).get_queryset()
+        queryset = queryset.filter(status='Active')
+        return queryset
+
+
+class InactiveCoacheeListView(CoacheeListView):
+
+    def get_context_data(self, **kwargs):
+        context = super(InactiveCoacheeListView, self).get_context_data(**kwargs)
+        context['status'] = "Inactive"
+        return context
+
+    def get_queryset(self, **kwargs):
+        queryset = super(InactiveCoacheeListView, self).get_queryset()
+        queryset = queryset.filter(status='Inactive')
+        return queryset
+
+
+class HisetCoacheeListView(CoacheeListView):
+
+    def get_context_data(self, **kwargs):
+        context = super(HisetCoacheeListView, self).get_context_data(**kwargs)
+        context['status'] = "Passed HiSet"
+        return context
+
+    def get_queryset(self, **kwargs):
+        queryset = super(HisetCoacheeListView, self).get_queryset()
+        queryset = queryset.filter(status="Completed HiSET")
+        return queryset
+
+
+class EslCcrCoacheeListView(CoacheeListView):
+
+    def get_context_data(self, **kwargs):
+        context = super(EslCcrCoacheeListView, self).get_context_data(**kwargs)
+        context['status'] = "ESL > CCR"
+        return context
+
+    def get_queryset(self, **kwargs):
+        queryset = super(EslCcrCoacheeListView, self).get_queryset()
+        queryset = queryset.filter(status="ESL > CCR")
+        return queryset
+
+class EnrolledCoacheeListView(CoacheeListView):
+
+    def get_context_data(self, **kwargs):
+        context = super(EnrolledCoacheeListView, self).get_context_data(**kwargs)
+        context['status'] = "Currently Enrolled"
+        return context
+
+    def get_queryset(self, **kwargs):
+        queryset = super(EnrolledCoacheeListView, self).get_queryset()
+        queryset = queryset.filter(coachee__classes__status='A').distinct()
+        return queryset
+
+
+class OnHoldCoacheeListView(CoacheeListView):
+
+    def get_context_data(self, **kwargs):
+        context = super(OnHoldCoacheeListView, self).get_context_data(**kwargs)
+        context['status'] = "On Hold"
+        return context
+
+    def get_queryset(self, **kwargs):
+        queryset = super(OnHoldCoacheeListView, self).get_queryset()
+        queryset = queryset.filter(status='On Hold')
+        return queryset
 
 
 class CoacheeExportCSV(LoginRequiredMixin, View):

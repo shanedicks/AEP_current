@@ -424,19 +424,22 @@ class StaffHomeView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(StaffHomeView, self).get_context_data(**kwargs)
-        coachees = self.object.coachees.filter(active=True)
+        coachees = self.object.coachees.all()
         if 'coachees' not in context:
-            context['coachees'] = coachees
+            context['coachees'] = coachees.count()
         if 'active' not in context:
-            context['active'] = coachees.filter(status='Active')
+            context['active'] = coachees.filter(status='Active').count()
         if 'hold' not in context:
-            context['hold'] = coachees.filter(status='On Hold')
+            context['hold'] = coachees.filter(status='On Hold').count()
         if 'inactive' not in context:
-            context['inactive'] = coachees.filter(status='Inactive')
+            context['inactive'] = coachees.filter(status='Inactive').count()
         if 'esl_ccr' not in context:
-            context['esl_ccr'] = coachees.filter(status='ESL > CCR')
+            context['esl_ccr'] = coachees.filter(status='ESL > CCR').count()
         if 'hiset' not in context:
-            context['hiset'] = coachees.filter(status='Completed HiSET')
+            context['hiset'] = coachees.filter(status='Completed HiSET').count()
+        if 'enrolled' not in context:
+            context['enrolled'] = coachees.filter(
+                coachee__classes__status='A').distinct().count()
         context.update(kwargs)
         return context
 

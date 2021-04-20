@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{ coach }} Coachees List{% endblock head_title %}
+{% block content %}
+<h1>{{status}} Coachees</h1>
+	<div class="btn-group" role="group" aria-label="coachee list links">
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:coachee list' slug=coach.slug %}">All</a>
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:active coachee list' slug=coach.slug %}">Active</a>
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:inactive coachee list' slug=coach.slug %}">Inactive</a>
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:passed hiset coachee list' slug=coach.slug %}">Passed Hiset</a>
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:esl to ccr coachee list' slug=coach.slug %}">ESL > CCR</a>
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:on hold coachee list' slug=coach.slug %}">On Hold</a>
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:enrolled coachee list' slug=coach.slug %}">Enrolled</a>
+	</div>
+    <table class="table">
+    <tr>
+        <th>Student</th>
+        <th>Times Met</th>
+        <th>Last Meeting Date</th>
+    </tr>
+    {% for coachee in object_list %}
+    <tr>
+        <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
+        <td>{{ coachee.notes.count }}</td>
+        {% if coachee.notes.count > 0 %}
+            <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
+        {% else %}
+            <td>Never</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </table>
+	{% if is_paginated %}
+        {% include 'components/pagination.html' %}
+    {% endif %}    
+{% endblock content %}

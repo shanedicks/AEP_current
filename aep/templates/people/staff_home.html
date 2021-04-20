@@ -54,105 +54,18 @@
         {% endfor %}
         </table>
     {% endif %}
-    {% if staff.coachees.count > 0 %}
+    {% if coachees > 0 %}
         <h3>My Coachees</h3>
         <a type="button" class="btn btn-default" href="{% url 'coaching:coachee export' slug=staff.slug %}">Coachee Export</a>
         <a type="button" class="btn btn-default" href="{% url 'coaching:update coachings' slug=staff.slug %}">Update Statuses</a>
-            <h4>Active</h4>
-                <table class="table">
-                <tr>
-                    <th>Student</th>
-                    <th>Times Met</th>
-                    <th>Last Meeting Date</th>
-                </tr>
-                {% for coachee in active %}
-                <tr>
-                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
-                    <td>{{ coachee.notes.count }}</td>
-                    {% if coachee.notes.count > 0 %}
-                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
-                    {% else %}
-                        <td>Never</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-                </table>
-            <h4>On Hold</h4>
-                <table class="table">
-                <tr>
-                    <th>Student</th>
-                    <th>Times Met</th>
-                    <th>Last Meeting Date</th>
-                </tr>
-                {% for coachee in hold %}
-                <tr>
-                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
-                    <td>{{ coachee.notes.count }}</td>
-                    {% if coachee.notes.count > 0 %}
-                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
-                    {% else %}
-                        <td>Never</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-                </table>
-            <h4>Inactive</h4>
-                <table class="table">
-                <tr>
-                    <th>Student</th>
-                    <th>Times Met</th>
-                    <th>Last Meeting Date</th>
-                </tr>
-                {% for coachee in inactive %}
-                <tr>
-                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
-                    <td>{{ coachee.notes.count }}</td>
-                    {% if coachee.notes.count > 0 %}
-                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
-                    {% else %}
-                        <td>Never</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-                </table>
-            <h4>ESL to CCR</h4>
-                <table class="table">
-                <tr>
-                    <th>Student</th>
-                    <th>Times Met</th>
-                    <th>Last Meeting Date</th>
-                </tr>
-                {% for coachee in esl_ccer %}
-                <tr>
-                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
-                    <td>{{ coachee.notes.count }}</td>
-                    {% if coachee.notes.count > 0 %}
-                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
-                    {% else %}
-                        <td>Never</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-                </table>
-            <h4>Completed Hiset</h4>
-                <table class="table">
-                <tr>
-                    <th>Student</th>
-                    <th>Times Met</th>
-                    <th>Last Meeting Date</th>
-                </tr>
-                {% for coachee in hiset %}
-                <tr>
-                    <td><a href="{% url 'coaching:coaching detail' pk=coachee.pk %}">{{coachee.coachee}}</a></td>
-                    <td>{{ coachee.notes.count }}</td>
-                    {% if coachee.notes.count > 0 %}
-                        <td><a href="{% url 'coaching:meeting note detail' pk=coachee.latest_note.pk %}">{{ coachee.latest_note.meeting_date }}</a></td>
-                    {% else %}
-                        <td>Never</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-                </table>
+            <h4><a href="{% url 'coaching:coachee list' slug=staff.slug %}">All: {{coachees}}</a></h4>
+            <h4><a href="{% url 'coaching:active coachee list' slug=staff.slug %}">Active: {{active}}</a></h4>
+            <h4><a href="{% url 'coaching:on hold coachee list' slug=staff.slug %}">On Hold: {{hold}}</a></h4>
+            <h4><a href="{% url 'coaching:inactive coachee list' slug=staff.slug %}">Inactive: {{inactive}}</a></h4>
+            <h4><a href="{% url 'coaching:esl to ccr coachee list' slug=staff.slug %}">ESL to CCR: {{esl_ccr}}</a></h4>
+            <h4><a href="{% url 'coaching:passed hiset coachee list' slug=staff.slug %}">Passed Hiset: {{hiset}}</a></h4>
+            <h4><a href="{% url 'coaching:enrolled coachee list' slug=staff.slug %}">Enrolled: {{enrolled}}</a></h4>
     {% endif %}
+
 
 {%endblock content %}

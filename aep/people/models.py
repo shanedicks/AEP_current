@@ -651,6 +651,7 @@ class Staff(Profile):
             'start_time'
         )
 
+
 class Paperwork(models.Model):
 
     student = models.OneToOneField(

@@ -23,10 +23,33 @@ single_student_patterns = [
         name='coaching create')
 ]
 
-single_coach_patterns = [
+coachee_list_patterns = [
     url(r'^$',
         views.CoacheeListView.as_view(),
         name='coachee list'),
+    url(r'^active/$',
+        views.ActiveCoacheeListView.as_view(),
+        name='active coachee list'),
+    url(r'^inactive/$',
+        views.InactiveCoacheeListView.as_view(),
+        name='inactive coachee list'),
+    url(r'^passed-hiset/$',
+        views.HisetCoacheeListView.as_view(),
+        name='passed hiset coachee list'),
+    url(r'^esl-to-ccr/$',
+        views.EslCcrCoacheeListView.as_view(),
+        name='esl to ccr coachee list'),
+    url(r'^on-hold/$',
+        views.OnHoldCoacheeListView.as_view(),
+        name='on hold coachee list'),
+    url(r'^enrolled/$',
+        views.EnrolledCoacheeListView.as_view(),
+        name='enrolled coachee list'),
+]
+
+single_coach_patterns = [
+    url(r'^coachees/',
+        include(coachee_list_patterns)),
     url(r'^export$',
         views.CoacheeExportCSV.as_view(),
         name='coachee export'),
@@ -48,8 +71,6 @@ single_coaching_patterns = [
 ]
 
 coaches_patterns = [
-    url(r'^(?P<pk>[0-9]+)/',
-        include(single_coaching_patterns)),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/',
         include(single_coach_patterns)),
 ]
@@ -106,6 +127,8 @@ e_learn_patterns = [
 ]
 
 urlpatterns = [
+    url(r'^(?P<pk>[0-9]+)/',
+        include(single_coaching_patterns)),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/',
         include(single_student_patterns)),
     url(r'^coaches/',
