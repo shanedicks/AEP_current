@@ -459,6 +459,13 @@ class MeetingNote(models.Model):
         (PERSON, 'In Person')        
     )
 
+    DURATION_CHOICES = (
+        ("15", "15 min"),
+        ("30", "30 min"),
+        ("45", "45 min"),
+        ("60", "60 min")
+    )
+
     meeting_type = models.CharField(
         max_length=17,
         choices=MEETING_TYPE_CHOICES,
@@ -534,6 +541,12 @@ class MeetingNote(models.Model):
 
     end_time = models.TimeField(
         null=True,
+        blank=True
+    )
+
+    duration = models.TextField(
+        max_length=3,
+        choices=DURATION_CHOICES,
         blank=True
     )
 

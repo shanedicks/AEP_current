@@ -322,19 +322,23 @@ class MeetingNoteForm(ModelForm):
                 Field(
                     'meeting_date',
                     placeholder="MM/DD/YYYY",
-                    wrapper_class="col-md-4",
+                    wrapper_class="col-md-3",
                     data_mask="99/99/9999"
+                ),
+                Field(
+                    'duration',
+                    wrapper_class="col-md-3",
                 ),
                 Field(
                     'start_time',
                     placeholder="HH:MM AM/PM",
-                    wrapper_class="col-md-4",
+                    wrapper_class="col-md-3",
                     data_mask="99:99 aa"
                 ),
                 Field(
                     'end_time',
                     placeholder="HH:MM AM/PM",
-                    wrapper_class="col-md-4",
+                    wrapper_class="col-md-3",
                     data_mask="99:99 aa"
                 ),
             ),
@@ -378,8 +382,7 @@ class MeetingNoteForm(ModelForm):
         fields = (
             'meeting_type',
             'meeting_date',
-            'start_time',
-            'end_time',
+            'duration',
             'student_no_show',
             'student_reschedule',
             'student_cancel',
@@ -456,19 +459,23 @@ class NewMeetingNoteForm(ModelForm):
                 Field(
                     'meeting_date',
                     placeholder="MM/DD/YYYY",
-                    wrapper_class="col-md-4",
+                    wrapper_class="col-md-3",
                     data_mask="99/99/9999"
+                ),
+                Field(
+                    'duration',
+                    wrapper_class="col-md-3",
                 ),
                 Field(
                     'start_time',
                     placeholder="HH:MM AM/PM",
-                    wrapper_class="col-md-4",
+                    wrapper_class="col-md-3",
                     data_mask="99:99 aa"
                 ),
                 Field(
                     'end_time',
                     placeholder="HH:MM AM/PM",
-                    wrapper_class="col-md-4",
+                    wrapper_class="col-md-3",
                     data_mask="99:99 aa"
                 ),
             ),
@@ -483,6 +490,7 @@ class NewMeetingNoteForm(ModelForm):
         model = MeetingNote
         fields = (
             'meeting_date',
+            'duration',
             'start_time',
             'end_time',
             'contact_type',
