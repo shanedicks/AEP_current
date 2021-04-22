@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from django.apps import apps
 from django.db import models
 from django.urls import reverse
+from core.tasks import send_mail_task
 from sections.tasks import roster_to_classroom_task
 from .tasks import enforce_attendance_task
 
@@ -124,6 +125,51 @@ class Semester(models.Model):
         cutoff = datetime.today().date() - timedelta(days=180)
         to_refresh = students.filter(student__tests__last_test_date__gte=cutoff)
         to_refresh.update(status='A')
+
+
+class Survey(models.Model):
+
+    title = models.CharField(
+        max_length=100
+    )
+
+    form_link = models.URLField(
+        blank=True
+    )
+
+    sessions = models.ManyToManyField(
+        Semester,
+    )
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title
+
+    def send_survey(self):
+        sessions = self.sessions.all()
+        students = apps.get_model('people', 'Student').objects.filter(
+            classes__section__semester__in=sessions
+        ).distinct()
+        for student in students:
+            if student.email:
+                send_mail_task.delay(
+                    subject="Delgado Adult Education - We want to hear from you!",
+                    message="",
+                    html_message="""<p>Hi {first_name},</p><p>Would you be able 
+                    to help us out by answering a few questions? If so, please 
+                    <a href='{form_link}'>click here</a> to access our survey. 
+                    If the form asks for it, please enter your workreadyu id: 
+                    {wru}</p><p>Thanks so much for taking the time to help us</p>
+                    """.format(
+                        first_name=student.first_name,
+                        form_link=self.form_link,
+                        wru=student.WRU_ID
+                    ),
+                    from_email="survey_robot@dccaep.org",
+                    recipient_list=[student.email]
+                )
 
 
 class Day(models.Model):

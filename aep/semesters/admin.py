@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Semester, Day
+from .models import Semester, Day, Survey
 from .tasks import (send_g_suite_info_task, semester_begin_task,
-    validate_enrollments_task, refresh_enrollments_task)
+    validate_enrollments_task, refresh_enrollments_task, send_survey_task)
 
 # Register your models here.
 
@@ -73,4 +73,20 @@ class SemesterAdmin(admin.ModelAdmin):
             refresh_enrollments_task.delay(obj.id)
 
 admin.site.register(Semester, SemesterAdmin)
+
+class SurveyAdmin(admin.ModelAdmin):
+
+    list_display = [
+        "title",
+    ]
+
+    actions = [
+        "send_survey"
+    ]
+
+    def send_survey(self, request, queryset):
+        for obj in queryset:
+            send_survey_task.delay(obj.id)
+
+admin.site.register(Survey, SurveyAdmin)
 admin.site.register(Day)
