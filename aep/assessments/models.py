@@ -909,6 +909,7 @@ class HiSet_Practice(Test):
     OPT7 = 'OPT7'
     OPT8 = 'OPT8'
     OPT9 = 'OPT9'
+    OPT10 = 'OPT10'
 
     VERSION_CHOICES = (
         (FPT2, 'Free Practice Test 2 (2015)'),
@@ -926,6 +927,7 @@ class HiSet_Practice(Test):
         (OPT7, 'Official Practice Test 7 (2017)'),
         (OPT8, 'Official Practice Test 8 (2018)'),
         (OPT9, 'Official Practice Test 9 (2019)'),
+        (OPT10, 'Official Practice Test 10 (2020)')
     )
 
     STAFF = 'Staff'

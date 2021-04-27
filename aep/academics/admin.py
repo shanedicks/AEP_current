@@ -138,6 +138,7 @@ class SkillAdmin(ImportExportActionModelAdmin):
     resource_class = SkillResource
 
     list_display = (
+        'id',
         'title',
         'code',
         'anchor_standard'

@@ -655,11 +655,9 @@ class Enrollment(models.Model):
             g_suite_email = self.student.elearn_record.g_suite_email
         except ObjectDoesNotExist:
             g_suite_email = ''
-        if g_suite_email != '':
-            recipients = [self.student.email, g_suite_email]
-        else:
-            recipients = [self.student.email]
-        if self.student.email:
+        emails = [g_suite_email, self.student.email]
+        recipients = [email for email in emails if email != '']
+        if len(recipients) > 0:
             send_mail_task.delay(
                 subject="Delgado Adult Education - Welcome to the new session! ¡Bienvenido a la nueva sesión!",
                 message="",

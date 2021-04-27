@@ -153,7 +153,7 @@ class Survey(models.Model):
             classes__section__semester__in=sessions
         ).distinct()
         for student in students:
-            if student.email:
+ 
                 send_mail_task.delay(
                     subject="Delgado Adult Education - We want to hear from you!",
                     message="",
@@ -161,14 +161,19 @@ class Survey(models.Model):
                     to help us out by answering a few questions? If so, please 
                     <a href='{form_link}'>click here</a> to access our survey. 
                     If the form asks for it, please enter your workreadyu id: 
-                    {wru}</p><p>Thanks so much for taking the time to help us</p>
+                    {wru}</p><p>Thanks so much for taking the time to help us</p><br>
+                    <p>¿Podrías ayudarnos respondiendo algunas preguntas? Si es así, 
+                    haga <a href='{form_link}'>clic aquí</a> para acceder a nuestra 
+                    encuesta. Si el formulario lo solicita, ingrese su id de 
+                    workreadyu: {wru}</p><p>Muchas gracias por tomarse el tiempo 
+                    para ayudarnos.</p>
                     """.format(
                         first_name=student.first_name,
                         form_link=self.form_link,
                         wru=student.WRU_ID
                     ),
                     from_email="survey_robot@dccaep.org",
-                    recipient_list=[student.email]
+                    recipient_list=recipients
                 )
 
 
