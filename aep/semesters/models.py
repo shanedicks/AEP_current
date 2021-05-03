@@ -153,28 +153,33 @@ class Survey(models.Model):
             classes__section__semester__in=sessions
         ).distinct()
         for student in students:
- 
-                send_mail_task.delay(
-                    subject="Delgado Adult Education - We want to hear from you!",
-                    message="",
-                    html_message="""<p>Hi {first_name},</p><p>Would you be able 
-                    to help us out by answering a few questions? If so, please 
-                    <a href='{form_link}'>click here</a> to access our survey. 
-                    If the form asks for it, please enter your workreadyu id: 
-                    {wru}</p><p>Thanks so much for taking the time to help us</p><br>
-                    <p>¿Podrías ayudarnos respondiendo algunas preguntas? Si es así, 
-                    haga <a href='{form_link}'>clic aquí</a> para acceder a nuestra 
-                    encuesta. Si el formulario lo solicita, ingrese su id de 
-                    workreadyu: {wru}</p><p>Muchas gracias por tomarse el tiempo 
-                    para ayudarnos.</p>
-                    """.format(
-                        first_name=student.first_name,
-                        form_link=self.form_link,
-                        wru=student.WRU_ID
-                    ),
-                    from_email="survey_robot@dccaep.org",
-                    recipient_list=recipients
-                )
+            try:
+                g_suite_email = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite_email = ''
+            emails = [g_suite_email, student.email]
+            recipients = [email for email in emails if email != '']
+            send_mail_task.delay(
+                subject="Delgado Adult Education - We want to hear from you!",
+                message="",
+                html_message="""<p>Hi {first_name},</p><p>Would you be able 
+                to help us out by answering a few questions? If so, please 
+                <a href='{form_link}'>click here</a> to access our survey. 
+                If the form asks for it, please enter your workreadyu id: 
+                {wru}</p><p>Thanks so much for taking the time to help us</p><br>
+                <p>¿Podrías ayudarnos respondiendo algunas preguntas? Si es así, 
+                haga <a href='{form_link}'>clic aquí</a> para acceder a nuestra 
+                encuesta. Si el formulario lo solicita, ingrese su id de 
+                workreadyu: {wru}</p><p>Muchas gracias por tomarse el tiempo 
+                para ayudarnos.</p>
+                """.format(
+                    first_name=student.first_name,
+                    form_link=self.form_link,
+                    wru=student.WRU_ID
+                ),
+                from_email="survey_robot@dccaep.org",
+                recipient_list=recipients
+            )
 
 
 class Day(models.Model):
