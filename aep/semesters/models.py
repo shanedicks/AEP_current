@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from django.apps import apps
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 from core.tasks import send_mail_task
