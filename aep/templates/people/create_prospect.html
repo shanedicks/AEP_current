@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Signup{% endblock head_title %}
+{% block content %}
+<div class="well">
+    <form method="post">
+        {% csrf_token %}
+            {% crispy form %}
+        <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Register</button>
+    </form>
+</div>
+{% endblock content %}

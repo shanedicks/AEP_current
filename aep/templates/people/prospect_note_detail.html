@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | Prospect Note{% endblock head_title %}
+{% block content %}
+    <h1>Prospect Note for <a href="{% url 'people:prospect detail' pk=note.prospect.pk%}">{{ note.prospect}}</a> </h1>
+    <a type='button' class="btn btn-default" href="{% url 'people:prospect note edit' pk=note.pk %}">Update</a>
+	{% if note.successful %}
+		<h3>Successful {{ note.contact_method }} on {{ note.contact_date}}</h3>
+	{% else %}
+		<h3>Unsuccessful {{ note.contact_method }} on {{ note.contact_date }}</h3>
+	{% endif %}
+    {% if note.notes != '' %}
+      <h4>{{note.notes}}</h4>
+    {% endif %}
+{% endblock content %}

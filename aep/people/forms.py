@@ -1,12 +1,13 @@
 from datetime import datetime
 from django.contrib.auth.models import User
-from django.forms import Form, ModelForm, CharField, ValidationError
+from django.db.models import Q
+from django.forms import Form, ModelForm, CharField, ValidationError, DateField
 from django.core.validators import RegexValidator
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML, Div
 from crispy_forms.bootstrap import PrependedText
-from .models import Student, Staff, WIOA, CollegeInterest
+from .models import Student, Staff, WIOA, CollegeInterest, Prospect, ProspectNote
 
 
 def make_username(first_name, last_name):
@@ -84,7 +85,7 @@ class StudentSearchForm(Form):
     f_name = CharField(label=_('First Name'), required=False)
     l_name = CharField(label=_('Last Name'), required=False)
     stu_id = CharField(label=_('Student ID'), required=False)
-    dob = CharField(label=_('Date of Birth'), required=False)
+    dob = DateField(label=_('Date of Birth'), required=False)
 
     def filter_queryset(self, request, queryset):
         qst = queryset
@@ -101,11 +102,7 @@ class StudentSearchForm(Form):
                 WRU_ID__contains=self.cleaned_data['stu_id']
             )
         if self.cleaned_data['dob']:
-            try:
-                date = datetime.strptime(self.cleaned_data['dob'], "%Y-%m-%d")
-                qst = qst.filter(dob=date)
-            except ValueError:
-                pass
+            qst = qst.filter(dob=self.cleaned_data['dob'])
         return qst
 
 
@@ -1806,3 +1803,171 @@ class StudentNotesForm(ModelForm):
     class Meta:
         model = Student
         fields = ('notes',)
+
+
+class ProspectForm(ModelForm):
+
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name'].title()
+        return data
+
+    def clean_last_name(self):
+        data = self.cleaned_data['last_name'].title()
+        return data
+
+
+    def __init__(self, *args, **kwargs):
+        super(ProspectForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Row(
+                Field(
+                    'first_name',
+                    wrapper_class="col-md-6",
+                    required=True
+                ),
+                Field(
+                    'last_name',
+                    wrapper_class="col-md-6",
+                    required=True
+                ),
+            ),
+            Row(
+                Field(
+                    'email',
+                    wrapper_class="col-md-4",
+                ),
+                Field(
+                    'phone',
+                    wrapper_class="col-md-4",
+                    data_mask="999-999-9999"
+                ),
+                Field(
+                    'contact_preference',
+                    wrapper_class="col-md-4"
+                ),
+            ),
+            Row(
+                Field(
+                    'dob',
+                    placeholder="MM/DD/YYYY",
+                    data_mask="99/99/9999",
+                    wrapper_class="col-md-6",
+                    required=True
+                ),
+                Field(
+                    'primary_language',
+                    wrapper_class="col-md-6",
+                    required=True
+                )
+            )
+        )
+
+    class Meta:
+        model = Prospect
+        fields = (
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'dob',
+            'contact_preference',
+            'primary_language',
+        )
+
+class ProspectStatusForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ProspectStatusForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            'active'
+        )
+
+    class Meta:
+        model = Prospect
+        fields = ('active',)
+
+
+class ProspectLinkStudentForm(ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+        name = kwargs.pop('name', None)
+        qst = Student.objects.none()
+        if name:
+            name = name[0]
+            qst = Student.objects.filter(
+                Q(first_name__icontains=name) | Q(last_name__icontains=name) | Q(WRU_ID__contains=name),
+                duplicate = False
+            )
+        self.base_fields['student'].queryset = qst
+        super(ProspectLinkStudentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            'student'
+        )
+
+    class Meta:
+        model = Prospect
+        fields = ('student',)
+
+
+class ProspectAssignAdvisorForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        self.base_fields['advisor'].queryset = Staff.objects.filter(prospect_advisor=True)
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            'advisor'
+        )
+
+    class Meta:
+        model = Prospect
+        fields = ('advisor',)    
+
+
+class ProspectNoteForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ProspectNoteForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Row(
+                Field(
+                    'contact_date',
+                    wrapper_class="col-md-4",
+                ),
+                Field(
+                    'contact_method',
+                    wrapper_class="col-md-4",
+                ),
+                Field(
+                    'successful',
+                    wrapper_class="col-md-4"
+                ),
+            ),
+            'notes'
+        )
+
+    class Meta:
+        model = ProspectNote
+        fields = (
+            'contact_date',
+            'contact_method',
+            'successful',
+            'notes'
+        )
+
+
+

@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.views.generic import TemplateView
 from sections.views import StudentCurrentClassListView, StudentPastClassListView, StudentScheduleView, AddClassView, StudentAttendanceView
 from . import views
 
@@ -98,12 +99,63 @@ staff_patterns = [
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/', include(single_staff_patterns)),
 ]
 
+single_note_patterns = [
+    url(r'^$',
+        views.ProspectNoteDetailView.as_view(),
+        name='prospect note detail'),
+    url(r'^edit/$',
+        views.ProspectNoteUpdateView.as_view(),
+        name='prospect note edit')
+]
+
+single_prospect_patterns = [
+    url(r'^$',
+        views.ProspectDetailView.as_view(),
+        name='prospect detail'),
+    url(r'^edit/$',
+        views.ProspectUpdateView.as_view(),
+        name='edit prospect'),
+    url(r'^status/$',
+        views.ProspectStatusFormView.as_view(),
+        name='prospect update status'),
+    url(r'^link-student/$',
+        views.ProspectLinkStudentView.as_view(),
+        name='prospect link student'),
+    url(r'^create-student/$',
+        views.ProspectCreateStudentView.as_view(),
+        name='prospect create student'),
+    url(r'^assign-advisor/$',
+        views.ProspectAssignAdvisorView.as_view(),
+        name='prospect assign advisor'),
+    url(r'^take-note/$',
+        views.ProspectNoteCreateView.as_view(),
+        name='prospect create note')
+]
+
+prospect_patterns = [
+    url(r'^$',
+        views.ActiveProspectListView.as_view(),
+        name='active prospect list'),
+    url(r'^inactive/$',
+        views.InactiveProspectListView.as_view(),
+        name='inactive prospect list'),
+    url(r'^closed/$',
+        views.ClosedProspectListView.as_view(),
+        name='closed prospect list'),
+    url(r'^(?P<pk>[0-9]+)/', include(single_prospect_patterns)),
+    url(r'^notes/(?P<pk>[0-9]+)/', include(single_note_patterns))
+]
+
 urlpatterns = [
     url(r'^students/', include(student_patterns)),
     url(r'^staff/', include(staff_patterns)),
+    url(r'^prospects/', include(prospect_patterns)),
     url(r'^sign-up/$',
         views.StudentSignupWizard.as_view(),
         name='student signup'),
+    url(r'^prospect-sign-up/$',
+        views.ProspectSignupView.as_view(),
+        name='prospect signup'),
     url(r'^partners/$',
         views.PartnerStudentCreateView.as_view(),
         name='partner student create'),
@@ -113,4 +165,11 @@ urlpatterns = [
     url(r'^elearn-success/$',
         views.ElearnSignupSuccessView.as_view(),
         name='elearn success'),
+    url(r'^prospect-success/$',
+        TemplateView.as_view(
+            template_name='people/prospect_success.html'
+        ),
+        name='prospect_success'
+    ),
+
 ]

@@ -609,6 +609,8 @@ class Staff(Profile):
 
     teacher = models.BooleanField(default=True)
 
+    prospect_advisor = models.BooleanField(default=False)
+
     coach = models.BooleanField(default=False)
 
     active = models.BooleanField(default=True)
@@ -2003,3 +2005,135 @@ class PoP(models.Model):
     def __str__(self):
         period = " - ".join([self.start_date.strftime('%m/%d/%Y'), self.last_service_date.strftime('%m/%d/%Y')])
         return " | ".join([self.student.__str__(), period])
+
+
+class Prospect(models.Model):
+
+    CONTACT_CHOICES = (
+        ('Call', 'Call'),
+        ('Text', 'Text'),
+        ('Email', 'Email'),
+    )
+
+    LANGUAGE_CHOICES = (
+        ("english", "English"),
+        ("spanish", "Spanish"),
+        ("vietnamese", "Vietnamese"),
+        ("arabic", "Arabic"),
+        ("chinese", "Chinese"),
+        ("french", "French"),
+        ("korean", "Korean"),
+        ("japanese", "Japanese"),
+        ("creole", "Creole"),
+        ("portugese", "Portugese"),
+        ("turkish", "Turkish"),
+        ("russian", "Russian"),
+        ("other", "Other")
+    )
+
+    student = models.ForeignKey(
+        Student,
+        models.PROTECT,
+        related_name='prospects',
+        null=True,
+        blank=True
+    )
+
+    advisor = models.ForeignKey(
+        Staff,
+        models.PROTECT,
+        related_name='prospects',
+        null=True,
+        blank=True
+    )
+
+    registration_date = models.DateField(
+        default=timezone.now
+    )
+
+    first_name = models.CharField(
+        max_length=50,
+        verbose_name=_("First Name"),
+    )
+    last_name = models.CharField(
+        max_length=150,
+        verbose_name=_("Last Name"),
+    )
+    email = models.EmailField(
+        max_length=80,
+        verbose_name=_("Email Address"),
+        blank=True
+    )
+    phone = models.CharField(
+        max_length=20,
+        verbose_name=_("Phone Number"),
+    )
+    dob = models.DateField(
+        verbose_name=_("Date of Birth")
+    )
+    contact_preference = models.CharField(
+        max_length=5,
+        choices=CONTACT_CHOICES,
+        verbose_name=_('How do you prefer to be contacted?')
+    )
+    primary_language = models.CharField(
+        max_length=20,
+        choices=LANGUAGE_CHOICES,
+        blank=True,
+        verbose_name=_("Primary Language")
+    )
+
+    active = models.BooleanField(
+        default=True
+    )
+
+    class Meta:
+        ordering = ["last_name", "first_name"]
+
+    def __str__(self):
+        return '{0} {1}'.format(self.first_name, self.last_name)
+
+    def get_absolute_url(self):
+        return reverse('people:prospect detail', kwargs={'pk': self.pk})
+
+
+class ProspectNote(models.Model):
+
+    CONTACT_CHOICES = (
+        ('Call', 'Call'),
+        ('Text', 'Text'),
+        ('Email', 'Email'),
+    )
+
+    prospect = models.ForeignKey(
+        Prospect,
+        models.PROTECT,
+        related_name="notes"
+    )
+
+    contact_date =  models.DateField()
+
+    contact_method = models.CharField(
+        max_length=5,
+        choices=CONTACT_CHOICES,
+    )
+
+    successful = models.BooleanField(
+        default=False
+    )
+
+    notes = models.TextField()
+
+    class Meta: 
+        ordering = ['contact_date', 'prospect']
+
+    def __str__(self):
+        return '{0} {1}ed {2}| {3}'.format(
+            self.prospect.advisor,
+            self.contact_method,
+            self.prospect,
+            self.contact_date
+        )
+
+    def get_absolute_url(self):
+        return reverse('people:prospect note detail', kwargs={'pk': self.pk})

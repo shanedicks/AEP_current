@@ -1,4 +1,4 @@
-from django.views.generic import (
+from django.views.generic import (View,
     DetailView, ListView, UpdateView,
     CreateView, TemplateView, FormView)
 from django.apps import apps
@@ -9,20 +9,21 @@ from django.http import HttpResponseRedirect, Http404
 from django.template.loader import get_template
 from django.template import Context
 from django.urls import reverse_lazy, reverse
+from django.views.generic.detail import SingleObjectMixin
 from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
 from core.forms import DateFilterForm
 from core.utils import render_to_csv
 from core.tasks import send_mail_task, email_multi_alternatives_task
 from sections.forms import SectionFilterForm
-from .models import Staff, Student, CollegeInterest, WIOA
+from .models import Staff, Student, CollegeInterest, WIOA, Prospect, ProspectNote
 from .forms import (
     StaffForm, StudentPersonalInfoForm, StudentSearchForm,
     StudentInterestForm, StudentContactForm, SSNForm, REForm,
     EETForm, AdditionalDetailsForm, DisabilityForm, StudentForm,
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
-    StudentComplianceForm, StudentNotesForm
-    )
+    StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
+    ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm)
 from .tasks import intake_retention_report_task, orientation_email_task
 
 
@@ -279,62 +280,6 @@ class StudentSignupWizard(SessionWizardView):
         return HttpResponseRedirect(reverse_lazy('people:signup success', kwargs={'pk' : orientation.event.pk}))
 
 
-class NewStudentSignupView(CreateView):
-
-    model = Student
-    form_class = StudentForm
-    template_name = 'people/sign_up.html'
-    success_url = reverse_lazy('people:signup success')
-
-    def get_context_data(self, **kwargs):
-        context = super(
-            NewStudentSignupView,
-            self
-        ).get_context_data(**kwargs)
-        if 'user_form' not in context:
-            context['user_form'] = UserForm
-            context.update(kwargs)
-        if 'wioa_form' not in context:
-            context['wioa_form'] = WioaForm
-            context.update(kwargs)
-        if 'orientation_form' not in context:
-            context['orientation_form'] = OrientationSignupForm
-            context.update(kwargs)
-        return context
-
-    def post(self, request, *args, **kwargs):
-        user_form = UserForm(request.POST)
-        student_form = StudentForm(request.POST)
-        wioa_form = WioaForm(request.POST)
-        orientation_form = OrientationSignupForm(request.POST)
-        uf_valid = user_form.is_valid()
-        sf_valid = student_form.is_valid()
-        wf_valid = wioa_form.is_valid()
-        of_valid = orientation_form.is_valid()
-        if uf_valid and sf_valid and wf_valid and of_valid:
-            user = user_form.save()
-            student = student_form.save(commit=False)
-            student.user = user
-            student.save()
-            wioa = wioa_form.save(commit=False)
-            wioa.student = student
-            orientation = orientation_form.save(commit=False)
-            orientation.student = student
-            wioa.save()
-            orientation.save()
-            self.object = student
-            return HttpResponseRedirect(self.get_success_url())
-        else:
-            self.object = None
-            return self.render_to_response(
-                self.get_context_data(
-                    user_form=user_form,
-                    wioa_form=wioa_form,
-                    orientation_form=orientation_form
-                )
-            )
-
-
 class StudentCreateSuccessView(TemplateView):
 
     template_name = 'people/student_create_success.html'
@@ -528,3 +473,197 @@ class StaffCreateView(LoginRequiredMixin, CreateView):
         context['user_form'] = UserForm
         context.update(kwargs)
         return context
+
+
+class ProspectSignupView(CreateView):
+
+    model = Prospect
+    form_class = ProspectForm
+    template_name = 'people/create_prospect.html'
+    success_url = reverse_lazy('people:prospect_success')
+
+
+class ProspectDetailView(LoginRequiredMixin, DetailView):
+
+    model = Prospect
+    form_class = ProspectStatusForm
+    template_name = 'people/prospect_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProspectDetailView, self).get_context_data(**kwargs)
+        context['notes'] = self.object.notes.all()
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('people:prospect detail', kwargs={'pk': self.object.pk})
+
+
+class ProspectStatusFormView(LoginRequiredMixin, UpdateView):
+
+    model = Prospect
+    form_class = ProspectStatusForm
+    template_name = 'people/prospect_status.html'
+
+    def get_success_url(self):
+        return reverse_lazy('people:prospect detail', kwargs={'pk': self.object.pk})
+
+
+class ProspectUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = Prospect
+    template_name = 'people/prospect_update.html'
+    form_class = ProspectForm
+
+
+class ProspectLinkStudentView(LoginRequiredMixin, UpdateView):
+
+    model = Prospect
+    template_name = 'people/prospect_student_link.html'
+    form_class = ProspectLinkStudentForm
+
+    def get_form_kwargs(self):
+        kwargs = super(ProspectLinkStudentView, self).get_form_kwargs()
+        if self.request.GET:
+            kwargs.update(self.request.GET)
+        return kwargs
+
+
+class ProspectAssignAdvisorView(LoginRequiredMixin, UpdateView):
+
+    model = Prospect
+    template_name = 'people/prospect_assign_advisor.html'
+    form_class = ProspectAssignAdvisorForm
+
+
+class ProspectCreateStudentView(LoginRequiredMixin, CreateView):
+
+    model = Student
+    form_class = StudentForm
+    template_name = 'people/prospect_student_create.html'
+
+    def get_success_url(self):
+        return reverse_lazy('people:prospect detail', pk=self.get_prospect().pk)
+
+    def get_prospect(self):
+        return Prospect.objects.get(pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'prospect' not in context:
+            context['prospect'] = self.get_prospect()
+        if 'wioa_form' not in context:
+            context['wioa_form'] = WioaForm(
+                initial = {
+                    'native_language': self.get_prospect().primary_language
+                }
+            )
+        return context
+
+    def get_initial(self):
+        prospect = self.get_prospect()
+        initial = {
+            'last_name': prospect.last_name,
+            'first_name': prospect.first_name,
+            'phone': prospect.phone,
+            'email': prospect.email,
+            'dob': prospect.dob
+
+        }
+        return initial
+
+    def post(self, request, *args, **kwargs):
+        prospect = self.get_prospect()
+        student_form = StudentForm(request.POST)
+        wioa_form = WioaForm(request.POST)
+        if student_form.is_valid() and wioa_form.is_valid():
+            student = student_form.save(commit=False)
+            student.save()
+            wioa = wioa_form.save(commit=False)
+            wioa.student = student
+            wioa.save()
+            prospect.student = student
+            prospect.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            self.object = None
+            return self.render_to_response(
+                self.get_context_data(
+                    wioa_form=wioa_form,
+                    orientation_form=orientation_form
+                )
+            )
+
+
+class ProspectList(LoginRequiredMixin, ListView, FormView):
+
+    model = Prospect
+    form_class = StudentSearchForm
+    template_name = 'people/prospect_list.html'
+    context_object_name = 'prospects'
+    paginate_by = 25
+
+    def get_form_kwargs(self):
+        return {
+            'initial': self.get_initial(),
+            'prefix': self.get_prefix(),
+            'data': self.request.GET or None
+        }
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        form = self.get_form(self.get_form_class())
+        if form.is_valid():
+            self.object_list = form.filter_queryset(request, self.object_list)
+        return self.render_to_response(
+            self.get_context_data(form=form, object_list=self.object_list)
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['status'] = self.status
+        return context
+
+
+class ActiveProspectListView(ProspectList):
+
+    queryset = Prospect.objects.filter(active=True)
+    status = 'Active'
+
+class InactiveProspectListView(ProspectList):
+
+    queryset = Prospect.objects.filter(active=False, student=None)
+    status = 'Inactive'
+
+class ClosedProspectListView(ProspectList):
+
+    queryset = Prospect.objects.filter(active=False).exclude(student=None)
+    status = 'Closed'
+
+
+class ProspectNoteCreateView(LoginRequiredMixin, CreateView):
+
+    model = ProspectNote
+    form_class = ProspectNoteForm
+    template_name = 'people/prospect_note_form.html'
+
+    def form_valid(self, form):
+        note = form.save(commit=False)
+        note.prospect = Prospect.objects.get(pk=self.kwargs['pk'])
+        note.save()
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('people:prospect detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class ProspectNoteDetailView(LoginRequiredMixin, DetailView):
+    
+    model = ProspectNote
+    template_name = 'people/prospect_note_detail.html'
+    context_object_name = 'note'
+
+class ProspectNoteUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = ProspectNote
+    form_class = ProspectNoteForm
+    template_name = 'people/prospect_note_form.html'

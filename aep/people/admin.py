@@ -10,7 +10,7 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
 from .models import (
     Student, Staff, WIOA, PoP,
-    CollegeInterest, Paperwork,
+    CollegeInterest, Paperwork, Prospect, ProspectNote
     )
 from coaching.models import ElearnRecord, AceRecord
 from core.utils import state_session
@@ -267,6 +267,45 @@ class PopResource(resources.ModelResource):
             'made_gain',
             'pretest_date',
             'pretest_type',
+        )
+
+
+class ProspectResource(resources.ModelResource):
+
+    student = fields.Field(
+        column_name='student',
+        attribute='student',
+        widget=widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    class Meta:
+        model = Prospect
+        fields = (
+            'id',
+            'student',
+            'advisor',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'dob',
+            'contact_preference',
+            'primary_language',
+            'active'
+        )
+
+
+class ProspectNoteResource(resources.ModelResource):
+
+    class Meta:
+        model = ProspectNote
+        fields = (
+            'id',
+            'prospect',
+            'contact_date',
+            'contact_method',
+            'successful',
+            'notes'
         )
 
 
@@ -626,7 +665,8 @@ class StaffAdmin(ImportExportActionModelAdmin):
         "g_suite_email",
         'teacher',
         'coach',
-        'partner'
+        'partner',
+        'prospect_advisor'
     )
 
     list_filter = (
@@ -864,3 +904,55 @@ class CollegeInterestAdmin(ImportExportActionModelAdmin):
 
 
 admin.site.register(CollegeInterest, CollegeInterestAdmin)
+
+class ProspectAdmin(ImportExportActionModelAdmin):
+
+    resource_class = ProspectResource
+
+    list_display = [
+        '__str__',
+        'dob',
+        'student',
+        'advisor',
+        'active'
+    ]
+
+    list_filter = [
+        'active'
+    ]
+
+    list_editable = [
+        'active'
+    ]
+
+    fields = [
+        'advisor',
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'dob',
+        'contact_preference',
+        'primary_language',
+        'active'
+    ]
+
+admin.site.register(Prospect, ProspectAdmin)
+
+
+class ProspectNoteAdmin(ImportExportActionModelAdmin):
+
+    resource_class = ProspectNoteResource
+
+    list_display = [
+        '__str__'
+    ]
+
+    fields = [
+        'contact_date',
+        'contact_method',
+        'successful',
+        'notes'       
+    ]
+
+admin.site.register(ProspectNote, ProspectNoteAdmin)

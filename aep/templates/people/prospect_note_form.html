@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Prospect Note{% endblock head_title %}
+{% block content %}
+<form class="form_group" method="post">
+    {% crispy form %}
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+{% endblock content %}

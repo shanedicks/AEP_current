@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Prospect Create Student{% endblock head_title %}
+{% block content %}
+<h1>Create Student for {{prospect}}</h1>
+<div class="well">
+    <form method="post">
+        {% csrf_token %}
+            {% crispy form %}
+            {% crispy wioa_form %}
+        <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Create Student</button>
+    </form>
+</div>
+{% endblock content %}
