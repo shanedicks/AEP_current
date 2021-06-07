@@ -895,6 +895,8 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
         context = super(AttendanceOverview, self).get_context_data()
         if 'days' not in context:
             context['days'] = self.object.get_class_dates()
+        if 'count' not in context:
+            context['count'] = self.object.students.all().count()
         if 'daily_present' not in context:
             context['daily_present'] = self.get_daily_totals()[0]
         if 'daily_absent' not in context:
