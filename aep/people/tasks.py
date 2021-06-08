@@ -479,7 +479,7 @@ def coachee_export_task(staff_id, email):
                 coaching.coachee.phone,
                 language,
                 coaching.status,
-                coahing.coachee.intake_date,
+                coaching.coachee.intake_date,
                 last_note_date,
                 last_note_note,
                 last_attendance_date,
