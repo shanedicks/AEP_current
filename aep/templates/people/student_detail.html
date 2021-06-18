@@ -136,10 +136,14 @@
             <p>Orientation: {{ student.get_orientation_display }}</p>
             <p>Office Paperwork: {{ student.get_paperwork_display }}</p>
             {% if student.intake_form %}
-            <p>Intake Form Completed</p>
+            <p>Intake Form: Complete</p>
+            {% else %}
+            <p>Intake Form: Incomplete</p>
             {% endif %}
             {% if student.intake_quiz %}
-            <p>Intake Quiz Completed</p>
+            <p>Intake Quiz: Complete</p>
+            {% else %}
+            <p>Intake Quiz: Incomplete</p>
             {% endif %}
             <a class="btn btn-default" href="{% url 'people:student compliance form' slug=student.slug %}" role="button">Update</a>
       </div>
