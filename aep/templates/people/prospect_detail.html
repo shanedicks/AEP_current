@@ -105,7 +105,7 @@
             {% else %}
             <p>Intake Quiz: Incomplete</p>
             {% endif %}
-            <a class="btn btn-default" href="{% url 'people:student compliance form' slug=prospect.student.slug %}" role="button">Update</a>
+            <a class="btn btn-default" href="{% url 'people:prospect compliance form' slug=prospect.student.slug pk=prospect.pk %}" role="button">Update</a>
         {% else %}
             <p>Prospect not linked to any student record</p>
             <p>Please link student to enable office tracking</p>

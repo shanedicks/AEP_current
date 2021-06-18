@@ -695,3 +695,16 @@ class ProspectNoteUpdateView(LoginRequiredMixin, UpdateView):
     model = ProspectNote
     form_class = ProspectNoteForm
     template_name = 'people/prospect_note_form.html'
+
+
+class ProspectComplianceFormView(LoginRequiredMixin, UpdateView):
+
+    model = Student
+    form_class = StudentComplianceForm
+    template_name = "people/student_compliance.html"
+
+    def get_object(self):
+        return Student.objects.get(slug=self.kwargs['slug'])
+
+    def get_success_url(self):
+        return reverse_lazy('people:prospect detail', kwargs={'pk': self.kwargs['pk']})
