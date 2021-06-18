@@ -14,7 +14,7 @@ from django.db import IntegrityError
 from core.forms import DateFilterForm
 from core.utils import render_to_csv
 from coaching.models import ElearnRecord
-from people.models import Student
+from people.models import Student, Staff
 from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
@@ -654,6 +654,33 @@ class PrintSignInView(LoginRequiredMixin, DetailView):
             )
         return context
 
+
+class StaffClassListView(LoginRequiredMixin, ListView):
+
+    model = Section
+    template_name = 'sections/staff_class_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentClassListView, self).get_context_data(**kwargs)
+        if 'staff' not in context:
+            context['student'] = Staff.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        if 'today' not in context:
+            context['today'] = datetime.today().date()
+            context.update(kwargs)
+        return context
+
+    def get_queryset(self):
+        if 'slug' in self.kwargs:
+            slug = self.kwargs['slug']
+            return Section.objects.filter(
+                teacher__slug=slug
+            ).order_by(
+                "-starting",
+                "-semester__start_date",
+                "tuesday",
+                "start_time"
+            )
 
 
 class StudentClassListView(LoginRequiredMixin, ListView):

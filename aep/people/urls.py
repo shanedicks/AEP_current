@@ -75,6 +75,22 @@ student_patterns = [
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/', include(single_student_patterns)),
 ]
 
+
+staff_prospect_patterns = [
+    url(r'^$',
+        views.StaffProspectListView.as_view(),
+        name='staff prospects'),
+    url(r'^active/$',
+        views.StaffActiveProspectList.as_view(),
+        name='staff active prospects'),
+    url(r'inactive/$',
+        views.StaffInactiveProspectList.as_view(),
+        name='staff inactive prospects'),
+    url(r'closed/$',
+        views.StaffClosedProspectList.as_view(),
+        name='staff closed prospects'),
+]
+
 single_staff_patterns = [
     url(r'^$',
         views.StaffDetailView.as_view(),
@@ -86,6 +102,8 @@ single_staff_patterns = [
         views.StaffHomeView.as_view(),
         name='staff home'
         ),
+    url(r'^prospects/',
+        include(staff_prospect_patterns))
 ]
 
 staff_patterns = [
@@ -134,6 +152,12 @@ single_prospect_patterns = [
 
 prospect_patterns = [
     url(r'^$',
+        views.ProspectListView.as_view(),
+        name='prospect list'),
+    url(r'^unassigned/$',
+        views.UnassignedProspectListView.as_view(),
+        name='unassigned prospect list'),
+    url(r'^active/$',
         views.ActiveProspectListView.as_view(),
         name='active prospect list'),
     url(r'^inactive/$',

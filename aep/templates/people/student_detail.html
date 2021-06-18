@@ -99,57 +99,71 @@
         </table> -->
     </div>
     <div class='col-md-5'>
-      <h3>Testing Appointments</h3>
-          {% if student.future_appts %}
-          {% for appt in student.future_appts %}
-              <p><a href="{% url 'assessments:test appointment detail' pk=appt.pk %}">{{ appt.event.title }} - {{appt.event.start }}</a></p>
-          {% endfor %}
-          {% else %}
-              <p>There are no upcoming testing appointments for {{ student }}. Would you like to create one?</p>
-              <p>
-                <a class="btn btn-default" href="{% url 'assessments:test signup' slug=student.slug %}" role="button">Testing Signup</a>
-              </p>
-          {% endif %}
-    </div>
-    <div class='col-md-5'>
-      <h3>Student Coaching</h3>
-          {% if coaches.count > 0 %}
-            <ul>
-            {% for coach in coaches %}
-                <li><a href="{% url 'coaching:coaching detail' pk=coach.pk %}">{{ coach.coach }} - {{ coach.get_coaching_type_display }} - since {{ coach.start_date.date }}</a></li>
+      <div>
+        <h3>Testing Appointments</h3>
+            {% if student.future_appts %}
+            {% for appt in student.future_appts %}
+                <p><a href="{% url 'assessments:test appointment detail' pk=appt.pk %}">{{ appt.event.title }} - {{appt.event.start }}</a></p>
             {% endfor %}
-            </ul>
-              <p>
-                <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
-              </p>
-          {% else %}
-              <p>{{ student }} is not assigned to any coaches.</p>
-              <p>
-                <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
-              </p>
-          {% endif %}
-    </div>
-    <div class='col-md-5'>
-      <h3>Office Tracking</h3>
-          <p>Office Folder: {{ student.get_folder_display }}</p>
-          <p>Orientation: {{ student.get_orientation_display }}</p>
-          <p>Office Paperwork: {{ student.get_paperwork_display }}</p>
-          {% if student.intake_form %}
-          <p>Intake Form Completed</p>
-          {% endif %}
-          {% if student.intake_quiz %}
-          <p>Intake Quiz Completed</p>
-          {% endif %}
-          <a class="btn btn-default" href="{% url 'people:student compliance form' slug=student.slug %}" role="button">Update</a>
-    </div>
-    <div class='col-md-5'>
-      <h3>Notes</h3>
-          {% if student.notes != '' %}
-              <p> {{student.notes }} </p>
-          {% endif %}
-          <p>
-            <a class="btn btn-default" href="{% url 'people:edit notes' slug=student.slug %}" role="button">Edit Notes</a>
-          </p>
+            {% else %}
+                <p>There are no upcoming testing appointments for {{ student }}. Would you like to create one?</p>
+                <p>
+                  <a class="btn btn-default" href="{% url 'assessments:test signup' slug=student.slug %}" role="button">Testing Signup</a>
+                </p>
+            {% endif %}
+      </div>
+      <div>
+        <h3>Student Coaching</h3>
+            {% if coaches.count > 0 %}
+              <ul>
+              {% for coach in coaches %}
+                  <li><a href="{% url 'coaching:coaching detail' pk=coach.pk %}">{{ coach.coach }} - {{ coach.get_coaching_type_display }} - since {{ coach.start_date.date }}</a></li>
+              {% endfor %}
+              </ul>
+                <p>
+                  <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
+                </p>
+            {% else %}
+                <p>{{ student }} is not assigned to any coaches.</p>
+                <p>
+                  <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
+                </p>
+            {% endif %}
+      </div>
+      <div>
+        <h3>Office Tracking</h3>
+            <p>Office Folder: {{ student.get_folder_display }}</p>
+            <p>Orientation: {{ student.get_orientation_display }}</p>
+            <p>Office Paperwork: {{ student.get_paperwork_display }}</p>
+            {% if student.intake_form %}
+            <p>Intake Form Completed</p>
+            {% endif %}
+            {% if student.intake_quiz %}
+            <p>Intake Quiz Completed</p>
+            {% endif %}
+            <a class="btn btn-default" href="{% url 'people:student compliance form' slug=student.slug %}" role="button">Update</a>
+      </div>
+      <div>
+        <h3>Notes</h3>
+            {% if student.notes != '' %}
+                <p> {{student.notes }} </p>
+            {% endif %}
+            <p>
+              <a class="btn btn-default" href="{% url 'people:edit notes' slug=student.slug %}" role="button">Edit Notes</a>
+            </p>
+      </div>
+      <div>
+          <h3>Prospects</h3>
+            {% if student.prospects.all.count > 0 %}
+              {% for prospect in student.prospects.all %}
+                <p>
+                  <a href="{{ prospect.get_absolute_url }}">{{ prospect.registration_date}}</a>
+                </p>
+              {% endfor %}
+            {% else %}
+              <p>There are no prospect records linked to this student</p>
+            {% endif %}
+      </div>
     </div>      
 
 {%endblock content %}

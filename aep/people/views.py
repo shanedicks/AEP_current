@@ -367,27 +367,6 @@ class StaffHomeView(LoginRequiredMixin, DetailView):
     model = Staff
     template_name = 'people/staff_home.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(StaffHomeView, self).get_context_data(**kwargs)
-        coachees = self.object.coachees.all()
-        if 'coachees' not in context:
-            context['coachees'] = coachees.count()
-        if 'active' not in context:
-            context['active'] = coachees.filter(status='Active').count()
-        if 'hold' not in context:
-            context['hold'] = coachees.filter(status='On Hold').count()
-        if 'inactive' not in context:
-            context['inactive'] = coachees.filter(status='Inactive').count()
-        if 'esl_ccr' not in context:
-            context['esl_ccr'] = coachees.filter(status='ESL > CCR').count()
-        if 'hiset' not in context:
-            context['hiset'] = coachees.filter(status='Completed HiSET').count()
-        if 'enrolled' not in context:
-            context['enrolled'] = coachees.filter(
-                coachee__classes__status='A').distinct().count()
-        context.update(kwargs)
-        return context
-
 
 class StaffListView(LoginRequiredMixin, ListView):
 
@@ -594,13 +573,14 @@ class ProspectCreateStudentView(LoginRequiredMixin, CreateView):
             )
 
 
-class ProspectList(LoginRequiredMixin, ListView, FormView):
+class ProspectListView(LoginRequiredMixin, ListView, FormView):
 
     model = Prospect
     form_class = StudentSearchForm
     template_name = 'people/prospect_list.html'
     context_object_name = 'prospects'
     paginate_by = 25
+    status = "All"
 
     def get_form_kwargs(self):
         return {
@@ -624,20 +604,68 @@ class ProspectList(LoginRequiredMixin, ListView, FormView):
         return context
 
 
-class ActiveProspectListView(ProspectList):
+class UnassignedProspectListView(ProspectListView):
 
-    queryset = Prospect.objects.filter(active=True)
+    queryset = Prospect.objects.filter(active=True, advisor=None)
+    status = 'Unassigned'
+
+
+class ActiveProspectListView(ProspectListView):
+
+    queryset = Prospect.objects.filter(active=True).exclude(advisor=None)
     status = 'Active'
 
-class InactiveProspectListView(ProspectList):
+
+class InactiveProspectListView(ProspectListView):
 
     queryset = Prospect.objects.filter(active=False, student=None)
     status = 'Inactive'
 
-class ClosedProspectListView(ProspectList):
+
+class ClosedProspectListView(ProspectListView):
 
     queryset = Prospect.objects.filter(active=False).exclude(student=None)
     status = 'Closed'
+
+
+class StaffProspectListView(ProspectListView):
+
+    template_name = 'people/staff_prospect_list.html'
+    status = 'All'
+    
+    def get_queryset(self): 
+        return Prospect.objects.filter(advisor__slug=self.kwargs['slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['staff'] = Staff.objects.get(slug=self.kwargs['slug'])
+        return context
+
+
+class StaffActiveProspectList(StaffProspectListView):
+
+    status = 'Active'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(active=True)
+
+class StaffInactiveProspectList(StaffProspectListView):
+
+    status = 'Inactive'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(active=False, student=None)
+
+
+class StaffClosedProspectList(StaffProspectListView):
+
+    status = 'Closed'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(active=False).exclude(student=None)
 
 
 class ProspectNoteCreateView(LoginRequiredMixin, CreateView):

@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-{% block head_title %}DCCAEP | Prospect List{% endblock head_title %}
+{% block head_title %}DCCAEP | {{staff}} Prospects List{% endblock head_title %}
 {% block content %}
     <h1>{{status}} Prospects</h1>
 	<div class="btn-group" role="group" aria-label="prospect links">
-	  <a type="button" class="btn btn-default" role="button" href="{% url 'people:prospect list' %}">All</a>
-      <a type="button" class="btn btn-default" href="{% url 'people:unassigned prospect list' %}" role="button">Unassigned</a>
-	  <a type="button" class="btn btn-default" role="button" href="{% url 'people:inactive prospect list' %}">Inactive</a>
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'people:staff prospects' slug=staff.slug%}">All</a>
+      <a type="button" class="btn btn-default" href="{% url 'people:staff active prospects' slug=staff.slug%}" role="button">Active</a>
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'people:staff inactive prospects' slug=staff.slug%}">Inactive</a>
+	  <a type="button" class="btn btn-default" role="button" href="{% url 'people:staff closed prospects' slug=staff.slug%}">Closed</a>
 	</div>
     <div>
         {% if request.GET %}

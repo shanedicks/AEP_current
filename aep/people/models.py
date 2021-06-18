@@ -621,6 +621,34 @@ class Staff(Profile):
     def get_absolute_url(self):
         return reverse('people:staff detail', kwargs={'slug': self.slug})
 
+    def active_coachees(self):
+        return self.coachees.filter(status='Active')
+
+    def on_hold_coachees(self):
+        return self.coachees.filter(status='On Hold')
+
+    def inactive_coachees(self):
+        return self.coachees.filter(status='Inactive')
+
+    def esl_ccr_coachees(self):
+        return self.coachees.filter(status='ESL > CCR')
+
+    def hiset_coachees(self):
+        return self.coachees.filter(status='Completed HiSET')
+
+    def enrolled_coachees(self):
+        return self.coachees.filter(coachee__classes__status='A').distinct()
+
+    def active_prospects(self):
+        return self.prospects.filter(active=True)
+
+    def inactive_prospects(self):
+        return self.prospects.filter(active=False, student=None)
+
+    def closed_prospects(self):
+        return self.prospects.filter(active=True).exclude(student=None)
+
+
     def current_classes(self):
         today = timezone.localdate()
         classes = self.classes.filter(
@@ -2090,6 +2118,19 @@ class Prospect(models.Model):
 
     def get_absolute_url(self):
         return reverse('people:prospect detail', kwargs={'pk': self.pk})
+
+    @property
+    def status(self):
+        if self.active:
+            if self.student is None:
+                return "Unassigned"
+            else:
+                return "Active"
+        else:
+            if self.student is None:
+                return "Inactive"
+            else:
+                return "Closed"
 
 
 class ProspectNote(models.Model):

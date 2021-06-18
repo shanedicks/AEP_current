@@ -54,17 +54,24 @@
         {% endfor %}
         </table>
     {% endif %}
-    {% if coachees > 0 %}
+    {% if staff.coachees.all.count > 0 %}
         <h3>My Coachees</h3>
         <a type="button" class="btn btn-default" href="{% url 'coaching:coachee export' slug=staff.slug %}">Coachee Export</a>
         <a type="button" class="btn btn-default" href="{% url 'coaching:update coachings' slug=staff.slug %}">Update Statuses</a>
-            <h4><a href="{% url 'coaching:coachee list' slug=staff.slug %}">All: {{coachees}}</a></h4>
-            <h4><a href="{% url 'coaching:active coachee list' slug=staff.slug %}">Active: {{active}}</a></h4>
-            <h4><a href="{% url 'coaching:on hold coachee list' slug=staff.slug %}">On Hold: {{hold}}</a></h4>
-            <h4><a href="{% url 'coaching:inactive coachee list' slug=staff.slug %}">Inactive: {{inactive}}</a></h4>
-            <h4><a href="{% url 'coaching:esl to ccr coachee list' slug=staff.slug %}">ESL to CCR: {{esl_ccr}}</a></h4>
-            <h4><a href="{% url 'coaching:passed hiset coachee list' slug=staff.slug %}">Passed Hiset: {{hiset}}</a></h4>
-            <h4><a href="{% url 'coaching:enrolled coachee list' slug=staff.slug %}">Enrolled: {{enrolled}}</a></h4>
+            <h4><a href="{% url 'coaching:coachee list' slug=staff.slug %}">All: {{ staff.coachees.all.count }}</a></h4>
+            <h4><a href="{% url 'coaching:active coachee list' slug=staff.slug %}">Active: {{ staff.active_coachees.count }}</a></h4>
+            <h4><a href="{% url 'coaching:on hold coachee list' slug=staff.slug %}">On Hold: {{ staff.on_hold_coachees.count }}</a></h4>
+            <h4><a href="{% url 'coaching:inactive coachee list' slug=staff.slug %}">Inactive: {{ staff.inactive_coachees.count }}</a></h4>
+            <h4><a href="{% url 'coaching:esl to ccr coachee list' slug=staff.slug %}">ESL to CCR: {{ staff.esl_ccr_coachees.count }}</a></h4>
+            <h4><a href="{% url 'coaching:passed hiset coachee list' slug=staff.slug %}">Passed Hiset: {{staff.hiset_coachees.count }}</a></h4>
+            <h4><a href="{% url 'coaching:enrolled coachee list' slug=staff.slug %}">Enrolled: {{ staff.enrolled_coachees.count }}</a></h4>
+    {% endif %}
+    {% if staff.prospects.all.count > 0 %}
+        <h3>My Prospects</h3>
+            <h4><a href="{% url 'people:staff prospects' slug=staff.slug %}">All: {{ staff.prospects.all.count }}</a></h4>
+            <h4><a href="{% url 'people:staff active prospects' slug=staff.slug %}">All: {{ staff.active_prospects.count }}</a></h4>
+            <h4><a href="{% url 'people:staff inactive prospects' slug=staff.slug %}">All: {{ staff.inactive_prospects.count }}</a></h4>
+            <h4><a href="{% url 'people:staff closed prospects' slug=staff.slug %}">All: {{ staff.closed_prospects.count }}</a></h4>
     {% endif %}
 
 
