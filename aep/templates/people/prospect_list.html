@@ -3,11 +3,11 @@
 {% block head_title %}DCCAEP | Prospect List{% endblock head_title %}
 {% block content %}
     <h1>{{status}} Prospects</h1>
-	<div class="btn-group" role="group" aria-label="prospect links">
-	  <a type="button" class="btn btn-default" role="button" href="{% url 'people:prospect list' %}">All</a>
+    <div class="btn-group" role="group" aria-label="prospect links">
+      <a type="button" class="btn btn-default" role="button" href="{% url 'people:prospect list' %}">All</a>
       <a type="button" class="btn btn-default" href="{% url 'people:unassigned prospect list' %}" role="button">Unassigned</a>
-	  <a type="button" class="btn btn-default" role="button" href="{% url 'people:inactive prospect list' %}">Inactive</a>
-	</div>
+      <a type="button" class="btn btn-default" role="button" href="{% url 'people:inactive prospect list' %}">Inactive</a>
+    </div>
     <div>
         {% if request.GET %}
             <form id='student-filter' class='form-inline' method='get' action={{request.path}}>
@@ -51,28 +51,30 @@
         {% endif %}
 
         <table class="table">
-        	<tr>
-        		<th>Prospect</th>
+            <tr>
+                <th>Prospect</th>
                 <th>Registration</th>
-        		<th>Phone</th>
-        		<th>Email</th>
-        		<th>Birth Date</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Language</th>
+                <th>Birth Date</th>
                 <th>Status</th>
-        		<th>Advisor</th>
-        	</tr>
+                <th>Advisor</th>
+            </tr>
         {% for prospect in prospects %}
             <tr>
-            	<td><a href="{{ prospect.get_absolute_url }}">{{ prospect }}</a></td>
+                <td><a href="{{ prospect.get_absolute_url }}">{{ prospect }}</a></td>
                 <td>{{ prospect.registration_date }}</td>
-            	<td>{{ prospect.phone }}</td>
-            	<td>{{ prospect.email }}</td>
-            	<td>{{ prospect.dob }}</td>
+                <td>{{ prospect.phone }}</td>
+                <td>{{ prospect.email }}</td>
+                <td>{{ prospect.get_primary_language_display }}</td>
+                <td>{{ prospect.dob }}</td>
                 <td>{{ prospect.status }}</td>
-            	<td>{{ prospect.advisor }}</td>
+                <td>{{ prospect.advisor }}</td>
             </tr>
         {% endfor %}
         </table>
     {% else %}
-    	<p>Sorry, We can't find any students matching your search...</p>
+        <p>Sorry, We can't find any students matching your search...</p>
     {% endif %}
 {% endblock content %}

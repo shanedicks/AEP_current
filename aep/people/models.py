@@ -2123,14 +2123,54 @@ class Prospect(models.Model):
     def status(self):
         if self.active:
             if self.student is None:
-                return "Unassigned"
+                return "Unlinked"
             else:
-                return "Active"
+                return "Linked"
         else:
             if self.student is None:
                 return "Inactive"
             else:
                 return "Closed"
+
+    @property
+    def folder(self):
+        if self.student is not None:
+            if self.student.folder == 'C':
+                return "Complete"
+            else:
+                return "Incomplete"
+        else:
+            return "--"
+
+    @property
+    def orientation(self):
+        if self.student is not None:
+            if self.student.orientation =='C' or self.student.intake_quiz:
+                return "Complete"
+            else:
+                return "Incomplete"
+        else:
+            return "--"
+
+    @property
+    def paperwork(self):
+        if self.student is not None:
+            if self.student.paperwork == 'C' or self.student.intake_form:
+                return "Complete"
+            else:
+                return "Incomplete"
+        else:
+            return "--"
+
+    @property
+    def testing(self):
+        if self.student is not None:
+            if self.student.tests is not None:
+                return self.student.tests.last_test_date
+            else:
+                return "No Test History"
+        else:
+            return "--"
 
 
 class ProspectNote(models.Model):
