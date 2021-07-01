@@ -560,17 +560,18 @@ class Enrollment(models.Model):
     # Creates related attendance objects for student enrollment with correct dates and pending status
     def activate(self):
         dates = self.section.get_class_dates()
-        if self.attendance.all().count() == 0:
-            online = self.section.program == 'ELRN' or self.section.site.code == 'OL'
-            for day in dates:
-                a = Attendance.objects.create(
-                    enrollment=self,
-                    attendance_date=day,
-                    time_in=self.section.start_time,
-                    time_out=self.section.end_time,
-                    online=online
-                )
-                a.save()
+        created_dates = self.attendance.dates('attendance_date', 'day')
+        new_dates = [x for x in dates if x not in created_dates]
+        online = self.section.program == 'ELRN' or self.section.site.code == 'OL'
+        for day in new_dates:
+            a = Attendance.objects.create(
+                enrollment=self,
+                attendance_date=day,
+                time_in=self.section.start_time,
+                time_out=self.section.end_time,
+                online=online
+            )
+            a.save()
         if self.section.course is not None:
             sm = apps.get_model('academics', 'SkillMastery')
             for skill in self.section.course.skills.all():

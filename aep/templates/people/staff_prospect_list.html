@@ -58,10 +58,10 @@
                 <th>Birth Date</th>
                 <th>Language</th>
                 <th>Status</th>
-                <th>Folder</th>
                 <th>Orientation</th>
                 <th>Paperwork</th>
                 <th>Testing</th>
+                <th>Folder</th>
             </tr>
         {% for prospect in prospects %}
             <tr>
@@ -70,10 +70,10 @@
                 <td>{{ prospect.dob }}</td>
                 <td>{{ prospect.get_primary_language_display }}</td>
                 <td>{{ prospect.status }}</td>
-                <td>{{ prospect.folder }}</td>
                 <td>{{ prospect.orientation }}</td>
                 <td>{{ prospect.paperwork }}</td>
                 <td>{{ prospect.testing }}</td>
+                <td>{{ prospect.folder }}</td>
             </tr>
         {% endfor %}
         </table>
