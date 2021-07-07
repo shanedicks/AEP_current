@@ -521,7 +521,7 @@ class ProspectCreateStudentView(LoginRequiredMixin, CreateView):
     template_name = 'people/prospect_student_create.html'
 
     def get_success_url(self):
-        return reverse_lazy('people:prospect detail', pk=self.get_prospect().pk)
+        return reverse('people:prospect detail', kwargs={'pk': self.kwargs['pk']})
 
     def get_prospect(self):
         return Prospect.objects.get(pk=self.kwargs['pk'])
@@ -568,7 +568,6 @@ class ProspectCreateStudentView(LoginRequiredMixin, CreateView):
             return self.render_to_response(
                 self.get_context_data(
                     wioa_form=wioa_form,
-                    orientation_form=orientation_form
                 )
             )
 
