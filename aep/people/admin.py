@@ -633,7 +633,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
                 pass              
                 
     def move_certificates(self, request, q):
-        c = q[0].certificates.all():
+        c = q[0].certificates.all()
         for record in c:
             try:
                 record.update(student=q[1])
