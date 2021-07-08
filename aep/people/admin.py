@@ -481,7 +481,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
                 tabe_loc.update(student=t)
                 clas_e = q[1].tests.clas_e_tests.all()
                 clas_e.update(student=t)
-                clas_e_loc = q[1].tests.clas_e_tests.all()
+                clas_e_loc = q[1].tests.clas_e_loc_tests.all()
                 clas_e_loc.update(student=t)
                 gain = q[1].tests.gain_tests.all()
                 gain.update(student=t)
@@ -624,6 +624,30 @@ class StudentAdmin(ImportExportActionModelAdmin):
             i += 1
             j += 1
 
+    def move_skill_masteries(self, request, q):
+        sm = q[0].skillmasterys.all()
+        for record in sm:
+            try:
+                record.update(student=q[1])
+            except IntegrityError
+                pass              
+                
+    def move_certificates(self, request, q):
+        c = q[0].certificates.all():
+        for record in c:
+            try:
+                record.update(student=q[1])
+            except IntegrityError:
+                pass
+
+    def move_course_completions(self, request, q):
+        cc = q[0].coursecompletions.all()
+        for record in cc:
+            try:
+                record.update(student=q[1])
+            except IntegrityError:
+                pass
+
     def full_merge(self, request, queryset):
         q = queryset.order_by('pk')
         self.move_test_history(request, q)
@@ -636,6 +660,9 @@ class StudentAdmin(ImportExportActionModelAdmin):
         self.copy_office_tracking(request, q)
         self.move_or_copy_paperwork(request, q)
         self.move_or_merge_pops(request, q)
+        self.move_skill_masteries(request, q)
+        self.move_certificates(request, q)
+        self.move_course_completions(request, q)
         n = q[1]
         o = q[0]
         n.intake_date = o.intake_date
