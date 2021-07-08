@@ -629,7 +629,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         for record in sm:
             try:
                 record.update(student=q[1])
-            except IntegrityError
+            except IntegrityError:
                 pass              
                 
     def move_certificates(self, request, q):
