@@ -3,6 +3,8 @@ from django.apps import apps
 from django.conf import settings
 from django.urls import reverse
 from django.db import models
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from core.tasks import send_mail_task
 from core.utils import get_fiscal_year_start_date
 from people.models import Staff, Student, PoP
@@ -18,6 +20,7 @@ class TestEvent(models.Model):
     TABE_LOC = 'TABE Locator'
     CLAS_E_LOC = 'CLAS-E Locator'
     ORIENTATION = 'Orientation'
+    ONLINE_ORIENTATION = 'Online Orientation'
     HISET_PRACTICE = 'HiSET Practice'
     EXIT_EXAM = 'Exit Exam'
     TEST_CHOICES = (
@@ -26,6 +29,7 @@ class TestEvent(models.Model):
         (CLAS_E, 'CLAS-E Test'),
         (CLAS_E_LOC, 'CLAS-E Locator'),
         (ORIENTATION, 'Orientation'),
+        (ONLINE_ORIENTATION, 'Online Orientation'),
         (HISET_PRACTICE, 'HiSET Practice'),
         (EXIT_EXAM, 'Exit Exam')
     )
@@ -109,47 +113,19 @@ class TestEvent(models.Model):
     def orientation_reminder(self):
         for student in self.students.all():
             if student.student.email:
+                context = {
+                    'student': student.student.first_name,
+                    'wru': ('', student.student.WRU_ID)[student.student.WRU_ID is not None]
+                }
+                if self.test == self.ONLINE_ORIENTATION:
+                    html_message = render_to_string('emails/online_orientation_reminder.html', context)
+                else:
+                    html_message = render_to_string('emails/orientation_reminder.html', context)
+                message = strip_tags(html_message)
                 send_mail_task.delay(
                     subject="Orientation for the Delgado Adult Education Program!",
-                    message="",
-                    html_message="<a href='https://docs.google.com/document/d/e/2PACX-1vSP_kxLYr7CRPlcd2KaL1UqF7ehmE139vo45Hflzcg81lVCNgVy2bI1mkZ2Bh3AYBau_LTIx1PhEdaP/pub'>"
-                    "Haga clic aquí para leer una versión en ESPAÑOL</a>"
-                    "<p>Hello {student},</p><p>Welcome to the Delgado"
-                    " Community College Adult Education Program! We are writing"
-                    " today with an update on new student orientation</p><p>"
-                    "<strong>Due to the COVID-19 pandemic, all Delgado Community"
-                    " College Campuses are closed.</strong> So orientation for all"
-                    " new student will now be held online. You can get started now"
-                    " with the self-paced orientation using the link below</p>"
-                    "<p><a href='https://sites.google.com/elearnclass.org/dccaepporientation/new-student-process'>"
-                    "Click here to get started with the Adult Education Program"
-                    " Orientation!</a></p><p>In this orientation you can learn"
-                    " about:<ul><li>The different subjects you can take</li>"
-                    "<li>Online and in-person class options</li><li>How to "
-                    "connect with a coach</li><li>And the testing process</li></ul>"
-                    "</p><p>You can work through the Orientation website anywhere"
-                    " and at your own pace. There are a few articles to read and "
-                    "videos to watch, so take your time!</p><p><strong>Finishing "
-                    "the Orientation is required in order to begin classes with "
-                    "Delgado.</strong> You will need your student ID number in "
-                    "order to complete the process on the website.</p><p>Your "
-                    "student number is <span style='font-size: 24px'><strong>{wru}"
-                    "</strong></span></p><p><strong>If "
-                    "you need help,</strong> you can send an email to <a href='"
-                    "mailto:intake@elearnclass.org'>intake@elearnclass.org</a>, "
-                    "and our intake team will get back to you in 1-3 business days. "
-                    "<em>To better help us find you in our system, please include your"
-                    " full name, date of birth, and student ID number in any message you send!</p>"
-                    "<p>Welcome again to the Adult Education Program at Delgado;"
-                    " we are excited to work with you soon!</p><p>Best,</p><p>"
-                    "DCCAEP Team</p>".format(
-                        student=student.student.first_name,
-                        wru=('', student.student.WRU_ID)[student.student.WRU_ID is not None],
-                        #dfmt='%m-%d-%Y',
-                        #tfmt="%I:%M %p",
-                        #date=self.start.date(),
-                        #time=self.start.time()
-                    ),
+                    message=message,
+                    html_message=html_message,
                     from_email="reminder@dccaep.org",
                     recipient_list=[student.student.email],
                 )
@@ -165,36 +141,20 @@ class TestEvent(models.Model):
         }
         for student in self.students.all():
             if student.student.email:
+                context = {
+                        'student': student.student.first_name,
+                        'date': self.start.date(),
+                        'time': self.start.time(),
+                        'site': self.site,
+                        'room': sites[self.site.code]                    
+                }
+                html_message = render_to_string('emails/test_reminder.html', context)
+                message = strip_tags(html_message)
                 send_mail_task.delay(
                     subject="Testing Reminder from the Delgado "
                     "Community College Adult Education Program",
-                    message="",
-                    html_message="<p>Hi {student},</p><p>This message is "
-                    "a reminder for your upcoming test appointment with "
-                    "Delgado Adult Education.</p><br><p>You signed up for "
-                    "testing on {date:{dfmt}} that will begin at {time:{tfmt}}."
-                    "</p><p>Your testing will take place at the {site} campus"
-                    ", and you can report to {room} to check-in.</p><br>"
-                    "<p><strong>Your attendance of this event is required"
-                    " in order to create a schedule and begin classes.</strong>"
-                    ".</p><p>If you have any questions or a problem with "
-                    " your appointment please <a href=https://docs.google.com/forms"
-                    "/d/e/1FAIpQLSc6Z-Zsq9zC962kd_3el0WoPTwCih-3-Qjxwq2HebvOXjRiYg/viewform>"
-                    "click here for assistance</a>.</p><p>Si tiene preguntas"
-                    " o problemas con su cita, haga <a href=https://docs.google.com/forms"
-                    "/d/e/1FAIpQLSc6Z-Zsq9zC962kd_3el0WoPTwCih-3-Qjxwq2HebvOXjRiYg/"
-                    "viewform>clic aquí para obtener ayuda</a></p>"
-                    "<br><p>Thank you,</p>"
-                    "<p>The Adult Education Program</p>"
-                    "<p>Delgado Community College</p>".format(
-                        student=student.student.first_name,
-                        dfmt='%m-%d-%Y',
-                        tfmt="%I:%M %p",
-                        date=self.start.date(),
-                        time=self.start.time(),
-                        site=self.site,
-                        room=sites[self.site.code]
-                    ),
+                    message=message,
+                    html_message=html_message,
                     from_email="reminder@dccaep.org",
                     recipient_list=[student.student.email],
                 )
