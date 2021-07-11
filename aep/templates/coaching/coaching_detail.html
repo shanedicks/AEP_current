@@ -119,8 +119,8 @@
         <h4>{{ item.0 }}</h4>
       {% endif %}
     {% endfor%}
-    <h3>Meeting Notes</h3>
-    {% if coaching.notes.count > 0 %}
+    <h3>My Meeting Notes</h3>
+    {% if coaching.notes.exists %}
         {% for note in coaching.notes.all %}
             <p><a href="{%url 'coaching:meeting note detail' pk=note.pk %}">{{ note.meeting_date }}</a></p>
         {% endfor %}
@@ -128,5 +128,13 @@
         <p>There are no meeting notes on record for this Coach and Student. Would you like to create one?</p>
     {% endif %}
         <a class="btn btn-default" href="{% url 'coaching:meeting note create' pk=coaching.pk %}" role="button">Take Note</a>
+    <h3>Other Meeting Notes</h3>
+    {% if other_notes.exists %}
+        {% for note in other_notes %}
+            <p><a href="{%url 'coaching:meeting note detail' pk=note.pk %}">{{ note.meeting_date }}</a></p>
+        {% endfor %}
+    {% else %}
+        <p>There are no other meeting notes on record for this student.</p>
+    {% endif %}    
 </div>
 {% endblock content %}

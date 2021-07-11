@@ -114,7 +114,7 @@
       </div>
       <div>
         <h3>Student Coaching</h3>
-            {% if coaches.count > 0 %}
+            {% if coaches.exists %}
               <ul>
               {% for coach in coaches %}
                   <li><a href="{% url 'coaching:coaching detail' pk=coach.pk %}">{{ coach.coach }} - {{ coach.get_coaching_type_display }} - since {{ coach.start_date.date }}</a></li>
@@ -158,7 +158,7 @@
       </div>
       <div>
           <h3>Prospects</h3>
-            {% if student.prospects.all.count > 0 %}
+            {% if student.prospects.all.exists %}
               {% for prospect in student.prospects.all %}
                 <p>
                   <a href="{{ prospect.get_absolute_url }}">{{ prospect.registration_date}}</a>

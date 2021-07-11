@@ -280,6 +280,11 @@ class CoachingDetailView(LoginRequiredMixin, DetailView):
             else:
                 context['warnings'] = []
             context.update(kwargs)
+        if 'other_notes' not in context:
+            notes = MeetingNote.objects.filter(
+                coaching__coachee=self.object.coachee
+            ).exclude(coaching__coach=self.object.coach)
+            context['other_notes'] = notes
         return context
 
 
