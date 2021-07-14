@@ -605,7 +605,10 @@ class ProspectListView(LoginRequiredMixin, ListView, FormView):
 
 class UnassignedProspectListView(ProspectListView):
 
-    queryset = Prospect.objects.filter(active=True, advisor=None)
+    queryset = Prospect.objects.filter(
+        active=True,
+        advisor=None
+    ).order_by('registration_date')
     status = 'Unassigned'
 
 
