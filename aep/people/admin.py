@@ -628,7 +628,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
         sm = q[0].skillmasterys.all()
         for record in sm:
             try:
-                record.update(student=q[1])
+                record.student = q[1]
+                record.save()
             except IntegrityError:
                 pass              
                 
@@ -636,7 +637,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
         c = q[0].certificates.all()
         for record in c:
             try:
-                record.update(student=q[1])
+                record.student = q[1]
+                record.save()
             except IntegrityError:
                 pass
 
@@ -644,7 +646,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
         cc = q[0].coursecompletions.all()
         for record in cc:
             try:
-                record.update(student=q[1])
+                record.student = q[1]
+                record.save()
             except IntegrityError:
                 pass
 
