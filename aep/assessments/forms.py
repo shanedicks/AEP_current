@@ -28,6 +28,22 @@ class TestAppointmentForm(ModelForm):
         fields = ('student', 'event')
 
 
+class TestAppointmentNotesForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(TestAppointmentNotesForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            'notes'
+        )
+
+    class Meta:
+        model = TestAppointment
+        fields = ('notes',)
+
+
 class TestAppointmentAttendanceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):

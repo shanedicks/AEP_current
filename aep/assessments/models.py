@@ -175,7 +175,7 @@ class TestAppointment(models.Model):
     )
 
     notes = models.CharField(
-        max_length=20,
+        max_length=200,
         blank=True
     )
 

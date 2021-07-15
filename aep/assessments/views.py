@@ -17,7 +17,8 @@ from .models import (
 from .forms import (
         TestSignupForm, TabeForm, Clas_E_Form,
         GainForm, HiSet_Practice_Form, CSVImportForm,
-        TestAppointmentAttendanceForm, TestAttendanceFormSet
+        TestAppointmentAttendanceForm, TestAttendanceFormSet,
+        TestAppointmentNotesForm
     )
 from .tasks import (event_attendance_report_task,
         accelerated_coaching_report_task, testing_eligibility_report
@@ -365,6 +366,13 @@ class TestAppointmentDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "appt"
 
 
+class TestAppointmentNotesView(LoginRequiredMixin, UpdateView):
+
+    model = TestAppointment
+    form_class = TestAppointmentNotesForm
+    template_name = 'assessments/test_appointment_notes.html'
+
+
 class TestAppointmentAttendanceView(LoginRequiredMixin, UpdateView):
 
     model = TestAppointment
@@ -585,7 +593,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     test.student.student.last_name,
                     test.student.student.first_name,
                     test_type,
-                    '2020-2021',
+                    '2021-2022',
                     version,
                     test.form,
                     test.read_level,
@@ -753,7 +761,7 @@ class ClasECSV(LoginRequiredMixin, FormView):
                 test.student.student.last_name,
                 test.student.student.first_name,
                 test_type,
-                '2019-2020',
+                '2021-2022',
                 'TABE CLAS-E',
                 test.form,
                 test.read_level,

@@ -116,6 +116,18 @@ single_event_patterns = [
         name="test event attendance report")
 ]
 
+single_appointment_patterns = [
+    url(r'^$',
+        views.TestAppointmentDetailView.as_view(),
+        name='test appointment detail'),
+    url(r'^notes/$',
+        views.TestAppointmentNotesView.as_view(),
+        name='test appointment notes'),
+    url(r'^attendance/$',
+        views.TestAppointmentAttendanceView.as_view(),
+        name='test appointment attendance'),
+]
+
 urlpatterns = [
     url(r'^$',
         views.TestingHomeView.as_view(),
@@ -123,12 +135,8 @@ urlpatterns = [
     url(r'^missing-history/$',
         views.NoHistoryView.as_view(),
         name='no history'),
-    url(r'^appointments/(?P<pk>[0-9]+)/$',
-        views.TestAppointmentDetailView.as_view(),
-        name='test appointment detail'),
-    url(r'^appointments/(?P<pk>[0-9]+)/attendance$',
-        views.TestAppointmentAttendanceView.as_view(),
-        name='test appointment attendance'),
+    url(r'^appointments/(?P<pk>[0-9]+)/',
+        include(single_appointment_patterns)),
     url(r'^events/current/$',
         views.CurrentEventListView.as_view(),
         name="current event list"),

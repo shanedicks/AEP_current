@@ -10,4 +10,5 @@
         <h4>Room: {{appt.event.room}}
     {% endif %}</h4>
 <h4>{{appt.event.start}} - {{appt.event.end.time}}<h4>
+<p>Notes: {{ appt.notes }}</p><a class="btn btn-default" href="{% url 'assessments:test appointment notes' pk=appt.pk %}" role="button">Update Notes</a>
 {% endblock %}
