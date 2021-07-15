@@ -27,7 +27,7 @@
 		<td>{{ student.student.tests.test_assignment }}</td>
 		<td>{{ student.student.phone }}</td>
 		<td>{{ student.student.email }}</td>
-		<td>{{ student.notes }}</td>
+		<td><a href="{% url 'assessments:test appointment notes' pk=student.pk %}">-{{ student.notes }}-</a></td>
 		<td><a href="{% url 'assessments:test appointment attendance' pk=student.pk %}">{{student.get_attendance_type_display}}</a></td>
 	</tr>
 {% endfor %}
