@@ -2172,6 +2172,13 @@ class Prospect(models.Model):
         else:
             return "--"
 
+    @property
+    def last_contact(self):
+        if self.notes.exists():
+            return self.notes.latest('contact_date').contact_date
+        else:
+            return "No Notes"
+
 
 class ProspectNote(models.Model):
 

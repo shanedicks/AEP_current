@@ -62,6 +62,7 @@
                 <th>Paperwork</th>
                 <th>Testing</th>
                 <th>Folder</th>
+                <th>Last Contact</th>
             </tr>
         {% for prospect in prospects %}
             <tr>
@@ -74,6 +75,7 @@
                 <td>{{ prospect.paperwork }}</td>
                 <td>{{ prospect.testing }}</td>
                 <td>{{ prospect.folder }}</td>
+                <td>{{ prospect.last_contact }}</td>
             </tr>
         {% endfor %}
         </table>
