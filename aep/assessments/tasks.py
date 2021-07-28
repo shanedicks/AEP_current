@@ -14,6 +14,19 @@ logger = get_task_logger(__name__)
 
 
 @shared_task
+def orientation_reminder_task(event_id):
+    event = apps.get_model('assessments', 'TestEvent').objects.get(pk=event_id)
+    logger.info("Sending orientation reminder for {0}".format(event))
+    event.orientation_reminder()
+    return True
+
+@shared_task
+def test_reminder_task(event_id):
+    event = apps.get_model('assessments', 'TestEvent').objects.get(pk=event_id)
+    logger.info("Sending test reminder for {0}".format(event))
+    event.test_reminder()
+
+@shared_task
 def event_attendance_report_task(event_id, email_address):
     filename = '{0}_attendance_report.csv'.format(event_id)
     with open(filename, 'w', newline='') as out:

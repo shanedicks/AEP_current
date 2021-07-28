@@ -3,7 +3,7 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from people.models import Student
 from .models import *
-from .tasks import event_attendance_report_task, test_process_task
+from .tasks import event_attendance_report_task, test_process_task, orientation_reminder_task, test_reminder_task
 
 
 class TestEventAdmin(admin.ModelAdmin):
@@ -55,11 +55,11 @@ class TestEventAdmin(admin.ModelAdmin):
 
     def orientation_reminder(self, request, queryset):
         for obj in queryset:
-            obj.orientation_reminder()
+            orientation_reminder_task.delay(obj.id)
 
     def test_reminder(self, request, queryset):
         for obj in queryset:
-            obj.test_reminder()
+            test_reminder_task.delay(obj.id)
 
     def attendance_report(self, request, queryset):
         for obj in queryset:
