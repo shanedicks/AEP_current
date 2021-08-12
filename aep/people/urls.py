@@ -1,11 +1,13 @@
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
-from sections.views import StudentCurrentClassListView, StudentPastClassListView, StudentScheduleView, AddClassView, StudentAttendanceView
+from sections.views import (StudentCurrentClassListView,
+    StudentPastClassListView, StudentScheduleView, AddClassView,
+    StudentAttendanceView, StaffClassListView)
 from . import views
 
 app_name = 'people'
 
-class_patterns = [
+student_class_patterns = [
     url(r'^current/$',
         StudentCurrentClassListView.as_view(),
         name='student current classes'),
@@ -53,7 +55,7 @@ single_student_patterns = [
     url(r'^transcript/$',
         views.StudentTranscriptView.as_view(),
         name='student transcript'),
-    url(r'^my-classes/', include(class_patterns))
+    url(r'^my-classes/', include(student_class_patterns))
 ]
 
 student_patterns = [
@@ -94,6 +96,7 @@ staff_prospect_patterns = [
         name='staff closed prospects'),
 ]
 
+
 single_staff_patterns = [
     url(r'^$',
         views.StaffDetailView.as_view(),
@@ -105,8 +108,10 @@ single_staff_patterns = [
         views.StaffHomeView.as_view(),
         name='staff home'
         ),
-    url(r'^prospects/',
-        include(staff_prospect_patterns))
+    url(r'^prospects/', include(staff_prospect_patterns)),
+    url(r'^my-classes/$',
+        StaffClassListView.as_view(),
+        name='staff class list')
 ]
 
 staff_patterns = [
@@ -169,6 +174,9 @@ prospect_patterns = [
     url(r'^closed/$',
         views.ClosedProspectListView.as_view(),
         name='closed prospect list'),
+    url(r'^duplicate/$',
+        views.DuplicateProspectListView.as_view(),
+        name='duplicate prospect list'),
     url(r'^(?P<pk>[0-9]+)/', include(single_prospect_patterns)),
     url(r'^notes/(?P<pk>[0-9]+)/', include(single_note_patterns))
 ]
@@ -183,6 +191,9 @@ urlpatterns = [
     url(r'^sign-up/$',
         views.ProspectSignupView.as_view(),
         name='prospect signup'),
+    url(r'sign-up/$',
+        views.TestProspectSignupView.as_view(),
+        name='test prospect signup'),
     url(r'^partners/$',
         views.PartnerStudentCreateView.as_view(),
         name='partner student create'),

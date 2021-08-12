@@ -7,6 +7,8 @@
       <a type="button" class="btn btn-default" role="button" href="{% url 'people:prospect list' %}">All</a>
       <a type="button" class="btn btn-default" href="{% url 'people:unassigned prospect list' %}" role="button">Unassigned</a>
       <a type="button" class="btn btn-default" role="button" href="{% url 'people:inactive prospect list' %}">Inactive</a>
+      <a type="button" class="btn btn-default" role="button" href="{% url 'people:duplicate prospect list' %}">Duplicate</a>
+      <a type="button" class="btn btn-default" role="button" href="{% url 'people:closed prospect list' %}">Closed</a>
     </div>
     <div>
         {% if request.GET %}
@@ -53,7 +55,7 @@
         <table class="table">
             <tr>
                 <th>Prospect</th>
-                <th>Registration</th>
+                <th>Signup Date</th>
                 <th>Phone</th>
                 <th>Email</th>
                 <th>Language</th>
@@ -64,11 +66,11 @@
         {% for prospect in prospects %}
             <tr>
                 <td><a href="{{ prospect.get_absolute_url }}">{{ prospect }}</a></td>
-                <td>{{ prospect.registration_date }}</td>
+                <td>{{ prospect.registration_date|date:"m-d-y" }}</td>
                 <td>{{ prospect.phone }}</td>
                 <td>{{ prospect.email }}</td>
                 <td>{{ prospect.get_primary_language_display }}</td>
-                <td>{{ prospect.dob }}</td>
+                <td>{{ prospect.dob|date:"m-d-y" }}</td>
                 <td>{{ prospect.status }}</td>
                 <td>{{ prospect.advisor }}</td>
             </tr>

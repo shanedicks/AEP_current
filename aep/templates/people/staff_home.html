@@ -2,6 +2,13 @@
 {% block head_title %}DCCAEP | {{staff}} Home{% endblock head_title %}
 {% block content %}
     <h1>{{ staff }} Home</h1>
+    {% if staff.prospects.all.count > 0 %}
+        <h3>My Prospects</h3>
+            <h4><a href="{% url 'people:staff prospects' slug=staff.slug %}">All: {{ staff.prospects.all.count }}</a></h4>
+            <h4><a href="{% url 'people:staff active prospects' slug=staff.slug %}">Active: {{ staff.active_prospects.count }}</a></h4>
+            <h4><a href="{% url 'people:staff inactive prospects' slug=staff.slug %}">Inactive: {{ staff.inactive_prospects.count }}</a></h4>
+            <h4><a href="{% url 'people:staff closed prospects' slug=staff.slug %}">Closed: {{ staff.closed_prospects.count }}</a></h4>
+    {% endif %}
     {% if staff.classes.count > 0 %}
         <h3>My Current Classes</h3>
         <table class='table'>
@@ -30,29 +37,7 @@
             </tr>
         {% endfor %}
         </table>
-        <h3>My Past Classes</h3>
-        <table class='table'>
-            <tr>
-                <th>Class Name</th>
-                <th>Students</th>
-                <th>Days</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-            </tr>
-        {% for section in staff.past_classes %}
-            <tr>
-                <td><a href="{{section.get_absolute_url}}">{{section.title}}</a></td>
-                <td>{{section.students.count}}</td>
-                <td>{{section.get_days_str}}</td>
-                <td>{{section.start_time}}</td>
-                <td>{{section.end_time}}</td>
-                <td>{{section.start_date}}</td>
-                <td>{{section.end_date}}</td>
-            </tr>
-        {% endfor %}
-        </table>
+        <a type="button" class="btn btn-default" href="{% url 'people:staff class list' slug=staff.slug %}">All My Classes</a>
     {% endif %}
     {% if staff.coachees.all.count > 0 %}
         <h3>My Coachees</h3>
@@ -66,13 +51,4 @@
             <h4><a href="{% url 'coaching:passed hiset coachee list' slug=staff.slug %}">Passed Hiset: {{staff.hiset_coachees.count }}</a></h4>
             <h4><a href="{% url 'coaching:enrolled coachee list' slug=staff.slug %}">Enrolled: {{ staff.enrolled_coachees.count }}</a></h4>
     {% endif %}
-    {% if staff.prospects.all.count > 0 %}
-        <h3>My Prospects</h3>
-            <h4><a href="{% url 'people:staff prospects' slug=staff.slug %}">All: {{ staff.prospects.all.count }}</a></h4>
-            <h4><a href="{% url 'people:staff active prospects' slug=staff.slug %}">Active: {{ staff.active_prospects.count }}</a></h4>
-            <h4><a href="{% url 'people:staff inactive prospects' slug=staff.slug %}">Inactive: {{ staff.inactive_prospects.count }}</a></h4>
-            <h4><a href="{% url 'people:staff closed prospects' slug=staff.slug %}">Closed: {{ staff.closed_prospects.count }}</a></h4>
-    {% endif %}
-
-
 {%endblock content %}

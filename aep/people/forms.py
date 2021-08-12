@@ -1885,12 +1885,18 @@ class ProspectStatusForm(ModelForm):
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
-            'active'
+            'active',
+            'duplicate',
+            'for_credit'
         )
 
     class Meta:
         model = Prospect
-        fields = ('active',)
+        fields = (
+            'active',
+            'duplicate',
+            'for_credit'
+        )
 
 
 class ProspectLinkStudentForm(ModelForm):

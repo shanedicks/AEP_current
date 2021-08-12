@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | {{staff}}'s Classes{% endblock head_title %}
+{% block content %}
+<h3>{{staff}}'s Classes</h3>
+    {% if is_paginated %}
+        {% include 'components/pagination.html' %}
+    {% endif %}
+<table class='table'>
+    <tr>
+        <th>Site</th>
+        <th>Program</th>
+        <th>Class Name</th>
+        <th>Students</th>
+        <th>Days</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+    </tr>
+{% for section in object_list %}
+    <tr>
+        <td>{{section.site}}</td>
+        <td>{{section.program}}</td>
+        <td><a href="{{section.get_absolute_url}}">{{section.title}}</a></td>
+        <td>{{section.students.count}}</td>
+        <td>{{section.get_days_str}}</td>
+        <td>{{section.start_time}}</td>
+        <td>{{section.end_time}}</td>
+        <td>{{section.start_date}}</td>
+        <td>{{section.end_date}}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock content %}

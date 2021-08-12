@@ -659,28 +659,24 @@ class StaffClassListView(LoginRequiredMixin, ListView):
 
     model = Section
     template_name = 'sections/staff_class_list.html'
+    paginate_by = 20
 
     def get_context_data(self, **kwargs):
-        context = super(StudentClassListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         if 'staff' not in context:
-            context['student'] = Staff.objects.get(slug=self.kwargs['slug'])
-            context.update(kwargs)
-        if 'today' not in context:
-            context['today'] = datetime.today().date()
+            context['staff'] = Staff.objects.get(slug=self.kwargs['slug'])
             context.update(kwargs)
         return context
 
     def get_queryset(self):
-        if 'slug' in self.kwargs:
-            slug = self.kwargs['slug']
-            return Section.objects.filter(
-                teacher__slug=slug
-            ).order_by(
-                "-starting",
-                "-semester__start_date",
-                "tuesday",
-                "start_time"
-            )
+        return Section.objects.filter(
+            teacher__slug=self.kwargs['slug']
+        ).order_by(
+            "-starting",
+            "-semester__start_date",
+            "tuesday",
+            "start_time"
+        )
 
 
 class StudentClassListView(LoginRequiredMixin, ListView):

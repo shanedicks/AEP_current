@@ -2110,6 +2110,16 @@ class Prospect(models.Model):
         default=True
     )
 
+    duplicate = models.BooleanField(
+        default=False,
+        verbose_name=_("Probable Duplicate")
+    )
+
+    for_credit = models.BooleanField(
+        default=False,
+        verbose_name=_("For-credit Student")
+    )
+
     class Meta:
         ordering = ["last_name", "first_name"]
 
@@ -2121,11 +2131,15 @@ class Prospect(models.Model):
 
     @property
     def status(self):
+        if self.duplicate:
+            return "Probable Duplicate"
+        if self.for_credit:
+            return "For Credit"
         if self.active:
             if self.student is None:
-                return "Unlinked"
+                return "Unregistered"
             else:
-                return "Linked"
+                return "Registered"
         else:
             if self.student is None:
                 return "Inactive"
@@ -2166,7 +2180,12 @@ class Prospect(models.Model):
     def testing(self):
         if self.student is not None:
             if self.student.tests is not None:
-                return self.student.tests.last_test_date
+                if self.student.tests.last_test_date is not None:
+                    return datetime.strftime(
+                        self.student.tests.last_test_date, "%m-%d-%y"
+                    )
+                else:
+                    return "No Tests"
             else:
                 return "No Test History"
         else:
@@ -2175,7 +2194,9 @@ class Prospect(models.Model):
     @property
     def last_contact(self):
         if self.notes.exists():
-            return self.notes.latest('contact_date').contact_date
+            return datetime.strftime(
+                self.notes.latest('contact_date').contact_date, "%m-%d-%y"
+            )
         else:
             return "No Notes"
 
@@ -2186,6 +2207,7 @@ class ProspectNote(models.Model):
         ('Call', 'Call'),
         ('Text', 'Text'),
         ('Email', 'Email'),
+        ('In Person', 'In Person')
     )
 
     prospect = models.ForeignKey(
@@ -2197,7 +2219,7 @@ class ProspectNote(models.Model):
     contact_date =  models.DateField()
 
     contact_method = models.CharField(
-        max_length=5,
+        max_length=10,
         choices=CONTACT_CHOICES,
     )
 

@@ -5,6 +5,7 @@ from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count, Max, Q
 from django.http import HttpResponseRedirect, Http404
 from django.template.loader import get_template
 from django.template import Context
@@ -462,6 +463,14 @@ class ProspectSignupView(CreateView):
     success_url = reverse_lazy('people:prospect_success')
 
 
+class TestProspectSignupView(CreateView):
+
+    model = Prospect
+    form_class = ProspectForm
+    template_name = 'people/test_create_prospect.html'
+    success_url = reverse_lazy('people:prospect_success')
+
+
 class ProspectDetailView(LoginRequiredMixin, DetailView):
 
     model = Prospect
@@ -607,28 +616,38 @@ class UnassignedProspectListView(ProspectListView):
 
     queryset = Prospect.objects.filter(
         active=True,
-        advisor=None
+        advisor=None,
+        duplicate=False
     ).order_by('registration_date')
     status = 'Unassigned'
 
 
 class ActiveProspectListView(ProspectListView):
 
-    queryset = Prospect.objects.filter(active=True).exclude(advisor=None)
+    queryset = Prospect.objects.filter(active=True, duplicate=False).exclude(advisor=None)
     status = 'Active'
 
 
 class InactiveProspectListView(ProspectListView):
 
-    queryset = Prospect.objects.filter(active=False, student=None)
+    queryset = Prospect.objects.filter(
+        active=False,
+        student=None,
+        duplicate=False,
+        for_credit=False
+    )
     status = 'Inactive'
 
 
 class ClosedProspectListView(ProspectListView):
 
-    queryset = Prospect.objects.filter(active=False).exclude(student=None)
+    queryset = Prospect.objects.filter(active=False).exclude(student=None) | Prospect.objects.filter(for_credit=True)
     status = 'Closed'
 
+class DuplicateProspectListView(ProspectListView):
+
+    queryset = Prospect.objects.filter(duplicate=True, student=None)
+    status = "Probable Duplicate"
 
 class StaffProspectListView(ProspectListView):
 
@@ -636,7 +655,13 @@ class StaffProspectListView(ProspectListView):
     status = 'All'
     
     def get_queryset(self): 
-        return Prospect.objects.filter(advisor__slug=self.kwargs['slug'])
+        return Prospect.objects.filter(
+            advisor__slug=self.kwargs['slug'],
+            duplicate=False
+        ).annotate(
+            num_contacts=Count('notes'),
+            latest_contact=Max('notes__contact_date')
+        ).order_by('num_contacts','latest_contact')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
