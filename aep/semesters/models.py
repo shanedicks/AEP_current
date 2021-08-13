@@ -7,6 +7,7 @@ from core.tasks import send_mail_task
 from sections.tasks import roster_to_classroom_task
 from .tasks import enforce_attendance_task
 
+Q = models.Q
 
 class Semester(models.Model):
 
@@ -118,7 +119,9 @@ class Semester(models.Model):
             student__partner__in=partner_check
         )
         cutoff = datetime.today().date() - timedelta(days=180)
-        to_hold = students.filter(student__tests__last_test_date__lte=cutoff)
+        to_hold = students.filter(
+            Q(student__tests__last_test_date__lte=cutoff) | Q(student__tests__last_test_date=None)
+        )
         to_hold.update(status='W')
 
     def refresh_enrollments(self):
