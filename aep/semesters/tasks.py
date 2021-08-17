@@ -56,8 +56,6 @@ def create_missing_g_suite_task(semester_id):
 	semester = apps.get_model('semesters', 'Semester').objects.get(id=semester_id)
 	Student = apps.get_model('people', 'Student')
 	Elearn = apps.get_model('coaching', 'ElearnRecord')
-	logger.info("Creating G Suite Service")
-	service = g_suite_service()
 	students = Student.objects.filter(classes__section__semester=semester).distinct()
 	need_elearn = students.filter(elearn_record=None)
 	logger.info("{0} students need elearn records".format(need_elearn.count()))
@@ -68,9 +66,11 @@ def create_missing_g_suite_task(semester_id):
 		)
 		logger.info("Created elearn record for {0}".format(student))
 	logger.info('Creating missing GSuite accounts for {0}'.format(semester.title))
+	logger.info("Creating G Suite Service")
+	service = g_suite_service()
 	for student in students:
 		logger.info("Creating GSuite account for {0}".format(student))
 		try:
-			student.elearn_record.create_g_suite_account()
+			student.elearn_record.create_g_suite_account(service)
 		except HttpError as e:
 			logger.info("{0}".format(e))
