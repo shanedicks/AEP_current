@@ -53,7 +53,7 @@ def send_survey_task(survey_id):
 
 @shared_task
 def create_missing_g_suite_task(semester_id):
-	semester = apps.get_model('semesters', 'Semester').objects.get(semester_id)
+	semester = apps.get_model('semesters', 'Semester').objects.get(id=semester_id)
 	Student = apps.get_model('people', 'Student')
 	Elearn = apps.get_model('coaching', 'ElearnRecord')
 	logger.info("Creating G Suite Service")
