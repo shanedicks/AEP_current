@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import Semester, Day, Survey
 from .tasks import (send_g_suite_info_task, semester_begin_task,
-    validate_enrollments_task, refresh_enrollments_task, send_survey_task)
+    validate_enrollments_task, refresh_enrollments_task, send_survey_task,
+    create_missing_g_suite_task)
 
 # Register your models here.
 
@@ -28,7 +29,8 @@ class SemesterAdmin(admin.ModelAdmin):
         "send_course_welcome_email",
         "roster_to_classroom",
         "validate_enrollments",
-        "refresh_enrollments"
+        "refresh_enrollments",
+        "create_missing_g_suite"
     ]
 
     def attendance_reminder(self, request, queryset):
@@ -71,6 +73,10 @@ class SemesterAdmin(admin.ModelAdmin):
     def refresh_enrollments(self, request, queryset):
         for obj in queryset:
             refresh_enrollments_task.delay(obj.id)
+
+    def create_missing_g_suite(self, request, queryset):
+        for obj in queryset:
+            create_missing_g_suite_task.delay(obj.id)
 
 admin.site.register(Semester, SemesterAdmin)
 
