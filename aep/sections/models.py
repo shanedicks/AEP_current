@@ -85,6 +85,11 @@ class Section(models.Model):
         blank=True
     )
 
+    g_suite_link = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
     site = models.ForeignKey(
         Site,
         models.PROTECT,
@@ -357,6 +362,23 @@ class Section(models.Model):
                     except IntegrityError:
                         print("Duplicate attendance found. Skipping....")
         print("Finished with", self.title)
+
+    def get_g_suite_link(self):
+        scopes = ['https://www.googleapis.com/auth/classroom.courses']
+
+        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+            keyfile_dict=settings.KEYFILE_DICT,
+            scopes=scopes
+        )
+
+        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        http_auth = shane.authorize(Http())
+        service = discovery.build('classroom', 'v1', http=http_auth)
+
+
+        course = service.courses().get(id=self.g_suite_id).execute()
+        self.g_suite_link = course.get('alternateLink')
+        self.save()
 
     # Drops active students with 2 absences and fills their spots with waitlisted students in enrollment order
     def waitlist_update(self):

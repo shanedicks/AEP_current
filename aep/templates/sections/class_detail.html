@@ -43,5 +43,6 @@
     {% if section.g_suite_id %}
     <br></br>
     <p> G Suite ID: {{ section.g_suite_id }}</p>
+    <p> Link to Classroom Section: <a href='{{section.g_suite_link}}'>{{ section.g_suite_link }}</a></p>
     {% endif %}
 {% endblock content %}

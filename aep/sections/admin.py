@@ -158,6 +158,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
 
                 post = service.courses().create(body=record).execute()
                 obj.g_suite_id = post.get('id')
+                obj.g_suite_link = post.get('alternateLink')
                 obj.save()
 
     def add_TA(self, request, queryset):
