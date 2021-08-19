@@ -8,7 +8,17 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from core.utils import make_slug, make_AEP_ID, state_session
+from core.utils import make_slug, make_AEP_ID, make_unique_slug, state_session
+
+# make_slug and make_AEP_ID callables were defaults for Profile and Student -have to be kept or migrations break
+def make_student_slug():
+    return make_unique_slug('people', 'Student')
+
+def make_staff_slug():
+    return make_unique_slug('people', 'Staff')
+
+def make_prospect_slug():
+    return make_unique_slug('people', 'Prospect')
 
 
 class Profile(models.Model):
@@ -181,11 +191,6 @@ class Profile(models.Model):
         verbose_name=_("Title")
     )
     # make_slug here creates a 5 character string for use in absolute urls
-    slug = models.CharField(
-        unique=True,
-        default=make_slug,
-        max_length=5
-    )
 
     class Meta:
         abstract = True
@@ -299,6 +304,11 @@ class Student(Profile):
         verbose_name=_("user"),
         null=True,
         blank=True
+    )
+    slug = models.CharField(
+        unique=True,
+        default=make_student_slug,
+        max_length=5
     )
     intake_date = models.DateField(
         null=True,
@@ -592,6 +602,12 @@ class Staff(Profile):
         models.CASCADE,
         related_name='staff',
         verbose_name=_("user"))
+    
+    slug = models.CharField(
+        unique=True,
+        default=make_staff_slug,
+        max_length=5
+    )
 
     wru = models.CharField(blank=True, max_length=5)
 
@@ -2118,6 +2134,11 @@ class Prospect(models.Model):
     for_credit = models.BooleanField(
         default=False,
         verbose_name=_("For-credit Student")
+    )
+    
+    slug = models.CharField(
+        default=make_prospect_slug,
+        max_length=5
     )
 
     class Meta:

@@ -284,6 +284,7 @@ class ProspectResource(resources.ModelResource):
             'id',
             'student',
             'advisor',
+            'advisor__last_name',
             'first_name',
             'last_name',
             'email',
@@ -302,6 +303,9 @@ class ProspectNoteResource(resources.ModelResource):
         fields = (
             'id',
             'prospect',
+            'prospect__last_name',
+            'prospect__first_name',
+            'prospect__advisor__last_name',
             'contact_date',
             'contact_method',
             'successful',
@@ -939,20 +943,32 @@ class ProspectAdmin(ImportExportActionModelAdmin):
 
     resource_class = ProspectResource
 
+    search_fields = [
+        'last_name',
+        'first_name',
+        'dob'
+    ]
+
+    ordering = [
+        "-registration_date"
+    ]
+
     list_display = [
         '__str__',
         'dob',
         'student',
         'advisor',
-        'active'
+        'active',
+        'duplicate'
     ]
 
     list_filter = [
-        'active'
+        'active',
     ]
 
     list_editable = [
-        'active'
+        'active',
+        'duplicate',
     ]
 
     fields = [
@@ -964,8 +980,12 @@ class ProspectAdmin(ImportExportActionModelAdmin):
         'dob',
         'contact_preference',
         'primary_language',
-        'active'
+        'active',
+        'duplicate',
+        'for_credit'
     ]
+
+
 
 admin.site.register(Prospect, ProspectAdmin)
 

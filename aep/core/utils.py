@@ -4,6 +4,7 @@ import requests
 from apiclient import discovery
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
+from django.apps import apps
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.http import HttpResponse
@@ -13,9 +14,19 @@ from django.conf import settings
 def make_AEP_ID():
     return get_random_string(length=8, allowed_chars='0123456789')
 
-
 def make_slug():
     return get_random_string(length=5)
+
+def make_unique_slug(app, model):
+    model_class = apps.get_model(app, model)
+    duplicate = True
+    while duplicate:
+        slug = get_random_string(length=5)
+        if model_class.objects.filter(slug=slug).exists():
+            continue
+        else:
+            duplicate = False
+    return slug
 
 
 def render_to_csv(data, filename):

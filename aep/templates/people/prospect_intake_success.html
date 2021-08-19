@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | Signup Success{% endblock head_title %}
+{% block content %}
+	<div class="col-md-6 col-md-offset-3">
+		<table class="table">
+			<tr>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vR4JJXOKIBaq9V6rOQULyQW4eU9AIszDsIzHcm-plJaVv3RUNkkd2e7KoR7yEMR5S83JmHXQxmuUUOv/pub" target="blank">Leer en español</a></td>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vQ1LHmhjDW3y2W6eZSxCceW7WHyZBkfHph7VW5E0szwV6rF4KkoJF4zCBm14fk2oQIHtQKat2EQOcjN/pub" target="blank">Đọc bằng tiếng Việt</a></td>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vRksPMsN2ikHjX6t918VGem15HGc0kAQNmpC9pHgbR8bUgpTeukAKp_jlx4fpo41idH-Rt2vmOJ1GO4/pub" target="blank">اقرأ باللغة العربية</a></td>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vSmCfOZEaqye_XHrzgl6Bg4w0kdcZF8tfSjkDvaONsgMcC6XErb2nevbKoJnwpQjzGHvEsjYlpfztmw/pub" target="blank">中文阅读</a></td>
+			</tr>
+			<tr>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vQEh5zV3_erVOE3t481LMgJMNwYjgsRpvL8Kp0DnTxSe2in3Ne6k4pKy-MvzNjRxCl-cOSiiyjjfo4Q/pub" target="blank">Lire en français</a></td>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vRf4zyzDNwNCl3Ck7panG7693Y_GYKAn6zBS7Uf7h1DlOnJPzRYhtaou8o2nU1Fn11cxZKDcfU3nvQ1/pub" target="blank">한국어로 읽기</a></td>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vRT-NkTiDgB5j3HhpjmMhldOLltGWCop_vTYWSztQkzwnlxjU11-ZID7g9QQmg9wwQnqRWUEq7D9BaR/pub" target="blank">日本語で読む</a></td>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vQGEFhf_OXi3YBpgrP8b0DfpkysNdgbzbUEZEayTWmRq0B_sqoEKSACzWVY4Kqid4t8RIOnNra2mL9E/pub" target="blank">Li an kreyòl</a></td>
+			</tr>
+			<tr>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vQclJXPcdSAmbYELVfR3HTtvz7aabr8B-dIxez75Wuhjl-wPudpoVu6tKnbLqdXlB-02gvrdcWK7ykp/pub" target="blank">Ler em portugues</a></td>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vRFJa8_MEcE2t3ZR4tCinpWwqu8iMXsWnFuZgpUx3Mj4rL7-mQ7m-xIcoZ9gETvRMlnv1-YIYKrncpg/pub" target="blank">Türkçe oku</a></td>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vTiWHL21kD8g5-X3uZLwEyyb6QPcHBu6OGXnZKCj2WHFg6THitVASi4SfXhlezFRMrE4GAdnd8K5RaI/pub" target="blank">Читать по русски</a></td>
+				<td><a href="https://docs.google.com/document/d/e/2PACX-1vQtHT5I7ZtWB9FARHy_2FWLonMTHIYGBo3Z09Hf9T0J2vq8um0VcF0ELvo4XSKxWtUO0peLhehZaB0A/pub" target="blank">اردو میں پڑھیں</a></td>
+			</tr>
+		</table>
+    	<h1 class="text-center">Success!</h1>
+    	<p class="text-center lead">Congratulations {{ prospect.first_name }}! You have successfully finished your intake form to join Delgado's Adult Education Program.</p>
+    	<br><p>The next steps in this process will be:</p>
+    	<ol>
+    		<li><strong>An Intake Advisor is going to be reaching out to you</strong> within the next five (5) business days-- they will call, email, or text you based on what you selected in your Interest Form.</li>
+    		<li> Since you have already filled out our detailed <strong>New Student Registration Form</strong>, your Intake Advisor can move on to the next step in the intake process</li>
+    		<li>During the meeting with your Intake Advisor, they will help schedule you into a <strong>New Student Orientation</strong>
+    			<ul><li>You will be able to choose if you would like to attend in-person at one of our campuses or if you would like to complete it online</li></ul>
+    			<br>
+    			<p><em>If you have any questions or need help in the meantime, you can call 504-671-5434</em></p>
+    			<p><em>Be sure to mention that you are a new student who filled out the interest form when you call or leave a voicemail</em></p>
+    		</li>
+    	</ol>
+    </div>
+{% endblock content %}

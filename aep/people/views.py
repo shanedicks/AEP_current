@@ -25,7 +25,7 @@ from .forms import (
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm)
-from .tasks import intake_retention_report_task, orientation_email_task
+from .tasks import intake_retention_report_task, orientation_email_task, prospect_check_duplicate_task
 
 
 class UserCreateView(CreateView):
@@ -460,15 +460,38 @@ class ProspectSignupView(CreateView):
     model = Prospect
     form_class = ProspectForm
     template_name = 'people/create_prospect.html'
-    success_url = reverse_lazy('people:prospect_success')
+    success_url = reverse_lazy('people:prospect success')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        prospect_check_duplicate_task.delay(self.object.id)
+        return super().form_valid(form)
 
 
 class TestProspectSignupView(CreateView):
 
     model = Prospect
     form_class = ProspectForm
-    template_name = 'people/test_create_prospect.html'
-    success_url = reverse_lazy('people:prospect_success')
+    template_name = 'people/create_prospect.html'
+
+    def get_success_url(self):
+        return reverse_lazy('people:test prospect success', kwargs={'slug': self.object.slug})
+
+
+class TestProspectSuccessView(TemplateView):
+
+    template_name = 'people/test_prospect_success.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TestProspectSuccessView, self).get_context_data(**kwargs)
+        context['prospect'] = Prospect.objects.get(slug=self.kwargs['slug'])
+        return context
+
+
+class ProspectIntakeSuccessView(TestProspectSuccessView):
+
+    template_name = 'people/propsect_intake_success.html'
+
 
 
 class ProspectDetailView(LoginRequiredMixin, DetailView):
@@ -523,17 +546,17 @@ class ProspectAssignAdvisorView(LoginRequiredMixin, UpdateView):
     form_class = ProspectAssignAdvisorForm
 
 
-class ProspectCreateStudentView(LoginRequiredMixin, CreateView):
+class ProspectCreateStudentView(CreateView):
 
     model = Student
     form_class = StudentForm
-    template_name = 'people/prospect_student_create.html'
+    template_name = 'people/prospect_registration_form.html'
 
     def get_success_url(self):
-        return reverse('people:prospect detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse('people:prospect success', kwargs={'slug': self.kwargs['slug']})
 
     def get_prospect(self):
-        return Prospect.objects.get(pk=self.kwargs['pk'])
+        return Prospect.objects.get(slug=self.kwargs['slug'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -579,6 +602,17 @@ class ProspectCreateStudentView(LoginRequiredMixin, CreateView):
                     wioa_form=wioa_form,
                 )
             )
+
+
+class StaffProspectCreateStudentView(LoginRequiredMixin, ProspectCreateStudentView):
+
+    template_name = 'people/prospect_student_create.html'
+
+    def get_success_url(self):
+        return reverse('people:prospect detail', kwargs={'pk': self.kwargs['pk']})
+
+    def get_prospect(self):
+        return Prospect.objects.get(pk=self.kwargs['pk'])
 
 
 class ProspectListView(LoginRequiredMixin, ListView, FormView):

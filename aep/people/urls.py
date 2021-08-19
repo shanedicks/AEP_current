@@ -148,7 +148,7 @@ single_prospect_patterns = [
         views.ProspectLinkStudentView.as_view(),
         name='prospect link student'),
     url(r'^create-student/$',
-        views.ProspectCreateStudentView.as_view(),
+        views.StaffProspectCreateStudentView.as_view(),
         name='prospect create student'),
     url(r'^assign-advisor/$',
         views.ProspectAssignAdvisorView.as_view(),
@@ -181,17 +181,29 @@ prospect_patterns = [
     url(r'^notes/(?P<pk>[0-9]+)/', include(single_note_patterns))
 ]
 
+prospect_intake_patterns = [
+    url(r'^test-success/$',
+        views.TestProspectSuccessView.as_view(),
+        name='test prospect success'),
+    url(r'^registration-form/$',
+        views.ProspectCreateStudentView.as_view(),
+        name='prospect intake form'),
+    url(r'^registration-success/$',
+        views.ProspectIntakeSuccessView.as_view(),
+        name='prospect intake success')
+]
+
 urlpatterns = [
     url(r'^students/', include(student_patterns)),
     url(r'^staff/', include(staff_patterns)),
     url(r'^prospects/', include(prospect_patterns)),
-    url(r'^student-intake_form/$',
+    url(r'^student-intake-form/$',
         views.StudentSignupWizard.as_view(),
         name='student signup'),
     url(r'^sign-up/$',
         views.ProspectSignupView.as_view(),
         name='prospect signup'),
-    url(r'sign-up/$',
+    url(r'^test-sign-up/$',
         views.TestProspectSignupView.as_view(),
         name='test prospect signup'),
     url(r'^partners/$',
@@ -207,7 +219,8 @@ urlpatterns = [
         TemplateView.as_view(
             template_name='people/prospect_success.html'
         ),
-        name='prospect_success'
-    ),
+        name='prospect success'),
+    url(r'^(?P<slug>[a-zA-Z0-9]{5})/',
+        include(prospect_intake_patterns))
 
 ]

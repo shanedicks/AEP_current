@@ -493,3 +493,24 @@ def coachee_export_task(staff_id, email):
     email = EmailMessage('Coachee Export', "Here is the coachee export your requested", 'reporter@dccaep.org', [email])
     email.attach_file('coachees_export.csv')
     email.send()
+
+@shared_task
+def prospect_check_duplicate_task(prospect_id):
+    Prospect = apps.get_model('people', 'Prospect')
+    prospect = Prospect.objects.get(id=prospect_id)
+    logger.info("Duplicate check for {0} - id={1}".format(prospect, prospect.id))
+    duplicates = Prospect.objects.filter(
+        first_name=prospect.first_name,
+        last_name=prospect.last_name,
+        email=prospect.email,
+        phone=prospect.phone,
+        dob=prospect.dob,
+        primary_language=prospect.primary_language,
+        contact_preference=prospect.contact_preference,
+        active=True
+    ).exclude(id=prospect.id)
+    if duplicates.exists():
+        logger.info("{0} marked as duplicate".format(prospect))
+        prospect.duplicate = True
+        prospect.active = False
+        prospect.save()
