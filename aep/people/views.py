@@ -490,7 +490,7 @@ class TestProspectSuccessView(TemplateView):
 
 class ProspectIntakeSuccessView(TestProspectSuccessView):
 
-    template_name = 'people/propsect_intake_success.html'
+    template_name = 'people/prospect_intake_success.html'
 
 
 
@@ -553,7 +553,7 @@ class ProspectCreateStudentView(CreateView):
     template_name = 'people/prospect_registration_form.html'
 
     def get_success_url(self):
-        return reverse('people:prospect success', kwargs={'slug': self.kwargs['slug']})
+        return reverse('people:prospect intake success', kwargs={'slug': self.kwargs['slug']})
 
     def get_prospect(self):
         return Prospect.objects.get(slug=self.kwargs['slug'])
