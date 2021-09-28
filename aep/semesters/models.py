@@ -166,17 +166,30 @@ class Survey(models.Model):
             send_mail_task.delay(
                 subject="Delgado Adult Education - We want to hear from you!",
                 message="",
-                html_message="""<p>Hi {first_name},</p><p>Would you be able 
-                to help us out by answering a few questions? If so, please 
-                <a href='{form_link}'>click here</a> to access our survey. 
-                If the form asks for it, please enter your workreadyu id: 
-                {wru}</p><p>Thanks so much for taking the time to help us</p><br>
-                <p>¿Podrías ayudarnos respondiendo algunas preguntas? Si es así, 
-                haga <a href='{form_link}'>clic aquí</a> para acceder a nuestra 
-                encuesta. Si el formulario lo solicita, ingrese su id de 
-                workreadyu: {wru}</p><p>Muchas gracias por tomarse el tiempo 
-                para ayudarnos.</p>
-                """.format(
+                html_message="""<p>Hello {first_name}!</p><p>New classes are starting
+                 in October in Adult Education at Delgado Community College.</p><p>
+                Click the link below to let us know if you'd like to attend classes 
+                online and/or at a Delgado campus.</p><p> 
+                <a href='{form_link}'>Click here to take the survey</a></p> 
+                <p>Thanks for your response that will help us to plan which classes 
+                to offer next session.</p><p>Classes start in mid-October, so we will
+                 send another update when scheduling begins so you can pick your next
+                 classes.If you have any questions, you can reach out by email 
+                 (coach@elearnclass.org) or phone (504-671-5434).</p><p>Stay safe 
+                and we hope to see you soon.</p><p>~Delgao Adult Education</p>
+                <br><p>Nuevas clases están indicando en octubre en Educación para 
+                Adultos en Delgado Community College.</p><p>Haga clic en el enlace 
+                a continuación para informarnos si desea asistir a clases en línea 
+                y / o en un campus de Delgado.</p><p><a href='{form_link}'>
+                Haga clic aquí para realizar la encuesta</a></p><p>Gracias por su 
+                respuesta que nos ayudará a planificar qué clases ofrecer la 
+                próxima sesión.</p><p>Las clases comienzan a mediados de octubre, 
+                por lo que le enviaremos otra actualización cuando comience la 
+                programación para que pueda elegir sus próximas clases.Si tiene 
+                alguna pregunta, puede comunicarse por correo electrónico 
+                (coach@elearnclass.org) o por teléfono (504-671- 5434).</p><p>
+                Mantente a salvo y esperamos verte pronto.</p><p>~ Educación de 
+                Adultos Delgado</p>""".format(
                     first_name=student.first_name,
                     form_link=self.form_link,
                     wru=student.WRU_ID
