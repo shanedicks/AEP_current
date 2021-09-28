@@ -17,6 +17,9 @@ def make_AEP_ID():
 def make_slug():
     return get_random_string(length=5)
 
+def plivo_num(phone):
+    return "1{0}".format(phone)
+
 def make_unique_slug(app, model):
     model_class = apps.get_model(app, model)
     duplicate = True

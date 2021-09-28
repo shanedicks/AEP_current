@@ -1,12 +1,15 @@
 from __future__ import absolute_import, unicode_literals
 import csv
+from core.utils import plivo_num
 from django.apps import apps
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.core.mail.message import EmailMessage
 from django.template.loader import get_template
 from celery import shared_task
 from celery.utils.log import get_task_logger
+import plivo
 
 logger = get_task_logger(__name__)
 
@@ -20,6 +23,18 @@ def send_mail_task(subject,message,from_email,recipient_list, html_message=None)
         from_email=from_email,
         recipient_list=recipient_list
     )
+
+@shared_task
+def send_sms_task(dst, message):
+    client = plivo.RestClient(settings.PLIVO_AUTH_ID, settings.PLIVO_AUTH_TOKEN)
+    logger.info('Sending sms to {0}, message:{1}'.format(dst, message))
+    sms = client.messages.create(
+        src='15046134281',
+        dst=plivo_num(dst),
+        text=message
+    )
+    return True
+
 
 @shared_task
 def email_multi_alternatives_task(subject, to, from_email, text_template, html_template):

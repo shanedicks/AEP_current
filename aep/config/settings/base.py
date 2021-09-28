@@ -203,3 +203,8 @@ PROXIE_DICT = {
 
 # Form field limit
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
+
+#Plivo Settings
+PLIVO_AUTH_ID = get_env_variable('PLIVO_AUTH_ID')
+
+PLIVO_AUTH_TOKEN = get_env_variable('PLIVO_AUTH_TOKEN')

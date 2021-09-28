@@ -3,7 +3,7 @@ from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
-from core.tasks import send_mail_task
+from core.tasks import send_mail_task, send_sms_task
 from sections.tasks import roster_to_classroom_task
 from .tasks import enforce_attendance_task
 
@@ -185,6 +185,37 @@ class Survey(models.Model):
                 recipient_list=recipients
             )
 
+class Message(models.Model):
+
+    title = models.CharField(
+        max_length=100
+    )
+
+    sessions = models.ManyToManyField(
+        Semester,
+    )
+
+    message = models.CharField(
+        max_length=160
+    )
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title
+
+    def send_message(self):
+        sessions = self.sessions.all()
+        students = apps.get_model('people', 'Student').objects.filter(
+            classes__section__semester__in=sessions
+        ).distinct()
+        for student in students:
+            send_sms_task.delay(
+                dst=student.phone,
+                message=self.message
+            )
+        
 
 class Day(models.Model):
 

@@ -52,6 +52,12 @@ def send_survey_task(survey_id):
 	survey.send_survey()
 
 @shared_task
+def send_message_task(message_id):
+	message = apps.get_model('semesters', 'Message').objects.get(id=message_id)
+	logger.info('Sending message {0}'.format(message.title))
+	message.send_message()
+
+@shared_task
 def create_missing_g_suite_task(semester_id):
 	semester = apps.get_model('semesters', 'Semester').objects.get(id=semester_id)
 	Student = apps.get_model('people', 'Student')
