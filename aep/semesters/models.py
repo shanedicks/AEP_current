@@ -192,7 +192,6 @@ class Survey(models.Model):
                 Adultos Delgado</p>""".format(
                     first_name=student.first_name,
                     form_link=self.form_link,
-                    wru=student.WRU_ID
                 ),
                 from_email="survey_robot@dccaep.org",
                 recipient_list=recipients

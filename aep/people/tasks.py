@@ -495,6 +495,92 @@ def coachee_export_task(staff_id, email):
     email.send()
 
 @shared_task
+def prospect_export_task(staff_id, email):
+    advisor = apps.get_model('people', 'Staff').objects.get(id=staff_id)
+    prospects = advisor.prospects.all()
+    with open('prospect_export.csv', 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            'WRU_ID',
+            'Last Name',
+            'First Name',
+            'Registration',
+            'DOB',
+            'Native Language',
+            'Phone',
+            'Email',
+            'Status',
+            'Orientation',
+            'Paperwork',
+            'Testing',
+            'Folder',
+            'Preferred Contact',
+            'Num Contacts',
+            'Last Contact',
+            'Last Note Content',
+            'Last Orientation',
+            'URL to Orientation'
+            'Enrollments',
+            'URL to Prospect Record'
+        ]
+        writer.writerow(headers)
+
+        for prospect in prospects:
+            try:
+                last_note = prospect.notes.latest('contact_date')
+                last_note_date = last_note.contact_date
+                last_note_note = last_note.notes
+            except ObjectDoesNotExist:
+                last_note_date ="No notes found"
+                last_note_note = ""
+            classes = []
+            if prospect.student:
+                wru_id = prospect.student.WRU_ID
+                for i in prospect.student.current_classes():
+                    j = "{0} ({1})".format(i.section, i.status)
+                    classes.append(j)
+                try:
+                    tests = ['Orientation', 'Online Orientation']
+                    last_orientation = prospect.student.test_appointments.filter(
+                        event__test__in=tests,
+                        attendance_type='P'
+                    ).latest('event__start')
+                    orientation_url = "".join(['dccaep.org', last_orientation.get_absolute_url()])
+                except ObjectDoesNotExist:
+                    last_orientation, orientation_url = '', ''
+            else:
+                last_orientation, orientation_url, wru_id = 'No Student', '', ''
+
+            s = [
+                wru_id,
+                prospect.last_name,
+                prospect.first_name,
+                prospect.registration_date,
+                prospect.dob,
+                prospect.primary_language,
+                prospect.phone,
+                prospect.email,
+                prospect.status,
+                prospect.orientation,
+                prospect.paperwork,
+                prospect.testing,
+                prospect.folder,
+                prospect.contact_preference,
+                prospect.num_contacts,
+                last_note_date,
+                last_note_note,
+                last_orientation,
+                orientation_url,
+                classes,
+                "".join(['dccaep.org',prospect.get_absolute_url()])
+            ]
+            writer.writerow(s)
+
+    email = EmailMessage('Prospect Export', "Here is the prospect export your requested", 'reporter@dccaep.org', [email])
+    email.attach_file('prospect_export.csv')
+    email.send()
+
+@shared_task
 def prospect_check_duplicate_task(prospect_id):
     Prospect = apps.get_model('people', 'Prospect')
     prospect = Prospect.objects.get(id=prospect_id)

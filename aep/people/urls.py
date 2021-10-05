@@ -94,6 +94,9 @@ staff_prospect_patterns = [
     url(r'closed/$',
         views.StaffClosedProspectList.as_view(),
         name='staff closed prospects'),
+    url(r'export/$',
+        views.ProspectExportCSV.as_view(),
+        name='prospect export')
 ]
 
 

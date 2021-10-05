@@ -2200,14 +2200,15 @@ class Prospect(models.Model):
     @property
     def testing(self):
         if self.student is not None:
-            if self.student.tests is not None:
+            try: 
+                self.student.tests
                 if self.student.tests.last_test_date is not None:
                     return datetime.strftime(
                         self.student.tests.last_test_date, "%m-%d-%y"
                     )
                 else:
                     return "No Tests"
-            else:
+            except ObjectDoesNotExist:
                 return "No Test History"
         else:
             return "--"
@@ -2220,6 +2221,11 @@ class Prospect(models.Model):
             )
         else:
             return "No Notes"
+
+    @property
+    def num_contacts(self):
+        num = self.notes.count() if self.notes.exists() else 0
+        return num
 
 
 class ProspectNote(models.Model):

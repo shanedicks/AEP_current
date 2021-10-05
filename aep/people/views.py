@@ -25,7 +25,8 @@ from .forms import (
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm)
-from .tasks import intake_retention_report_task, orientation_email_task, prospect_check_duplicate_task
+from .tasks import (intake_retention_report_task, orientation_email_task, 
+    prospect_check_duplicate_task, prospect_export_task)
 
 
 class UserCreateView(CreateView):
@@ -693,9 +694,9 @@ class StaffProspectListView(ProspectListView):
             advisor__slug=self.kwargs['slug'],
             duplicate=False
         ).annotate(
-            num_contacts=Count('notes'),
+            contact_count=Count('notes'),
             latest_contact=Max('notes__contact_date')
-        ).order_by('num_contacts','latest_contact')
+        ).order_by('contact_count','latest_contact')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -769,3 +770,12 @@ class ProspectComplianceFormView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('people:prospect detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class ProspectExportCSV(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        staff = apps.get_model('people', 'Staff').objects.get(slug = kwargs['slug'])
+        user_email = request.user.email
+        prospect_export_task.delay(staff.id, user_email)
+        return HttpResponseRedirect(reverse('report success'))
