@@ -621,7 +621,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                     test.student.student.last_name,
                     test.student.student.first_name,
                     test_type,
-                    '2019-2020',
+                    '2021-2022',
                     version,
                     test.form,
                     test.math_level,
