@@ -292,7 +292,11 @@ class ProspectResource(resources.ModelResource):
             'dob',
             'contact_preference',
             'primary_language',
-            'active'
+            'active',
+            'registration_date',
+            'duplicate',
+            'for_credit',
+            'slug'
         )
 
 
@@ -956,6 +960,7 @@ class ProspectAdmin(ImportExportActionModelAdmin):
     list_display = [
         '__str__',
         'dob',
+        'registration_date',
         'student',
         'advisor',
         'active',
