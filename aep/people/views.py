@@ -463,38 +463,29 @@ class ProspectSignupView(CreateView):
     model = Prospect
     form_class = ProspectForm
     template_name = 'people/create_prospect.html'
-    success_url = reverse_lazy('people:prospect success')
+
+    def get_success_url(self):
+        return reverse_lazy('people:prospect success', kwargs={'slug': self.object.slug})
 
     def form_valid(self, form):
         self.object = form.save()
         prospect_check_duplicate_task.delay(self.object.id)
         return super().form_valid(form)
 
-
-class TestProspectSignupView(CreateView):
-
-    model = Prospect
-    form_class = ProspectForm
-    template_name = 'people/create_prospect.html'
-
-    def get_success_url(self):
-        return reverse_lazy('people:test prospect success', kwargs={'slug': self.object.slug})
-
-
-class TestProspectSuccessView(TemplateView):
+class ProspectSuccessView(TemplateView):
 
     template_name = 'people/test_prospect_success.html'
 
     def get_context_data(self, **kwargs):
         prospect = Prospect.objects.get(slug=self.kwargs['slug'])
-        context = super(TestProspectSuccessView, self).get_context_data(**kwargs)
+        context = super(ProspectSuccessView, self).get_context_data(**kwargs)
         context['prospect'] = prospect
         cutoff_date = timezone.now().date() - timedelta(days=6570)
         context['minor'] = prospect.dob >= cutoff_date
         return context
 
 
-class ProspectIntakeSuccessView(TestProspectSuccessView):
+class ProspectIntakeSuccessView(ProspectSuccessView):
 
     template_name = 'people/prospect_intake_success.html'
 
@@ -598,6 +589,8 @@ class ProspectCreateStudentView(CreateView):
             wioa.student = student
             wioa.save()
             prospect.student = student
+            prospect.active = True
+            prospect.duplicate = False
             prospect.save()
             return HttpResponseRedirect(self.get_success_url())
         else:

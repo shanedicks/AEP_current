@@ -188,9 +188,9 @@ prospect_patterns = [
 ]
 
 prospect_intake_patterns = [
-    url(r'^test-success/$',
-        views.TestProspectSuccessView.as_view(),
-        name='test prospect success'),
+    url(r'^success/$',
+        views.ProspectSuccessView.as_view(),
+        name='prospect success'),
     url(r'^registration-form/$',
         views.ProspectCreateStudentView.as_view(),
         name='prospect intake form'),
@@ -209,9 +209,6 @@ urlpatterns = [
     url(r'^sign-up/$',
         views.ProspectSignupView.as_view(),
         name='prospect signup'),
-    url(r'^test-sign-up/$',
-        views.TestProspectSignupView.as_view(),
-        name='test prospect signup'),
     url(r'^partners/$',
         views.PartnerStudentCreateView.as_view(),
         name='partner student create'),
@@ -221,11 +218,6 @@ urlpatterns = [
     url(r'^elearn-success/$',
         views.ElearnSignupSuccessView.as_view(),
         name='elearn success'),
-    url(r'^success/$',
-        TemplateView.as_view(
-            template_name='people/prospect_success.html'
-        ),
-        name='prospect success'),
     url(r'^(?P<slug>[a-zA-Z0-9]{5})/',
         include(prospect_intake_patterns))
 

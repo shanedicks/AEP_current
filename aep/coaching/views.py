@@ -17,6 +17,7 @@ from .forms import (
     AssignCoach, AceRecordForm, ElearnRecordForm,
     AcademicQuestionaireForm, PersonalQuestionaireForm,
     GeneralInfoForm, UpdateCoachingStatusForm, UpdateCoachingStatusFormSet)
+from .tasks import coaching_export_task
 import rules
 
 class StudentCoachingView(LoginRequiredMixin, DetailView):
