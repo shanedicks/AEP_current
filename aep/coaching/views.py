@@ -232,6 +232,13 @@ class CoacheeExportCSV(LoginRequiredMixin, View):
         coachee_export_task.delay(staff.id, user_email)
         return HttpResponseRedirect(reverse('report success'))
 
+class CoachingExportCSV(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        email = request.user.email
+        coaching_export_task.delay(email)
+        return HttpResponseRedirect(reverse('report success'))
+
 
 class CoachingCreateView(LoginRequiredMixin, CreateView):
 

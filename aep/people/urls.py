@@ -180,6 +180,9 @@ prospect_patterns = [
     url(r'^duplicate/$',
         views.DuplicateProspectListView.as_view(),
         name='duplicate prospect list'),
+    url(r'^attendance-report/$',
+        views.ProspectMeetingAttendanceCSV.as_view(),
+        name='prospect meeting attendance csv'),
     url(r'^(?P<pk>[0-9]+)/', include(single_prospect_patterns)),
     url(r'^notes/(?P<pk>[0-9]+)/', include(single_note_patterns))
 ]

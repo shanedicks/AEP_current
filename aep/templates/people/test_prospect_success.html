@@ -24,17 +24,16 @@
 		</table>
     	<h1 class="text-center">Success!</h1>
     	<p class="text-center lead">Congratulations {{ prospect.first_name }}! You have successfully filled out and entered your interest form to join Delgado's Adult Education Program.</p>
-    	<br><p>If you would like to continue on and fill out our detailed <strong>New Student Registration Form</strong>, please <a href="{% url 'people:prospect intake form' slug=prospect.slug %}">Click Here</a>
-    	<br><p>Otherwise, The next steps in this process will be:</p>
-    	<ol>
-    		<li><strong>An Intake Advisor is going to be reaching out to you</strong> within the next five (5) business days-- they will call, email, or text you based on what you selected in your Interest Form.</li>
-    		<li>During the meeting with your Intake Advisor, you will fill out our detailed <strong>New Student Registration Form</strong></li>
-    		<li>At the end of your meeting with your Intake Advisor, they will help schedule you into a <strong>New Student Orientation</strong>
-    			<ul><li>You will be able to choose if you would like to attend in-person at one of our campuses or if you would like to complete it online</li></ul>
-    			<br>
-    			<p><em>If you have any questions or need help in the meantime, you can call 504-671-5434</em></p>
-    			<p><em>Be sure to mention that you are a new student who filled out the interest form when you call or leave a voicemail</em></p>
-    		</li>
-    	</ol>
+    	{% if minor %}
+    	<br><p>The next steps in this process will be:</p>
+    	<p><strong>Wait for an Intake Advisor to reach out to you</strong> within the next five (5) business days-- they will call, email, or text you based on what you selected in your Interest Form.</p>
+    	{% else %}
+    	<br><p>If you would like to continue on and fill out our detailed <strong>New Student Registration Form</strong>, please <a href="{% url 'people:prospect intake form' slug=prospect.slug %}">Click Here.</a>
+		<p><strong>If you would like support completing registration, wait for an Intake Advisor to reach out to you</strong> within the next five (5) business days-- they will call, email, or text you based on what you selected in your Interest Form.</p>
+    	{% endif %}
+    		<p>During the meeting with your Intake Advisor, you will fill out our detailed <strong>New Student Registration Form</strong> and sign-up for a <strong>New Student Orientation.</strong></p>
+    			<ul>
+    			<li>You will be able to choose if you would like to attend in-person at one of our campuses or if you would like to complete it online.</li></ul>
+    			<p><em>If you have any questions or need help in the meantime, you can call 504-671-5434.</em> Be sure to mention that you are a new student who filled out the interest form when you call or leave a voicemail.</em></p>
     </div>
 {% endblock content %}

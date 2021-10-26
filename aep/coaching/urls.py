@@ -138,5 +138,8 @@ urlpatterns = [
     url(r'^ace/',
         include(ace_patterns)),
     url(r'^e-learn/',
-        include(e_learn_patterns))
+        include(e_learn_patterns)),
+    url(r'^export$',
+        views.CoachingExportCSV.as_view(),
+        name='coaching export')
 ]
