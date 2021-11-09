@@ -57,7 +57,7 @@ class StudentResource(resources.ModelResource):
             "US_citizen",
             "other_ID",
             "ccr_app",
-            "esl_app",
+            "ell_app",
             "e_learn_app",
             "ace_app",
             "success_app",
@@ -138,7 +138,7 @@ class WIOAResource(resources.ModelResource):
             "student__US_citizen",
             "student__other_ID",
             "student__ccr_app",
-            "student__esl_app",
+            "student__ell_app",
             "student__prior_registration",
             "student__phone",
             "student__alt_phone",
@@ -390,7 +390,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'accuplacer_app',
         'ace_app',
         'ccr_app',
-        'esl_app',
+        'ell_app',
         'duplicate',
     )
 

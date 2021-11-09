@@ -464,7 +464,7 @@ class StudentInterestForm(ModelForm):
                 'What types of classes are you interested in taking with us?',
                 Column(
                     'ccr_app',
-                    'esl_app',
+                    'ell_app',
                     'ace_app',
                     css_class="col-md-6"
                 ),
@@ -481,7 +481,7 @@ class StudentInterestForm(ModelForm):
         model = Student
         fields = (
             "ccr_app",
-            "esl_app",
+            "ell_app",
             "ace_app",
             "success_app",
             'e_learn_app',
@@ -490,7 +490,7 @@ class StudentInterestForm(ModelForm):
 
         help_texts = {
             "ccr_app": "Reading, writing, and math skill building classes to help with college and career readiness goals as well as passing the HiSET.",
-            "esl_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
+            "ell_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
             "ace_app": "Integrated education and training classes where students can earn industry credentials and college credit in career pathways: information technology, healthcare, construction trades, and culinary/hospitality.",
             "success_app": "Classes designed to help students successfully navigate school and careers such as computer basics, job readiness, career exploration, college skills, and financial success.",
             'e_learn_app': "Online courses to help with college and career readiness goals as well as passing the HiSET.",
@@ -651,7 +651,7 @@ class StudentForm(ModelForm):
                 'What types of classes are you interested in taking with us?',
                 Column(
                     'ccr_app',
-                    'esl_app',
+                    'ell_app',
                     'ace_app',
                     css_class="col-md-6"
                 ),
@@ -763,7 +763,7 @@ class StudentForm(ModelForm):
             "other_ID",
             "other_ID_name",
             "ccr_app",
-            "esl_app",
+            "ell_app",
             "ace_app",
             "success_app",
             'e_learn_app',
@@ -785,7 +785,7 @@ class StudentForm(ModelForm):
         labels = {
             "US_citizen": "Check this box if you are a US citizen",
             "ccr_app": "College and Career Readiness (HiSET Prep)",
-            "esl_app": "English Language Learning",
+            "ell_app": "English Language Learning",
             "ace_app": "Accelerated Career Education Program",
             "success_app": "Success Classes",
             'e_learn_app': "Online Classes with eLearn",
@@ -794,7 +794,7 @@ class StudentForm(ModelForm):
 
         help_texts = {
             "ccr_app": "Reading, writing, and math skill building classes to help with college and career readiness goals as well as passing the HiSET.",
-            "esl_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
+            "ell_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
             "ace_app": "Integrated education and training classes where students can earn industry credentials and college credit in career pathways: information technology, healthcare, construction trades, and culinary/hospitality.",
             "success_app": "Classes designed to help students successfully navigate school and careers such as computer basics, job readiness, career exploration, college skills, and financial success.",
             'e_learn_app': "Online courses to help with college and career readiness goals as well as passing the HiSET.",
@@ -936,7 +936,7 @@ class PartnerForm(ModelForm):
                 'What types of classes will the student be taking with us?',
                 Column(
                     'ccr_app',
-                    'esl_app',
+                    'ell_app',
                     'ace_app',
                     css_class="col-md-6"
                 ),
@@ -961,7 +961,7 @@ class PartnerForm(ModelForm):
             "gender",
             "marital_status",
             "ccr_app",
-            "esl_app",
+            "ell_app",
             "ace_app",
             "success_app",
             'e_learn_app',
@@ -984,7 +984,7 @@ class PartnerForm(ModelForm):
             "ec_relation": "Their relationship to student",
             "US_citizen": "Check this box if you are a US citizen",
             "ccr_app": "College and Career Readiness (HiSET Prep)",
-            "esl_app": "English Language Learning",
+            "ell_app": "English Language Learning",
             "ace_app": "Accelerated Career Education Program",
             "success_app": "Success Classes",
             'e_learn_app': "Online Classes with eLearn",
@@ -995,7 +995,7 @@ class PartnerForm(ModelForm):
             "WRU_ID": "Student's ID number in LCTCS workreadyu database",
             "partner": "Name of Delgado partner organization where this student is registered",
             "ccr_app": "Reading, writing, and math skill building classes to help with college and career readiness goals as well as passing the HiSET.",
-            "esl_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
+            "ell_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
             "ace_app": "Integrated education and training classes where students can earn industry credentials and college credit in career pathways: information technology, healthcare, construction trades, and culinary/hospitality.",
             "success_app": "Classes designed to help students successfully navigate school and careers such as computer basics, job readiness, career exploration, college skills, and financial success.",
             'e_learn_app': "Online courses to help with college and career readiness goals as well as passing the HiSET.",

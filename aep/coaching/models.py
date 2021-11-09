@@ -349,13 +349,13 @@ class Coaching(models.Model):
     ACTIVE = 'Active'
     ON_HOLD = 'On Hold'
     INACTIVE = 'Inactive'
-    ESL_CCR = 'ESL > CCR'
+    ELL_CCR = 'ELL > CCR'
     COMPLETED_HISET = 'Completed HiSET'
     STATUS_CHOICES = (
         (ACTIVE, 'Active'),
         (ON_HOLD, 'On Hold'),
         (INACTIVE, 'Inactive'),
-        (ESL_CCR, 'ESL > CCR'),
+        (ELL_CCR, 'ELL > CCR'),
         (COMPLETED_HISET, 'Completed HiSET')
     )
 

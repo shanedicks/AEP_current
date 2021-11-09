@@ -44,13 +44,13 @@ class Site(models.Model):
 
 class Section(models.Model):
 
-    ESL = 'ESL'
+    ESL = 'ELL'
     CCR = 'CCR'
     TRANS = 'TRANS'
     ADMIN = 'ADMIN'
     ELEARN = 'ELRN'
     PROGRAM_CHOICES = (
-        (ESL, 'ESL'),
+        (ESL, 'ELL'),
         (CCR, 'CCR'),
         (ADMIN, 'Admin'),
         (ELEARN, 'eLearn'),

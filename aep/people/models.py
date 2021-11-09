@@ -287,13 +287,13 @@ class Student(Profile):
         (OTHER, 'Other')
     )
     CCR = 'C'
-    ESL = 'E'
+    ELL = 'E'
     ELEARN = 'D'
     SUCCESS = 'S'
     ACE = 'A'
     PROGRAM_CHOICES = (
         (CCR, "College and Career Readiness - HiSET Prep Classes"),
-        (ESL, "Beginning English Language Classes"),
+        (ELL, "Beginning English Language Classes"),
         (ELEARN, "Online Classes"),
         (ACE, "ACE Program"),
     )
@@ -348,9 +348,9 @@ class Student(Profile):
         default=False,
         verbose_name=_("CCR")
     )
-    esl_app = models.BooleanField(
+    ell_app = models.BooleanField(
         default=False,
-        verbose_name=_("ESL")
+        verbose_name=_("ELL")
     )
     ace_app = models.BooleanField(
         default=False,
@@ -646,8 +646,8 @@ class Staff(Profile):
     def inactive_coachees(self):
         return self.coachees.filter(status='Inactive')
 
-    def esl_ccr_coachees(self):
-        return self.coachees.filter(status='ESL > CCR')
+    def ell_ccr_coachees(self):
+        return self.coachees.filter(status='ELL > CCR')
 
     def hiset_coachees(self):
         return self.coachees.filter(status='Completed HiSET')
@@ -869,7 +869,7 @@ def primary_program(student):
         program = '15'
     elif student.e_learn_app:
         program = '12'
-    elif student.esl_app:
+    elif student.ell_app:
         program = '16'
     else:
         program = "1"
@@ -880,13 +880,13 @@ def secondary_program(student):
     program = ""
     if student.ccr_app:
         program = '8'
-    if student.esl_app:
+    if student.ell_app:
         program = '6'
     return program
 
 
-def esl(student):
-    if student.esl_app:
+def ell(student):
+    if student.ell_app:
         return "true"
     else:
         return "false"
@@ -1582,7 +1582,7 @@ class WIOA(models.Model):
             "Program.ProgramTypeId": "19",
             "Program.StateKeyword": "",
             "Program.SecondaryProgram1TypeId": "",
-            "ESLStudent": esl(self.student),
+            "ESLStudent": ell(self.student),
             "Program.Keyword": "",
             "Program.SecondaryProgram2TypeId": "",
             "Program.NativeLanguage": self.native_language,

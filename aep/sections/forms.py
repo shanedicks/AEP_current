@@ -88,7 +88,7 @@ class SectionFilterForm(Form):
     program = ChoiceField(
         choices=(
             ('', 'Program'),
-            ('ESL', 'ESL'),
+            ('ELL', 'ELL'),
             ('CCR', 'CCR'),
             ('TRANS', 'Transitions'),
             ('ELRN', 'ELearn'),
@@ -162,7 +162,7 @@ class SectionSearchForm(Form):
     program = ChoiceField(
         choices=(
             ('', 'Program'),
-            ('ESL', 'ESL'),
+            ('ELL', 'ELL'),
             ('CCR', 'CCR'),
             ('TRANS', 'Transitions'),
             ('ELRN', 'ELearn'),

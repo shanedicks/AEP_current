@@ -187,16 +187,16 @@ class HisetCoacheeListView(CoacheeListView):
         return queryset
 
 
-class EslCcrCoacheeListView(CoacheeListView):
+class EllCcrCoacheeListView(CoacheeListView):
 
     def get_context_data(self, **kwargs):
-        context = super(EslCcrCoacheeListView, self).get_context_data(**kwargs)
-        context['status'] = "ESL > CCR"
+        context = super(EllCcrCoacheeListView, self).get_context_data(**kwargs)
+        context['status'] = "ELL > CCR"
         return context
 
     def get_queryset(self, **kwargs):
-        queryset = super(EslCcrCoacheeListView, self).get_queryset()
-        queryset = queryset.filter(status="ESL > CCR")
+        queryset = super(EllCcrCoacheeListView, self).get_queryset()
+        queryset = queryset.filter(status="ELL > CCR")
         return queryset
 
 class EnrolledCoacheeListView(CoacheeListView):

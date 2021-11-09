@@ -48,7 +48,7 @@
             <h4><a href="{% url 'coaching:active coachee list' slug=staff.slug %}">Active: {{ staff.active_coachees.count }}</a></h4>
             <h4><a href="{% url 'coaching:on hold coachee list' slug=staff.slug %}">On Hold: {{ staff.on_hold_coachees.count }}</a></h4>
             <h4><a href="{% url 'coaching:inactive coachee list' slug=staff.slug %}">Inactive: {{ staff.inactive_coachees.count }}</a></h4>
-            <h4><a href="{% url 'coaching:esl to ccr coachee list' slug=staff.slug %}">ESL to CCR: {{ staff.esl_ccr_coachees.count }}</a></h4>
+            <h4><a href="{% url 'coaching:ell to ccr coachee list' slug=staff.slug %}">ELL to CCR: {{ staff.ell_ccr_coachees.count }}</a></h4>
             <h4><a href="{% url 'coaching:passed hiset coachee list' slug=staff.slug %}">Passed Hiset: {{staff.hiset_coachees.count }}</a></h4>
             <h4><a href="{% url 'coaching:enrolled coachee list' slug=staff.slug %}">Enrolled: {{ staff.enrolled_coachees.count }}</a></h4>
     {% endif %}
