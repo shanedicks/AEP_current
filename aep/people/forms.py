@@ -1963,7 +1963,8 @@ class ProspectNoteForm(ModelForm):
                     wrapper_class="col-md-4"
                 ),
             ),
-            'notes'
+            'notes',
+            'returning_student'
         )
 
     class Meta:
@@ -1972,7 +1973,8 @@ class ProspectNoteForm(ModelForm):
             'contact_date',
             'contact_method',
             'successful',
-            'notes'
+            'notes',
+            'returning_student'
         )
 
 

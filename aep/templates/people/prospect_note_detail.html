@@ -11,4 +11,7 @@
     {% if note.notes != '' %}
       <h4>{{note.notes}}</h4>
     {% endif %}
+    {% if note.returning_student %}
+    	<p>Returning Student</p>
+    {% endif %}
 {% endblock content %}

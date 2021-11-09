@@ -2254,6 +2254,11 @@ class ProspectNote(models.Model):
         default=False
     )
 
+    returning_student = models.BooleanField(
+        default=False,
+        verbose_name=_("Returning Student")
+    )
+
     notes = models.TextField()
 
     class Meta: 
