@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | New Official HiSET{% endblock head_title %}
+{% block content %}
+<h1>Add Official HiSET Test Result for {{student}}</h1>
+<div class="well">
+    <form method="post">
+            {% crispy form %} 
+        <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Add</button>
+    </form>
+</div>
+{% endblock content %}

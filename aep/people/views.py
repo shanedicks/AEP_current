@@ -28,7 +28,7 @@ from .forms import (
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm)
 from .tasks import (intake_retention_report_task, orientation_email_task, 
-    prospect_check_duplicate_task, prospect_export_task)
+    prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task)
 
 
 class UserCreateView(CreateView):
@@ -470,11 +470,20 @@ class ProspectSignupView(CreateView):
     def form_valid(self, form):
         self.object = form.save()
         prospect_check_duplicate_task.delay(self.object.id)
+        Student = apps.get_model('people', 'Student')
+        matches = Student.objects.filter(
+            first_name=self.object.first_name,
+            last_name=self.object.last_name,
+            dob=self.object.dob,
+        )
+        if matches.exists():
+            self.object.returning_student = True
+            self.object.save()
         return super().form_valid(form)
 
 class ProspectSuccessView(TemplateView):
 
-    template_name = 'people/test_prospect_success.html'
+    template_name = 'people/prospect_success.html'
 
     def get_context_data(self, **kwargs):
         prospect = Prospect.objects.get(slug=self.kwargs['slug'])
@@ -649,9 +658,20 @@ class UnassignedProspectListView(ProspectListView):
     queryset = Prospect.objects.filter(
         active=True,
         advisor=None,
-        duplicate=False
+        duplicate=False,
+        returning_student=False,
     ).order_by('registration_date')
     status = 'Unassigned'
+
+
+class ReturningProspectListView(ProspectListView):
+
+    queryset = Prospect.objects.filter(
+        active=True,
+        duplicate=False,
+        returning_student=True
+    ).order_by('registration_date')
+    status = 'Returning'
 
 
 class ActiveProspectListView(ProspectListView):

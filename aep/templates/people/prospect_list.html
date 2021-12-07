@@ -9,6 +9,7 @@
       <a type="button" class="btn btn-default" role="button" href="{% url 'people:inactive prospect list' %}">Inactive</a>
       <a type="button" class="btn btn-default" role="button" href="{% url 'people:duplicate prospect list' %}">Duplicate</a>
       <a type="button" class="btn btn-default" role="button" href="{% url 'people:closed prospect list' %}">Closed</a>
+      <a type="button" class="btn btn-default" role="button" href="{% url 'people:returning prospect list' %}">Returning</a>
     </div>
     <div>
         {% if request.GET %}

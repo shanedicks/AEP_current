@@ -1384,13 +1384,6 @@ class AdditionalDetailsForm(ModelForm):
 
 class WioaForm(ModelForm):
 
-    def clean_SID(self):
-        data = self.cleaned_data['SID']
-        if data != "":
-            if WIOA.objects.filter(SID=data).count() > 0:
-                raise ValidationError("Sorry, we have this SSN in our records already. Please call 504-671-5434 to speak to a staff member.")
-        return data
-
     def clean(self):
         data = super(WioaForm, self).clean()
         ethnicity = [
@@ -1887,7 +1880,8 @@ class ProspectStatusForm(ModelForm):
         self.helper.layout = Layout(
             'active',
             'duplicate',
-            'for_credit'
+            'for_credit',
+            'returning_student'
         )
 
     class Meta:
@@ -1895,7 +1889,8 @@ class ProspectStatusForm(ModelForm):
         fields = (
             'active',
             'duplicate',
-            'for_credit'
+            'for_credit',
+            'returning_student'
         )
 
 

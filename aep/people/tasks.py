@@ -600,3 +600,19 @@ def prospect_check_duplicate_task(prospect_id):
         prospect.duplicate = True
         prospect.active = False
         prospect.save()
+
+@shared_task
+def prospect_check_returner_task(prospect_id):
+    Prospect = apps.get_model('people', 'Prospect')
+    prospect = Prospect.objects.get(id=prospect_id)
+    Student = apps.get_model('people', 'Student')
+    logger.info("Returner check for {0} - id={1}".format(prospect, prospect.id))
+    matches = Student.objects.filter(
+        first_name=prospect.first_name,
+        last_name=prospect.last_name,
+        dob=prospect.dob,
+    )
+    if matches.exists():
+        logger.info("{0} marked as returner".format(prospect))
+        prospect.returning_student = True
+        prospect.save()

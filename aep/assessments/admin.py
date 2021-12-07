@@ -475,7 +475,6 @@ class Hiset_Practice_Resource(TestResource):
             'reported_by',
             'grade',
             'score',
-            'nrs',
         )
 
 
@@ -516,3 +515,52 @@ class Hiset_Practice_Admin(ImportExportActionModelAdmin):
 
 
 admin.site.register(HiSet_Practice, Hiset_Practice_Admin)
+
+class Hiset_Resource(TestResource):
+
+    class Meta:
+        model = HiSet_Practice
+        fields = (
+            'id',
+            'student',
+            'student__student__last_name',
+            'student__student__first_name',
+            'student__student__email',
+            'student__student__elearn_record__g_suite_email',
+            'test_date',
+            'subject',
+            'proctor',
+            'score',
+        )
+
+
+class Hiset_Admin(ImportExportActionModelAdmin):
+
+    resource_class = Hiset_Practice_Resource
+
+    list_display = (
+        'student',
+        'test_date',
+        'subject',
+        'score',
+    )
+
+    list_filter = (
+        'test_date',
+    )
+
+    search_fields = [
+        'student__student__first_name',
+        'student__student__last_name',
+        'student_wru',
+        'test_date'
+    ]
+
+    fields = (
+        'test_date',
+        'subject',
+        'proctor',
+        'score',
+    )
+
+admin.site.register(HiSET, Hiset_Admin)

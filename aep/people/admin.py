@@ -964,7 +964,8 @@ class ProspectAdmin(ImportExportActionModelAdmin):
         'student',
         'advisor',
         'active',
-        'duplicate'
+        'duplicate',
+        'returning_student'
     ]
 
     list_filter = [
@@ -974,6 +975,7 @@ class ProspectAdmin(ImportExportActionModelAdmin):
     list_editable = [
         'active',
         'duplicate',
+        'returning_student'
     ]
 
     fields = [

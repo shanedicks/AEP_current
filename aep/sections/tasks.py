@@ -176,3 +176,27 @@ def section_skill_mastery_report_task(section_id, email_address):
 	email.attach_file(filename)
 	email.send()
 	return True
+
+@shared_task
+def create_missing_g_suite_task(section_id):
+	section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+	Student = apps.get_model('people', 'Student')
+	Elearn = apps.get_model('coaching', 'ElearnRecord')
+	students = Student.objects.filter(classes__section=section).distinct()
+	need_elearn = students.filter(elearn_record=None)
+	logger.info("{0} students need elearn records".format(need_elearn.count()))
+	for student in need_elearn:
+		Elearn.objects.create(
+			student=student,
+			intake_date=timezone.now().date()
+		)
+		logger.info("Created elearn record for {0}".format(student))
+	logger.info('Creating missing GSuite accounts for {0}'.format(section.title))
+	logger.info("Creating G Suite Service")
+	service = g_suite_service()
+	for student in students:
+		logger.info("Creating GSuite account for {0}".format(student))
+		try:
+			student.elearn_record.create_g_suite_account(service)
+		except HttpError as e:
+			logger.info("{0}".format(e))

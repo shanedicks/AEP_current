@@ -2131,6 +2131,11 @@ class Prospect(models.Model):
         verbose_name=_("Probable Duplicate")
     )
 
+    returning_student = models.BooleanField(
+        default=False,
+        verbose_name=_("Probable Returning Student")
+    )
+
     for_credit = models.BooleanField(
         default=False,
         verbose_name=_("For-credit Student")
@@ -2158,7 +2163,10 @@ class Prospect(models.Model):
             return "For Credit"
         if self.active:
             if self.student is None:
-                return "Unregistered"
+                if self.returning_student:
+                    return "Probable Returner"
+                else:
+                    return "Unregistered"
             else:
                 return "Registered"
         else:

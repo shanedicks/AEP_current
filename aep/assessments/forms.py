@@ -6,7 +6,7 @@ from django.utils import timezone
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset
 from .models import (TestEvent, TestAppointment,
-                     Tabe, Clas_E, HiSet_Practice, Gain)
+                     Tabe, Clas_E, HiSet_Practice, Gain, HiSET, Accuplacer)
 
 class CSVImportForm(Form):
     csv_file = FileField()
@@ -335,6 +335,83 @@ class HiSet_Practice_Form(ModelForm):
                 wrapper_class='col-md-4'
             )
         )
+
+
+class HiSetForm(ModelForm):
+
+    class Meta:
+        model = HiSET
+        fields = (
+            'test_date',
+            'subject',
+            'proctor',
+            'score',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(HiSetForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.layout = Layout(
+            Field(
+                'test_date',
+                placeholder="MM/DD/YYYY",
+                data_mask="99/99/9999"
+            ),
+            Field(
+                'proctor',
+            ),
+            Field(
+                'subject',
+                'score',
+                wrapper_class='col-md-6'
+            )
+        )
+
+
+class AccuplacerForm(ModelForm):
+
+    class Meta:
+        model = Accuplacer
+        fields = (
+            'test_date',
+            'reading',
+            'writing',
+            'quantitative',
+            'functions',
+            'eng_placement',
+            'math_placement',
+        )        
+
+    def __init__(self, *args, **kwargs):
+        super(AccuplacerForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.layout = Layout(
+            Field(
+                'test_date',
+                placeholder="MM/DD/YYYY",
+                data_mask="99/99/9999"
+            ),
+            Field(
+                'reading',
+                'writing',
+                wrapper_class='col-md-6'
+            ),
+            Field(
+                'quantitative',
+                'functions',
+                wrapper_class='col-md-6'
+            ),
+            Field(
+                'eng_placement',
+                'math_placement',
+                wrapper_class='col-md-6',
+            )
+        )
+
 
 TestAttendanceFormSet = modelformset_factory(
         TestAppointment, 

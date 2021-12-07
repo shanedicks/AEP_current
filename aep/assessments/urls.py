@@ -51,6 +51,30 @@ single_student_hiset_practice_paterns = [
         name="student hiset practice detail"),
 ]
 
+single_student_hiset_paterns = [
+    url(r'^$',
+        views.StudentHisetListView.as_view(),
+        name="student hiset list"),
+    url(r'^new/$',
+        views.StudentHisetAddView.as_view(),
+        name="student hiset add"),
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.StudentHisetDetailView.as_view(),
+        name="student hiset detail"),
+]
+
+single_student_accuplacer_patterns = [
+    url(r'^$',
+        views.StudentAccuplacerListView.as_view(),
+        name="student accuplacer list"),
+    url(r'^new/$',
+        views.StudentAccuplacerAddView.as_view(),
+        name="student accuplacer add"),
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.StudentAccuplacerDetailView.as_view(),
+        name="student accuplacer detail")
+]
+
 single_student_assessment_patterns = [
     url(r'^$',
         views.StudentTestHistoryView.as_view(),
@@ -65,10 +89,14 @@ single_student_assessment_patterns = [
         include(single_student_tabe_patterns)),
     url(r'^clas-e/',
         include(single_student_clas_e_patterns)),
+    url(r'^hiset/',
+        include(single_student_hiset_paterns)),
     url(r'^hiset-practice/',
         include(single_student_hiset_practice_paterns)),
     url(r'^gain/',
         include(single_student_gain_patterns)),
+    url(r'^accuplacer/',
+        include(single_student_accuplacer_patterns)),
 ]
 
 report_patterns = [

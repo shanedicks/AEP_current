@@ -5,37 +5,32 @@
     <div class="jumbotron">
       <div class="container">
         <h1>Welcome to DCC Adult Education</h1>
-        <p>We are a free, open-enrollment program that offers a variety of classes designed to help students in New Orleans meet their academic, professional, and personal goals. Some of these goals include:
+        <p>We are a free adult education program serving the New Orleans Region. We offer classes for:
         </p>
         <ul>
-          <li><p>studying to earn a high school equivalency diploma (HiSET, formerly the GED)</p></li>
-          <li><p>improving English language skills in our English Language Learners (ELL) courses</p></li>
-          <li><p>building digital literacy through Computer Basics, and more!</p></li>
+          <li><p>HiSET (formerly the GED)</p></li>
+          <li><p>English language skills</p></li>
+          <li><p>College and career skills</p></li>
         </ul>
-        <p>With classes available at six academic sites throughout the city and sections that meet in the mornings, afternoons, and evenings, most students are able to find a class schedule that works.  And with nearly forty qualified instructors and tutors, the Adult Education Program is ready to help any students continue their education and career!
+        <p>We offer classes at six sites throughout the city in the mornings, afternoons, and evenings.
         </p>
-        <p><strong>Want to join us? Great news! If you've ever registered with us before, you can skip this step!  Just call us at <a href="tel:5046715434">504-671-5434</a> to find out what to do next. Otherwise, Click here to Register</strong></p>
-        <p><a class="btn btn-lg btn-primary center-block" href="{% url 'people:prospect signup' %}" role="button">Register Now</a></p>
+        <p><a class="btn btn-lg btn-primary center-block" href="{% url 'people:prospect signup' %}" role="button">Register Here</a></p>
       </div>
     </div>
-<!--    <div class="container">
-      <div class="row">
-        <div class="col-md-4">
-          <h2>Classes</h2>
-          <p>Hey look at all these classes we offer! Isn't that Swell?</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-          <h2>Calendar Announcement</h2>
-          <p>Students and staff will all be able to view this page from any web connected device. We can keep everyone up to speed on whats happening - as it's happening</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Student Spotlight</h2>
-          <p>We've talked about doing this kind of thing before. I think it's a nice idea. And look at all the space we're using with it!</p>
-          <p><a class="btn btn-default" href="/students/" role="button">View details &raquo;</a></p>
-        </div>
-      </div> 
-    </div>-->
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Bienvenido a DCC Adult Education</h1>
+        <p>Bienvenido a DCC Adult Education. Somos un programa gratuito de educación para adultos al servicio de la región de Nueva Orleans. Ofrecemos clases para:
+        </p>
+        <ul>
+          <li><p>HiSET (anteriormente GED)</p></li>
+          <li><p>Destreza en lenguaje Ingles</p></li>
+          <li><p>Habilidades universitarias y profesionales</p></li>
+        </ul>
+        <p>Ofrecemos clases en seis sitios de la ciudad por las mañanas, tardes y noches.
+        </p>
+        <p><a class="btn btn-lg btn-primary center-block" href="{% url 'people:prospect signup' %}" role="button">Registrar aquí</a></p>
+      </div>
+    </div>
 
  {% endblock content %}

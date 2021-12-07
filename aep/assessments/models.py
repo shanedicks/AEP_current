@@ -946,3 +946,102 @@ class HiSet_Practice(Test):
                 'pk': self.pk
             }
         )
+
+
+class HiSET(Test):
+
+    MATH = 'Math'
+    READING = 'Reading'
+    SCIENCE = 'Science'
+    SOCIAL_STUDIES = 'Social Studies'
+    WRITING = 'Writing'
+    ESSAY = 'Essay'
+    SUBJECT_CHOICES = (
+        (MATH, 'Math'),
+        (READING, 'Reading'),
+        (SCIENCE, 'Science'),
+        (SOCIAL_STUDIES, 'Social Studies'),
+        (WRITING, 'Writing'),
+        (ESSAY, 'Essay'),
+    )
+
+    STAFF = 'Staff'
+    SELF = 'Self'
+
+    PROCTOR_CHOICES = (
+        (STAFF, 'Proctored by Staff Member'),
+        (SELF, 'Self-Administered'),
+    )
+
+    subject = models.CharField(
+        max_length=14,
+        choices=SUBJECT_CHOICES
+    )
+
+    proctor = models.CharField(
+        max_length=20,
+        choices=PROCTOR_CHOICES,
+        default="Staff"
+    )
+
+    reported_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        models.PROTECT,
+        related_name='ht_submissions'
+    )
+
+    score = models.PositiveSmallIntegerField(
+    )
+
+    class Meta:
+        verbose_name = "Official HiSET"
+        verbose_name_plural = "Official HiSET scores"
+
+    def __str__(self):
+        student = self.student.__str__()
+        date = str(self.test_date)
+        return " | ".join([student, 'HiSET', date])
+
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:student hiset detail",
+            kwargs={
+                'slug': self.student.student.slug,
+                'pk': self.pk
+            }
+        )
+
+
+class Accuplacer(Test):
+
+    reading = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True
+    )
+
+    writing = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True
+    )
+
+    quantitative = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True
+    )
+
+    functions = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True
+    )
+
+    eng_placement = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    math_placement = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )

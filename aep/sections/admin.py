@@ -8,7 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff, Student
 from academics.models import Course
 from .models import Site, Section, Enrollment, Attendance
-from .tasks import roster_to_classroom_task, send_g_suite_info_task
+from .tasks import roster_to_classroom_task, send_g_suite_info_task, create_missing_g_suite_task
 
 class SiteResource(resources.ModelResource):
 
@@ -118,6 +118,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
         'send_g_suite_info',
         'send_course_welcome_email',
         'add_TA',
+        'create_missing_g_suite',
     ]
 
     def get_active_enrollment_count(self, obj):
@@ -192,6 +193,10 @@ class SectionAdmin(ImportExportActionModelAdmin):
         for obj in queryset:
             for student in obj.students.all():
                 student.welcome_email()
+
+    def create_missing_g_suite(self, request, queryset):
+        for obj in queryset:
+            create_missing_g_suite_task.delay(obj.id)
 
 
 admin.site.register(Section, SectionAdmin)

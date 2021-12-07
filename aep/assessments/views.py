@@ -12,13 +12,13 @@ from core.forms import DateFilterForm
 from people.models import Student
 from .models import (
         TestEvent, TestAppointment, TestHistory,                 
-        Tabe, Clas_E, HiSet_Practice, Gain,
+        Tabe, Clas_E, HiSet_Practice, Gain, HiSET, Accuplacer
     )
 from .forms import (
         TestSignupForm, TabeForm, Clas_E_Form,
         GainForm, HiSet_Practice_Form, CSVImportForm,
         TestAppointmentAttendanceForm, TestAttendanceFormSet,
-        TestAppointmentNotesForm
+        TestAppointmentNotesForm, HiSetForm, AccuplacerForm
     )
 from .tasks import (event_attendance_report_task,
         accelerated_coaching_report_task, testing_eligibility_report
@@ -504,6 +504,12 @@ class StudentTestAddView(LoginRequiredMixin, CreateView):
         test.student = student
         return super(StudentTestAddView, self).form_valid(form)
 
+    def get_success_url(self):
+        return reverse(
+            "assessments:student test history",
+            kwargs={'slug': self.kwargs['slug']}
+        )
+
 
 class StudentTabeListView(StudentTestListView):
 
@@ -516,13 +522,6 @@ class StudentTabeAddView(StudentTestAddView):
     model = Tabe
     form_class = TabeForm
     template_name = 'assessments/student_tabe_add.html'
-
-    def get_success_url(self):
-        return reverse(
-            "assessments:student test history",
-            kwargs={'slug': self.kwargs['slug']}
-        )
-
 
 class StudentTabeDetailView(StudentTestDetailView):
 
@@ -1031,3 +1030,46 @@ class EventAttendanceCSV(LoginRequiredMixin, FormView):
         data = self.get_data(student_dict)
         return render_to_csv(data=data, filename=filename)
 
+
+class StudentHisetListView(StudentTestListView):
+
+    model = HiSET
+    template_name = "assessments/student_hiset_list.html"
+
+
+class StudentHisetAddView(StudentTestAddView):
+
+    model = HiSET
+    form_class = HiSetForm
+    template_name = "assessments/student_hiset_add.html"
+
+    def form_valid(self, form):
+        test = form.save(commit=False)
+        submitter = self.request.user
+        test.reported_by = submitter
+        return super(StudentHisetAddView, self).form_valid(form)
+
+
+class StudentHisetDetailView(StudentTestDetailView):
+
+    model = HiSET
+    template_name = "assessments/student_hiset_detail.html"
+
+
+class StudentAccuplacerListView(StudentTestListView):
+
+    model = Accuplacer
+    template_name = "assessments/student_accuplacer_list.html"
+
+
+class StudentAccuplacerAddView(StudentTestAddView):
+
+    model = Accuplacer
+    form_class = AccuplacerForm
+    template_name = "assessments/student_accuplacer_add.html"
+
+
+class StudentAccuplacerDetailView(StudentTestDetailView):
+
+    model = Accuplacer
+    template_name = "assessments/student_accuplacer_detail.html"    

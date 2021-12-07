@@ -79,18 +79,7 @@
       <div>
         <h3>Status</h3>
         <strong>
-        {% if prospect.active %}
-        <p>Active</p>
-        {% elif prospect.duplicate %}
-        <p>Duplicate</p>
-        {% elif prospect.student is not None or prospect.for_credit %}
-        <p>Closed</p>
-        {% else %}
-        <p>Inactive</p>
-        {% endif %}
-        {% if prospect.for_credit %}
-        <p>Seeking For-Credit Classes</p>
-        {% endif %}
+          <p>{{prospect.status}}</p>
         </strong>
         <a type='button' class="btn btn-default" href="{% url 'people:prospect update status' pk=prospect.pk %}">Update Status</a>
       </div>

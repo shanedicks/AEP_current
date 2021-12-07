@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}} Official HiSET Scores{% endblock head_title %}
+{% block content %}
+<h1>Official HiSET Test Results for {{student}}</h1>
+<p><a class="btn btn-default" href="{% url 'assessments:student hiset add' slug=student.slug %}">Add HiSET Test</a></p>
+
+    <div class="col-md-7">
+    <table class="table">
+    <tr>
+        <th>Date</th>\
+        <th>Subject</th>
+        <th>Score</th>
+    </tr>
+    {% for test in object_list %}
+    <tr>
+        <p><td>{{ test.test_date|date:"m/d/y" }}</td></p>
+        <p><td>{{ test.subject }}</td></p>
+        <p><td>{{ test.score }}</td></p>
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+
+{% endblock %}
