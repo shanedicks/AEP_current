@@ -9,6 +9,7 @@
             <th>Student</th>
             <th>Test Assignment</th>
             <th>Last Test</th>
+            <th>Attendance Hours</th>
             <th>Phone</th>
             <th>Email</th>
         </tr>
@@ -18,6 +19,7 @@
             <td>{{ student.student }}</td>
             <td>{{ student.student.tests.test_assignment }}</td>
             <td>{{ student.student.tests.last_test_date|date:"M. j, Y" }}</td>
+            <td>{{ student.student.tests.active_hours }}</td>
             <td>{{ student.student.phone }}</td>
             <td>{{ student.student.email }}</td>
         </tr>

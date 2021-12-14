@@ -652,13 +652,14 @@ class StudentForm(ModelForm):
                 Column(
                     'ccr_app',
                     'ell_app',
-                    'ace_app',
+                    'accuplacer_app',
+                    'success_app',
                     css_class="col-md-6"
                 ),
                 Column(
-                    'success_app',
                     'e_learn_app',
-                    'accuplacer_app',
+                    'ell_online_app',
+                    'certifications_app',
                     css_class="col-md-6"
                 ),
             ),
@@ -764,10 +765,11 @@ class StudentForm(ModelForm):
             "other_ID_name",
             "ccr_app",
             "ell_app",
-            "ace_app",
+            'ell_online_app',
             "success_app",
             'e_learn_app',
             'accuplacer_app',
+            'certifications_app',
             "prior_registration",
             "phone",
             "alt_phone",
@@ -784,21 +786,23 @@ class StudentForm(ModelForm):
         )
         labels = {
             "US_citizen": "Check this box if you are a US citizen",
-            "ccr_app": "College and Career Readiness (HiSET Prep)",
-            "ell_app": "English Language Learning",
-            "ace_app": "Accelerated Career Education Program",
+            "ccr_app": "In Person study for HiSET",
+            "ell_app": "In Person English Language Learners",
+            "ell_online_app": "Online English Language Learners",
             "success_app": "Success Classes",
-            'e_learn_app': "Online Classes with eLearn",
-            'accuplacer_app': "Accuplacer Prep Classes",
+            'e_learn_app': "Online study for HiSET",
+            'accuplacer_app': "Accuplacer",
+            'certifications_app': 'Certification'
         }
 
         help_texts = {
-            "ccr_app": "Reading, writing, and math skill building classes to help with college and career readiness goals as well as passing the HiSET.",
-            "ell_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
-            "ace_app": "Integrated education and training classes where students can earn industry credentials and college credit in career pathways: information technology, healthcare, construction trades, and culinary/hospitality.",
-            "success_app": "Classes designed to help students successfully navigate school and careers such as computer basics, job readiness, career exploration, college skills, and financial success.",
-            'e_learn_app': "Online courses to help with college and career readiness goals as well as passing the HiSET.",
-            'accuplacer_app': "Short preparation classes for the English and math accuplacer college placement tests. ",
+            "ccr_app": "(high school equivalency test, was the GED)<br />Math, Science, Social Studies, Reading and Writing",
+            "ell_app": "(not a native English speaker)<br />Aprendices del idioma inglés en persona<br />(no un hablante nativo de inglés)",
+            "ell_online_app": "(not a native English speaker)<br />Aprendices del idioma inglés en persona<br />(no un hablante nativo de inglés)",
+            "success_app": "(examples: Citizenship, Computer Basics, Public Speaking)",
+            'e_learn_app': "(high school equivalency test, was the GED)<br />Math, Science, Social Studies, Reading and Writing ",
+            'accuplacer_app': "study for college entrance exams",
+            'certifications_app': '(NCCER, ServSafe, Basic Life Support, Microsoft Word)'
         }
 
 

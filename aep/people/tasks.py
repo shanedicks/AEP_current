@@ -519,7 +519,7 @@ def prospect_export_task(staff_id, email):
             'Last Contact',
             'Last Note Content',
             'Last Orientation',
-            'URL to Orientation'
+            'URL to Orientation',
             'Enrollments',
             'URL to Prospect Record'
         ]

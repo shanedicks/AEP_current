@@ -346,11 +346,15 @@ class Student(Profile):
     )
     ccr_app = models.BooleanField(
         default=False,
-        verbose_name=_("CCR")
+        verbose_name=_("HiSET In-Person")
     )
     ell_app = models.BooleanField(
         default=False,
-        verbose_name=_("ELL")
+        verbose_name=_("ELL In-Person")
+    )
+    ell_online_app = models.BooleanField(
+        default=False,
+        verbose_name=_("ELL Online")
     )
     ace_app = models.BooleanField(
         default=False,
@@ -358,7 +362,7 @@ class Student(Profile):
     )
     e_learn_app = models.BooleanField(
         default=False,
-        verbose_name=_("ELearn")
+        verbose_name=_("HiSET Online")
     )
     success_app = models.BooleanField(
         default=False,
@@ -375,6 +379,10 @@ class Student(Profile):
     accuplacer_app = models.BooleanField(
         default=False,
         verbose_name=_("Accuplacer")
+    )
+    certifications_app = models.BooleanField(
+        default=False,
+        verbose_name=_('Certifications')
     )
     parish = models.CharField(
         max_length=2,
