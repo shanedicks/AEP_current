@@ -659,6 +659,15 @@ class StudentAdmin(ImportExportActionModelAdmin):
             except IntegrityError:
                 pass
 
+    def move_prospects(self,request, q):
+        p = q[0].prospects.all()
+        for record in p:
+            try:
+                record.student = q[1]
+                record.save()
+            except IntegrityError:
+                pass
+
     def full_merge(self, request, queryset):
         q = queryset.order_by('pk')
         self.move_test_history(request, q)
@@ -674,6 +683,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         self.move_skill_masteries(request, q)
         self.move_certificates(request, q)
         self.move_course_completions(request, q)
+        self.move_prospects(request, q)
         n = q[1]
         o = q[0]
         n.intake_date = o.intake_date
