@@ -39,18 +39,18 @@ def coaching_export_task(email):
 		]
 		writer.writerow(headers)
 
-	for coaching in coachings:
-		s = [
-			coaching.student.WRU_ID,
-			coaching.student.last_name,
-			coaching.student.first_name,
-			coaching.coach,
-			coaching.coach.last_name,
-			coaching.coach.first_name,
-			coaching.coaching_type,
-			coaching.start_date,
-		]
-		writer.writerow(s)
+		for coaching in coachings:
+			s = [
+				coaching.coachee.WRU_ID,
+				coaching.coachee.last_name,
+				coaching.coachee.first_name,
+				coaching.coach,
+				coaching.coach.last_name,
+				coaching.coach.first_name,
+				coaching.coaching_type,
+				coaching.start_date,
+			]
+			writer.writerow(s)
 	email = EmailMessage(
 		"Coaching Export",
 		"Here is the coaching export you requested",
