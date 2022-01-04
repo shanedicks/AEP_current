@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.apps import apps
 from django.core.mail.message import EmailMessage
 
 logger = get_task_logger(__name__)
