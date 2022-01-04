@@ -965,23 +965,9 @@ class HiSET(Test):
         (ESSAY, 'Essay'),
     )
 
-    STAFF = 'Staff'
-    SELF = 'Self'
-
-    PROCTOR_CHOICES = (
-        (STAFF, 'Proctored by Staff Member'),
-        (SELF, 'Self-Administered'),
-    )
-
     subject = models.CharField(
         max_length=14,
         choices=SUBJECT_CHOICES
-    )
-
-    proctor = models.CharField(
-        max_length=20,
-        choices=PROCTOR_CHOICES,
-        default="Staff"
     )
 
     reported_by = models.ForeignKey(

@@ -519,7 +519,7 @@ admin.site.register(HiSet_Practice, Hiset_Practice_Admin)
 class Hiset_Resource(TestResource):
 
     class Meta:
-        model = HiSet_Practice
+        model = HiSET
         fields = (
             'id',
             'student',
@@ -529,14 +529,13 @@ class Hiset_Resource(TestResource):
             'student__student__elearn_record__g_suite_email',
             'test_date',
             'subject',
-            'proctor',
             'score',
         )
 
 
 class Hiset_Admin(ImportExportActionModelAdmin):
 
-    resource_class = Hiset_Practice_Resource
+    resource_class = Hiset_Resource
 
     list_display = (
         'student',
@@ -559,7 +558,6 @@ class Hiset_Admin(ImportExportActionModelAdmin):
     fields = (
         'test_date',
         'subject',
-        'proctor',
         'score',
     )
 

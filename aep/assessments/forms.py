@@ -344,7 +344,6 @@ class HiSetForm(ModelForm):
         fields = (
             'test_date',
             'subject',
-            'proctor',
             'score',
         )
 
@@ -358,9 +357,6 @@ class HiSetForm(ModelForm):
                 'test_date',
                 placeholder="MM/DD/YYYY",
                 data_mask="99/99/9999"
-            ),
-            Field(
-                'proctor',
             ),
             Field(
                 'subject',
