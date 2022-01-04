@@ -970,12 +970,6 @@ class HiSET(Test):
         choices=SUBJECT_CHOICES
     )
 
-    reported_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        models.PROTECT,
-        related_name='ht_submissions'
-    )
-
     score = models.PositiveSmallIntegerField(
     )
 
