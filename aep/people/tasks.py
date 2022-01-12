@@ -502,6 +502,7 @@ def prospect_export_task(staff_id, email):
         writer = csv.writer(out)
         headers = [
             'WRU_ID',
+            'Prospect',
             'Last Name',
             'First Name',
             'Registration',
@@ -553,6 +554,7 @@ def prospect_export_task(staff_id, email):
 
             s = [
                 wru_id,
+                prospect.id,
                 prospect.last_name,
                 prospect.first_name,
                 prospect.registration_date,
