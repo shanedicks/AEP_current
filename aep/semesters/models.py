@@ -3,6 +3,7 @@ from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from core.tasks import send_mail_task, send_sms_task
 from sections.tasks import roster_to_classroom_task
 from .tasks import enforce_attendance_task
@@ -211,6 +212,11 @@ class Message(models.Model):
         max_length=160
     )
 
+    sent = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+
     class Meta:
         ordering = ["title"]
 
@@ -227,6 +233,8 @@ class Message(models.Model):
                 dst=student.phone,
                 message=self.message
             )
+        self.sent = timezone.now()
+        self.save()
         
 
 class Day(models.Model):

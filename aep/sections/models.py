@@ -8,12 +8,14 @@ from django.db import models, IntegrityError
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.utils import timezone
 from core.utils import make_slug
 from core.tasks import send_mail_task
 from academics.models import Course
 from people.models import Staff, Student
 from people.tasks import pop_update_task
 from semesters.models import Semester
+from core.tasks import send_sms_task
 from .tasks import (activate_task, end_task, drop_task,
     enrollment_notification_task)
 
@@ -816,3 +818,41 @@ class Attendance(models.Model):
         super(Attendance, self).save(*args, **kwargs)
         if self.attendance_type == 'P':
             pop_update_task.delay(self.enrollment.student.id, self.attendance_date)
+
+class Message(models.Model):
+
+    title = models.CharField(
+        max_length=100
+    )
+
+    sections = models.ManyToManyField(
+        Section,
+    )
+
+    message = models.CharField(
+        max_length=160
+    )
+
+    sent = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title
+
+    def send_message(self):
+        sections = self.sections.all()
+        students = apps.get_model('people', 'Student').objects.filter(
+            classes__section__in=sections
+        ).distinct()
+        for student in students:
+            send_sms_task.delay(
+                dst=student.phone,
+                message=self.message
+            )
+        self.sent = timezone.now()
+        self.save()

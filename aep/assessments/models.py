@@ -5,7 +5,8 @@ from django.urls import reverse
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from core.tasks import send_mail_task
+from django.utils import timezone
+from core.tasks import send_mail_task, send_sms_task
 from core.utils import get_fiscal_year_start_date
 from people.models import Staff, Student, PoP
 from sections.models import Attendance, Site
@@ -1025,3 +1026,41 @@ class Accuplacer(Test):
         null=True,
         blank=True
     )
+
+class Message(models.Model):
+
+    title = models.CharField(
+        max_length=100
+    )
+
+    events = models.ManyToManyField(
+        TestEvent,
+    )
+
+    message = models.CharField(
+        max_length=160
+    )
+
+    sent = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title
+
+    def send_message(self):
+        events = self.events.all()
+        students = apps.get_model('people', 'Student').objects.filter(
+            test_appointments__event__in=events,
+        ).distinct()
+        for student in students:
+            send_sms_task.delay(
+                dst=student.phone,
+                message=self.message
+            )
+        self.sent = timezone.now()
+        self.save()

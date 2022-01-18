@@ -2,8 +2,8 @@ from django.contrib import admin
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from people.models import Student
-from .models import *
-from .tasks import event_attendance_report_task, test_process_task, orientation_reminder_task, test_reminder_task
+from .models import TestEvent, TestHistory, TestAppointment, Tabe, Tabe_Loc, Clas_E, Clas_E_Loc, Gain, HiSET, HiSet_Practice, Message
+from .tasks import event_attendance_report_task, test_process_task, orientation_reminder_task, test_reminder_task, send_message_task
 
 
 class TestEventAdmin(admin.ModelAdmin):
@@ -562,3 +562,20 @@ class Hiset_Admin(ImportExportActionModelAdmin):
     )
 
 admin.site.register(HiSET, Hiset_Admin)
+
+class MessageAdmin(admin.ModelAdmin):
+
+    list_display = [
+        "title",
+        "sent"
+    ]
+
+    actions = [
+        "send_message"
+    ]
+
+    def send_message(self, request, queryset):
+        for obj in queryset:
+            send_message_task.delay(obj.id)
+
+admin.site.register(Message, MessageAdmin)

@@ -200,3 +200,9 @@ def create_missing_g_suite_task(section_id):
 			student.elearn_record.create_g_suite_account(service)
 		except HttpError as e:
 			logger.info("{0}".format(e))
+
+@shared_task
+def send_message_task(message_id):
+	message = apps.get_model('sections', 'Message').objects.get(id=message_id)
+	logger.info('Sending message {0}'.format(message.title))
+	message.send_message()

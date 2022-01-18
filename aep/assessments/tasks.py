@@ -336,3 +336,9 @@ def testing_eligibility_report(email_address):
     email.attach_file(filename)
     email.send()
     return True
+
+@shared_task
+def send_message_task(message_id):
+    message = apps.get_model('assessments', 'Message').objects.get(id=message_id)
+    logger.info('Sending message {0}'.format(message.title))
+    message.send_message()

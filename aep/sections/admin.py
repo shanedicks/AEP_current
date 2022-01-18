@@ -7,8 +7,8 @@ from import_export.admin import ImportExportModelAdmin, ImportExportActionModelA
 from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff, Student
 from academics.models import Course
-from .models import Site, Section, Enrollment, Attendance
-from .tasks import roster_to_classroom_task, send_g_suite_info_task, create_missing_g_suite_task
+from .models import Site, Section, Enrollment, Attendance, Message
+from .tasks import roster_to_classroom_task, send_g_suite_info_task, create_missing_g_suite_task, send_message_task
 
 class SiteResource(resources.ModelResource):
 
@@ -316,3 +316,20 @@ class AttendanceAdmin(ImportExportActionModelAdmin):
     )
 
 admin.site.register(Attendance, AttendanceAdmin)
+
+class MessageAdmin(admin.ModelAdmin):
+
+    list_display = [
+        "title",
+        "sent"
+    ]
+
+    actions = [
+        "send_message"
+    ]
+
+    def send_message(self, request, queryset):
+        for obj in queryset:
+            send_message_task.delay(obj.id)
+
+admin.site.register(Message, MessageAdmin)

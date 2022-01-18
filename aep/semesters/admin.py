@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Semester, Day, Survey, Message
+from .models import Semester, Survey, Message
 from .tasks import (send_g_suite_info_task, semester_begin_task,
     validate_enrollments_task, refresh_enrollments_task, send_survey_task,
     create_missing_g_suite_task, send_message_task)
@@ -100,6 +100,7 @@ class MessageAdmin(admin.ModelAdmin):
 
     list_display = [
         "title",
+        "sent"
     ]
 
     actions = [
@@ -111,5 +112,3 @@ class MessageAdmin(admin.ModelAdmin):
             send_message_task.delay(obj.id)
 
 admin.site.register(Message, MessageAdmin)
-
-admin.site.register(Day)
