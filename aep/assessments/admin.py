@@ -1,4 +1,6 @@
+from datetime import timedelta
 from django.contrib import admin
+from django.utils import timezone
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from people.models import Student
@@ -246,6 +248,7 @@ class TabeAdmin(ImportExportActionModelAdmin):
         'read_nrs',
         'math_nrs',
         'lang_nrs',
+        'score_report_link'
     ]
 
     actions = ImportExportActionModelAdmin.actions + [
@@ -300,7 +303,8 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
         'test_date',
         'read_level',
         'read_ss',
-        'read_nrs'
+        'read_nrs',
+        'score_report_link'
     )
 
     actions = ImportExportActionModelAdmin.actions + [
@@ -359,7 +363,8 @@ class Tabe_Loc_Admin(ImportExportActionModelAdmin):
         'math_comp',
         'app_math',
         'lang',
-        'composite'
+        'composite',
+        'score_report_link'
     )
 
 
@@ -397,7 +402,8 @@ class Clas_E_Loc_Admin(ImportExportActionModelAdmin):
 
     fields = (
         'test_date',
-        'read'
+        'read',
+        'score_report_link'
     )
 
 
@@ -450,7 +456,8 @@ class Gain_Admin(ImportExportActionModelAdmin):
         'subject',
         'scale_score',
         'grade_eq',
-        'nrs'
+        'nrs',
+        'score_report_link'
     )
 
 
@@ -570,6 +577,10 @@ class MessageAdmin(admin.ModelAdmin):
         "sent"
     ]
 
+    filter_horizontal = [
+        'events'
+    ]
+
     actions = [
         "send_message"
     ]
@@ -577,5 +588,11 @@ class MessageAdmin(admin.ModelAdmin):
     def send_message(self, request, queryset):
         for obj in queryset:
             send_message_task.delay(obj.id)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        request.target = timezone.now() - timedelta(days=180)
+        if db_field.name == "events":
+            kwargs["queryset"] = TestEvent.objects.filter(start__gte=request.target)
+        return super(MessageAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 admin.site.register(Message, MessageAdmin)

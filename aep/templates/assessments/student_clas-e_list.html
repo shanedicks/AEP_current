@@ -10,13 +10,19 @@
         <th>Test</th>
         <th>NRS Level</th>
         <th>Scale Score</th>
+        <th>Score Report Link</th>
     </tr>
     {% for test in object_list %}
     <tr>
-        <p><td>{{ test.test_date|date:"m/d/y" }}</td></p>
+        {% if test.score_report_link %}
+            <p><td><a href={{test.score_report_link}}>{{ test.test_date|date:"m/d/y" }}</a></td></p>
+        {% else %}
+            <p><td>{{ test.test_date|date:"m/d/y" }}</td></p>
+        {% endif %}
         <p><td>{{ test.read_level }}{{test.form}}</td></p>
         <p><td>{{ test.read_nrs }}</td></p>
         <p><td>{{ test.read_ss }}</td></p>
+        <p><td><a href="{% url 'assessments:clas_e score report link' slug=student.slug pk=test.pk %}">Update</a></td></p>
     </tr>
     {% endfor %}
     </table>

@@ -18,7 +18,8 @@ from .forms import (
         TestSignupForm, TabeForm, Clas_E_Form,
         GainForm, HiSet_Practice_Form, CSVImportForm,
         TestAppointmentAttendanceForm, TestAttendanceFormSet,
-        TestAppointmentNotesForm, HiSetForm, AccuplacerForm
+        TestAppointmentNotesForm, HiSetForm, AccuplacerForm,
+        Clas_E_ScoreReportLinkForm, TabeScoreReportLinkForm
     )
 from .tasks import (event_attendance_report_task,
         accelerated_coaching_report_task, testing_eligibility_report
@@ -528,6 +529,20 @@ class StudentTabeDetailView(StudentTestDetailView):
     model = Tabe
     template_name = 'assessments/student_tabe_detail.html'
 
+
+class TabeScoreReportLinkFormView(LoginRequiredMixin, UpdateView):
+
+    model = Tabe
+    form_class = TabeScoreReportLinkForm
+    template_name = 'assessments/score_report_link.html'
+
+    def get_success_url(self):
+        return reverse(
+            "assessments:student tabe list",
+            kwargs={'slug': self.kwargs['slug']}
+        )
+
+
 class TabeCSV(LoginRequiredMixin, FormView):
 
     model = Tabe
@@ -709,6 +724,20 @@ class StudentClasEDetailView(StudentTestDetailView):
 
     model = Clas_E
     template_name = 'assessments/student_clas-e_detail.html'
+
+
+class ClasEScoreReportLinkFormView(LoginRequiredMixin, UpdateView):
+
+    model = Clas_E
+    form_class = Clas_E_ScoreReportLinkForm
+    template_name = 'assessments/score_report_link.html'
+
+    def get_success_url(self):
+        return reverse(
+            "assessments:student clas-e list",
+            kwargs={'slug': self.kwargs['slug']}
+        )
+
 
 class ClasECSV(LoginRequiredMixin, FormView):
 

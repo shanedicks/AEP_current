@@ -1,7 +1,9 @@
 from apiclient import discovery
 from httplib2 import Http
+from datetime import timedelta
 from django.contrib import admin
 from django.conf import settings
+from django.utils import timezone
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from oauth2client.service_account import ServiceAccountCredentials
@@ -324,6 +326,8 @@ class MessageAdmin(admin.ModelAdmin):
         "sent"
     ]
 
+    filter_horizontal = ['sections']
+
     actions = [
         "send_message"
     ]
@@ -331,5 +335,11 @@ class MessageAdmin(admin.ModelAdmin):
     def send_message(self, request, queryset):
         for obj in queryset:
             send_message_task.delay(obj.id)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        request.target = timezone.now() - timedelta(days=180)
+        if db_field.name == "sections":
+            kwargs["queryset"] = Section.objects.filter(semester__start_date__gte=request.target)
+        return super(MessageAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 admin.site.register(Message, MessageAdmin)

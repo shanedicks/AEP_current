@@ -370,6 +370,10 @@ class NRSTest(Test):
         default=False
     )
 
+    score_report_link = models.URLField(
+        blank=True
+    )
+
     class Meta:
         abstract = True
 

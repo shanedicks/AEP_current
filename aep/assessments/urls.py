@@ -12,7 +12,10 @@ single_student_tabe_patterns = [
         name="student tabe add"),
     url(r'^(?P<pk>[0-9]+)$',
         views.StudentTabeDetailView.as_view(),
-        name="student tabe detail")
+        name="student tabe detail"),
+    url(r'^(?P<pk>[0-9]+)/score-report-link/$',
+        views.TabeScoreReportLinkFormView.as_view(),
+        name="tabe score report link")
 ]
 
 single_student_clas_e_patterns = [
@@ -25,6 +28,9 @@ single_student_clas_e_patterns = [
     url(r'^(?P<pk>[0-9]+)/$',
         views.StudentClasEDetailView.as_view(),
         name="student clas-e detail"),
+    url(r'^(?P<pk>[0-9]+)/score-report-link/$',
+        views.ClasEScoreReportLinkFormView.as_view(),
+        name="clas-e score report link")
 ]
 
 single_student_gain_patterns = [

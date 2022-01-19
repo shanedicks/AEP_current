@@ -299,6 +299,33 @@ class GainForm(ModelForm):
         )
 
 
+class TabeScoreReportLinkForm(ModelForm):
+
+    class Meta:
+        model = Tabe
+        fields = ('score_report_link',)
+
+    def __init__(self, *args, **kwargs):
+        super(TabeScoreReportLinkForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.layout = Layout(Field('score_report_link'))
+
+class Clas_E_ScoreReportLinkForm(ModelForm):
+
+    class Meta:
+        model = Tabe
+        fields = ('score_report_link',)
+
+    def __init__(self, *args, **kwargs):
+        super(TabeScoreReportLinkForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.layout = Layout(Field('score_report_link'))
+
+
 class HiSet_Practice_Form(ModelForm):
 
     class Meta:
