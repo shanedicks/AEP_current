@@ -22,7 +22,7 @@
         <p><td>{{ test.read_level }}{{test.form}}</td></p>
         <p><td>{{ test.read_nrs }}</td></p>
         <p><td>{{ test.read_ss }}</td></p>
-        <p><td><a href="{% url 'assessments:clas_e score report link' slug=student.slug pk=test.pk %}">Update</a></td></p>
+        <p><td><a href="{% url 'assessments:clas-e score report link' slug=student.slug pk=test.pk %}">Update</a></td></p>
     </tr>
     {% endfor %}
     </table>
