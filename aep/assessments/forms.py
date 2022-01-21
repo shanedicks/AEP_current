@@ -319,7 +319,7 @@ class Clas_E_ScoreReportLinkForm(ModelForm):
         fields = ('score_report_link',)
 
     def __init__(self, *args, **kwargs):
-        super(TabeScoreReportLinkForm, self).__init__(*args, **kwargs)
+        super(Clas_E_ScoreReportLinkForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.help_text_inline = False
