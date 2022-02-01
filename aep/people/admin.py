@@ -973,6 +973,7 @@ class ProspectAdmin(ImportExportActionModelAdmin):
         'registration_date',
         'student',
         'advisor',
+        'advisor_assigned_date',
         'active',
         'duplicate',
         'returning_student'
@@ -980,6 +981,9 @@ class ProspectAdmin(ImportExportActionModelAdmin):
 
     list_filter = [
         'active',
+        'advisor_assigned_date',
+        ('advisor', admin.RelatedOnlyFieldListFilter)
+
     ]
 
     list_editable = [

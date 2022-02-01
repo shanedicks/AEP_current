@@ -2078,6 +2078,12 @@ class Prospect(models.Model):
         ("other", "Other")
     )
 
+    CONTACT_TIME_CHOICES = (
+        ("M", "8am - 12pm"),
+        ("A", "12pm - 4pm"),
+        ("E", "4pm - 8pm")
+    )
+
     student = models.ForeignKey(
         Student,
         models.PROTECT,
@@ -2123,6 +2129,12 @@ class Prospect(models.Model):
         choices=CONTACT_CHOICES,
         verbose_name=_('How do you prefer to be contacted?')
     )
+    contact_time = models.CharField(
+        max_length=1,
+        choices=CONTACT_TIME_CHOICES,
+        verbose_name=_('What time do you prefer to be contacted?'),
+        blank=True
+    )
     primary_language = models.CharField(
         max_length=20,
         choices=LANGUAGE_CHOICES,
@@ -2154,6 +2166,11 @@ class Prospect(models.Model):
         max_length=5
     )
 
+    advisor_assigned_date = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
     class Meta:
         ordering = ["last_name", "first_name"]
 
@@ -2162,6 +2179,12 @@ class Prospect(models.Model):
 
     def get_absolute_url(self):
         return reverse('people:prospect detail', kwargs={'pk': self.pk})
+
+    def save(self, *args, **kwargs):
+        super(Prospect, self).save(*args, **kwargs)
+        if self.advisor is not None and self.advisor_assigned_date is None:
+            self.advisor_assigned_date = timezone.now()
+            self.save()
 
     @property
     def status(self):

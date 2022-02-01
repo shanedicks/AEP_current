@@ -1842,22 +1842,26 @@ class ProspectForm(ModelForm):
                     data_mask="999-999-9999"
                 ),
                 Field(
-                    'contact_preference',
-                    wrapper_class="col-md-4"
-                ),
+                    'primary_language',
+                    wrapper_class="col-md-4",
+                    required=True
+                )
             ),
             Row(
                 Field(
                     'dob',
                     placeholder="MM/DD/YYYY",
                     data_mask="99/99/9999",
-                    wrapper_class="col-md-6",
+                    wrapper_class="col-md-4",
                     required=True
                 ),
                 Field(
-                    'primary_language',
-                    wrapper_class="col-md-6",
-                    required=True
+                    'contact_preference',
+                    wrapper_class="col-md-4"
+                ),
+                Field(
+                    'contact_time',
+                    wrapper_class="col-md-4"
                 )
             )
         )
@@ -1871,6 +1875,7 @@ class ProspectForm(ModelForm):
             'phone',
             'dob',
             'contact_preference',
+            'contact_time',
             'primary_language',
         )
 
