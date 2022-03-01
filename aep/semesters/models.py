@@ -131,6 +131,30 @@ class Semester(models.Model):
         to_refresh = students.filter(student__tests__last_test_date__gte=cutoff)
         to_refresh.update(status='A')
 
+    def get_att_rate_list(self, section_queryset):
+        students = self.get_enrollment_queryset().filter(section__in=section_queryset)
+        students = students.exclude(section__program='ADMIN')
+        rates = []
+        if len(students) > 0:
+            att_matrix = [
+                [att.attendance_type for att in student.attendance.all()]
+                for student
+                in students
+            ]
+            days_range = max([len(row) for row in att_matrix])
+            daily_matrix = [
+                [row[i] for row in att_matrix if len(row) > i and row[i] != 'C']
+                for i
+                in range(days_range)
+            ]
+            rates = [
+                round(len([att for att in row if att =='P']) / len(row), 2)
+                if len(row) > 0 else 0
+                for row
+                in daily_matrix
+            ]
+        return rates
+
 
 class Survey(models.Model):
 

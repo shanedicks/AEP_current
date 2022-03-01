@@ -117,17 +117,17 @@
         {% endfor %}
     </tr>
     <tr>
-        <td>Students Absent</td>
-        <td></td>
-        {% for total in daily_absent %}
-        <td>{{total}}</td>
-        {% endfor %}
-    </tr>
-    <tr>
         <td>Students Enrolled</td>
         <td></td>
         {% for total in daily_absent %}
         <td>{{ count }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <td>Attendance Rate</td>
+        <td></td>
+        {% for day in section.get_daily_attendance_rate %}
+        <td>{{day}}</td>
         {% endfor %}
     </tr>
 </table>

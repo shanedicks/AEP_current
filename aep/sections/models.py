@@ -496,6 +496,29 @@ class Section(models.Model):
                 class_dates.append(d)
         return class_dates
 
+    def get_daily_attendance_rate(self):
+        days = len(self.get_class_dates())
+        rates = []
+        if self.students.all().count() > 0:
+            att_matrix = [
+                [att.attendance_type for att in student.attendance.all()]
+                for student
+                in self.students.all()
+            ]
+            days_range = min(days, max([len(row) for row in att_matrix]))
+            daily_matrix = [
+                [row[i] if len(row) > i else 'X' for row in att_matrix]
+                for i
+                in range(days)
+            ]
+            rates = [
+                round(len([att for att in row if att =='P']) / len(row), 2)
+                if len(row) > 0 else 0
+                for row
+                in daily_matrix
+            ]
+        return rates
+
 
 class Enrollment(models.Model):
 
