@@ -819,6 +819,80 @@ class ClasECSV(LoginRequiredMixin, FormView):
         return render_to_csv(data=data, filename=filename)
 
 
+class TestScoreStorageCSV(LoginRequiredMixin, FormView):
+
+    form_class = DateFilterForm
+    template_name = 'assessments/test_score_storage.html'
+
+    def get_data(self, clas_es, tabes):
+        data = []
+        headers = [
+            'Test',
+            'WRU_ID',
+            'Last Name',
+            'First Name',
+            'Personal Email',
+            'G Suite Email',
+            'Test Date',
+            'NRS_Reading',
+            'NRS_Language',
+            'NRS_Math'
+        ]
+        data.append(headers)
+        for tabe in tabes:
+            student = tabe.student.student
+            try:
+                g_suite_email = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite_email = ''
+            s = [
+                'TABE',
+                student.WRU_ID,
+                student.last_name,
+                student.first_name,
+                student.email,
+                g_suite_email,
+                tabe.test_date,
+                tabe.read_nrs,
+                tabe.lang_nrs,
+                tabe.math_nrs
+            ]
+            data.append(s)
+        for clas_e in clas_es:
+            student = clas_e.student.student
+            try:
+                g_suite_email = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite_email = ''
+            s = [
+                'CLAS-E',
+                student.WRU_ID,
+                student.last_name,
+                student.first_name,
+                student.email,
+                g_suite_email,
+                clas_e.test_date,
+                clas_e.read_nrs,
+            ]
+            data.append(s)
+        return data
+    
+    def form_valid(self, form):
+        clas_es = Clas_E.objects.select_related().all()
+        tabes = Tabe.objects.select_related().all()
+        filename = "test_storage_report.csv"
+        if form.cleaned_data['from_date'] != "":
+            from_date = form.cleaned_data['from_date']
+            clas_es = clas_es.filter(test_date__gte=from_date)
+            tabes = tabes.filter(test_date__gte=from_date)
+        if form.cleaned_data['to_date'] != "":
+            to_date = form.cleaned_data['to_date']
+            clas_es = clas_es.filter(test_date__lte=to_date)
+            tabes = tabes.filter(test_date__lte=to_date)
+        data = self.get_data(clas_es, tabes)
+        return render_to_csv(data=data, filename=filename)
+
+
 class ClasEImportCSV(LoginRequiredMixin, FormView):
 
     model = Clas_E
