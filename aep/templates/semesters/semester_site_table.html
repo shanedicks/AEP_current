@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{semester}}{% endblock head_title %}
+{% block content %}
+    <h1>{{ semester.title }}</h1>
+    <h4>{{ semester.start_date }} - {{semester.end_date}}</h4>
+    {% include 'components/semester_nav.html' %}
+    <br>
+
+    <table class="table">
+        <tr>
+            <td>Site</td>
+            {% for day in days%}
+            <td>{{day}}</td>
+            {% endfor %}
+        </tr>
+        {% for site, rate_list in sites.items %}
+        <tr>
+            <td>{{site}}</td>
+            {% for daily_rate in rate_list %}
+            <td>{{daily_rate}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        <tr></tr>
+    </table>
+
+{% endblock content %}

@@ -20,7 +20,7 @@
 		</tr>
 		{% for semester in object_list %}
 	      	<tr>
-	          <td><a href="{{ semester.get_absolute_url }}">{{ semester.title }}</a></td>
+	          <td><a href="{% url 'semesters:semester class list' pk=semester.pk %}">{{ semester.title }}</a></td>
 	          <td>{{ semester.start_date }} - {{ semester.end_date }}</td>
 	          <td>{{ semester.section_count }}</td>
             <td>{{ semester.unique_student_count }}</td>

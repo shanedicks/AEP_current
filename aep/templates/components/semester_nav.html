@@ -1,0 +1,5 @@
+<div class="btn-group" role="group" aria-label="semester links">
+  <a type="button" class="btn btn-default" role="button" href="{% url 'semesters:semester class list' pk=semester.pk %}">Class List</a>
+  <a type="button" class="btn btn-default" role="button" href="{% url 'semesters:semester sites table' pk=semester.pk %}">Sites Overview</a>
+  <a type="button" class="btn btn-default" href="{% url 'semesters:semester times table' pk=semester.pk %}" role="button">Times Overview</a>
+</div>

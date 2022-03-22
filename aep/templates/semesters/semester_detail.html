@@ -5,39 +5,4 @@
     <h4>{{ semester.start_date }} - {{semester.end_date}}</h4>
     <br>
 
-    <table class="table">
-        <tr>
-            <td>Site</td>
-            {% for day in days%}
-            <td>Day {{day}}</td>
-            {% endfor %}
-        </tr>
-        {% for site, rate_list in sites.items %}
-        <tr>
-            <td>{{site}}</td>
-            {% for daily_rate in rate_list %}
-            <td>{{daily_rate}}</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    <table class="table">
-        <tr>
-            <td>Time</td>
-            {% for day in days%}
-            <td>Day {{day}}</td>
-            {% endfor %}
-        </tr>
-        {% for time, rate_list in times.items %}
-        <tr>
-            <td>{{time}}</td>
-            {% for daily_rate in rate_list %}
-            <td>{{daily_rate}}</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
-
-
 {% endblock content %}

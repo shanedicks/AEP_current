@@ -512,7 +512,9 @@ class Section(models.Model):
                 in range(days)
             ]
             rates = [
-                round(len([att for att in row if att =='P']) / len(row), 2)
+                "{:.0%}".format(
+                    round(len([att for att in row if att =='P']) / len(row), 2)
+                )
                 if len(row) > 0 else 0
                 for row
                 in daily_matrix
