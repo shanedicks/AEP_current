@@ -73,18 +73,21 @@ enrollment_patterns = [
 ]
 
 reports_patterns = [
-    url(r'^active-students$',
+    url(r'^active-students/$',
         views.ActiveStudentCSV.as_view(),
         name='active student csv'),
-    url(r'^student-enrollment$',
+    url(r'^student-enrollment/$',
         views.StudentEnrollmentCSV.as_view(),
         name='student enrollment csv'),
-    url(r'^atrium$',
+    url(r'^atrium/$',
         views.AtriumCSV.as_view(),
         name='atrium csv'),
-    url(r'^participation$',
+    url(r'^participation/$',
         views.ParticipationReport.as_view(),
-        name='participation report')
+        name='participation report'),
+    url(r'^mondo/$',
+        views.MondoAttendanceReport.as_view(),
+        name='mondo attendance report')
 ]
 
 urlpatterns = [

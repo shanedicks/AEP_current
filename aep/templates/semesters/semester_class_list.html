@@ -11,12 +11,26 @@
         <button type="submit" class="btn btn-default btn-sm">Filter Classes</button>
     <a href="{% url 'semesters:semester class list' pk=semester.pk %}" class="btn btn-default btn-sm">Clear</a>
     <table class="table">
+        <tr>
+            <td>Site</td>
+            <td>Title</td>
+            <td>Teacher</td>
+            <td>Days</td>
+            <td>Time</td>
+            {% for day in days %}
+            <td>{{day}}</td>
+            {% endfor %}
+        </tr>
         {% for section in object_list %}
         <tr>
-        	<td>{{section}}</td>
-        	{% for day in section.get_daily_attendance_rate %}
-        	<td>{{day}}</td>
-        	{% endfor %}
+            <td>{{section.site}}</td>
+            <td>{{section.title}}</td>
+            <td>{{section.teacher}}</td>
+            <td>{{section.get_days_str}}</td>
+            <td>{{section.start_time|time:"g:ia"}}
+            {% for day in section.get_daily_attendance_rate %}
+            <td>{{day}}</td>
+            {% endfor %}
         </tr>
         {% endfor %}
     </table>

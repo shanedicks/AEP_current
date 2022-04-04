@@ -1,7 +1,10 @@
 from __future__ import absolute_import, unicode_literals
+from datetime import datetime
 import csv
 from django.apps import apps
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail.message import EmailMessage
+from django.db.models import Q
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -95,6 +98,136 @@ def participation_detail_task(email_address):
 	email.attach_file('participation_detail_report.csv')
 	email.send()
 	return True
+
+
+@shared_task
+def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
+	enrollments = apps.get_model('sections', 'Enrollment').objects.all()
+	if semesters is not None:
+		enrollments = enrollments.filter(section__semester__in=semesters)
+	if from_date is not None:
+		from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S').date()
+		enrollments = enrollments.filter(
+			Q(section__starting__gte=from_date) | 
+			Q(section__semester__start_date__gte=from_date)
+		)
+	if to_date is not None:
+		to_date = datetime.strptime(to_date, '%Y-%m-%dT%H:%M:%S').date()
+		enrollments = enrollments.filter(
+			Q(section__ending__lte=to_date) | 
+			Q(section__semester__end_date__lte=to_date)
+		)
+	with open('mondo_attendance_report.csv', 'w', newline='') as out:
+		writer = csv.writer(out)
+
+		headers = [
+			'SID',
+			'LAST_NAME',
+			'FIRST_NAME',
+			'MIDDLE_INITIAL',
+			'COURSE_NAME',
+			'GB_COURSE_SECTION_ID',	
+			'WRU_ID',
+			'Partner',
+			'Teacher_First',
+			'Teacher_Last',
+			'Teacher_First_Teacher_Last',
+			'Program',
+			'Coach_First',
+			'Coach_Last',
+			'Coach_First_Coach_Last',
+			'Site',
+			'Monday',
+			'Tuesday',
+			'Wednesday',
+			'Thursday',
+			'Friday',
+			'Saturday',
+			'Sunday',
+			'Semester',
+			'Start_Date',
+			'End_Date',	
+			'Seats',
+			'Last_Test_Date',
+			'AssessmentName',	
+			'AssessmentForm',
+			'AssessmentLevel',	
+			'NRS_Math',
+			'NRS_Reading',
+			'NRS_Language',	
+			'Total_Attendance_Hours',
+		]
+		for i in range(48):
+			headers.extend(['HOURS_{}'.format(i+1), 'HOURS_DATE_{}'.format(i+1)])
+
+		writer.writerow(headers)
+
+		for e in enrollments:
+			section = e.section
+			student = e.student
+			try:
+				coaching = student.coaches.latest('start_date')
+				coach = coaching.coach
+			except ObjectDoesNotExist:
+				coach = None
+			coach_last = getattr(coach, 'last_name', '')
+			coach_first = getattr(coach, 'first_name', '')
+			try:
+				last_test = student.tests.last_test
+			except ObjectDoesNotExist:
+				last_test = None
+			lt_date = getattr(last_test, 'test_date', '')
+			lt_name = type(last_test).__name__
+			lt_form = getattr(last_test, 'form', '')
+			lt_level = getattr(last_test, 'level', '')
+			lt_read = getattr(last_test, 'read_nrs', '')
+			lt_math = getattr(last_test, 'math_nrs', '')
+			lt_lang = getattr(last_test, 'lang_nrs', '')
+			data = [
+				student.WRU_ID,
+				student.last_name,
+				student.first_name,
+				'',
+				section.title,
+				section.id,
+				section.WRU_ID,
+				student.partner,
+				section.teacher.first_name,
+				section.teacher.last_name,
+				"{0} {1}".format(section.teacher.first_name, section.teacher.last_name),
+				section.program,
+				coach_first,
+				coach_last,
+				"{0} {1}".format(coach_first, coach_last),
+				section.site,
+				section.monday,
+				section.tuesday,
+				section.wednesday,
+				section.thursday,
+				section.friday,
+				section.saturday,
+				section.sunday,
+				section.semester,
+				section.start_date,
+				section.end_date,
+				section.seats,
+				e.total_hours()
+			]
+			for att in e.attendance.filter(attendance_type='P'):
+				data.extend([att.hours, att.attendance_date])
+
+			writer.writerow(data)
+
+		email = EmailMessage(
+		'Mondo Attendance Report',
+		'An attendance report with all the extra bells and whistles',
+		'reporter@dccaep.org',
+		[email_address]
+	)
+	email.attach_file('mondo_attendance_report.csv')
+	email.send()
+	return True
+
 
 @shared_task
 def roster_to_classroom_task(section_id):

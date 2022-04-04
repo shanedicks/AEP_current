@@ -342,6 +342,13 @@ class TestHistory(models.Model):
         date = self.hiset_practice_tests.latest('test_date').test_date
         return self.hiset_practice_tests.filter(test_date=date)
 
+    @property
+    def last_test(self):
+        if self.last_test_type == 'Tabe':
+            return self.latest_tabe
+        if self.last_test_type == 'Clas_E':
+            return self.latest_clas_e
+
 
 class Test(models.Model):
 

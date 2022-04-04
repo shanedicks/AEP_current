@@ -85,6 +85,8 @@ class SemesterClassListView(LoginRequiredMixin, ListView, FormView):
     def get_context_data(self, **kwargs):
         context = super(SemesterClassListView, self).get_context_data(**kwargs)
         context['semester'] = Semester.objects.get(pk=self.kwargs['pk'])
+        num_days = max([len(x.get_daily_attendance_rate()) for x in self.object_list])
+        context['days'] = [i + 1 for i in range(num_days)]
         return context
 
     def get_form_kwargs(self):

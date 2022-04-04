@@ -594,10 +594,9 @@ class Enrollment(models.Model):
         return self.attendance.order_by('attendance_date')
 
     def total_hours(self):
-        total = 0
-        for att in self.attendance.filter(attendance_type='P'):
-            total += att.hours
-        return total
+        return sum(
+            [att.hours for att in self.attendance.filter(attendance_type='p')]
+        )
 
     def get_skill_masteries(self):
         masteries = apps.get_model('academics', 'SkillMastery').objects.filter(
