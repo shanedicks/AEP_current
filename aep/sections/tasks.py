@@ -211,6 +211,13 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 				section.start_date,
 				section.end_date,
 				section.seats,
+				lt_date,
+				lt_name,
+				lt_form,
+				lt_level,
+				lt_math,
+				lt_read,
+				lt_lang,
 				e.total_hours()
 			]
 			for att in e.attendance.filter(attendance_type='P'):

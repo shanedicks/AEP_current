@@ -595,7 +595,7 @@ class Enrollment(models.Model):
 
     def total_hours(self):
         return sum(
-            [att.hours for att in self.attendance.filter(attendance_type='p')]
+            [att.hours for att in self.attendance.filter(attendance_type='P')]
         )
 
     def get_skill_masteries(self):
