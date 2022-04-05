@@ -99,7 +99,6 @@ def participation_detail_task(email_address):
 	email.send()
 	return True
 
-
 @shared_task
 def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 	enrollments = apps.get_model('sections', 'Enrollment').objects.all()
@@ -146,7 +145,9 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 			'Sunday',
 			'Semester',
 			'Start_Date',
-			'End_Date',	
+			'End_Date',
+			'Start_Time',
+			'End_Time',
 			'Seats',
 			'Last_Test_Date',
 			'AssessmentName',	
@@ -210,6 +211,8 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 				section.semester,
 				section.start_date,
 				section.end_date,
+				section.start_time,
+				section.end_time,
 				section.seats,
 				lt_date,
 				lt_name,
@@ -234,7 +237,6 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 	email.attach_file('mondo_attendance_report.csv')
 	email.send()
 	return True
-
 
 @shared_task
 def roster_to_classroom_task(section_id):
