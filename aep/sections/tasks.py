@@ -127,6 +127,7 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 			'COURSE_NAME',
 			'GB_COURSE_SECTION_ID',	
 			'WRU_ID',
+			'Course',
 			'Partner',
 			'Teacher_First',
 			'Teacher_Last',
@@ -167,6 +168,13 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 			section = e.section
 			student = e.student
 			try:
+				teacher = section.teacher
+			except:
+				ObjectDoesNotExist
+				teacher = None
+			teacher_last = getattr(teacher, 'last_name', '')
+			teacher_first = getattr(teacher, 'first_name', '')
+			try:
 				coaching = student.coaches.latest('start_date')
 				coach = coaching.coach
 			except ObjectDoesNotExist:
@@ -192,10 +200,11 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 				section.title,
 				section.id,
 				section.WRU_ID,
+				section.course,
 				student.partner,
-				section.teacher.first_name,
-				section.teacher.last_name,
-				"{0} {1}".format(section.teacher.first_name, section.teacher.last_name),
+				teacher_first,
+				teacher_last,
+				"{0} {1}".format(teacher_first, teacher_last),
 				section.program,
 				coach_first,
 				coach_last,
