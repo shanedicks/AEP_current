@@ -3,7 +3,7 @@ from django.forms import (ModelForm, Form, ChoiceField, modelformset_factory,
                          ValidationError, CharField, DateField,
                          ModelChoiceField, ModelMultipleChoiceField)
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from core.forms import DateFilterForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field

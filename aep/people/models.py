@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from core.utils import make_slug, make_AEP_ID, make_unique_slug, state_session
 
 # make_slug and make_AEP_ID callables were defaults for Profile and Student -have to be kept or migrations break

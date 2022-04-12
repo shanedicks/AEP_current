@@ -42,6 +42,8 @@ EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 DEFAULT_FROM_EMAIL = 'robot@dccaep.org'
 SERVER_EMAIL = 'server@dccaep.org'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Application definition
 
 DJANGO_APPS = [

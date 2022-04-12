@@ -1,7 +1,7 @@
 import datetime
 from django.db.models import Q
 from django.forms import ModelForm, Form, FileField, modelformset_factory, ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset
