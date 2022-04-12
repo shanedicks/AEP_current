@@ -1,25 +1,25 @@
-from django.conf.urls import url, include
+from django.urls import re_path, include
 from . import views
 
 app_name = 'semesters'
 
 
 single_semester_patterns = [
-    url(r'^$',
+    re_path(r'^$',
         views.SemesterClassListView.as_view(),
         name='semester class list'),
-    url(r'^sites-table/$',
+    re_path(r'^sites-table/$',
         views.SemesterSitesTableView.as_view(),
         name='semester sites table'),
-    url(r'^times-table/$',
+    re_path(r'^times-table/$',
         views.SemesterTimesTableView.as_view(),
         name='semester times table')
 ]
 
 urlpatterns = [
-    url(r'^$',
+    re_path(r'^$',
         views.SemesterListView.as_view(),
         name='semester list'),
-    url(r'^(?P<pk>\d+)/',
+    re_path(r'^(?P<pk>\d+)/',
         include(single_semester_patterns))
 ]
