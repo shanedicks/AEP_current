@@ -132,7 +132,11 @@ class Section(models.Model):
         t = str(self.teacher)
         d = self.get_days_str()
         b = self.start_time.strftime('%I:%M%p')
-        items = [s, n, t, d, b]
+        try:
+            sem = "({0})".format(str(self.semester.id))
+        except ObjectDoesNotExist:
+            sem = ''
+        items = [s, n, t, d, b, sem]
         return "|".join(items)
 
     def get_absolute_url(self):
