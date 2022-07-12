@@ -5,7 +5,7 @@ from django.apps import apps
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, Count
 from django.utils import timezone
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -342,3 +342,59 @@ def send_message_task(message_id):
     message = apps.get_model('assessments', 'Message').objects.get(id=message_id)
     logger.info('Sending message {0}'.format(message.title))
     message.send_message()
+
+@shared_task
+def remove_duplicate_assessments():
+    tabes = apps.get_model('assessments', 'Tabe').objects.all()
+    clas_es = apps.get_model('assessments', 'Clas_E').objects.all()
+
+    tabe_dupes = tabes.values(
+        'student',
+        'test_date',
+        'form',
+        'read_level',
+        'math_level',
+        'lang_level',
+        'read_nrs',
+        'math_nrs',
+        'lang_nrs'
+    ).annotate(records=Count('student')).filter(records__gt=1)
+
+    for dupes in tabe_dupes:
+        dupes = tabes.filter(
+        student=dupes['student'],
+        test_date=dupes['test_date'],
+        form=dupes['form'],
+        read_level=dupes['read_level'],
+        math_level=dupes['math_level'],
+        lang_level=dupes['lang_level'],
+        read_nrs=dupes['read_nrs'],
+        math_nrs=dupes['math_nrs'],
+        lang_nrs=dupes['lang_nrs']
+        )
+        print("Keeping {0}".format(dupes[0]))
+        print("Removing {0}".format(dupes[1:]))
+        remove = tabes.filter(pk__in=dupes[1:])
+        remove.delete()
+
+    clas_e_dupes = clas_es.values(
+        'student',
+        'test_date',
+        'form',
+        'read_level',
+        'read_nrs',
+    ).annotate(records=Count('student')).filter(records__gt=1)
+
+    for dupes in clas_e_dupes:
+        dupes = clas_es.filter(
+        student=dupes['student'],
+        test_date=dupes['test_date'],
+        form=dupes['form'],
+        read_level=dupes['read_level'],
+        read_nrs=dupes['read_nrs'],
+        )
+        print("Keeping {0}".format(dupes[0]))
+        print("Removing {0}".format(dupes[1:]))
+        remove = clas_es.filter(pk__in=dupes[1:])
+        remove.delete()
+

@@ -296,13 +296,13 @@ def participation_summary_task():
                     record['total_hours'],
                 ]
             )
-    email = EmailMessage('Participation Report Test', "Missed a few things the first time. Second Attempt", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
+    email = EmailMessage('Participation Report', "This is a detailed participation report for all students", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
     email.attach_file('participation_report.csv')
     email.send()
     return True
 
 @shared_task
-def summary_report_task(from_date, to_date, email):
+def summary_report_task(from_date, to_date):
 
     from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S').date()
     to_date = datetime.strptime(to_date, '%Y-%m-%dT%H:%M:%S').date()
@@ -313,13 +313,29 @@ def summary_report_task(from_date, to_date, email):
     Clas_E = apps.get_model('assessments', 'Clas_E')
 
     students = Student.objects.filter(duplicate=False)
-    attendance = Attendance.objects.filter(attendance_type='P', attendance_date__gte=from_date)
-    tabe_tests = Tabe.objects.filter(test_date__gte=from_date)
-    clas_e_tests = Clas_E.objects.filter(test_date__gte=from_date)
+    attendance = Attendance.objects.filter(
+        attendance_type='P',
+        attendance_date__gte=from_date,
+        attendance_date__lte=to_date
+    )
+    tabe_tests = Tabe.objects.filter(
+        test_date__gte=from_date,
+        test_date__lte=to_date
+    )
+    clas_e_tests = Clas_E.objects.filter(
+        test_date__gte=from_date,
+        test_date__lte=to_date
+    )
+
+    notes = apps.get_model('people', 'ProspectNote').objects.filter(
+        successful=True,
+        contact_date__gte=from_date,
+        contact_date__lte=to_date
+    ).exclude(prospect__student=None)
 
     min_id = students.filter(intake_date=from_date).aggregate(Min('id'))['id__min']
     max_id = students.filter(intake_date=to_date).aggregate(Max('id'))['id__max']
-    new_students = students.filter(id__gte=min_id)
+    new_students = students.filter(id__gte=min_id, id__lte=max_id)
 
     attended_students = students.filter(classes__attendance__in=attendance).distinct()
     
@@ -340,26 +356,48 @@ def summary_report_task(from_date, to_date, email):
             'Partner',
             '# Enrollments',
             'Last Attendance',
-            'Total Attendance',
+            'Class Attendance',
+            'Prospect Attendance',
+            'Testing Attendance',
             'Total Hours',
         ]
         writer.writerow(headers)
 
         for student in all_students:
             enrollments = student.classes.filter(attendance__in=attendance)
+            student_attendance = attendance.filter(enrollment__in=enrollments)
+            try:
+                last_attended = student_attendance.last().attendance_date
+            except AttributeError:
+                last_attended = "No Attendance"
+            att_hours = sum([a.hours for a in student_attendance])
+            num_tabes = tabe_tests.filter(student__student=student).count() 
+            num_clas_es = clas_e_tests.filter(student__student=student).count()
+            test_hours = 2 * (num_tabes + num_clas_es)
+            prospect = 1 if notes.filter(prospect__student=student).exists() else 0
             try:
                 g_suite = student.elearn_record.g_suite_email
             except ObjectDoesNotExist:
                 g_suite = "No elearn record found"
-            record = {
-                'first_name': student.first_name,
-                'last_name': student.last_name,
-                'email': student.email,
-                'g_suite': g_suite,
-                'partner': student.partner,
-                'wru': student.WRU_ID,
-                'num_classes': enrollments.count()
-            }
+            record = [
+                student.WRU_ID,
+                student.first_name,
+                student.last_name,
+                student.email,
+                g_suite,
+                student.partner,
+                enrollments.count(),
+                last_attended,
+                att_hours,
+                prospect,
+                test_hours,
+                sum([att_hours, prospect, test_hours])
+            ]
+            writer.writerow(record)
+    email = EmailMessage('Summary Report', "Student attendance summary report", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
+    email.attach_file('summary_report.csv')
+    email.send()
+    return True
 
 @shared_task
 def pop_update_task(student_id, date):
