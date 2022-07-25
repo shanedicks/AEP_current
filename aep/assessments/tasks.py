@@ -306,6 +306,10 @@ def testing_eligibility_report(email_address):
                 native_language = student.WIOA.native_language
             except ObjectDoesNotExist:
                 native_language = ''
+            try:
+                active_hours = record.active_hours,
+            except TypeError:
+                active_hours ="active_hours failed"
             s = [
                 student.WRU_ID,
                 student.last_name,
@@ -319,7 +323,7 @@ def testing_eligibility_report(email_address):
                 record.last_test_type,
                 record.last_test_date,
                 record.test_assignment,
-                record.active_hours,
+                active_hours,
                 hours,
                 coaches,
                 sections,

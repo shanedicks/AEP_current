@@ -98,6 +98,14 @@ class TestAppointmentAdmin(ImportExportActionModelAdmin):
 
     list_display = (
         '__str__',
+        'attendance_type',
+        'att_hours',
+        'time_in',
+        'time_out'
+    )
+
+    list_filter = (
+        'attendance_type',
     )
 
     search_fields = [

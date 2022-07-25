@@ -823,7 +823,7 @@ class Attendance(models.Model):
 
     @property
     def hours(self):
-        if self.att_hours:
+        if self.att_hours is not None:
             return self.att_hours
         else:
             if self.attendance_type == 'P':
