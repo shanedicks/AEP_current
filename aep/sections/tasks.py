@@ -104,18 +104,23 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 	enrollments = apps.get_model('sections', 'Enrollment').objects.all()
 	if semesters is not None:
 		enrollments = enrollments.filter(section__semester__in=semesters)
+		print("Enrollments in semester: ", enrollments.count())
 	if from_date is not None:
 		from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S').date()
+		print(from_date)
 		enrollments = enrollments.filter(
 			Q(section__starting__gte=from_date) | 
 			Q(section__semester__start_date__gte=from_date)
 		)
+		print("Enrollments after from_date: ", enrollments.count())
 	if to_date is not None:
 		to_date = datetime.strptime(to_date, '%Y-%m-%dT%H:%M:%S').date()
+		print(to_date)
 		enrollments = enrollments.filter(
 			Q(section__ending__lte=to_date) | 
 			Q(section__semester__end_date__lte=to_date)
 		)
+		print("Enrollments before to_date: ", enrollments.count())
 	with open('mondo_attendance_report.csv', 'w', newline='') as out:
 		writer = csv.writer(out)
 
