@@ -55,7 +55,10 @@ single_student_patterns = [
     re_path(r'^transcript/$',
         views.StudentTranscriptView.as_view(),
         name='student transcript'),
-    re_path(r'^my-classes/', include(student_class_patterns))
+    re_path(r'^my-classes/', include(student_class_patterns)),
+    re_path(r'^send-schedule/$',
+        views.SendStudentScheduleView.as_view(),
+        name="send student schedule")
 ]
 
 student_patterns = [

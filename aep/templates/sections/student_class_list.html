@@ -32,6 +32,7 @@
             <th>Start Date</th>
             <th>End Date</th>
             <th>Enrollment Status</th>
+            <th>Schedule Sent</th>
         </tr>
         {% if is_paginated %}
             {% include 'components/pagination.html' %}
@@ -48,12 +49,17 @@
             <td>{{ enrollment.section.start_date }}</td>
             <td>{{ enrollment.section.end_date }}</td>
             <td>{{ enrollment.get_status_display }}</td>
+            {% if enrollment.schedule_sent %}
+                <td>Yes</td>
+            {% else %}
+                <td>No</td>
+            {% endif %}
         </tr>
     {% endfor %}
     </table>
     <!--{% if pretested %} --> <!-- {% endif %} -->
     <p><a class="btn btn-default" href="{% url 'people:add class' slug=student.slug %}" role="button">Add New Class &raquo;</a>
-    
     <a class="btn btn-default" href="{%url 'people:print schedule' slug=student.slug %}" role="button">Print Schedule &raquo;</a>
+    <a class="btn btn-default" href="{%url 'people:send student schedule' slug=student.slug %}" role="button">Email Schedule &raquo;</a>
     </p>
 {% endblock %}

@@ -1,0 +1,18 @@
+
+<p>Hi, {{student}}</p>
+<p>Here are your classes for next session.</p>
+
+{% for section in current %}
+	<p><strong>Class Title:</strong> {{ section.title }}</p>
+    <p><strong>Teacher Name:</strong> {{ section.teacher }}</p>
+    <p><strong>Class Location:</strong> {{ section.site }}, {{ section.room }}</p>
+    {% if section.program != 'ELRN'%}
+        <p><strong>Class Days:</strong> {{ section.get_days_names }}</p>
+        <p><strong>Class Times:</strong> {{ section.start_time }}-{{ section.end_time }}</p>
+    {% endif %}
+    <p><strong>Class Dates:</strong> Classes start the week of {{ section.start_date }} and end the week of {{ section.end_date }}</p>
+    <p></p>
+{% endfor %}
+<p>To make changes to this schedule call 504-671-5434 or email us at coach@elearnclass.org.</p>
+<p>See you in class!</p>
+<p>~Delgado Adult Education</p>

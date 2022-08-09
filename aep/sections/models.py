@@ -482,6 +482,16 @@ class Section(models.Model):
                 days_str.append(day[1])
         return "".join(days_str)
 
+    def get_days_names(self):
+        days = [s[0].title() for s in self.get_days()]
+        if len(days) > 1:
+            out = ", ".join(days[:-1]) +" and "+days[-1]
+        elif len(days) == 1:
+            out = days[0]
+        else:
+            out = ""
+        return out
+
     def get_class_dates(self):
         weekdays = [i[2] for i in self.get_days()]
         if self.starting is not None:
@@ -568,6 +578,7 @@ class Enrollment(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    schedule_sent = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('student', 'section')

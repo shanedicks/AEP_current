@@ -6,8 +6,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.db.models import Sum, Min, Max
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from core.tasks import send_mail_task
 
 logger = get_task_logger(__name__)
 
@@ -656,3 +659,30 @@ def prospect_check_returner_task(prospect_id):
         logger.info("{0} marked as returner".format(prospect))
         prospect.returning_student = True
         prospect.save()
+
+@shared_task
+def send_student_schedule_task(student_id):
+    student = apps.get_model('people', "Student").objects.get(id=student_id)
+    current = student.current_classes().filter(status='A')
+    recipients = []
+    try:
+        recipients.append(student.elearn_record.g_suite_email)
+    except ObjectDoesNotExist:
+        pass
+    if student.email:
+        recipients.append(student.email)
+    if len(recipients) > 0:
+        current.update(schedule_sent=True)
+        context = {
+                'student': student.first_name,
+                'current': [e.section for e in current]
+        }
+        html_message = render_to_string('emails/student_schedule.html', context)
+        message = strip_tags(html_message)
+        send_mail_task.delay(
+            subject="DCCAEP Class Schedule",
+            message=message,
+            html_message=html_message,
+            from_email="reminder@dccaep.org",
+            recipient_list=recipients,
+        )

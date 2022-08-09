@@ -28,7 +28,8 @@ from .forms import (
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm)
 from .tasks import (intake_retention_report_task, orientation_email_task, 
-    prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task)
+    prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
+    send_student_schedule_task)
 
 
 class UserCreateView(CreateView):
@@ -903,3 +904,10 @@ class ProspectMeetingAttendanceCSV(LoginRequiredMixin, FormView):
             prospect_dict[prospect.id] = record
         data = self.get_data(prospect_dict)
         return render_to_csv(data=data, filename=filename)
+
+class SendStudentScheduleView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        student = Student.objects.get(slug = kwargs['slug'])
+        send_student_schedule_task.delay(student.id)
+        return HttpResponseRedirect(reverse('people:student current classes', kwargs={'slug': student.slug}))

@@ -16,13 +16,11 @@ def get_enrollment(enrollment_id):
 
 @shared_task
 def activate_task(enrollment_id):
-	logger.info('Activating enrollment {0}'.format(enrollment_id))
 	enrollment = get_enrollment(enrollment_id)
 	return enrollment.activate()
 
 @shared_task
 def end_task(enrollment_id):
-	logger.info('Ending enrollment {0}'.format(enrollment_id))
 	enrollment = get_enrollment(enrollment_id)
 	if enrollment.status == enrollment.ACTIVE:
 		enrollment.status = enrollment.COMPLETED
