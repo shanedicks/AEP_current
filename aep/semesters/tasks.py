@@ -114,7 +114,7 @@ def send_schedules_task(semester_id_list):
             html_message = render_to_string('emails/student_schedule.html', context)
             message = strip_tags(html_message)
             send_mail_task.delay(
-                subject="DCCAEP Class Schedule",
+                subject="Delgado Adult Education Class Schedule",
                 message=message,
                 html_message=html_message,
                 from_email="reminder@dccaep.org",
