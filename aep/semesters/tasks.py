@@ -88,7 +88,7 @@ def create_missing_g_suite_task(semester_id):
 @shared_task
 def send_schedules_task(semester_id_list):
     semesters = apps.get_model('semesters', 'Semester').objects.filter(id__in=semester_id_list)
-    enrollments = apps.get_model('sections', 'Enrollments').objects.filter(
+    enrollments = apps.get_model('sections', 'Enrollment').objects.filter(
         section__semester__in=semesters,
         status='A',
         schedule_sent=False,
