@@ -41,11 +41,18 @@ class ClassAddEnrollmentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         site = kwargs.pop('site', None)
         program = kwargs.pop('program', None)
-        limit = datetime.datetime.today() - datetime.timedelta(days=7)
+        limit = datetime.datetime.today() - datetime.timedelta(days=14)
+        ell_limit = datetime.datetime.today() - datetime.timedelta(days=42)
         qst = Section.objects.filter(
             semester__start_date__gte=limit
         ) | Section.objects.filter(
             starting__gte=limit
+        ) | Section.objects.filter(
+            semester__start_date__gte=ell_limit,
+            program='ELL'
+        ) | Section.objects.filter(
+            starting__gte=ell_limit,
+            program='ELL'
         )
         qst.order_by('site', 'title', 'start_time')
         if site and site[0] != '':
