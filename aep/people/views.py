@@ -32,13 +32,6 @@ from .tasks import (intake_retention_report_task, orientation_email_task,
     send_student_schedule_task)
 
 
-class UserCreateView(CreateView):
-    model = settings.AUTH_USER_MODEL
-    form_class = UserForm
-    success_url = reverse_lazy('people home')
-    template_name = 'people/create_user.html'
-
-
 # <<<<< Student Views >>>>>
 
 class StudentDetailView(LoginRequiredMixin, DetailView):
@@ -482,6 +475,7 @@ class ProspectSignupView(CreateView):
             self.object.save()
         return super().form_valid(form)
 
+
 class ProspectSuccessView(TemplateView):
 
     template_name = 'people/prospect_success.html'
@@ -498,7 +492,6 @@ class ProspectSuccessView(TemplateView):
 class ProspectIntakeSuccessView(ProspectSuccessView):
 
     template_name = 'people/prospect_intake_success.html'
-
 
 
 class ProspectDetailView(LoginRequiredMixin, DetailView):

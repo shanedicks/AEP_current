@@ -864,7 +864,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
         "SID"
     )
 
-    actions = ImportExportActionModelAdmin.actions + ['send_to_state', 'check_for_state_id']
+    actions = ImportExportActionModelAdmin.actions + ['send_to_state', 'check_for_state_id', 'verify']
 
     def get_AEP_ID(self, obj):
         return obj.student.AEP_ID
@@ -884,7 +884,12 @@ class WIOAAdmin(ImportExportActionModelAdmin):
     def send_to_state(self, request, queryset):
         session = state_session()
         for obj in queryset:
-            obj.send(session)
+            obj.send_to_state(session)
+
+    def verify(self, request, queryset):
+        session = state_session()
+        for obj in queryset:
+            obj.verify(session)
 
 admin.site.register(WIOA, WIOAAdmin)
 

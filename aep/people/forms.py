@@ -448,7 +448,8 @@ class StudentPersonalInfoForm(ModelForm):
             'last_name': "Last Name (primer y segundo apellido)",
             'title': "Title (titulo)",
             'nickname': "Preferred Name or Nickname (nombre o apodo preferido)",
-            'pronoun': "Pronouns (pronombres)"
+            'pronoun': "Pronouns (pronombres)",
+            "US_citizen": "<strong>Check this box if you are a US Citizen</strong>"
         }
 
 
@@ -461,20 +462,81 @@ class StudentInterestForm(ModelForm):
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
             Fieldset(
+                'Tell us about your goals',
+                'primary_goal',
+                HTML(
+                    """<p><strong>What other goals would you like to pursue? (optional)</strong></p>"""
+                ),
+                Column(
+                    "check_goal_1",
+                    "check_goal_2",
+                    "check_goal_3",
+                    css_class="col-md-4"
+                ),
+                Column(
+                    "check_goal_4",
+                    "check_goal_5",
+                    "check_goal_6",
+                    css_class="col-md-4"
+                ),
+                Column(
+                    "check_goal_7",
+                    "check_goal_8",
+                    "check_goal_9",
+                    css_class="col-md-4"
+                )
+            ),
+            Fieldset(
                 'What types of classes are you interested in taking with us?',
                 Column(
                     'ccr_app',
-                    'ell_app',
-                    'ace_app',
-                    css_class="col-md-6"
+                    'e_learn_app',
+                    css_class="col-md-4"
                 ),
                 Column(
-                    'success_app',
-                    'e_learn_app',
                     'accuplacer_app',
-                    css_class="col-md-6"
+                    'success_app',
+                    'certifications_app',
+                    css_class="col-md-4"
                 ),
-            )
+                Column(
+                    'ell_app',
+                    'ell_online_app',
+                    css_class="col-md-4"
+                ),
+            ),
+            Fieldset(
+                'Tell us more about your class preferences',
+                Column(    
+                    HTML(
+                        """<p><strong>How would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                    ),
+                    "on_campus",
+                    "online_solo",
+                    "online_cohort",
+                    "hybrid",
+                    css_class="col-md-4"
+                ),
+                Column(
+                    HTML(
+                        """<p><strong>When would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                    ),
+                    "morning",
+                    "afternoon",
+                    "evening",
+                    "weekend",
+                    css_class="col-md-4"
+                ),
+                Column(
+                    HTML(
+                        """<p><strong>Can you access online classes or resources?</strong></p>"""
+                    ),
+                    "computer_access",
+                    "internet_access",
+                    css_class="col-md-4"
+                )
+            ),
+            'prior_registration',  
         )
 
     class Meta:
@@ -482,19 +544,53 @@ class StudentInterestForm(ModelForm):
         fields = (
             "ccr_app",
             "ell_app",
-            "ace_app",
             "success_app",
             'e_learn_app',
             'accuplacer_app',
+            'ell_online_app',
+            'certifications_app',
+            'primary_goal',
+            "check_goal_1",
+            "check_goal_2",
+            "check_goal_3",
+            "check_goal_4",
+            "check_goal_5",
+            "check_goal_6",
+            "check_goal_7",
+            "check_goal_8",
+            "check_goal_9",
+            "online_cohort",
+            "online_solo",
+            "on_campus",
+            "hybrid",
+            "morning",
+            "afternoon",
+            "evening",
+            "weekend",
+            "computer_access",
+            "internet_access",
+            "prior_registration"
+
         )
 
+        labels = {
+            "ccr_app": "In Person study for HiSET",
+            "ell_app": "In Person English Language Learners",
+            "ell_online_app": "Online English Language Learners",
+            "success_app": "Success Classes",
+            'e_learn_app': "Online study for HiSET",
+            'accuplacer_app': "Accuplacer",
+            'certifications_app': 'Certification'
+        }
+
         help_texts = {
-            "ccr_app": "Reading, writing, and math skill building classes to help with college and career readiness goals as well as passing the HiSET.",
-            "ell_app": "English classes to help non-native speakers improve speaking, listening, reading, and writing skills.",
-            "ace_app": "Integrated education and training classes where students can earn industry credentials and college credit in career pathways: information technology, healthcare, construction trades, and culinary/hospitality.",
-            "success_app": "Classes designed to help students successfully navigate school and careers such as computer basics, job readiness, career exploration, college skills, and financial success.",
-            'e_learn_app': "Online courses to help with college and career readiness goals as well as passing the HiSET.",
-            'accuplacer_app': "Short preparation classes for the English and math accuplacer college placement tests. ",
+            "ccr_app": "(high school equivalency test, was the GED)<br />Math, Science, Social Studies, Reading and Writing",
+            "ell_app": "(not a native English speaker)<br />Aprendices del idioma inglés en persona<br />(no un hablante nativo de inglés)",
+            "ell_online_app": "(not a native English speaker)<br />Aprendices del idioma inglés en persona<br />(no un hablante nativo de inglés)",
+            "success_app": "(examples: Citizenship, Computer Basics, Public Speaking)",
+            'e_learn_app': "(high school equivalency test, was the GED)<br />Math, Science, Social Studies, Reading and Writing ",
+            'accuplacer_app': "study for college entrance exams",
+            'certifications_app': '(NCCER, ServSafe, Basic Life Support, Microsoft Word)'
         }
 
 
@@ -539,7 +635,16 @@ class StudentContactForm(ModelForm):
                 Row(
                     Field(
                         'city',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                     Field(
+                        'other_city',
+                        wrapper_class="col-md-6",
+                    ),                   
+                    Field(
                         'state',
+                        'parish',
                         wrapper_class="col-md-4",
                         required=True
                     ),
@@ -550,20 +655,27 @@ class StudentContactForm(ModelForm):
                         required=True
                     ),
                 ),
-                'parish',
             ),
             Fieldset(
                 'Emergency Contact Information',
-                'emergency_contact',
+                Field(
+                    'emergency_contact',
+                    required=True,
+                ),
                 Field(
                     'ec_phone',
                     data_mask="999-999-9999",
-                    wrapper_class="col-md-4"
+                    wrapper_class="col-md-4",
+                    required=True
                 ),
                 Field(
-                    'ec_email',
                     'ec_relation',
-                    wrapper_class="col-md-4"
+                    wrapper_class="col-md-4",
+                ),
+                Field(
+                    'ec_relation',
+                    wrapper_class="col-md-4",
+                    required=True
                 ),
             ),
         )
@@ -576,6 +688,7 @@ class StudentContactForm(ModelForm):
             "street_address_1",
             "street_address_2",
             "city",
+            "other_city",
             "state",
             "parish",
             "zip_code",
@@ -587,6 +700,26 @@ class StudentContactForm(ModelForm):
 
 
 class StudentForm(ModelForm):
+
+    def clean_dob(self):
+        data = self.cleaned_data['dob']
+        diff = datetime.today().date() - data
+        age = diff.days // 365.25
+        if age < 16:
+            raise ValidationError(
+                "We're Sorry, but you must be at least 16 years of age"
+                " in order to enroll in classes."
+            )
+        elif age < 18:
+            raise ValidationError(
+                "If you are 16 or 17 years old additional paperwork is "
+                "required for you to register for classes.  Please come "
+                "to the Adult Education Office, City Park Campus, 615 "
+                "City Park Avenue, Building 7, Room 170.  Our office hours"
+                " are Monday thru Thursday, 9am to 4pm.  If you have any "
+                "questions, please contact us at 504-671-5434."
+            )
+        return data
 
     def clean_first_name(self):
         data = self.cleaned_data['first_name'].title()
@@ -617,7 +750,7 @@ class StudentForm(ModelForm):
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
             Fieldset(
-                'User Information',
+                'Student Information',
                 Row(
                     Field(
                         'first_name',
@@ -633,19 +766,53 @@ class StudentForm(ModelForm):
                 Row(
                     Field(
                     'title',
-                    wrapper_class="col-md-3"
+                        wrapper_class="col-md-3",
+                        required=True,
                     ),
                     Field(
-                    'nickname',
-                    wrapper_class="col-md-6"
+                        'nickname',
+                        wrapper_class="col-md-6"
                     ),
                     Field(
-                    'pronoun',
-                    wrapper_class="col-md-3"
+                        'pronoun',
+                        wrapper_class="col-md-3"
                     ),
                 ),
-                'email',
-                'alt_email'
+                Row(
+                    Field(
+                        'email',
+                        wrapper_class="col-md-6"
+                    ),
+                    Field(
+                        'alt_email',
+                        wrapper_class="col-md-6"
+                    ),
+                )
+            ),
+            Fieldset(
+                'Tell us about your goals',
+                'primary_goal',
+                HTML(
+                    """<p><strong>What other goals would you like to pursue? (optional)</strong></p>"""
+                ),
+                Column(
+                    "check_goal_1",
+                    "check_goal_2",
+                    "check_goal_3",
+                    css_class="col-md-4"
+                ),
+                Column(
+                    "check_goal_4",
+                    "check_goal_5",
+                    "check_goal_6",
+                    css_class="col-md-4"
+                ),
+                Column(
+                    "check_goal_7",
+                    "check_goal_8",
+                    "check_goal_9",
+                    css_class="col-md-4"
+                )
             ),
             Fieldset(
                 'What types of classes are you interested in taking with us?',
@@ -664,18 +831,42 @@ class StudentForm(ModelForm):
                 ),
             ),
             Fieldset(
+                'Tell us more about your class preferences',
+                HTML(
+                    """<p><strong>How would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                ),
+                "on_campus",
+                "online_solo",
+                "online_cohort",
+                "hybrid",
+                HTML(
+                    """<p><strong>When would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                ),
+                "morning",
+                "afternoon",
+                "evening",
+                "weekend",
+                HTML(
+                    """<p><strong>Can you access online classes or resources?</strong></p>"""
+                ),
+                "computer_access",
+                "internet_access"
+            ),
+            'prior_registration',            
+            Fieldset(
                 'Contact Information',
+                "allow_texts",
                 Row(
                     Field(
                         'phone',
                         placeholder="504-555-5555",
-                        wrapper_class="col-md-6",
+                        wrapper_class="col-md-5",
                         data_mask="999-999-9999",
                         required=True
                     ),
                     Field(
                         'alt_phone',
-                        wrapper_class="col-md-6",
+                        wrapper_class="col-md-5",
                         placeholder="504-555-5555",
                         data_mask="999-999-9999",
                     )
@@ -694,7 +885,16 @@ class StudentForm(ModelForm):
                 Row(
                     Field(
                         'city',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                     Field(
+                        'other_city',
+                        wrapper_class="col-md-6",
+                    ),                   
+                    Field(
                         'state',
+                        'parish',
                         wrapper_class="col-md-4",
                         required=True
                     ),
@@ -705,20 +905,27 @@ class StudentForm(ModelForm):
                         required=True
                     ),
                 ),
-                'parish',
             ),
             Fieldset(
                 'Emergency Contact Information',
-                'emergency_contact',
+                Field(
+                    'emergency_contact',
+                    required=True,
+                ),
                 Field(
                     'ec_phone',
                     data_mask="999-999-9999",
-                    wrapper_class="col-md-4"
+                    wrapper_class="col-md-4",
+                    required=True
                 ),
                 Field(
-                    'ec_email',
                     'ec_relation',
-                    wrapper_class="col-md-4"
+                    wrapper_class="col-md-4",
+                ),
+                Field(
+                    'ec_relation',
+                    wrapper_class="col-md-4",
+                    required=True
                 ),
             ),
             Fieldset(
@@ -772,10 +979,12 @@ class StudentForm(ModelForm):
             'certifications_app',
             "prior_registration",
             "phone",
+            "allow_texts",
             "alt_phone",
             "street_address_1",
             "street_address_2",
             "city",
+            "other_city",
             "state",
             "parish",
             "zip_code",
@@ -783,9 +992,30 @@ class StudentForm(ModelForm):
             "ec_phone",
             "ec_email",
             "ec_relation",
+            "primary_goal",
+            "check_goal_1",
+            "check_goal_2",
+            "check_goal_3",
+            "check_goal_4",
+            "check_goal_5",
+            "check_goal_6",
+            "check_goal_7",
+            "check_goal_8",
+            "check_goal_9",
+            "on_campus",
+            "online_solo",
+            "online_cohort",
+            "hybrid",
+            "morning",
+            "afternoon",
+            "evening",
+            "weekend",
+            "internet_access",
+            "computer_access"
         )
         labels = {
-            "US_citizen": "Check this box if you are a US citizen",
+            "allow_texts": "Allow Texts",
+            "US_citizen": "<strong>Check this box if you are a US citizen</strong>",
             "ccr_app": "In Person study for HiSET",
             "ell_app": "In Person English Language Learners",
             "ell_online_app": "Online English Language Learners",
@@ -807,6 +1037,26 @@ class StudentForm(ModelForm):
 
 
 class PartnerForm(ModelForm):
+
+    def clean_dob(self):
+        data = self.cleaned_data['dob']
+        diff = datetime.today().date() - data
+        age = diff.days // 365.25
+        if age < 16:
+            raise ValidationError(
+                "We're Sorry, but you must be at least 16 years of age"
+                " in order to enroll in classes."
+            )
+        elif age < 18:
+            raise ValidationError(
+                "If you are 16 or 17 years old additional paperwork is "
+                "required for you to register for classes.  Please come "
+                "to the Adult Education Office, City Park Campus, 615 "
+                "City Park Avenue, Building 7, Room 170.  Our office hours"
+                " are Monday thru Thursday, 9am to 4pm.  If you have any "
+                "questions, please contact us at 504-671-5434."
+            )
+        return data
 
     def clean_first_name(self):
         data = self.cleaned_data['first_name'].title()
@@ -1039,6 +1289,10 @@ class SSNForm(ModelForm):
             'SID',
         )
 
+        help_texts = {
+            "SID": "This is used by the State of Louisiana as a means of matching student records, however it is not required for admission."
+        }
+
 
 class REForm(ModelForm):
 
@@ -1090,9 +1344,17 @@ class REForm(ModelForm):
                     Field(
                         "country",
                         "native_language",
-                        wrapper_class="col-md-6"
+                        wrapper_class="col-md-6",
+                        required=True
                     )
                 ),
+                Row(
+                    Field(
+                        "other_country",
+                        "other_language",
+                        wrapper_class="col-md-6"
+                    )
+                )
             ),
         )
 
@@ -1106,11 +1368,25 @@ class REForm(ModelForm):
             "white",
             "pacific_islander",
             "country",
+            "other_country",
+            "other_language",
             "native_language",
         )
 
 
 class EETForm(ModelForm):
+
+    def clean(self):
+        data = super(EETForm, self).clean()
+        if data['current_employment_status'] in ["1", "9"]:
+            if data["employer"] == '': 
+                msg = _("""Sorry, the State of Louisiana requires that we
+                        collect employer data from any employed applicants. """)
+                self.add_error("employer", msg)
+            if data["occupation"] == '':
+                msg = _("""Sorry, the State of Louisiana requires that we
+                        collect occupation data from any employed applicants. """)
+                self.add_error("occupation", msg)
 
     def __init__(self, *args, **kwargs):
         super(EETForm, self).__init__(*args, **kwargs)
@@ -1123,8 +1399,10 @@ class EETForm(ModelForm):
                 Row(
                     Field(
                         "highest_level_completed",
+                        "highet_level_at_entry",
                         "school_location",
-                        wrapper_class="col-md-4"
+                        wrapper_class="col-md-4",
+                        required=True
                     ),
                 )
             ),
@@ -1138,31 +1416,10 @@ class EETForm(ModelForm):
                         wrapper_class="col-md-4"
                     )
                 ),
-                "migrant_seasonal_status",
                 "long_term_unemployed",
-            ),
-            Fieldset(
-                "Services/Training Information",
-                Field(
-                    "adult_one_stop",
-                    "youth_one_stop",
-                    "voc_rehab",
-                    "wagner_peyser",
-                    "recieved_training",
-                    "etp_name",
-                    "etp_program",
-                    "etp_CIP_Code",
-                    "training_type_1",
-                    "training_type_2",
-                    "training_type_3",
-                    type="hidden"
-                ),
-                Field(
-                    "job_corps",
-                    "youth_build",
-                    "school_status",
-                    required=True
-                ),
+                "current_industry",
+                "industry_preference",
+                "migrant_seasonal_status",
             ),
         )
 
@@ -1170,31 +1427,27 @@ class EETForm(ModelForm):
         model = WIOA
         fields = (
             "highest_level_completed",
+            "highet_level_at_entry",
             "school_location",
             "current_employment_status",
             "employer",
             "occupation",
             "migrant_seasonal_status",
             "long_term_unemployed",
-            "adult_one_stop",
-            "youth_one_stop",
-            "voc_rehab",
-            "wagner_peyser",
-            "school_status",
-            "recieved_training",
-            "etp_name",
-            "etp_program",
-            "etp_CIP_Code",
-            "training_type_1",
-            "training_type_2",
-            "training_type_3",
-            "job_corps",
-            "youth_build",
-            "school_status",
+            "current_industry",
+            "industry_preference",
+            "migrant_seasonal_status"
         )
 
 
 class DisabilityForm(ModelForm):
+
+    def clean_request_accommodation(self):
+        data = self.cleaned_data['request_accommodation']
+        if not data:
+            msg = _("You must indicate you understand your responsibility to request accomodations.")
+            self.add_error("request_accommodation", msg)
+        return data
 
     def __init__(self, *args, **kwargs):
         super(DisabilityForm, self).__init__(*args, **kwargs)
@@ -1203,7 +1456,7 @@ class DisabilityForm(ModelForm):
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
             Fieldset(
-                "Disability Disclosure",
+                "Accessibilitiy Details",
                 Row(
                     Column(
                         "adhd",
@@ -1231,7 +1484,7 @@ class DisabilityForm(ModelForm):
                     )
                 ),
                 HTML(
-                    '<h5>Learning Disabilities</h5>'
+                    '<h4>Learning Disabilities</h4>'
                 ),
                 Row(
                     Column(
@@ -1244,7 +1497,15 @@ class DisabilityForm(ModelForm):
                         "neurological_impairments",
                         css_class="col-md-4",
                     )
-                )
+                ),
+                HTML(
+                    "<h4>Disability Disclosure </h4>"
+                ),
+                Field(
+                    'disability_notice',
+                    required=True,
+                ),
+                'request_accommodation'
             ),
         )
 
@@ -1270,6 +1531,8 @@ class DisabilityForm(ModelForm):
             "dysgraphia",
             "dyslexia",
             "neurological_impairments",
+            "disability_notice",
+            "request_accommodation"
         )
 
 
@@ -1283,107 +1546,95 @@ class AdditionalDetailsForm(ModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 "Additional Details",
-                Row(
-                    HTML("""<div class="col-md-8"><p>This information is
-                         optional, however, sharing it with us can help
-                         us to better understand the needs of our
-                         student body and provide additional
-                         programming and services for all of
-                         our students.</p></div>"""),
+                HTML("""<p>This information is
+                     optional, however, sharing it with us can help
+                     us to better understand the needs of our
+                     student body and provide additional
+                     programming and services for all of
+                     our students.</p>"""
                 ),
-                Row(
-                    Column(
-                        "single_parent",
-                        "rural_area",
-                        "displaced_homemaker",
-                        "dislocated_worker",
-                        "state_payed_foster",
-                        css_class="col-md-4"
-                    ),
-                    Column(
-                        "cult_barriers_hind_emp",
-                        "in_foster_care",
-                        "aged_out_foster_care",
-                        "exhaust_tanf",
-                        css_class="col-md-4"
-                    ),
+                HTML("""<p><strong>Have you 
+                    (or someone in your household) recieved any of 
+                    the following in the last six months?</strong></p>"""
                 ),
-                HTML("""<hr>"""),
-                "recieves_public_assistance",
-                Row(
-                    Column(
-                        HTML(
-                            """<p>(i) SNAP or Louisiana Purchase Card </p>
-                            <p>(ii) TANF Assistance</p>
-                            <p>(iii) SSI Assistance</p>"""
-                        ),
-                        css_class="col-md-4"
-                    ),
-                    Column(
-                        HTML(
-                            """<p>(iv) State or local income-based public
-                             assistance (Louisiana Medicaid, Section 8 Housing,
-                             Kinship Care, Child Care Assisstance,
-                             LSU Hospital Free Care, Free Dental Program)</p>"""
-                        ),
-                        css_class="col-md-4"
-                    ),
-                ),
-                HTML("""<hr>"""),
                 Field(
-                    "low_family_income",
-                    HTML("""<table class="table table-condensed">
-                        <tr>
-                        <th>Individual</th><th>Family of 2</th>
-                        <th>Family of 3</th><th>Family of 4</th>
-                        <th>Family of 5</th><th>Family of 6</th>
-                        <th>Family of 7</th><th>Family of 8</th>
-                        </tr>
-                        <tr>
-                        <td>$11,880</td><td>$16,020</td><td>$20,300</td>
-                        <td>$25,062</td><td>$29,579</td><td>$34,595</td>
-                        <td>$36,730</td><td>$40,890</td>
-                        </tr></table>"""
-                         ),
-                    Field(
-                        "disabled_in_poverty",
-                        "youth_in_high_poverty_area",
-                        type="hidden"
-                    ),
-                    HTML("""<hr>"""),
-                    "subject_of_criminal_justice",
-                    "arrest_record_employment_barrier",
-                    "lacks_adequate_residence",
-                    "irregular_sleep_accomodation",
-                    "migratory_child",
-                    "runaway_youth"
-                )
+                    "TANF",
+                    "TANF_2",
+                    "SNAP",
+                    "SSI",
+                    "Tstate",
+                    wrapper_class="col-md-60"
+                ),
+                "household_income",
+                "household_size",
+                HTML("""<p><strong>Do any of the following statements apply to you?</strong></p>"""
+                ),
+                "displaced_homemaker",
+                "single_parent",
+                "lacks_adequate_residence",
+                "criminal_record",
+                "foster_care",
+                "veteran",
+                Field(
+                    "parental_status",
+                    required=True,
+                ),
+                HTML("""<p><strong>I want to increase my involvement in my childrens 
+                        education by:</strong></p>"""
+                ),
+                "help_with_schoolwork",
+                "student_teacher_contact",
+                "parent_volunteering",
+                HTML("""<p><strong>I want to increase my involvement in my childrens 
+                    literacy-related activity by:</strong></p>"""
+                ),
+                "read_to_children",
+                "visit_library",
+                "purchase_books",                
+            ),
+            Fieldset(
+                "Before you submit",
+                Field(
+                    "referred_by",
+                    "digital_signature",
+                    required=True
+                ),
             )
         )
 
     class Meta:
         model = WIOA
         fields = (
-            "single_parent",
-            "rural_area",
+            "TANF",
+            "TANF_2",
+            "SNAP",
+            "SSI",
+            "Tstate",
+            "household_income",
+            "household_size",
             "displaced_homemaker",
-            "dislocated_worker",
-            "cult_barriers_hind_emp",
-            "in_foster_care",
-            "aged_out_foster_care",
-            "exhaust_tanf",
-            "recieves_public_assistance",
-            "low_family_income",
-            "state_payed_foster",
-            "disabled_in_poverty",
-            "youth_in_high_poverty_area",
-            "subject_of_criminal_justice",
-            "arrest_record_employment_barrier",
+            "single_parent",
             "lacks_adequate_residence",
-            "irregular_sleep_accomodation",
-            "migratory_child",
-            "runaway_youth",
+            "criminal_record",
+            "foster_care",
+            "veteran",
+            "parental_status",
+            "help_with_schoolwork",
+            "student_teacher_contact",
+            "parent_volunteering",
+            "read_to_children",
+            "visit_library",
+            "purchase_books",
+            "referred_by",
+            "digital_signature",
         )
+
+        labels = {
+            "request_accommodation": """<strong>Check here to indicate that you 
+                                        understand your responsibility to request 
+                                        accommodations.</strong>""",
+            "referred_by": "<strong>How did you hear about us?"
+        }
 
 
 class WioaForm(ModelForm):
@@ -1399,11 +1650,27 @@ class WioaForm(ModelForm):
             data['pacific_islander'],
         ]
         if not any(ethnicity):
+            msg = _('Sorry, the State of Louisiana requires'
+                    ' that we collect race/ethnicity data')
+            self.add_error('pacific_islander', msg)
+        if data['current_employment_status'] in ["1", "9"]:
+            if data["employer"] == '': 
+                msg = _("""Sorry, the State of Louisiana requires that we
+                        collect employer data from any employed applicants. """)
+                self.add_error("employer", msg)
+            if data["occupation"] == '':
+                msg = _("""Sorry, the State of Louisiana requires that we
+                        collect occupation data from any employed applicants. """)
+                self.add_error("occupation", msg)
+
+    def clean_request_accommodation(self):
+        data = self.cleaned_data['request_accommodation']
+        if not data:
             raise ValidationError(
-                _('Sorry, the State of Louisiana requires'
-                    ' that we collect race/ethnicity data'),
-                code=ethnicity
-            )
+                _("You must indicate you understand your responsibility to request accomodations."),
+                code="accomodations"
+                )
+        return data
 
     def __init__(self, *args, **kwargs):
         super(WioaForm, self).__init__(*args, **kwargs)
@@ -1411,6 +1678,10 @@ class WioaForm(ModelForm):
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
+            Field(
+                "parental_status",
+                "veteran",
+            ),
             Field(
                 "SID",
                 data_mask="999-99-9999"
@@ -1420,8 +1691,10 @@ class WioaForm(ModelForm):
                 Row(
                     Field(
                         "highest_level_completed",
+                        "highet_level_at_entry",
                         "school_location",
-                        wrapper_class="col-md-4"
+                        wrapper_class="col-md-4",
+                        required=True
                     ),
                 )
             ),
@@ -1435,31 +1708,10 @@ class WioaForm(ModelForm):
                         wrapper_class="col-md-4"
                     )
                 ),
-                "migrant_seasonal_status",
                 "long_term_unemployed",
-            ),
-            Fieldset(
-                "Services/Training Information",
-                Field(
-                    "adult_one_stop",
-                    "youth_one_stop",
-                    "voc_rehab",
-                    "wagner_peyser",
-                    "recieved_training",
-                    "etp_name",
-                    "etp_program",
-                    "etp_CIP_Code",
-                    "training_type_1",
-                    "training_type_2",
-                    "training_type_3",
-                    type="hidden"
-                ),
-                Field(
-                    "job_corps",
-                    "youth_build",
-                    "school_status",
-                    required=True
-                )
+                "current_industry",
+                "industry_preference",
+                "migrant_seasonal_status",
             ),
             Fieldset(
                 'Race/Ethnicity/Language Information',
@@ -1485,12 +1737,20 @@ class WioaForm(ModelForm):
                     Field(
                         "country",
                         "native_language",
-                        wrapper_class="col-md-6"
+                        wrapper_class="col-md-6",
+                        required=True
                     )
                 ),
+                Row(
+                    Field(
+                        "other_country",
+                        "other_language",
+                        wrapper_class="col-md-6"
+                    )
+                )
             ),
             Fieldset(
-                "Disability Disclosure",
+                "Accessibilitiy Details",
                 Row(
                     Column(
                         "adhd",
@@ -1518,7 +1778,7 @@ class WioaForm(ModelForm):
                     )
                 ),
                 HTML(
-                    '<h5>Learning Disabilities</h5>'
+                    '<h4>Learning Disabilities</h4>'
                 ),
                 Row(
                     Column(
@@ -1531,85 +1791,66 @@ class WioaForm(ModelForm):
                         "neurological_impairments",
                         css_class="col-md-4",
                     )
-                )
+                ),
+                HTML(
+                    "<h4>Disability Disclosure </h4>"
+                ),
+                Field(
+                    'disability_notice',
+                    required=True
+                ),
+                'request_accommodation'
             ),
             Fieldset(
                 "Additional Details",
-                Row(
-                    HTML("""<div class="col-md-8"><p>This information is
-                         optional, however, sharing it with us can help
-                         us to better understand the needs of our
-                         student body and provide additional
-                         programming and services for all of
-                         our students.</p></div>"""),
+                HTML("""<p>This information is
+                     optional, however, sharing it with us can help
+                     us to better understand the needs of our
+                     student body and provide additional
+                     programming and services for all of
+                     our students.</p>"""
                 ),
-                Row(
-                    Column(
-                        "single_parent",
-                        "rural_area",
-                        "displaced_homemaker",
-                        "dislocated_worker",
-                        "state_payed_foster",
-                        css_class="col-md-4"
-                    ),
-                    Column(
-                        "cult_barriers_hind_emp",
-                        "in_foster_care",
-                        "aged_out_foster_care",
-                        "exhaust_tanf",
-                        css_class="col-md-4"
-                    ),
+                HTML("""<p><strong>Have you 
+                    (or someone in your household) recieved any of 
+                    the following in the last six months?</strong></p>"""
                 ),
-                HTML("""<hr>"""),
-                "recieves_public_assistance",
-                Row(
-                    Column(
-                        HTML(
-                            """<p>(i) SNAP or Louisiana Purchase Card </p>
-                            <p>(ii) TANF Assistance</p>
-                            <p>(iii) SSI Assistance</p>"""
-                        ),
-                        css_class="col-md-4"
-                    ),
-                    Column(
-                        HTML(
-                            """<p>(iv) State or local income-based public
-                             assistance (Louisiana Medicaid, Section 8 Housing,
-                             Kinship Care, Child Care Assisstance,
-                             LSU Hospital Free Care, Free Dental Program)</p>"""
-                        ),
-                        css_class="col-md-4"
-                    ),
-                ),
-                HTML("""<hr>"""),
                 Field(
-                    "low_family_income",
-                    HTML("""<table class="table table-condensed">
-                        <tr>
-                        <th>Individual</th><th>Family of 2</th>
-                        <th>Family of 3</th><th>Family of 4</th>
-                        <th>Family of 5</th><th>Family of 6</th>
-                        <th>Family of 7</th><th>Family of 8</th>
-                        </tr>
-                        <tr>
-                        <td>$11,880</td><td>$16,020</td><td>$20,300</td>
-                        <td>$25,062</td><td>$29,579</td><td>$34,595</td>
-                        <td>$36,730</td><td>$40,890</td>
-                        </tr></table>"""
-                         ),
-                    Field(
-                        "disabled_in_poverty",
-                        "youth_in_high_poverty_area",
-                        type="hidden"
-                    ),
-                    HTML("""<hr>"""),
-                    "subject_of_criminal_justice",
-                    "arrest_record_employment_barrier",
-                    "lacks_adequate_residence",
-                    "irregular_sleep_accomodation",
-                    "migratory_child",
-                    "runaway_youth"
-                )
+                    "TANF",
+                    "TANF_2",
+                    "SNAP",
+                    "SSI",
+                    "Tstate",
+                    wrapper_class="col-md-60"
+                ),
+                "household_income",
+                "household_size",
+                HTML("""<p><strong>Do any of the following statements apply to you?</strong></p>"""
+                ),
+                "displaced_homemaker",
+                "single_parent",
+                "lacks_adequate_residence",
+                "criminal_record",
+                "foster_care",
+                HTML("""<p><strong>I want to increase my involvement in my childrens 
+                        education by:</strong></p>"""
+                ),
+                "help_with_schoolwork",
+                "student_teacher_contact",
+                "parent_volunteering",
+                HTML("""<p><strong>I want to increase my involvement in my childrens 
+                    literacy-related activity by:</strong></p>"""
+                ),
+                "read_to_children",
+                "visit_library",
+                "purchase_books",                
+            ),
+            Fieldset(
+                "Before you submit",
+                Field(
+                    "referred_by",
+                    "digital_signature",
+                    required=True
+                ),
             )
         )
 
@@ -1625,41 +1866,24 @@ class WioaForm(ModelForm):
             "current_employment_status",
             "employer",
             "occupation",
+            "current_industry",
+            "industry_preference",
+            "TANF",
+            "TANF_2",
+            "SNAP",
+            "SSI",
+            "Tstate",
+            "veteran",
+            "parental_status",
             "migrant_seasonal_status",
             "long_term_unemployed",
             "single_parent",
-            "rural_area",
             "displaced_homemaker",
-            "dislocated_worker",
-            "cult_barriers_hind_emp",
-            "in_foster_care",
-            "aged_out_foster_care",
-            "exhaust_tanf",
-            "job_corps",
-            "youth_build",
-            "recieves_public_assistance",
-            "low_family_income",
-            "state_payed_foster",
-            "disabled_in_poverty",
-            "youth_in_high_poverty_area",
-            "subject_of_criminal_justice",
-            "arrest_record_employment_barrier",
             "lacks_adequate_residence",
-            "irregular_sleep_accomodation",
-            "migratory_child",
-            "runaway_youth",
-            "adult_one_stop",
-            "youth_one_stop",
-            "voc_rehab",
-            "wagner_peyser",
-            "school_status",
-            "recieved_training",
-            "etp_name",
-            "etp_program",
-            "etp_CIP_Code",
-            "training_type_1",
-            "training_type_2",
-            "training_type_3",
+            "criminal_record",
+            "foster_care",
+            "household_income",
+            "household_size",
             "adhd",
             "autism",
             "deaf_blind",
@@ -1680,21 +1904,34 @@ class WioaForm(ModelForm):
             "dyslexia",
             "neurological_impairments",
             "highest_level_completed",
+            "highet_level_at_entry",
             "school_location",
             "country",
+            "other_country",
             "native_language",
+            "other_language",
+            "help_with_schoolwork",
+            "student_teacher_contact",
+            "parent_volunteering",
+            "read_to_children",
+            "visit_library",
+            "purchase_books",
+            "referred_by",
+            "disability_notice",
+            "request_accommodation",
+            "digital_signature",
             "SID"
         )
+
         labels = {
-            "recieves_public_assistance": "Please check this box if you receive assistance through any of the following programs.",
-            "state_payed_foster": "Are you in state-payed foster care?",
-            "subject_of_criminal_justice": "Have you ever been involved in the criminal justice system for committing a status offense or delinquent act?",
-            "arrest_record_employment_barrier": "Do you need help overcoming employment barriers due to a criminal record?",
-            "low_family_income": "Please check this box if you have low family income. See chart below for low income levels for families of various sizes",
-            "lacks_adequate_residence": "Do you lack a fixed, regular, and adequate nighttime residence?",
-            "irregular_sleep_accomodation": "Do you have irregular sleep accommodations?",
-            "migratory_child": "Are you a migratory child?",
-            "runaway_youth": "Are you a runaway youth?"        
+            "veteran": "<strong> Check this box if you are a veteran</strong>",
+            "request_accommodation": """<strong>Check here to indicate that you 
+                                        understand your responsibility to request 
+                                        accommodations.</strong>""",
+            "referred_by": "<strong>How did you hear about us?"
+        }
+        help_texts = {
+            "SID": "This is used by the State of Louisiana as a means of matching student records, however it is not required for admission."
         }
 
 

@@ -1,5 +1,6 @@
 import requests
 import bs4
+import time
 from datetime import datetime, timedelta
 from django.apps import apps
 from django.db import models
@@ -75,6 +76,314 @@ class Profile(models.Model):
         ("WI", "Wisconsin"),
         ("WY", "Wyoming")
     )
+    CITY_CHOICES = (
+        ("Abbeville", "Abbeville"),
+        ("Abita Springs", "Abita Springs"),
+        ("Addis", "Addis"),
+        ("Albany", "Albany"),
+        ("Alexandria", "Alexandria"),
+        ("Amite", "Amite"),
+        ("Anacoco", "Anacoco"),
+        ("Angie", "Angie"),
+        ("Arcadia", "Arcadia"),
+        ("Arnaudville", "Arnaudville"),
+        ("Ashland", "Ashland"),
+        ("Athens", "Athens"),
+        ("Atlanta", "Atlanta"),
+        ("Baker", "Baker"),
+        ("Baldwin", "Baldwin"),
+        ("Ball", "Ball"),
+        ("Basile", "Basile"),
+        ("Baskin", "Baskin"),
+        ("Bastrop", "Bastrop"),
+        ("Baton Rouge", "Baton Rouge"),
+        ("Belcher", "Belcher"),
+        ("Benton", "Benton"),
+        ("Bernice", "Bernice"),
+        ("Berwick", "Berwick"),
+        ("Bienville", "Bienville"),
+        ("Blanchard", "Blanchard"),
+        ("Bogalusa", "Bogalusa"),
+        ("Bonita", "Bonita"),
+        ("Bossier", "Bossier"),
+        ("Boyce", "Boyce"),
+        ("Breaux Bridge", "Breaux Bridge"),
+        ("Broussard", "Broussard"),
+        ("Brusly", "Brusly"),
+        ("Bryceland", "Bryceland"),
+        ("Bunkie", "Bunkie"),
+        ("Calvin", "Calvin"),
+        ("Campti", "Campti"),
+        ("Cankton", "Cankton"),
+        ("Carencro", "Carencro"),
+        ("Castor", "Castor"),
+        ("Central", "Central"),
+        ("Chataignier", "Chataignier"),
+        ("Chatham", "Chatham"),
+        ("Cheneyville", "Cheneyville"),
+        ("Choudrant", "Choudrant"),
+        ("Church Point", "Church Point"),
+        ("Clarence", "Clarence"),
+        ("Clarks", "Clarks"),
+        ("Clayton", "Clayton"),
+        ("Clinton", "Clinton"),
+        ("Colfax", "Colfax"),
+        ("Collinston", "Collinston"),
+        ("Columbia", "Columbia"),
+        ("Converse", "Converse"),
+        ("Cottonport", "Cottonport"),
+        ("Cotton Valley", "Cotton Valley"),
+        ("Coushatta", "Coushatta"),
+        ("Covington", "Covington"),
+        ("Creola", "Creola"),
+        ("Crowley", "Crowley"),
+        ("Cullen", "Cullen"),
+        ("Delcambre", "Delcambre"),
+        ("Delhi", "Delhi"),
+        ("Delta", "Delta"),
+        ("Denham Springs", "Denham Springs"),
+        ("DeQuincy", "DeQuincy"),
+        ("DeRidder", "DeRidder"),
+        ("Dixie Inn", "Dixie Inn"),
+        ("Dodson", "Dodson"),
+        ("Donaldsonville", "Donaldsonville"),
+        ("Downsville", "Downsville"),
+        ("Doyline", "Doyline"),
+        ("Dry Prong", "Dry Prong"),
+        ("Dubach", "Dubach"),
+        ("Dubberly", "Dubberly"),
+        ("Duson", "Duson"),
+        ("East Hodge", "East Hodge"),
+        ("Edgefield", "Edgefield"),
+        ("Elizabeth", "Elizabeth"),
+        ("Elton", "Elton"),
+        ("Epps", "Epps"),
+        ("Erath", "Erath"),
+        ("Eros", "Eros"),
+        ("Estherwood", "Estherwood"),
+        ("Eunice", "Eunice"),
+        ("Evergreen", "Evergreen"),
+        ("Farmerville", "Farmerville"),
+        ("Fenton", "Fenton"),
+        ("Ferriday", "Ferriday"),
+        ("Fisher", "Fisher"),
+        ("Florien", "Florien"),
+        ("Folsom", "Folsom"),
+        ("Fordoche", "Fordoche"),
+        ("Forest", "Forest"),
+        ("Forest Hill", "Forest Hill"),
+        ("Franklin", "Franklin"),
+        ("Franklinton", "Franklinton"),
+        ("French Settlement", "French Settlement"),
+        ("Georgetown", "Georgetown"),
+        ("Gibsland", "Gibsland"),
+        ("Gilbert", "Gilbert"),
+        ("Gilliam", "Gilliam"),
+        ("Glenmora", "Glenmora"),
+        ("Golden Meadow", "Golden Meadow"),
+        ("Goldonna", "Goldonna"),
+        ("Gonzales", "Gonzales"),
+        ("Grambling", "Grambling"),
+        ("Gramercy", "Gramercy"),
+        ("Grand Cane", "Grand Cane"),
+        ("Grand Coteau", "Grand Coteau"),
+        ("Grand Isle", "Grand Isle"),
+        ("Grayson", "Grayson"),
+        ("Greensburg", "Greensburg"),
+        ("Greenwood", "Greenwood"),
+        ("Gretna", "Gretna"),
+        ("Grosse Tete", "Grosse Tete"),
+        ("Gueydan", "Gueydan"),
+        ("Hall Summit", "Hall Summit"),
+        ("Hammond", "Hammond"),
+        ("Harahan", "Harahan"),
+        ("Harrisonburg", "Harrisonburg"),
+        ("Haughton", "Haughton"),
+        ("Haynesville", "Haynesville"),
+        ("Heflin", "Heflin"),
+        ("Henderson", "Henderson"),
+        ("Hessmer", "Hessmer"),
+        ("Hodge", "Hodge"),
+        ("Homer", "Homer"),
+        ("Hornbeck", "Hornbeck"),
+        ("Hosston", "Hosston"),
+        ("Houma", "Houma"),
+        ("Ida", "Ida"),
+        ("Independence", "Independence"),
+        ("Iota", "Iota"),
+        ("Iowa", "Iowa"),
+        ("Jackson", "Jackson"),
+        ("Jamestown", "Jamestown"),
+        ("Jeanerette", "Jeanerette"),
+        ("Jean Lafitte", "Jean Lafitte"),
+        ("Jena", "Jena"),
+        ("Jennings", "Jennings"),
+        ("Jonesboro", "Jonesboro"),
+        ("Jonesville", "Jonesville"),
+        ("Junction", "Junction"),
+        ("Kaplan", "Kaplan"),
+        ("Keachi", "Keachi"),
+        ("Keithville", "Keithville"),
+        ("Kenner", "Kenner"),
+        ("Kentwood", "Kentwood"),
+        ("Kilbourne", "Kilbourne"),
+        ("Killian", "Killian"),
+        ("Kinder", "Kinder"),
+        ("Krotz Springs", "Krotz Springs"),
+        ("Lafayette", "Lafayette"),
+        ("Lake Arthur", "Lake Arthur"),
+        ("Lake Charles", "Lake Charles"),
+        ("Lake Providence", "Lake Providence"),
+        ("Lecompte", "Lecompte"),
+        ("Leesville", "Leesville"),
+        ("Leonville", "Leonville"),
+        ("Lillie", "Lillie"),
+        ("Lisbon", "Lisbon"),
+        ("Livingston", "Livingston"),
+        ("Livonia", "Livonia"),
+        ("Lockport", "Lockport"),
+        ("Logansport", "Logansport"),
+        ("Longstreet", "Longstreet"),
+        ("Loreauville", "Loreauville"),
+        ("Lucky", "Lucky"),
+        ("Lutcher", "Lutcher"),
+        ("McNary", "McNary"),
+        ("Madisonville", "Madisonville"),
+        ("Mamou", "Mamou"),
+        ("Mandeville", "Mandeville"),
+        ("Mangham", "Mangham"),
+        ("Mansfield", "Mansfield"),
+        ("Mansura", "Mansura"),
+        ("Many", "Many"),
+        ("Maringouin", "Maringouin"),
+        ("Marion", "Marion"),
+        ("Marksville", "Marksville"),
+        ("Martin", "Martin"),
+        ("Maurice", "Maurice"),
+        ("Melville", "Melville"),
+        ("Mermentau", "Mermentau"),
+        ("Mer Rouge", "Mer Rouge"),
+        ("Merryville", "Merryville"),
+        ("Minden", "Minden"),
+        ("Monroe", "Monroe"),
+        ("Montgomery", "Montgomery"),
+        ("Montpelier", "Montpelier"),
+        ("Mooringsport", "Mooringsport"),
+        ("Moreauville", "Moreauville"),
+        ("Morgan", "Morgan"),
+        ("Morganza", "Morganza"),
+        ("Morse", "Morse"),
+        ("Mound", "Mound"),
+        ("Mount Lebanon", "Mount Lebanon"),
+        ("Napoleonville", "Napoleonville"),
+        ("Natchez", "Natchez"),
+        ("Natchitoches", "Natchitoches"),
+        ("Newellton", "Newellton"),
+        ("New Iberia", "New Iberia"),
+        ("New Llano", "New Llano"),
+        ("New Orleans", "New Orleans"),
+        ("New Roads", "New Roads"),
+        ("Noble", "Noble"),
+        ("North Hodge", "North Hodge"),
+        ("Norwood", "Norwood"),
+        ("Oakdale", "Oakdale"),
+        ("Oak Grove", "Oak Grove"),
+        ("Oak Ridge", "Oak Ridge"),
+        ("Oberlin", "Oberlin"),
+        ("Oil", "Oil"),
+        ("Olla", "Olla"),
+        ("Opelousas", "Opelousas"),
+        ("Palmetto", "Palmetto"),
+        ("Parks", "Parks"),
+        ("Patterson", "Patterson"),
+        ("Pearl River", "Pearl River"),
+        ("Pine Prairie", "Pine Prairie"),
+        ("Pineville", "Pineville"),
+        ("Pioneer", "Pioneer"),
+        ("Plain Dealing", "Plain Dealing"),
+        ("Plaquemine", "Plaquemine"),
+        ("Plaucheville", "Plaucheville"),
+        ("Pleasant Hill", "Pleasant Hill"),
+        ("Pollock", "Pollock"),
+        ("Ponchatoula", "Ponchatoula"),
+        ("Port Allen", "Port Allen"),
+        ("Port Barre", "Port Barre"),
+        ("Port Vincent", "Port Vincent"),
+        ("Powhatan", "Powhatan"),
+        ("Provencal", "Provencal"),
+        ("Quitman", "Quitman"),
+        ("Rayne", "Rayne"),
+        ("Rayville", "Rayville"),
+        ("Reeves", "Reeves"),
+        ("Richmond", "Richmond"),
+        ("Richwood", "Richwood"),
+        ("Ridgecrest", "Ridgecrest"),
+        ("Ringgold", "Ringgold"),
+        ("Robeline", "Robeline"),
+        ("Rodessa", "Rodessa"),
+        ("Rosedale", "Rosedale"),
+        ("Roseland", "Roseland"),
+        ("Rosepine", "Rosepine"),
+        ("Ruston", "Ruston"),
+        ("St. Francisville", "St. Francisville"),
+        ("St. Gabriel", "St. Gabriel"),
+        ("St. Joseph", "St. Joseph"),
+        ("St. Martinville", "St. Martinville"),
+        ("Saline", "Saline"),
+        ("Sarepta", "Sarepta"),
+        ("Scott", "Scott"),
+        ("Shongaloo", "Shongaloo"),
+        ("Shreveport", "Shreveport"),
+        ("Sibley", "Sibley"),
+        ("Sicily Island", "Sicily Island"),
+        ("Sikes", "Sikes"),
+        ("Simmesport", "Simmesport"),
+        ("Simpson", "Simpson"),
+        ("Simsboro", "Simsboro"),
+        ("Slaughter", "Slaughter"),
+        ("Slidell", "Slidell"),
+        ("Sorrento", "Sorrento"),
+        ("South Mansfield", "South Mansfield"),
+        ("Spearsville", "Spearsville"),
+        ("Springfield", "Springfield"),
+        ("Springhill", "Springhill"),
+        ("Stanley", "Stanley"),
+        ("Sterlington", "Sterlington"),
+        ("Stonewall", "Stonewall"),
+        ("Sulphur", "Sulphur"),
+        ("Sun", "Sun"),
+        ("Sunset", "Sunset"),
+        ("Tallulah", "Tallulah"),
+        ("Tangipahoa", "Tangipahoa"),
+        ("Thibodaux", "Thibodaux"),
+        ("Tickfaw", "Tickfaw"),
+        ("Tullos", "Tullos"),
+        ("Turkey Creek", "Turkey Creek"),
+        ("Urania", "Urania"),
+        ("Varnado", "Varnado"),
+        ("Vidalia", "Vidalia"),
+        ("Vienna", "Vienna"),
+        ("Ville Platte", "Ville Platte"),
+        ("Vinton", "Vinton"),
+        ("Vivian", "Vivian"),
+        ("Walker", "Walker"),
+        ("Washington", "Washington"),
+        ("Waterproof", "Waterproof"),
+        ("Welsh", "Welsh"),
+        ("Westlake", "Westlake"),
+        ("West Monroe", "West Monroe"),
+        ("Westwego", "Westwego"),
+        ("White Castle", "White Castle"),
+        ("Wilson", "Wilson"),
+        ("Winnfield", "Winnfield"),
+        ("Winnsboro", "Winnsboro"),
+        ("Wisner", "Wisner"),
+        ("Woodworth", "Woodworth"),
+        ("Youngsville", "Youngsville"),
+        ("Zachary", "Zachary"),
+        ("Zwolle", "Zwolle"),
+        ("Other", "Other"),
+    )
     EC_RELATIONS_CHOICES = (
         ("D", "Father"),
         ("M", "Mother"),
@@ -139,6 +448,12 @@ class Profile(models.Model):
         verbose_name=("Street Address 2"))
     city = models.CharField(
         max_length=30,
+        choices=CITY_CHOICES,
+        default="New Orleans"
+    )
+    other_city = models.CharField(
+        max_length=30,
+        blank=True
     )
     state = models.CharField(
         max_length=2,
@@ -296,6 +611,17 @@ class Student(Profile):
         (ELL, "Beginning English Language Classes"),
         (ELEARN, "Online Classes"),
         (ACE, "ACE Program"),
+    )
+    PRIMARY_GOAL_CHOICES = (
+        ("1", "I want to earn a high school equivalency diploma (HiSET, formerly GED)"),
+        ("2", "I want to work on my reading, writing, or math skills"),
+        ("3", "I want to learn English"),
+        ("4", "I want to prepare for college"),
+        ("5", "I want to work on my computer skills, financial skills, or health literacy"),
+        ("6", "I want to start college classes while working on my reading, writing, and math skills"),
+        ("7", "I want to participate in workforce trainings wille working on my reading, writing, and math skills"),
+        ("8", "I want to start college classes while earning my high school equivalency diploma"),
+        ("9", "I want to explore career options")
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -460,6 +786,93 @@ class Student(Profile):
     intake_quiz = models.BooleanField(
         default = False
     )
+
+    allow_texts = models.BooleanField(
+        default = True
+    )
+    primary_goal = models.CharField(
+        max_length=50,
+        default = "1",
+        choices = PRIMARY_GOAL_CHOICES
+    )
+    check_goal_1 = models.BooleanField(
+        default = False,
+        verbose_name = _("I want to earn a high school equivalency diploma (HiSET, formerly GED)")
+    )
+    check_goal_2 = models.BooleanField(
+        default = False,
+        verbose_name = _("I want to work on my reading, writing, or math skills")
+    )
+    check_goal_3 = models.BooleanField(
+        default = False,
+        verbose_name = _("I want to learn English")
+    )
+    check_goal_4 = models.BooleanField(
+        default = False,
+        verbose_name = _("I want to prepare for college")
+    )
+    check_goal_5 = models.BooleanField(
+        default = False,
+        verbose_name = _("I want to work on my computer skills, financial skills, or health literacy")
+    )
+    check_goal_6 = models.BooleanField(
+        default = False,
+        verbose_name = _("I want to start college classes while working on my reading, writing, and math skills")
+    )
+    check_goal_7 = models.BooleanField(
+        default = False,
+        verbose_name = _("I want to participate in workforce trainings wille working on my reading, writing, and math skills")
+    )
+    check_goal_8 = models.BooleanField(
+        default = False,
+        verbose_name = _("I want to start college classes while earning my high school equivalency diploma")
+    )
+    check_goal_9 = models.BooleanField(
+        default = False,
+        verbose_name = _("I want to explore career options")
+    )
+
+    on_campus = models.BooleanField(
+        default = False,
+        verbose_name = _("On Campus - in person courses where students meet at a specific time as a group") 
+    )
+    online_solo = models.BooleanField(
+        default = False,
+        verbose_name = _("Online, Self Paced - online coursework completed when learner is ready")
+    )
+    online_cohort = models.BooleanField(
+        default = False,
+        verbose_name = _("Online, Cohort - online course where students meet at a specific time as a group")
+    )
+    hybrid = models.BooleanField(
+        default = False,
+        verbose_name = _("Hybrid - some online and some in person")
+    )
+    morning = models.BooleanField(
+        default = False,
+        verbose_name = _("Morning")
+    )
+    afternoon = models.BooleanField(
+        default = False,
+        verbose_name = _("Afternoon")
+    )
+    evening = models.BooleanField(
+        default = False,
+        verbose_name = _("Evening")
+    )
+    weekend = models.BooleanField(
+        default = False,
+        verbose_name = _("Weekend")
+    )
+    computer_access = models.BooleanField(
+        default = False,
+        verbose_name = _("I have access to a computer or device to participate in online classes or resources")
+    )
+    internet_access = models.BooleanField(
+        default = False,
+        verbose_name = _("I have access to the internet")
+    )
+
 
     class Meta:
         ordering = ["last_name", "first_name"]
@@ -752,8 +1165,8 @@ class Paperwork(models.Model):
         return '{0} Paperwork'.format(self.student)
 
 def convert_date_format(date_string):
-    date_input = datetime.strptime(date_string, "%m/%d/%y")
-    return datetime.strftime(date_input, "%m/%d/%Y")
+    date_i = datetime.strptime(date_string, "%m/%d/%y")
+    return datetime.strftime(date_i, "%m/%d/%Y")
 
 
 def get_SID(sid):
@@ -765,15 +1178,15 @@ def get_age_at_intake(dob, intake_date):
     return age
 
 
-def citizen(input):
-    if input == 1:
+def citizen(i):
+    if i == 1:
         cit = "true"
     else:
         cit = "false"
     return cit
 
 
-def marital(input):
+def marital(i):
     statuses = {
         "S": "1",
         "M": "2",
@@ -781,18 +1194,18 @@ def marital(input):
         "W": "4",
         "O": "5"
     }
-    return statuses[input]
+    return statuses[i]
 
 
-def gender(input):
+def gender(i):
     genders = {
         "M": "2",
         "F": "1"
     }
-    return genders[input]
+    return genders[i]
 
 
-def state(input):
+def state(i):
     states = {
         "AL": "2",
         "AK": "1",
@@ -846,25 +1259,25 @@ def state(input):
         "WI": "49",
         "WY": "51"
     }
-    return states[input]
+    return states[i]
 
 
-def email_status(input):
-    if input != "":
+def email_status(i):
+    if i != "":
         return "true"
     else:
         return "false"
 
 
-def true_false(input):
-    if input is True:
+def true_false(i):
+    if i is True:
         return "true"
     else:
         return "false"
 
 
-def hl_tf(input):
-    if input is True:
+def hl_tf(i):
+    if i is True:
         return "True"
     else:
         return "False"
@@ -900,49 +1313,51 @@ def ell(student):
         return "false"
 
 
-def employment_status(input):
+def employment_status(i):
     emp = {
         "1": "1_EM",
+        "9": "1_EM",
         "2": "3_UE",
-        "3": "4_UNL",
-        "4": "5_NLF",
-        "5": "1_EM",
-        "6": "5_NLF"
+        "3": "3_UE",
+        "4": "3_UE",
+        "5": "11_EMR",
+        "6": "3_UE",
+        "7": "14_RT"
     }
-    return emp[input]
+    return emp[i]
 
 
-def migrant(input):
+def migrant(i):
     mig = {
         "1": 1,
         "2": 2,
         "3": 3,
         "4": 0,
     }
-    return mig[input]
+    return mig[i]
 
 
-def one_stop(input):
+def one_stop(i):
     o = {
         "1": 1,
         "2": 2,
         "3": 3,
         "4": 0
     }
-    return o[input]
+    return o[i]
 
 
-def y_n_u(input):
+def y_n_u(i):
     y = {
         "": 9,
         "1": 1,
         "2": 0,
         "3": 9
     }
-    return y[input]
+    return y[i]
 
 
-def school_status(input):
+def school_status(i):
     status = {
         "1": 1,
         "2": 2,
@@ -951,41 +1366,129 @@ def school_status(input):
         "5": 5,
         "6": 6
     }
-    return status[input]
+    return status[i]
 
 
-def dislocated(input):
-    if input is True:
+def dislocated(i):
+    if i is True:
         return 1
     else:
         return 0
 
 
-def voc_rehab(input):
+def voc_rehab(i):
     v = {
         "1": 1,
         "2": 2,
         "3": 3,
         "4": 0
     }
-    return v[input]
+    return v[i]
+
+def check_farm(wioa):
+    if wioa.migrant_seasonal_status == "4":
+        return "false"
+    else:
+        return "true"
+
+def low_income(wioa):
+    avg = wioa.household_income / wioa.household_size
+    return avg >= 12,750
+
+def check_statements(wioa):
+    if any([
+        wioa.migrant_seasonal_status != "4",
+        wioa.lacks_adequate_residence,
+        wioa.criminal_record,
+        wioa.in_foster_care,
+        wioa.single_parent,
+        low_income(wioa)
+    ]):
+        return "false"
+    else:
+        return "true"
+
+def pronouns(i):
+    p = {
+        "He/Him/His": 1,
+        "She/Her/Hers": 2,
+        "They/Them/Theirs": 3,
+        "Ze/Hir/Hirs": 4,
+        "I do not use a pronoun": 4,
+        "Other, please ask": 4,
+        "I use all gender pronouns": 4
+    }
+    other = i if p[i] not in [1,2,3] else ""
+    return (p[i], other)
+
+def title(i):
+    t = {
+        "Mx.": "",
+        "Miss": "Ms.",
+        "Ms.": "Ms.",
+        "Mrs.": "Mrs.",
+        "Mr.": "Mr.", 
+    }
+    return t[i]
+
+def ec_name(i):
+    return i.split(" ", 1)
+
+def ec_relation(i):
+    r = {
+        "D": 1,
+        "M": 2,
+        "S": 3,
+        "B": 6,
+        "F": 4,
+        "G": 5,
+        "O": 6
+    }
+    return r[i]
+
+
+def full_time(i):
+    return i == "1"
+
+def long_term_unemployed(i):
+    return i == "8"
+
+def labor_force(i):
+    l = "true" if i == "6" else "false"
+
+def looking_for_work(i):
+    l = "true" if i == "8" else "false"
+
+def recieved_assistance(wioa):
+    if any([
+        wioa.TANF,
+        wioa.TANF_2,
+        wioa.SNAP,
+        wioa.SSI,
+        wioa.Tstate
+    ]):
+        return "true"
+    else :
+        return "false"
 
 
 class WIOA(models.Model):
 
     EMPLOYMENT_STATUS_CHOICES = (
-        ("1", "Employed"),
-        ("2", "Unemployed"),
-        ("3", "Unemployed - Not looking for work"),
-        ("4", "Not in labor force"),
+        ("1", "Employed - Full Time"),
+        ("9", "Employed - Part Time"),
+        ("8", "Unemployed - Looking for work"),
+        ("4", "Not in labor force/ Not available for work"),
         ("5", "Employed, but recieved notice of termination or Military seperation is pending"),
         ("6", "Not in labor force and/or not looking for work"),
+        ("7", "Retired")
     )
     MIGRANT_SEASONAL_STATUS_CHOICES = (
-        ("1", "Seasonal Farmworker"),
-        ("2", "Migrant and Seasonal Farmworker"),
-        ("3", "A Dependant of a Seasonal, or Migrant and Seasonal Farmworker"),
-        ("4", "No"),
+        ("0", "I am a farmworker"),
+        ("1", "I am a seasonal farmworker who has worked the last 12 months in agriculture or farm fishing labor"),
+        ("2", "I am a seasonal farmworker with no permanent residence (migrant)"),
+        ("3", "I am a dependent of a farmworker"),
+        ("4", "None of these apply to me"),
     )
     YES_NO_UNKNOWN = (
         ("1", "Yes"),
@@ -1086,7 +1589,6 @@ class WIOA(models.Model):
         ("1", "US Based"),
         ("2", "Non-US Based"),
     )
-
     NATIVE_LANGUAGE_CHOICES = (
         ("english", "English"),
         ("spanish", "Spanish"),
@@ -1102,7 +1604,95 @@ class WIOA(models.Model):
         ("russian", "Russian"),
         ("other", "Other")
     )
+    COUNTRY_CHOICES = (
+        ("1", "United States"),
+        ("2", "India"),
+        ("3", "Australia"),
+        ("4", "Japan"),
+        ("5", "New"),
+        ("6", "Philippines"),
+        ("7", "Turkey"),
+        ("8", "Austria"),
+        ("9", "Belgium"),
+        ("10", "Denmark"),
+        ("11", "France"),
+        ("12", "Germany"),
+        ("13", "Italy"),
+        ("14", "Portugal"),
+        ("15", "Spain"),
+        ("16", "Sweden"),
+        ("17", "Argentina"),
+        ("18", "Brazil"),
+        ("19", "Russia"),
+        ("20", "South"),
+        ("21", "Egypt"),
+        ("22", "England"),
+        ("23", "Greece"),
+        ("24", "Singapore"),
+        ("25", "South"),
+        ("26", "Mexico"),
+        ("27", "Afghanistan"),
+        ("28", "Algeria"),
+        ("29", "Albania"),
+        ("30", "Aruba"),
+        ("31", "Bahamas"),
+        ("32", "North"),
+        ("33", "Canada"),
+        ("34", "China"),
+        ("35", "Georgia"),
+        ("36", "Hong"),
+        ("37", "Indonesia"),
+        ("38", "Iraq"),
+        ("39", "Israel"),
+        ("40", "Kuwait"),
+        ("41", "Korea"),
+        ("42", "Lebanon"),
+        ("43", "Malaysia"),
+        ("44", "Nigeria"),
+        ("45", "Norway"),
+        ("46", "Oman"),
+        ("47", "Pakistan"),
+        ("48", "Switzerland"),
+        ("49", "Thailand"),
+        ("50", "United Arab Emirates"),
+        ("51", "United Kingdom"),
+        ("52", "Switzerland"),
+        ("53", "Thailand"),
+        ("100", "Other"),
 
+    )
+    REFERRER_CHOICES = (
+        ("1", "TV"),
+        ("2", "RADIO"),
+        ("3", "SOCIAL MEDIA"),
+        ("4", "BROCHURE"),
+        ("5", "CAREER COMPASS"),
+        ("6", "COACH"),
+        ("7", "COLLEGE RECRUITER"),
+        ("8", "FACULTY/STAFF"),
+        ("9", "FAMILY MEMBER"),
+        ("10", "FORMER STUDENT"),
+        ("11", "FRIEND"),
+        ("12", "HIGH SCHOOL COUNSELOR"),
+        ("13", "INTERNET SEARCH"),
+        ("14", "NEWSPAPER"),
+        ("15", "OTHER"),
+        ("16", "ONE STOP"),
+        ("17", "AMERICAN JOB CENTER"),
+        ("18", "UNEMPLOYMENT OFFICE"),
+    )
+    PARENTAL_STATUS_CHOICES = (
+        ( "1", "parent of children 1-5"),
+        ( "2", "parent of children 6-10"),
+        ( "3", "parent of children 11-13"),
+        ( "4", "parent of children 14-18"),
+        ( "0", "No")
+    )
+    DISABILITY_CHOICES = (
+        ("1", "Yes"),
+        ("2", "No"),
+        ("3", "Do not wish to disclose")
+    )
     student = models.OneToOneField(
         Student,
         models.CASCADE,
@@ -1143,10 +1733,21 @@ class WIOA(models.Model):
         blank=True,
         verbose_name=_("Native Language")
     )
-    country = models.CharField(
+    other_language = models.CharField(
         max_length=20,
         blank=True,
-        verbose_name=_("Country of Origin - if not US")
+        verbose_name=_("Other Native Language Not Listed")
+    )
+    country = models.CharField(
+        max_length=20,
+        choices=COUNTRY_CHOICES,
+        blank=True,
+        verbose_name=_("Country of Birth")
+    )
+    other_country = models.CharField(
+        max_length=20,
+        blank=True,
+        verbose_name=_("Other Country if not listed")
     )
     current_employment_status = models.CharField(
         max_length=2,
@@ -1164,20 +1765,118 @@ class WIOA(models.Model):
         blank=True,
         verbose_name=_("Occupation")
     )
-    migrant_seasonal_status = models.CharField(
+    parental_status = models.CharField(
         max_length=2,
-        choices=MIGRANT_SEASONAL_STATUS_CHOICES,
-        default="4",
-        verbose_name=_("Migrant and Seasonal Farmworker Status")
+        choices=PARENTAL_STATUS_CHOICES,
+        blank=True,
+        verbose_name=_("Are you a parent?")
+    )
+    current_industry = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name=_("If you are currently employed, what industry cluster do you work in?")
+    )
+    industry_preference = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name=_("If you could get a job or change jobs, what industry cluster would you like to work in?")
+    )
+    household_income = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Annual Household Income")
+    )
+    household_size = models.PositiveIntegerField(
+        default=1,
+        verbose_name=_("How many family members including yourself have lived in your household in the past six months?")
+    )
+    TANF = models.BooleanField(
+        default=False,
+        verbose_name=_("TANF (Temporary Assistance for Needy Families")
+    )
+    TANF_2 = models.BooleanField(
+        default=False,
+        verbose_name=_("Have you recieved TANF for more than two years in total?")
+    )
+    SNAP = models.BooleanField(
+        default=False,
+        verbose_name=_("SNAP (Supplemental Nutrition Assistance Program) Food Stamps")
+    )
+    SSI = models.BooleanField(
+        default=False,
+        verbose_name=_("SSI (Supplemental Security Income)")
+    )
+    Tstate = models.BooleanField(
+        default=False,
+        verbose_name=_("Tstate or Local income-based public assistance")
+    )
+    veteran = models.BooleanField(
+        default=False,
+        verbose_name=_("I am a veteran")
+    )
+    criminal_record = models.BooleanField(
+        default=False,
+        verbose_name=_("I have a criminal record that makes it hard to find a job.")
     )
     long_term_unemployed = models.BooleanField(
         default=False,
         verbose_name=_("Long-term Unemployed"),
-        help_text=_("More than 27 consecutive weeks")
+        help_text=_("If you are not working, has it been 27 weeks (6 months) or longer since you had a job?")
+    )
+    migrant_seasonal_status = models.CharField(
+        max_length=2,
+        choices=MIGRANT_SEASONAL_STATUS_CHOICES,
+        default="4",
+        verbose_name=_("Farmworker Status")
     )
     single_parent = models.BooleanField(
         default=False,
-        verbose_name=_("Are you a single parent?")
+        verbose_name=_("I am a single parent. I am unmarried or seperated from my spouse and have primary responsibility for one or more dependent children under the age of 18, or I am a single, pregnant woman.")
+    )
+    help_with_schoolwork = models.BooleanField(
+        default = False,
+        verbose_name = _("Helping more frequently with their schoolwork.")
+    )
+    student_teacher_contact  = models.BooleanField(
+        default = False,
+        verbose_name = _("Increasing contact with my children's teachers to discuss children's education")
+    )
+    parent_volunteering = models.BooleanField(
+        default = False,
+        verbose_name = _("Being more involved in my children's school, such as attendending school activities and parent meetings, and volunteering")
+    )
+    read_to_children = models.BooleanField(
+        default = False,
+        verbose_name = _("Reading to children")
+    )
+    visit_library  = models.BooleanField(
+        default = False,
+        verbose_name = _("Visiting a library")
+    )
+    purchase_books = models.BooleanField(
+        default = False,
+        verbose_name = _("Purchasing books or magazines")
+    )
+    referred_by = models.CharField(
+        max_length=2,
+        blank=True,
+        choices=REFERRER_CHOICES
+    )
+    digital_signature = models.CharField(
+        max_length = 100,
+        blank = True,
+        verbose_name = _("DISCLAIMER: By typing your name below, you are signing this application electronically. You agree that your electronic signature is the legal equivalent of your manual signature on this application.")
+    )
+    disability_notice = models.CharField(
+        max_length = 1,
+        blank = True,
+        choices = DISABILITY_CHOICES,
+        verbose_name = _("Are you an Individual with a Disability?"),
+        help_text= _("In the Americans with Disabilities Act of 1990, a disability is defined as a physical or mental impairment that substantially limits one or more of a person’s major life activities.")
+    )
+    request_accommodation = models.BooleanField(
+        default = False,
+        verbose_name = _("Check here to indicate that you understand your responsibility to request accommodations."),
+        help_text = _("If you have a disability and/or a condition for which you would like special accommodations for instruction or testing it is your responsibility to notify the program’s administrative office and provide professional documentation.")
     )
     rural_area = models.BooleanField(
         default=False,
@@ -1185,7 +1884,7 @@ class WIOA(models.Model):
     )
     displaced_homemaker = models.BooleanField(
         default=False,
-        verbose_name=_("Are you a displaced homemaker?")
+        verbose_name=_("I am a former homemaker who is having trouble finding a job or a better job.")
     )
     dislocated_worker = models.BooleanField(
         default=False,
@@ -1196,6 +1895,14 @@ class WIOA(models.Model):
         verbose_name=_(
             "Are there cultural barriers hindering your employment?"
         )
+    )
+    foster_care = models.BooleanField(
+        default = False,
+        verbose_name = _("I am in the foster care system (or used to be) and I am less than 24 years old.")
+    )
+    lacks_adequate_residence = models.BooleanField(
+        default=False,
+        verbose_name = _("I am homeless. I live in a motel, hotel, campground, transitional housing, or with another person because I lost my house or apartment")
     )
     in_foster_care = models.BooleanField(
         default=False,
@@ -1263,9 +1970,6 @@ class WIOA(models.Model):
 
     # Homeless Individual
     # A
-    lacks_adequate_residence = models.BooleanField(
-        default=False,
-    )
     # B
     irregular_sleep_accomodation = models.BooleanField(
         default=False,
@@ -1451,12 +2155,16 @@ class WIOA(models.Model):
     highet_level_at_entry = models.CharField(
         max_length=2,
         choices=COMPLETED_AT_ENTRY_CHOICES,
-        default="1"
+        default="0"
     )
     school_location = models.CharField(
         max_length=1,
         choices=SCHOOL_LOCATION_CHOICES,
         default="1"
+    )
+
+    state_id_checked = models.BooleanField(
+        default=False
     )
 
     class Meta:
@@ -1470,7 +2178,7 @@ class WIOA(models.Model):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
         }
 
-        s = session.get(
+        s = session.post(
             'https://workreadyu.lctcs.edu/Student/',
             data=search_dict,
             headers=headers,
@@ -1486,7 +2194,6 @@ class WIOA(models.Model):
             return 'No ID'
 
     def check_for_state_id(self, session):
-
         search = {
             'LastNameTextBox': self.student.last_name,
             'FirstNameTextBox': self.student.first_name,
@@ -1500,9 +2207,7 @@ class WIOA(models.Model):
             'AgeFromTextBox': get_age_at_intake(self.student.dob, self.student.intake_date),
             'btnFilter': 'Filter List'
         }
-
         wru = self.wru_search(session, search)
-
         if wru == 'No ID':
             if self.SID:
                 search = {
@@ -1511,184 +2216,167 @@ class WIOA(models.Model):
                     'btnFilter': 'Filter List'
                 }
                 wru = self.wru_search(session, search)
-
         if wru != 'No ID':
             wru = b'x' + wru
             wru = wru.decode('ascii')
-
+        self.state_id_checked = True
+        self.save()
         self.student.WRU_ID = wru
         self.student.save()
 
     def send_to_state(self, session):
+        if self.state_id_checked:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
+            }
+            student = {
+                "hdnRoleType": "2",
+                "FY": "11",
+                "lblCurrentFY": "11",
+                "FYBginDate": "7/1/2022 12:00:00 AM",
+                "FYEndDate": "6/30/2023 12:00:00 AM",
+                "hdnProviderId": "DELGADO COMMUNITY COLLEGE",
+                "hdnInactiveStateKey": ",2,3,4,5,7,18",
+                "hdnInactiveProg": "2,5,7,13,",
+                "hdnInactiveEmpStat": ",4_UNL, 5_NLF,",
+                "IntakeOnlyProgram": "19",
+                "FirstName": self.student.first_name,
+                "MiddleInitial": "",
+                "LastName": self.student.last_name,
+                "Suffix": title(self.student.title),
+                "Pronouns": pronouns(self.student.pronoun)[0],
+                "OtherPronouns": pronouns(self.student.pronoun)[1],
+                "Address.Street1": self.student.street_address_1,
+                "Address.Street2": self.student.street_address_2,
+                "Address.City": self.student.city,
+                "Address.OtherCity": self.student.other_city,
+                "Address.StateId": state(self.student.state),
+                "Address.Zip": self.student.zip_code,
+                "Address.VTCountyId": self.student.parish,
+                "Email.Email1": self.student.email,
+                "Telephone.PrimaryPhoneNumber": self.student.phone,
+                "Telephone.PrimaryPhoneStatus": "true",
+                "Telephone.AllowTexts": true_false(self.student.allow_texts),
+                "Telephone.AlternativePhoneNumber1": "",
+                "Emergency.FirstName": ec_name(self.student.emergency_contact)[0],
+                "Emergency.LastName": ec_name(self.student.emergency_contact)[1],
+                "Emergency.RelationshipId": ec_relation(self.student.ec_relation),
+                "Emergency.Telephone1": self.student.ec_phone,
+                "StudentId": "0",
+                "SSN": get_SID(self.SID),
+                "OtherID": "",
+                "USCitizen": citizen(self.student.US_citizen),
+                "DateOfBirth": self.student.dob,
+                "Age": get_age_at_intake(self.student.dob, self.student.intake_date),
+                "Gender": gender(self.student.gender),
+                "MaritalStatusId": marital(self.student.marital_status),
+                "Ethnicity_1": true_false(self.amer_indian),
+                "Ethnicity_2": true_false(self.asian),
+                "Ethnicity_3": true_false(self.black),
+                "Ethnicity_5": true_false(self.white),
+                "Ethnicity_4": true_false(self.pacific_islander),
+                "Ethnicity_8": 'false',
+                "HispanicLatino": hl_tf(self.hispanic_latino),
+                "StudentWIOADetail.ParentalStatus": self.parental_status,
+                "Program.NativeLanguage": self.native_language,
+                "Program.OtherNativeLanguage": self.other_language,
+                "CountryOfBirth":  self.country,
+                "OtherCountryOfBirth": self.other_country,
+                "StudentWIOADetail.Veteran": true_false(self.veteran),
+                "Program.ProgramTypeId": "19",
+                "HighestId": self.highest_level_completed,
+                "HighLocId": self.school_location,
+                "StudentWIOADetail.HighestSchCompletedEntry": self.highet_level_at_entry,
+                "Disability_12": true_false(self.adhd),
+                "Disability_13": true_false(self.autism),
+                "Disability_9": true_false(self.deaf_blind),
+                "Disability_3": true_false(self.deaf),
+                "Disability_6": true_false(self.emotional_disturbance),
+                "Disability_15": true_false(self.k12_iep),
+                "Disability_2": true_false(self.hard_of_hearing),
+                "Disability_1": true_false(self.intellectual_disability),
+                "Disability_10": true_false(self.multiple_disabilities),
+                "Disability_7": true_false(self.orthopedic_impairment),
+                "Disability_8": true_false(self.other_health_impairment),
+                "Disability_11": true_false(self.learning_disability),
+                "Disability_4": true_false(self.speech_or_lang_impairment),
+                "Disability_14": true_false(self.traumatic_brain_injury),
+                "Disability_5": true_false(self.visual_impairment),
+                "Dislearning_4": true_false(self.dyscalculia),
+                "Dislearning_3": true_false(self.dysgraphia),
+                "Dislearning_2": true_false(self.dyslexia),
+                "Dislearning_1": true_false(self.neurological_impairments),
+                "SpecLearningDisId": "11",
+                "Program.PastEnrollment": true_false(self.student.prior_registration),
+                "EmploymentStatusId": employment_status(self.current_employment_status),
+                "EnrollPStat.FullTimeEmployed": full_time(self.current_employment_status),
+                "EnrollPStat.NotInLaborForce": labor_force(self.current_employment_status),
+                "EnrollPStat.NotWorkingButLookingForWork": looking_for_work(self.current_employment_status),
+                "EnrollPStat.MoreThan6MonthsUnemployed": self.long_term_unemployed,
+                "EnrollPStat.CurrentIndustry": self.current_industry,
+                "EnrollPStat.IndustryPreference": self.industry_preference,
+                "EnrollPStat.EmploymentLocation": self.employer,
+                "EnrollPStat.Occupation": self.occupation,
+                "StudentWIOADetail.TANF": true_false(self.TANF),
+                "StudentWIOADetail.ReceivedTANFMoreThan2Yrs": self.TANF_2,
+                "StudentWIOADetail.SNAP": true_false(self.SNAP),
+                "StudentWIOADetail.SSI": true_false(self.SSI),
+                "StudentWIOADetail.TState": true_false(self.Tstate),
+                "StudentWIOADetail.NNRecievedAssistance": recieved_assistance(self),
+                "EnrollSStat.AnnualIncome": self.household_income,
+                "EnrollSStat.NoOfFamilyMembers": self.household_size,
+                "EnrollSStat.LowHouseholdIncome": true_false(low_income(self)),
+                "EnrollSStat.LowIncome": true_false(low_income(self)),
+                "EnrollSStat.DisplayedHomemaker": true_false(self.displaced_homemaker),
+                "EnrollSStat.SingleParent": true_false(self.single_parent),
+                "StudentWIOADetail.NNLacksFixedNighttimeResidence": true_false(self.lacks_adequate_residence),
+                "StudentWIOADetail.CriminalRecordHardToFindJob": true_false(self.criminal_record),
+                "StudentWIOADetail.NNFostercareYouth": true_false(self.in_foster_care),
+                "StudentWIOADetail.MigrantAndSeasonalFarmworker": migrant(self.migrant_seasonal_status),
+                "chkFarmworker": check_farm(self),
+                "chkNoneOfThese": check_statements(self),
+                "StudentWIOADetail.PrimaryGoal": 1,
+                "chkPreferences_1": true_false(self.student.check_goal_1),
+                "chkPreferences_2": true_false(self.student.check_goal_2),
+                "chkPreferences_3": true_false(self.student.check_goal_3),
+                "chkPreferences_4": true_false(self.student.check_goal_4),
+                "chkPreferences_5": true_false(self.student.check_goal_5),
+                "chkPreferences_6": true_false(self.student.check_goal_6),
+                "chkPreferences_7": true_false(self.student.check_goal_7),
+                "chkPreferences_8": true_false(self.student.check_goal_8),
+                "chkPreferences_9": true_false(self.student.check_goal_9),
+                "GoalId": '5',
+                "StudentWIOADetail.HelpWithSchoolWork": true_false(self.help_with_schoolwork),
+                "StudentWIOADetail.StudentTeacherContact": true_false(self.student_teacher_contact),
+                "StudentWIOADetail.ParentVolunteering": true_false(self.parent_volunteering),
+                "StudentWIOADetail.ReadToChildren": true_false(self.read_to_children),
+                "StudentWIOADetail.VisitLibrary": true_false(self.visit_library),
+                "StudentWIOADetail.PurchasingBooks": true_false(self.purchase_books),
+                "chkClassInterest_1": true_false(self.student.on_campus),
+                "chkClassInterest_2": true_false(self.student.online_solo),
+                "chkClassInterest_3": true_false(self.student.online_cohort),
+                "chkClassInterest_4": true_false(self.student.hybrid),
+                "chkTimePreference_1": true_false(self.student.morning),
+                "chkTimePreference_2": true_false(self.student.afternoon),
+                "chkTimePreference_3": true_false(self.student.evening),
+                "chkTimePreference_4": true_false(self.student.weekend),
+                "StudentWIOADetail.ComputerAccess": self.student.computer_access,
+                "StudentWIOADetail.InternetAccess": self.student.internet_access,
+                "StudentWIOADetail.ReferredBy": self.referred_by,
+                "SignaturePath": self.digital_signature,
+                "StudentWIOADetail.Disability": self.disability_notice,
+                "StudentWIOADetail.RequestAccommodation": true_false(self.request_accommodation),
+                "btnSave": "Submit",
+                "alertTextBox": "txtSearchStudentFName"
+            }
+            session.post(
+                'https://workreadyu.lctcs.edu/Student/CreateWithWIOAStepWise/CreateLink',
+                data=student,
+                headers=headers,
+                proxies=settings.PROXIE_DICT
+            )
 
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
-        }
-
-        student = {
-            "hdnRoleType": "2",
-            "hdnInactiveStateKey": ",2,3,4,5,7,18",
-            "hdnInactiveProg": "2,5,7,13,",
-            "hdnInactiveEmpStat": ",4_UNL, 5_NLF,",
-            "IntakeOnlyProgram": "19",
-            "IsIntakeOnly": "true",
-            "EnrollPStat.IntakeDate": self.student.intake_date,
-            "FY": "11",
-            "lblCurrentFY": "11",
-            "FYBginDate": "7/1/2022 12:00:00 AM",
-            "FYEndDate": "6/30/2023 12:00:00 AM",
-            "hdnProviderId": "DELGADO COMMUNITY COLLEGE",
-            "StudentId": "0",
-            "SSN": get_SID(self.SID),
-            "LastName": self.student.last_name,
-            "FirstName": self.student.first_name,
-            "MiddleInitial": "",
-            "DateOfBirth": self.student.dob,
-            "Age": get_age_at_intake(self.student.dob, self.student.intake_date),
-            "USCitizen": citizen(self.student.US_citizen),
-            "MaritalStatusId": marital(self.student.marital_status),
-            "Gender": gender(self.student.gender),
-            "OtherID": "",
-            "Suffix": "",
-            "EnrollmentDate": self.student.intake_date,
-            "Address.Street1": self.student.street_address_1,
-            "Address.Street2": self.student.street_address_2,
-            "Address.City": self.student.city,
-            "Address.StateId": state(self.student.state),
-            "Address.Zip": self.student.zip_code,
-            "Address.AddressTypeId": "1",
-            "Address.Status": "true",
-            "Address.Status": "false",
-            "Address.VTCountyId": self.student.parish,
-            "Telephone.PrimaryPhoneNumber": self.student.phone,
-            "Telephone.PrimaryPhoneTypeId": "",
-            "Telephone.PrimaryPhoneStatus": "true",
-            "Telephone.PrimaryPhoneStatus": "false",
-            "Telephone.AlternativePhoneNumber1": "",
-            "Telephone.AlternativePhoneType1Id": "",
-            "Telephone.AlternativePhoneStatus1": "false",
-            "Telephone.AlternativePhoneNumber2": "",
-            "Telephone.AlternativePhoneType2Id": "",
-            "Telephone.AlternativePhoneStatus2": "false",
-            "Telephone.AlternativePhoneNumber3": "",
-            "Telephone.AlternativePhoneTypeId3": "",
-            "Telephone.AlternativePhoneNumberStatus3": "false",
-            "Emergency.LastName": "",
-            "Emergency.FirstName": "",
-            "Emergency.RelationshipId": "",
-            "Emergency.Telephone1": "",
-            "Emergency.Telephone2": "",
-            "Email.Email1": self.student.email,
-            "Email.EmailTypeId": "1",
-            "Email.EmailStatus": email_status(self.student.email),
-            "HispanicLatino": hl_tf(self.hispanic_latino),
-            "Ethnicity_1": true_false(self.amer_indian),
-            "Ethnicity_2": true_false(self.asian),
-            "Ethnicity_3": true_false(self.black),
-            "Ethnicity_5": true_false(self.white),
-            "Ethnicity_4": true_false(self.pacific_islander),
-            "Program.ProgramTypeId": "19",
-            "Program.StateKeyword": "",
-            "Program.SecondaryProgram1TypeId": "",
-            "ESLStudent": ell(self.student),
-            "Program.Keyword": "",
-            "Program.SecondaryProgram2TypeId": "",
-            "Program.NativeLanguage": self.native_language,
-            "Program.SecondaryProgram3TypeId": "",
-            "Program.SecondaryProgram4TypeId": "",
-            "Program.CountryOfHighestEducation": self.country,
-            "Program.PastEnrollment": true_false(self.student.prior_registration),
-            "Program.PastEnrollCollege": "",
-            "EmploymentStatusId": employment_status(self.current_employment_status),
-            "EnrollPStat.EmploymentLocation": self.employer,
-            "EnrollPStat.EmploymentDate": "",
-            "EnrollPStat.Occupation": self.occupation,
-            "EnrollSStat.PublicAssistance": true_false(self.recieves_public_assistance),
-            "EnrollSStat.RuralArea": true_false(self.rural_area),
-            "EnrollSStat.LowIncome": true_false(self.low_family_income),
-            "EnrollSStat.DisplayedHomemaker": true_false(self.displaced_homemaker),
-            "EnrollSStat.SingleParent": true_false(self.single_parent),
-            "EnrollSStat.DislocatedWorker": true_false(self.dislocated_worker),
-            "StudentWIOADetail.MigrantAndSeasonalFarmworker": migrant(self.migrant_seasonal_status),
-            "StudentWIOADetail.NNLongTermUnemployed": true_false(self.long_term_unemployed),
-            "StudentWIOADetail.DislocatedWorker": dislocated(self.dislocated_worker),
-            "StudentWIOADetail.NNCulturalBarriers": true_false(self.cult_barriers_hind_emp),
-            "StudentWIOADetail.NNFostercareYouth": true_false(self.in_foster_care),
-            "StudentWIOADetail.NNAgedOutFosterCare": true_false(self.aged_out_foster_care),
-            "StudentWIOADetail.NNExhaustingTANFWithin2Years": true_false(self.exhaust_tanf),
-            "StudentWIOADetail.IndividualWithDisability": "",
-            "StudentWIOADetail.JobCorps": y_n_u(self.job_corps),
-            "StudentWIOADetail.YouthBuild": y_n_u(self.youth_build),
-            "StudentWIOADetail.NNLowLevelsOfLiteracy": "false",
-            "StudentWIOADetail.NNRecievedAssistance": true_false(self.recieves_public_assistance),
-            "StudentWIOADetail.NNIncomeBelowStandardIncomeLevel": true_false(self.low_family_income),
-            "StudentWIOADetail.NNReceiveReducedPriceLunch": "false",
-            "StudentWIOADetail.NNLowIncomeFosterChild": true_false(self.state_payed_foster),
-            "StudentWIOADetail.NNLowIncomeIndividualWithDisability": true_false(self.disabled_in_poverty),
-            "StudentWIOADetail.NNHomelessOrRunawayYouth": true_false(self.runaway_youth),
-            "StudentWIOADetail.NNLivingInHighPovertyArea": true_false(self.youth_in_high_poverty_area),
-            "StudentWIOADetail.NNSubjectToCriminalJusticeProcess": true_false(self.subject_of_criminal_justice),
-            "StudentWIOADetail.NNBarriersToEmployment": true_false(self.arrest_record_employment_barrier),
-            "StudentWIOADetail.NNLacksFixedNighttimeResidence": true_false(self.lacks_adequate_residence),
-            "StudentWIOADetail.NNNighttimeResidenceNotForHumans": true_false(self.irregular_sleep_accomodation),
-            "StudentWIOADetail.NNMigratoryChild": true_false(self.migratory_child),
-            "StudentWIOADetail.NNBelow18AndAbsetFromHome": true_false(self.runaway_youth),
-            "StudentWIOADetail.Adult": one_stop(self.adult_one_stop),
-            "StudentWIOADetail.AdultDateofLastService": "",
-            "StudentWIOADetail.AdultProviderName": "",
-            "StudentWIOADetail.AdultTypeOfService": 0,
-            "StudentWIOADetail.Youth": one_stop(self.youth_one_stop),
-            "StudentWIOADetail.YouthDateofLastService": "",
-            "StudentWIOADetail.YouthProviderName": "",
-            "StudentWIOADetail.YouthTypeOfService": 0,
-            "StudentWIOADetail.VocationalRehabilitation": voc_rehab(self.voc_rehab),
-            "StudentWIOADetail.WagnerPeyserAct": y_n_u(self.wagner_peyser),
-            "StudentWIOADetail.SchoolStatusAtParticipation": school_status(self.school_status),
-            "StudentWIOADetail.ReceivedTraining": "",
-            "StudentWIOADetail.EligibleTrainingProvider": "",
-            "StudentWIOADetail.TypeTrainingServices": "",
-            "StudentWIOADetail.EligibleTrainingProviderStudy": "",
-            "StudentWIOADetail.EligibleTrainingProviderCIP": "",
-            "StudentWIOADetail.TypeTrainingService2": "",
-            "StudentWIOADetail.TypeTrainingService3": "",
-            "Disability_12": true_false(self.adhd),
-            "Disability_13": true_false(self.autism),
-            "Disability_9": true_false(self.deaf_blind),
-            "Disability_3": true_false(self.deaf),
-            "Disability_6": true_false(self.emotional_disturbance),
-            "Disability_15": true_false(self.k12_iep),
-            "Disability_2": true_false(self.hard_of_hearing),
-            "Disability_1": true_false(self.intellectual_disability),
-            "Disability_10": true_false(self.multiple_disabilities),
-            "Disability_7": true_false(self.orthopedic_impairment),
-            "Disability_8": true_false(self.other_health_impairment),
-            "Disability_11": true_false(self.learning_disability),
-            "Disability_4": true_false(self.speech_or_lang_impairment),
-            "Disability_14": true_false(self.traumatic_brain_injury),
-            "Disability_5": true_false(self.visual_impairment),
-            "SpecLearningDisId": "11",
-            "Dislearning_4": true_false(self.dyscalculia),
-            "Dislearning_3": true_false(self.dysgraphia),
-            "Dislearning_2": true_false(self.dyslexia),
-            "Dislearning_1": true_false(self.neurological_impairments),
-            "HighestId": self.highest_level_completed,
-            "HighLocId": self.school_location,
-            "StudentWIOADetail.HighestSchCompletedEntry": 0,
-            "GoalId": "",
-            "ReferralDate": "",
-            "ReferralTo": "",
-            "CommentDate": "",
-            "Comment": "",
-            "btnSave": "Create"
-        }
-
-        session.post(
-            'https://workreadyu.lctcs.edu/Student/CreateWithWIOA/CreateLink',
-            data=student,
-            headers=headers,
-            proxies=settings.PROXIE_DICT
-        )
-
+    def verify(self, session):
         search = {
             'LastNameTextBox': self.student.last_name,
             'FirstNameTextBox': self.student.first_name,
@@ -1696,22 +2384,17 @@ class WIOA(models.Model):
             'ToTextBox': self.student.intake_date,
             'btnFilter': 'Filter List'
         }
-
         wru = self.wru_search(session, search)
         try:
             wru = wru.decode('ascii')
         except AttributeError:
             pass
-
         self.student.WRU_ID = wru
         self.student.save()
         self.student.testify()
         self.student.track()
 
-    def send(self, session):
-        self.check_for_state_id(session)
-        if self.student.WRU_ID == 'No ID':
-            self.send_to_state(session)
+
 
 
 class CollegeInterest(models.Model):
