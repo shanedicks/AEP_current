@@ -2394,7 +2394,6 @@ class WIOA(models.Model):
             'LastNameTextBox': self.student.last_name,
             'FirstNameTextBox': self.student.first_name,
             'FromTextBox': self.student.intake_date,
-            'ToTextBox': self.student.intake_date,
             'btnFilter': 'Filter List'
         }
         wru = self.wru_search(session, search)
