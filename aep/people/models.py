@@ -1323,7 +1323,8 @@ def employment_status(i):
         "4": "3_UE",
         "5": "11_EMR",
         "6": "3_UE",
-        "7": "14_RT"
+        "7": "14_RT",
+        "8": "3_UE"
     }
     return emp[i]
 
@@ -1465,10 +1466,10 @@ def long_term_unemployed(i):
     return i == "8"
 
 def labor_force(i):
-    l = "true" if i == "6" else "false"
+    l = "true" if i in ["6", "4"] else "false"
 
 def looking_for_work(i):
-    l = "true" if i == "8" else "false"
+    l = "true" if i in ["8", "2"] else "false"
 
 def recieved_assistance(wioa):
     if any([
@@ -1488,8 +1489,8 @@ class WIOA(models.Model):
     EMPLOYMENT_STATUS_CHOICES = (
         ("1", "Employed - Full Time"),
         ("9", "Employed - Part Time"),
-        ("2", "Unemployed - Not Looking For Work"),
-        ("8", "Unemployed - Looking for work"),
+        ("2", "Unemployed - Looking For Work"),
+        ("3", "Unemployed - Not Looking for work"),
         ("4", "Not in labor force/ Not available for work"),
         ("5", "Employed, but recieved notice of termination or Military seperation is pending"),
         ("6", "Not in labor force and/or not looking for work"),
