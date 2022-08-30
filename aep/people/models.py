@@ -264,6 +264,7 @@ class Profile(models.Model):
         ("Mermentau", "Mermentau"),
         ("Mer Rouge", "Mer Rouge"),
         ("Merryville", "Merryville"),
+        ("Metairie", "Metairie"),
         ("Minden", "Minden"),
         ("Monroe", "Monroe"),
         ("Montgomery", "Montgomery"),
