@@ -1488,6 +1488,7 @@ class WIOA(models.Model):
     EMPLOYMENT_STATUS_CHOICES = (
         ("1", "Employed - Full Time"),
         ("9", "Employed - Part Time"),
+        ("2", "Unemployed - Not Looking For Work"),
         ("8", "Unemployed - Looking for work"),
         ("4", "Not in labor force/ Not available for work"),
         ("5", "Employed, but recieved notice of termination or Military seperation is pending"),

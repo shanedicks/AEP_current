@@ -1891,6 +1891,7 @@ class WioaForm(ModelForm):
                         collect occupation data from any employed applicants. """)
                 self.add_error("occupation", msg)
 
+
     def clean_request_accommodation(self):
         data = self.cleaned_data['request_accommodation']
         if not data:
