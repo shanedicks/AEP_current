@@ -2394,7 +2394,11 @@ class WIOA(models.Model):
         self.student.testify()
         self.student.track()
 
-
+    def send(self, session):
+        self.check_for_state_id(session)
+        if self.student.WRU_ID == 'No ID':
+            self.send_to_state(session)
+            self.verify(session)
 
 
 class CollegeInterest(models.Model):
