@@ -391,7 +391,8 @@ class StudentPersonalInfoForm(ModelForm):
                 Row(
                     Field(
                     'title',
-                    wrapper_class="col-md-3"
+                    wrapper_class="col-md-3",
+                    required=True,
                     ),
                     Field(
                     'nickname',
