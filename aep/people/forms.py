@@ -829,6 +829,22 @@ class StudentUpdateForm(ModelForm):
                 ),
             ),
             Fieldset(
+                'What types of classes are you interested in taking with us?',
+                Column(
+                    'ccr_app',
+                    'ell_app',
+                    'accuplacer_app',
+                    'success_app',
+                    css_class="col-md-6"
+                ),
+                Column(
+                    'e_learn_app',
+                    'ell_online_app',
+                    'certifications_app',
+                    css_class="col-md-6"
+                ),
+            ),
+            Fieldset(
                 'Tell us more about your class preferences',
                 HTML(
                     """<p><strong>How would you prefer to attend classes? (Check all that apply)</strong></p>"""
