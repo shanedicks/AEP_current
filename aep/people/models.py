@@ -1430,7 +1430,10 @@ def title(i):
         "Mrs.": "Mrs.",
         "Mr.": "Mr.", 
     }
-    return t[i]
+    if i in t.keys():
+        return t[i]
+    else:
+        return ""
 
 def ec_name(i):
     return i.split(" ", 1)
