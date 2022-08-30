@@ -699,6 +699,202 @@ class StudentContactForm(ModelForm):
             "ec_relation",
         )
 
+class StudentUpdateForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(StudentUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['phone'].validators.append(phone_validator)
+        self.fields['alt_phone'].validators.append(phone_validator)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Student Information',
+                Row(
+                    Field(
+                        'first_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'last_name',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                ),
+                Row(
+                    Field(
+                        'dob',
+                        placeholder="MM/DD/YYYY",
+                        wrapper_class="col-md-4",
+                        data_mask="99/99/9999"
+                    ),
+                    Field(
+                        'gender',
+                        'marital_status',
+                        wrapper_class="col-md-4",
+                    ),
+                ),
+                Row(
+                    Field(
+                    'title',
+                        wrapper_class="col-md-3",
+                    ),
+                    Field(
+                        'nickname',
+                        wrapper_class="col-md-6"
+                    ),
+                    Field(
+                        'pronoun',
+                        wrapper_class="col-md-3"
+                    ),
+                ),
+            ),   
+            Fieldset(
+                'Contact Information',
+                "allow_texts",
+                Row(
+                    Field(
+                        'phone',
+                        placeholder="504-555-5555",
+                        wrapper_class="col-md-5",
+                        data_mask="999-999-9999",
+                    ),
+                    Field(
+                        'alt_phone',
+                        wrapper_class="col-md-5",
+                        placeholder="504-555-5555",
+                        data_mask="999-999-9999",
+                    )
+                ),
+                Row(
+                    Field(
+                        'email',
+                        wrapper_class="col-md-6"
+                    ),
+                    Field(
+                        'alt_email',
+                        wrapper_class="col-md-6"
+                    ),
+                ),
+                Row(
+                    Field(
+                        'street_address_1',
+                        wrapper_class="col-md-6",
+                    ),
+                    Field(
+                        'street_address_2',
+                        wrapper_class="col-md-6"
+                    )
+                ),
+                Row(
+                    Field(
+                        'city',
+                        wrapper_class="col-md-6",
+                    ),
+                     Field(
+                        'other_city',
+                        wrapper_class="col-md-6",
+                    ),                   
+                    Field(
+                        'state',
+                        'parish',
+                        wrapper_class="col-md-4",
+                    ),
+                    Field(
+                        'zip_code',
+                        data_mask="99999",
+                        wrapper_class="col-md-4",
+                    ),
+                ),
+            ),
+            Fieldset(
+                'Emergency Contact Information',
+                Field(
+                    'emergency_contact',
+                ),
+                Field(
+                    'ec_phone',
+                    data_mask="999-999-9999",
+                    wrapper_class="col-md-4",
+                ),
+                Field(
+                    'ec_relation',
+                    wrapper_class="col-md-4",
+                ),
+                Field(
+                    'ec_relation',
+                    wrapper_class="col-md-4",
+                ),
+            ),
+            Fieldset(
+                'Tell us more about your class preferences',
+                HTML(
+                    """<p><strong>How would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                ),
+                "on_campus",
+                "online_solo",
+                "online_cohort",
+                "hybrid",
+                HTML(
+                    """<p><strong>When would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                ),
+                "morning",
+                "afternoon",
+                "evening",
+                "weekend",
+                HTML(
+                    """<p><strong>Can you access online classes or resources?</strong></p>"""
+                ),
+                "computer_access",
+                "internet_access"
+            ),
+        )
+
+    class Meta:
+        model = Student
+        fields = (
+            "first_name",
+            "last_name",
+            'title',
+            'nickname',
+            'pronoun',
+            "email",
+            "alt_email",
+            "dob",
+            "gender",
+            "marital_status",
+            "phone",
+            "allow_texts",
+            "alt_phone",
+            "street_address_1",
+            "street_address_2",
+            "city",
+            "other_city",
+            "state",
+            "parish",
+            "zip_code",
+            "emergency_contact",
+            "ec_phone",
+            "ec_email",
+            "ec_relation",
+            "on_campus",
+            "online_solo",
+            "online_cohort",
+            "hybrid",
+            "morning",
+            "afternoon",
+            "evening",
+            "weekend",
+            "internet_access",
+            "computer_access"
+        )
+        labels = {
+            "allow_texts": "Allow Texts",
+            "other_city": "Other City Not Listed"
+        }
+
 
 class StudentForm(ModelForm):
 
@@ -1175,11 +1371,15 @@ class PartnerForm(ModelForm):
             ),
             Fieldset(
                 'Student Emergency Contact Information',
-                'emergency_contact',
+                Field(
+                    'emergency_contact',
+                    required=True
+                ),
                 Field(
                     'ec_phone',
                     data_mask="999-999-9999",
-                    wrapper_class="col-md-4"
+                    wrapper_class="col-md-4",
+                    required=True
                 ),
                 Field(
                     'ec_email',
@@ -1412,6 +1612,10 @@ class EETForm(ModelForm):
                 Row(
                     Field(
                         'current_employment_status',
+                        wrapper_class="col-md-4",
+                        required=True
+                    ),
+                    Field(
                         "employer",
                         "occupation",
                         wrapper_class="col-md-4"

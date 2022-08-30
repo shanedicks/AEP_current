@@ -1439,7 +1439,11 @@ def title(i):
         return ""
 
 def ec_name(i):
-    return i.split(" ", 1)
+    name = i.split(" ", 1)
+    if len(name) == 2:
+        return name
+    else:
+        return [name, ""]
 
 def ec_relation(i):
     r = {

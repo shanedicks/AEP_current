@@ -22,7 +22,7 @@ from sections.forms import SectionFilterForm
 from .models import Staff, Student, CollegeInterest, WIOA, Prospect, ProspectNote
 from .forms import (
     StaffForm, StudentPersonalInfoForm, StudentSearchForm,
-    StudentInterestForm, StudentContactForm, SSNForm, REForm,
+    StudentInterestForm, StudentContactForm, StudentUpdateForm, SSNForm, REForm,
     EETForm, AdditionalDetailsForm, DisabilityForm, StudentForm,
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
@@ -184,7 +184,7 @@ class NewStudentCSV(LoginRequiredMixin, FormView):
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Student
-    form_class = StudentForm
+    form_class = StudentUpdateForm
     template_name = "people/student_update.html"
 
 
