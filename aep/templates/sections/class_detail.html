@@ -3,6 +3,11 @@
 {% block content %}
     <h1>{{ section.title }}</h1>
     <h3>{{ section.teacher }} | {{ section.start_time }}-{{section.end_time}}</h3>
+    {% if section.room != '' %}
+        <h3>{{section.site}} Room {{section.room}}</h3>
+    {% else %}
+        <h3>{{section.site}}</h3>
+    {% endif %}
     <a class="btn btn-default btn-sm" href="{% url 'sections:class roster csv' slug=section.slug %}" role="button">Export Roster</a>
     <table class="table">
         <tr>
