@@ -1419,8 +1419,11 @@ def pronouns(i):
         "Other, please ask": 4,
         "I use all gender pronouns": 4
     }
-    other = i if p[i] not in [1,2,3] else ""
-    return (p[i], other)
+    if i in p.keys():
+        other = i if p[i] not in [1,2,3] else ""
+        return (p[i], other)
+    else:
+        return ("", "")
 
 def title(i):
     t = {
