@@ -904,7 +904,14 @@ class StudentUpdateForm(ModelForm):
             "evening",
             "weekend",
             "internet_access",
-            "computer_access"
+            "computer_access",
+            'ccr_app',
+            'ell_app',
+            'accuplacer_app',
+            'success_app',
+            'e_learn_app',
+            'ell_online_app',
+            'certifications_app',
         )
         labels = {
             "allow_texts": "Allow Texts",
