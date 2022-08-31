@@ -253,6 +253,9 @@ class StudentSignupWizard(SessionWizardView):
 
     template_name = "people/sign_up_wizard.html"
 
+    def get_success_url(self):
+        return reverse_lazy('people:signup success', kwargs={'pk' : orientation.event.pk})
+
     def done(self, form_list, form_dict, **kwargs):
         ssn = self.get_cleaned_data_for_step('ssn')
         personal = self.get_cleaned_data_for_step('personal')
@@ -270,11 +273,6 @@ class StudentSignupWizard(SessionWizardView):
         orientation = form_dict["signup"].save(commit=False)
         orientation.student = student
         orientation.save()
-        if student.email:
-            try:
-                orientation_email_task.delay(student.first_name, student.email, orientation.id)
-            except ConnectionError:
-                pass
         return HttpResponseRedirect(reverse_lazy('people:signup success', kwargs={'pk' : orientation.event.pk}))
 
 
@@ -603,6 +601,50 @@ class ProspectCreateStudentView(CreateView):
                     wioa_form=wioa_form,
                 )
             )
+
+class ProspectCreateStudentWizard(StudentSignupWizard):
+
+    def get_prospect(self):
+        return Prospect.objects.get(slug=self.kwargs['slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'prospect' not in context:
+            context['prospect'] = self.get_prospect()
+        return context
+
+    def get_form_initial(self, step):
+        prospect = self.get_prospect()
+        self.initial_dict = {
+            "personal": {
+                'last_name': prospect.last_name,
+                'first_name': prospect.first_name,
+                'email': prospect.email,
+                'dob': prospect.dob                
+                },
+            "contact": {"phone": prospect.phone}
+        }
+        return self.initial_dict.get(step, {})
+
+    def done(self, form_list, form_dict, **kwargs):
+        ssn = self.get_cleaned_data_for_step('ssn')
+        personal = self.get_cleaned_data_for_step('personal')
+        interest = self.get_cleaned_data_for_step('interest')
+        contact = self.get_cleaned_data_for_step('contact')
+        race = self.get_cleaned_data_for_step('race')
+        eet = self.get_cleaned_data_for_step('EET')
+        disability = self.get_cleaned_data_for_step('disability')
+        details = self.get_cleaned_data_for_step('details')
+        student = Student(**personal, **interest, **contact)
+        student.save()
+        wioa = WIOA(**ssn, **race, **eet, **disability, **details)
+        wioa.student = student
+        wioa.save()
+        orientation = form_dict["signup"].save(commit=False)
+        orientation.student = student
+        orientation.save()
+        return HttpResponseRedirect(reverse_lazy('people:signup success', kwargs={'pk' : orientation.event.pk}))
+
 
 
 class StaffProspectCreateStudentView(LoginRequiredMixin, ProspectCreateStudentView):

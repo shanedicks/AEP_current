@@ -198,7 +198,7 @@ prospect_intake_patterns = [
         views.ProspectSuccessView.as_view(),
         name='prospect success'),
     re_path(r'^registration-form/$',
-        views.ProspectCreateStudentView.as_view(),
+        views.ProspectCreateStudentWizard.as_view(),
         name='prospect intake form'),
     re_path(r'^registration-success/$',
         views.ProspectIntakeSuccessView.as_view(),

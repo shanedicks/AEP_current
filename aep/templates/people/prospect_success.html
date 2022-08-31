@@ -24,27 +24,18 @@
 		</table>
 	</div>
 	<div class="col-md-8 col-md-offset-2">
-		{% if prospect.returning_student %}
-		<h1 class="text-center">Congratulations and welcome back!</h1>
-    	<p class="text-center lead">Your info matches a student record already in our system. Instead of registering again, please fill out the returning student form below, and we will contact you with your next steps for enrolling in classes.</p>
-    	<p class="text-center"><a class='btn btn-default' href='https://docs.google.com/forms/d/e/1FAIpQLSfsScUww4u3tGn_wlbUjGn-nQqqsBrx4kHsXFApK7O6JivScA/viewform' target="blank">Returning Student Form</a></p>
-		<h1 class="text-center">¡Felicitaciones y bienvenido de nuevo!</h1>
-    	<p class="text-center lead">Su información coincide con un registro de estudiante que ya está en nuestro sistema. En lugar de registrarse, complete el formulario de Estudiante que regresa a continuación y nos comunicaremos con usted para informarle los próximos pasos para inscribirse en las clases.</p>
-    	<p class="text-center"><a class='btn btn-default' href='https://docs.google.com/forms/d/e/1FAIpQLSfsScUww4u3tGn_wlbUjGn-nQqqsBrx4kHsXFApK7O6JivScA/viewform' target="blank">Formulario de estudiante que regresa</a></p>
-		{% else%}
-    	<h1 class="text-center">Success!</h1>
-    	<p class="text-center lead">Congratulations {{ prospect.first_name }}! You have successfully filled out and entered your interest form to join Delgado's Adult Education Program.</p>
+    	<h1 class="text-center">Thanks for reaching out</h1>
+    	<p class="text-center lead">An advisor will reach out to you within five days</p>
     	{% if minor %}
     	<br><p>The next steps in this process will be:</p>
     	<p><strong>Wait for an Intake Advisor to reach out to you</strong> within the next five (5) business days-- they will call, email, or text you based on what you selected in your Interest Form.</p>
     	{% else %}
-    	<br><p>If you would like to continue on and fill out our detailed <strong>New Student Registration Form</strong>, please <a href="{% url 'people:prospect intake form' slug=prospect.slug %}">Click Here.</a>
+    	<br><p  class="text-center">If you would like to continue on and fill out our detailed <strong>New Student Registration Form</strong>, please <a class="btn btn-lg btn-primary center-block" href="{% url 'people:prospect intake form' slug=prospect.slug %}">Click Here.</a>
 		<p><strong>If you would like support completing registration, wait for an Intake Advisor to reach out to you</strong> within the next five (5) business days-- they will call, email, or text you based on what you selected in your Interest Form.</p>
     	{% endif %}
     		<p>During the meeting with your Intake Advisor, you will fill out our detailed <strong>New Student Registration Form</strong> and sign-up for a <strong>New Student Orientation.</strong></p>
     			<ul>
     			<li>You will be able to choose if you would like to attend in-person at one of our campuses or if you would like to complete it online.</li></ul>
     			<p><em>If you have any questions or need help in the meantime, you can call 504-671-5434.</em> Be sure to mention that you are a new student who filled out the interest form when you call or leave a voicemail.</em></p>
-    	{% endif %}
     </div>
 {% endblock content %}

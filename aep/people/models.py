@@ -271,7 +271,7 @@ class Profile(models.Model):
         ("Montpelier", "Montpelier"),
         ("Mooringsport", "Mooringsport"),
         ("Moreauville", "Moreauville"),
-        ("Morgan", "Morgan"),
+        ("Morgan City", "Morgan City"),
         ("Morganza", "Morganza"),
         ("Morse", "Morse"),
         ("Mound", "Mound"),
@@ -291,7 +291,7 @@ class Profile(models.Model):
         ("Oak Grove", "Oak Grove"),
         ("Oak Ridge", "Oak Ridge"),
         ("Oberlin", "Oberlin"),
-        ("Oil", "Oil"),
+        ("Oil City", "Oil City"),
         ("Olla", "Olla"),
         ("Opelousas", "Opelousas"),
         ("Palmetto", "Palmetto"),
@@ -1462,11 +1462,8 @@ def ec_relation(i):
 def full_time(i):
     return i == "1"
 
-def long_term_unemployed(i):
-    return i == "8"
-
 def labor_force(i):
-    l = "true" if i in ["6", "4"] else "false"
+    l = "true" if i in ["6", "4", "3"] else "false"
 
 def looking_for_work(i):
     l = "true" if i in ["8", "2"] else "false"
@@ -1489,11 +1486,9 @@ class WIOA(models.Model):
     EMPLOYMENT_STATUS_CHOICES = (
         ("1", "Employed - Full Time"),
         ("9", "Employed - Part Time"),
-        ("2", "Unemployed - Looking For Work"),
-        ("3", "Unemployed - Not Looking for work"),
-        ("4", "Not in labor force/ Not available for work"),
         ("5", "Employed, but recieved notice of termination or Military seperation is pending"),
-        ("6", "Not in labor force and/or not looking for work"),
+        ("2", "Unemployed - Looking For Work"),
+        ("4", "Not in labor force / Not looking for work"),
         ("7", "Retired")
     )
     MIGRANT_SEASONAL_STATUS_CHOICES = (
@@ -1622,7 +1617,7 @@ class WIOA(models.Model):
         ("2", "India"),
         ("3", "Australia"),
         ("4", "Japan"),
-        ("5", "New"),
+        ("5", "New Zealand"),
         ("6", "Philippines"),
         ("7", "Turkey"),
         ("8", "Austria"),
@@ -1637,23 +1632,23 @@ class WIOA(models.Model):
         ("17", "Argentina"),
         ("18", "Brazil"),
         ("19", "Russia"),
-        ("20", "South"),
+        ("20", "South Korea"),
         ("21", "Egypt"),
         ("22", "England"),
         ("23", "Greece"),
         ("24", "Singapore"),
-        ("25", "South"),
+        ("25", "South Africa"),
         ("26", "Mexico"),
         ("27", "Afghanistan"),
         ("28", "Algeria"),
         ("29", "Albania"),
         ("30", "Aruba"),
         ("31", "Bahamas"),
-        ("32", "North"),
+        ("32", "North Korea"),
         ("33", "Canada"),
         ("34", "China"),
         ("35", "Georgia"),
-        ("36", "Hong"),
+        ("36", "Hong Kong"),
         ("37", "Indonesia"),
         ("38", "Iraq"),
         ("39", "Israel"),

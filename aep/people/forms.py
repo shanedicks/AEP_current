@@ -930,15 +930,6 @@ class StudentForm(ModelForm):
                 "We're Sorry, but you must be at least 16 years of age"
                 " in order to enroll in classes."
             )
-        elif age < 18:
-            raise ValidationError(
-                "If you are 16 or 17 years old additional paperwork is "
-                "required for you to register for classes.  Please come "
-                "to the Adult Education Office, City Park Campus, 615 "
-                "City Park Avenue, Building 7, Room 170.  Our office hours"
-                " are Monday thru Thursday, 9am to 4pm.  If you have any "
-                "questions, please contact us at 504-671-5434."
-            )
         return data
 
     def clean_first_name(self):
