@@ -199,6 +199,7 @@ class TabeResource(TestResource):
             'read_nrs',
             'math_nrs',
             'lang_nrs',
+            'score_report_link'
         )
 
 
@@ -213,15 +214,10 @@ class TabeAdmin(ImportExportActionModelAdmin):
         'read_level',
         'math_level',
         'lang_level',
-        'read_ss',
-        'math_comp_ss',
-        'app_math_ss',
-        'lang_ss',
-        'total_math_ss',
-        'total_batt_ss',
         'read_nrs',
         'math_nrs',
         'lang_nrs',
+        'score_report_link'
     )
 
     list_filter = (
@@ -231,6 +227,7 @@ class TabeAdmin(ImportExportActionModelAdmin):
     search_fields = [
         'student__student__first_name',
         'student__student__last_name',
+        'student__student__WRU_ID',
         'student__student_wru',
         'test_date'
     ]
@@ -292,7 +289,8 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
     list_display = (
         'student',
         'test_date',
-        'read_nrs'
+        'read_nrs',
+        'score_report_link'
     )
 
     list_filter = (
@@ -302,6 +300,7 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
     search_fields = [
         'student__student__first_name',
         'student__student__last_name',
+        'student__student__WRU_ID',
         'student__student_wru',
         'test_date'
     ]

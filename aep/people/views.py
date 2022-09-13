@@ -242,10 +242,10 @@ class StudentSignupWizard(SessionWizardView):
     form_list = [
         ("personal", StudentPersonalInfoForm),
         ("ssn", SSNForm),
-        ("interest", StudentInterestForm),
         ("contact", StudentContactForm),
         ("race", REForm),
         ("EET", EETForm),
+        ("interest", StudentInterestForm),
         ("disability", DisabilityForm),
         ("details", AdditionalDetailsForm),
         ("signup", OrientationSignupForm)

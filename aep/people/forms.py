@@ -376,7 +376,7 @@ class StudentPersonalInfoForm(ModelForm):
                     Field(
                         'first_name',
                         wrapper_class="col-md-6",
-                        required=True
+                        required=True,
                     ),
                     Field(
                         'last_name',
@@ -400,7 +400,8 @@ class StudentPersonalInfoForm(ModelForm):
                     ),
                     Field(
                     'pronoun',
-                    wrapper_class="col-md-3"
+                    wrapper_class="col-md-3",
+                    required=True
                     ),
                 ),
                 'email',
@@ -409,12 +410,14 @@ class StudentPersonalInfoForm(ModelForm):
                         'dob',
                         placeholder="MM/DD/YYYY",
                         wrapper_class="col-md-4",
-                        data_mask="99/99/9999"
+                        data_mask="99/99/9999",
+                        required=True
                     ),
                     Field(
                         'gender',
                         'marital_status',
                         wrapper_class="col-md-4",
+                        required=True
                     ),
                 ),
                 Row(
@@ -445,14 +448,13 @@ class StudentPersonalInfoForm(ModelForm):
             "other_ID_name",
         )
         labels = {
-            'first_name': "First Name (primer y segundo nombre)",
-            'last_name': "Last Name (primer y segundo apellido)",
-            'title': "Title (titulo)",
+            'first_name': "First Name (primer y segundo nombre)*",
+            'last_name': "Last Name (primer y segundo apellido)*",
+            'title': "Title (titulo)*",
             'nickname': "Preferred Name or Nickname (nombre o apodo preferido)",
-            'pronoun': "Pronouns (pronombres)",
-            "US_citizen": "<strong>Check this box if you are a US Citizen</strong>"
+            'pronoun': "Pronouns (pronombres)*",
+            "US_citizen": "<strong>Check this box if you are a US Citizen*</strong>"
         }
-
 
 class StudentInterestForm(ModelForm):
 
@@ -670,7 +672,7 @@ class StudentContactForm(ModelForm):
                     required=True
                 ),
                 Field(
-                    'ec_relation',
+                    'ec_email',
                     wrapper_class="col-md-4",
                 ),
                 Field(
@@ -698,6 +700,12 @@ class StudentContactForm(ModelForm):
             "ec_email",
             "ec_relation",
         )
+
+        labels = {
+            "emergency_contact": "Emergency Contact Full Name*",
+            "ec_phone": "Their Phone Number*",
+            "ec_relation": "Their Relationship to You*",
+        }
 
 class StudentUpdateForm(ModelForm):
 
@@ -820,7 +828,7 @@ class StudentUpdateForm(ModelForm):
                     wrapper_class="col-md-4",
                 ),
                 Field(
-                    'ec_relation',
+                    'ec_email',
                     wrapper_class="col-md-4",
                 ),
                 Field(
@@ -1536,7 +1544,7 @@ class REForm(ModelForm):
         self.helper.template_pack = 'bootstrap3'
         self.helper.layout = Layout(
             Fieldset(
-                'Race/Ethnicity/Language Information',
+                'Race/Ethnicity/Language Information*',
                 Row(
                     Column(
                         "amer_indian",
@@ -1587,6 +1595,11 @@ class REForm(ModelForm):
             "other_language",
             "native_language",
         )
+
+    labels = {
+        "country": "Country of Birth*",
+        "native_language": "Native Language*",
+    }
 
 
 class EETForm(ModelForm):
@@ -1754,6 +1767,11 @@ class DisabilityForm(ModelForm):
             "request_accommodation"
         )
 
+        labels = {
+            "disability_notice": "Are you an Individual with a Disability?*",
+            "request_accommodation": "<strong>Check here to indicate that you understand your responsibility to request accommodations.*</strong>"
+        }
+
 
 class AdditionalDetailsForm(ModelForm):
 
@@ -1849,10 +1867,9 @@ class AdditionalDetailsForm(ModelForm):
         )
 
         labels = {
-            "request_accommodation": """<strong>Check here to indicate that you 
-                                        understand your responsibility to request 
-                                        accommodations.</strong>""",
-            "referred_by": "<strong>How did you hear about us?"
+            "parental_status": "Are you a parent?*",
+            "referred_by": "<strong>How did you hear about us?*</strong>",
+            "digital_signature": "DISCLAIMER: By typing your name below, you are signing this application electronically. You agree that your electronic signature is the legal equivalent of your manual signature on this application.*"
         }
 
 
@@ -1951,7 +1968,6 @@ class WioaForm(ModelForm):
                         "pacific_islander",
                         css_class="col-md-4"
                     ),
-
                 ),
                 Row(
                     Field(

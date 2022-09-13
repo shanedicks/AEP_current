@@ -23,7 +23,11 @@
                 <button class="btn btn-default" name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">First Step</button>
                 <button class="btn btn-default" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">Prev Step</button>
             {% endif %}
-            <input class="btn btn-success btn-lg center-block" type="submit" value="Submit">
+            {% if wizard.steps.next %}
+                <input class="btn btn-success btn-lg center-block" type="submit" value="Next Step">
+            {% else %}
+                <input class="btn btn-success btn-lg center-block" type="submit" value="Submit">
+            {% endif %}
         </form>
     </div>
 {% endblock %}

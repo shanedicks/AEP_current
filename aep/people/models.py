@@ -408,7 +408,8 @@ class Profile(models.Model):
         ("Miss", "Miss"),
         ("Ms.", "Ms."),
         ("Mrs.", "Mrs."),
-        ("Mr.", "Mr.")
+        ("Mr.", "Mr."),
+        ("Dr.", "Dr.")
     )
     first_name = models.CharField(
         max_length=30,
@@ -650,12 +651,12 @@ class Student(Profile):
     other_ID = models.CharField(
         max_length=20,
         blank=True,
-        verbose_name=_("State ID, Passport #, Visa info, etc.")
+        verbose_name=_("State ID, Passport #, Visa info, etc. (Optional)")
     )
     other_ID_name = models.CharField(
         max_length=20,
         blank=True,
-        verbose_name=_('What kind of ID is this?')
+        verbose_name=_('What kind of ID is this? (Optional)')
     )
     US_citizen = models.BooleanField(
         default=False,
