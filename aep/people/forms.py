@@ -401,7 +401,6 @@ class StudentPersonalInfoForm(ModelForm):
                     Field(
                     'pronoun',
                     wrapper_class="col-md-3",
-                    required=True
                     ),
                 ),
                 'email',
@@ -452,7 +451,7 @@ class StudentPersonalInfoForm(ModelForm):
             'last_name': "Last Name (primer y segundo apellido)*",
             'title': "Title (titulo)*",
             'nickname': "Preferred Name or Nickname (nombre o apodo preferido)",
-            'pronoun': "Pronouns (pronombres)*",
+            'pronoun': "Pronouns (pronombres)",
             "US_citizen": "<strong>Check this box if you are a US Citizen*</strong>"
         }
 
@@ -1596,10 +1595,10 @@ class REForm(ModelForm):
             "native_language",
         )
 
-    labels = {
-        "country": "Country of Birth*",
-        "native_language": "Native Language*",
-    }
+        labels = {
+            "country": "Country of Birth*",
+            "native_language": "Native Language*",
+        }
 
 
 class EETForm(ModelForm):
