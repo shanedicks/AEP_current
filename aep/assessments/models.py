@@ -531,6 +531,17 @@ class Tabe(NRSTest):
     class Meta:
         verbose_name = "TABE"
         verbose_name_plural = "TABE scores"
+        unique_together = [
+            "student",
+            "test_date",
+            "form",
+            "read_level",
+            "math_level",
+            "lang_level",
+            "read_nrs",
+            "math_nrs",
+            "lang_nrs"
+        ]
 
     def __str__(self):
         student = self.student.__str__()
@@ -694,7 +705,13 @@ class Clas_E(NRSTest):
     class Meta:
         verbose_name = "CLAS-E"
         verbose_name_plural = "CLAS-E scores"
-
+        unique_together = [
+            "student",
+            "test_date",
+            "form",
+            "read_level",
+            "read_nrs"
+        ]
 
     def __str__(self):
         student = self.student.__str__()
