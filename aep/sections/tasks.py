@@ -383,6 +383,7 @@ def cancel_class_task(cancellation_id):
 			'class_title': section.title,
 			'teacher': section.teacher.first_name,
 			'start_time': section.start_time.strftime("%I:%M %p"),
+			'site': section.site.name
 			'date': cancellation_date
 		}
 		if student.email:
@@ -392,10 +393,11 @@ def cancel_class_task(cancellation_id):
 		if student.phone:
 			send_sms_task.delay(
 				dst=student.phone,
-				message="Delgado Adult Ed Alert: {0} with {1} at {2} is cancelled on {3}. Sorry for any inconvenience".format(
+				message="Delgado Adult Ed Alert: {0} at {1} at {2} with {3} is cancelled on {4}. Sorry for any hassle".format(
 					context['class_title'],
-					context['teacher'],
 					context['start_time'],
+					context['site'],
+					context['teacher'],
 					context['date']
 				)
 			)
