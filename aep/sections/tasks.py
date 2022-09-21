@@ -375,7 +375,7 @@ def cancel_class_task(cancellation_id):
 	)
 	attendance.update(attendance_type='C')
 	students = apps.get_model('people', 'Student').objects.filter(classes__section=section)
-	cancellation_date = cancellation.cancellation_date.strptime("%m/%d/%y")
+	cancellation_date = cancellation.cancellation_date.strftime("%m/%d/%y")
 	recipient_list = []
 	context = {
 		'student': student.first_name,
