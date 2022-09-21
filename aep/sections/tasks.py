@@ -392,10 +392,7 @@ def cancel_class_task(cancellation_id):
 		if student.phone:
 			send_sms_task.delay(
 				dst=student.phone,
-				message="""
-					Delgado Adult Ed Alert: {0} with {1} at {2} is cancelled on {3}. 
-					Sorry for any inconvenience
-					""".format(
+				message="Delgado Adult Ed Alert: {0} with {1} at {2} is cancelled on {3}. Sorry for any inconvenience".format(
 					context['class_title'],
 					context['teacher'],
 					context['start_time'],
