@@ -383,7 +383,7 @@ def cancel_class_task(cancellation_id):
 			'class_title': section.title,
 			'teacher': section.teacher.first_name,
 			'start_time': section.start_time.strftime("%I:%M %p"),
-			'site': section.site.name
+			'site': section.site.name,
 			'date': cancellation_date
 		}
 		if student.email:
