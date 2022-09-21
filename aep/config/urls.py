@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import include, re_path
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
+from sections.views import CurrentCancellationsListView, CancellationsListView
 
 
 admin.site.site_header = 'Greenbean Administration'
@@ -39,7 +40,14 @@ urlpatterns = [
         ),
         name='privacy'
     ),
-
+    re_path(r'^cancelled/$',
+        CurrentCancellationsListView.as_view(),
+        name="current cancellations list"
+    ),
+    re_path(r'^cancelled/all$',
+        CancellationsListView.as_view(),
+        name="cancellations list"
+    ),
     # Django Admin Stuff
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^accounts/', include('django.contrib.auth.urls')),

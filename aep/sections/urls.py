@@ -96,15 +96,6 @@ reports_patterns = [
         name='mondo attendance report')
 ]
 
-cancellations_patterns = [
-    re_path(r'^$',
-        views.CurrentCancellationsListView.as_view(),
-        name='current cancellations list'),
-    re_path(r'^history/$',
-        views.CancellationsListView.as_view(),
-        name='cancellations list')
-]
-
 urlpatterns = [
     re_path(r'^$',
         views.ClassListView.as_view(),
@@ -123,6 +114,4 @@ urlpatterns = [
         name='elearn attendance csv'),
     re_path(r'^(?P<slug>[a-zA-Z0-9]{5})/',
         include(single_class_patterns)),
-    re_path(r'^cancelled/',
-        include(cancellations_patterns))
 ]

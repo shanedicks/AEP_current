@@ -5,8 +5,10 @@
 {% block content %}
     {% if today %}
     <h1>Cancelled Classes for {{today}}</h1>
+    <a class="btn btn-default" href="{% url 'cancellations list' %}">All</a>
     {% else %}
     <h1>Cancelled Classes</h1>
+    <a class="btn btn-default" href="{% url 'current cancellations list' %}">Today</a>
     {% endif %}
     <table class="table">
         <tr>

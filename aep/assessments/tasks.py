@@ -408,11 +408,17 @@ def remove_duplicate_assessments():
 @shared_task
 def send_score_report_link_task(test_id, test_type):
     test = apps.get_model('assessments', test_type).objects.get(id=test_id)
-    if test.student.student.email:
+    student = test.student.student
+    recipient_list = []
+    if student.email:
+        recipient_list.append(student.email)
+    if student.elearn_record and student.elearn_record.g_suite_email:
+        recipient_list.append(student.elearn_record.g_suite_email)
+    if len(recipient_list) > 0:
         test.score_report_sent = True
         test.save()
         context = {
-            'student': test.student.student.first_name,
+            'student': student.first_name,
             'date': test.test_date,
             'link': test.score_report_link
         }
@@ -422,6 +428,6 @@ def send_score_report_link_task(test_id, test_type):
             message=strip_tags(html_message),
             html_message=html_message,
             from_email="score_report_robot@dccaep.org",
-            recipient_list=[test.student.student.email]
+            recipient_list=recipient_list
         )
 
