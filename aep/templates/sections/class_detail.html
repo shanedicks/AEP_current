@@ -9,6 +9,9 @@
         <h3>{{section.site}}</h3>
     {% endif %}
     <a class="btn btn-default btn-sm" href="{% url 'sections:class roster csv' slug=section.slug %}" role="button">Export Roster</a>
+    <!--
+    <a class="btn btn-default btn-sm" href="{% url 'sections:cancel class' slug=section.slug %}" role="button">Cancel Class</a>
+    -->
     <table class="table">
         <tr>
             <th>Student</th>

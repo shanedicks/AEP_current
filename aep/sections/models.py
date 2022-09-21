@@ -17,7 +17,7 @@ from people.tasks import pop_update_task
 from semesters.models import Semester
 from core.tasks import send_sms_task
 from .tasks import (activate_task, end_task, drop_task,
-    enrollment_notification_task)
+    enrollment_notification_task, cancel_class_task)
 
 
 class Site(models.Model):
@@ -400,7 +400,7 @@ class Section(models.Model):
         if len(dropped) > 0:
             if self.teacher.email:
                 send_mail_task.delay(
-                    "Delgado Adult Ed Dropped Student Notice {day}".format(day=datetime.today().date()),
+                    "Delgado Adult Ed Dropped Student Notice {day}".format(day=timezone.now().date()),
                     "Hi {teacher},\n"
                     "In accordance with our attendance policy, "
                     "we have dropped the following students from {section}:\n"
@@ -429,8 +429,8 @@ class Section(models.Model):
 
     def attendance_reminder(self):
         if self.teacher.email:
-            today = datetime.today()
-            last_week = datetime.today() - td(days=7)
+            today = timezone.now()
+            last_week = timezone.now() - td(days=7)
             att = Attendance.objects.filter(
                 attendance_date__lt=today,
                 attendance_date__gte=last_week,
@@ -440,7 +440,7 @@ class Section(models.Model):
             ).count()
             if att > 1:
                 send_mail_task.delay(
-                    "Delgado Adult Ed Attendance Reminder {day}".format(day=datetime.today().date()),
+                    "Delgado Adult Ed Attendance Reminder {day}".format(day=timezone.now().date()),
                     "Hi {teacher} \n"
                     "\n"
                     "Your attendance for {section} is incomplete.\n"
@@ -758,7 +758,7 @@ class Enrollment(models.Model):
 
     def save(self, *args, **kwargs):
         super(Enrollment, self).save(*args, **kwargs)
-        mod = datetime.today().date()
+        mod = timezone.now().date()
         if self.section.starting is not None:
             start = self.section.starting
         else:
@@ -895,3 +895,37 @@ class Message(models.Model):
             )
         self.sent = timezone.now()
         self.save()
+
+class Cancellation(models.Model):
+
+    section = models.ForeignKey(
+            Section,
+            models.PROTECT,
+            related_name = 'cancellations',
+        )
+
+    cancellation_date = models.DateField()
+
+    cancelled_by = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            models.PROTECT,
+            related_name = 'cancellations'
+    )
+
+    notification_sent = models.BooleanField(
+        default=False
+    )
+
+    send_notification = models.BooleanField(
+        default=False
+    )
+
+    def __str__(self):
+        date = self.cancellation_date.strftime('%Y-%m-%d')
+        return "|".join([date, self.section.__str__()])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.notification_sent is False and self.send_notification is True:
+            cancel_class_task.delay(self.id)
+

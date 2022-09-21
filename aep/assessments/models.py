@@ -381,6 +381,10 @@ class NRSTest(Test):
         blank=True
     )
 
+    score_report_sent = models.BooleanField(
+        default=False
+    )
+
     class Meta:
         abstract = True
 

@@ -16,6 +16,9 @@ single_class_attendance_patterns = [
     re_path(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/$',
         views.DailyAttendanceView.as_view(),
         name='daily attendance'),
+    re_path(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/cancel/$',
+        views.CreateCancellationView.as_view(),
+        name='cancel dated class'),
     re_path(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/print-sign-in/$',
         views.PrintSignInView.as_view(),
         name='sign in'),
@@ -50,7 +53,10 @@ single_class_patterns = [
         include(single_class_skills_patterns)),
     re_path(r'^csv/$',
         views.ClassRosterCSV.as_view(),
-        name='class roster csv')
+        name='class roster csv'),
+    re_path(r'^cancel/$',
+        views.CreateCancellationView.as_view(),
+        name='cancel class')
 ]
 
 staff_patterns = [
@@ -90,6 +96,15 @@ reports_patterns = [
         name='mondo attendance report')
 ]
 
+cancellations_patterns = [
+    re_path(r'^$',
+        views.CurrentCancellationsListView.as_view(),
+        name='current cancellations list'),
+    re_path(r'^history/$',
+        views.CancellationsListView.as_view(),
+        name='cancellations list')
+]
+
 urlpatterns = [
     re_path(r'^$',
         views.ClassListView.as_view(),
@@ -107,5 +122,7 @@ urlpatterns = [
         views.ElearnAttendanceCSV.as_view(),
         name='elearn attendance csv'),
     re_path(r'^(?P<slug>[a-zA-Z0-9]{5})/',
-        include(single_class_patterns))
+        include(single_class_patterns)),
+    re_path(r'^cancelled/',
+        include(cancellations_patterns))
 ]

@@ -15,7 +15,10 @@ single_student_tabe_patterns = [
         name="student tabe detail"),
     re_path(r'^(?P<pk>[0-9]+)/score-report-link/$',
         views.TabeScoreReportLinkFormView.as_view(),
-        name="tabe score report link")
+        name="tabe score report link"),
+    re_path(r'^(?P<pk>[0-9]+)/send-score-report/$',
+        views.SendScoreReportView.as_view(test_type = 'Tabe'),
+        name="send tabe score report")
 ]
 
 single_student_clas_e_patterns = [
@@ -30,7 +33,10 @@ single_student_clas_e_patterns = [
         name="student clas-e detail"),
     re_path(r'^(?P<pk>[0-9]+)/score-report-link/$',
         views.ClasEScoreReportLinkFormView.as_view(),
-        name="clas-e score report link")
+        name="clas-e score report link"),
+    re_path(r'^(?P<pk>[0-9]+)/send-score-report/$',
+        views.SendScoreReportView.as_view(test_type="Clas_E"),
+        name="send clas-e score report")
 ]
 
 single_student_gain_patterns = [

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Cancellations{% endblock head_title %}
+
+{% block content %}
+    {% if today %}
+    <h1>Cancelled Classes for {{today}}</h1>
+    {% else %}
+    <h1>Cancelled Classes</h1>
+    {% endif %}
+    <table class="table">
+        <tr>
+            <th>Date</th>
+            <th>Site</th>
+            <th>Class</th>
+            <th>Instructor</th>
+            <th>Time</th>
+        </tr>
+        {% if is_paginated %}
+            {% include 'components/pagination.html' %}
+        {% endif %}
+        {% for cancellation in object_list %}
+        <tr>
+            <td>{{ cancellation.cancellation_date }}</td>
+            <td>{{ cancellation.section.site }}</td>
+            <td>{{ cancellation.section.title }}</td>
+            <td>{{ cancellation.section.teacher }}</td>
+            <td>{{ cancellation.section.start_time }} to {{ section.end_time }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

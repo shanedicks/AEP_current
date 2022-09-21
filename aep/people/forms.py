@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.forms import Form, ModelForm, CharField, ValidationError, DateField
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML, Div
 from crispy_forms.bootstrap import PrependedText
@@ -338,7 +339,7 @@ class StudentPersonalInfoForm(ModelForm):
 
     def clean_dob(self):
         data = self.cleaned_data['dob']
-        diff = datetime.today().date() - data
+        diff = timezone.now().date() - data
         age = diff.days // 365.25
         if age < 16:
             raise ValidationError(
@@ -930,7 +931,7 @@ class StudentForm(ModelForm):
 
     def clean_dob(self):
         data = self.cleaned_data['dob']
-        diff = datetime.today().date() - data
+        diff = timezone.now().date() - data
         age = diff.days // 365.25
         if age < 16:
             raise ValidationError(
@@ -1258,7 +1259,7 @@ class PartnerForm(ModelForm):
 
     def clean_dob(self):
         data = self.cleaned_data['dob']
-        diff = datetime.today().date() - data
+        diff = timezone.now().date() - data
         age = diff.days // 365.25
         if age < 16:
             raise ValidationError(

@@ -119,7 +119,7 @@ class Semester(models.Model):
             status='A',
             student__partner__in=partner_check
         )
-        cutoff = datetime.today().date() - timedelta(days=180)
+        cutoff = timezone.now().date() - timedelta(days=180)
         to_hold = students.filter(
             Q(student__tests__last_test_date__lte=cutoff) | Q(student__tests__last_test_date=None)
         )
@@ -127,7 +127,7 @@ class Semester(models.Model):
 
     def refresh_enrollments(self):
         students = self.get_enrollment_queryset().filter(status='W')
-        cutoff = datetime.today().date() - timedelta(days=180)
+        cutoff = timezone.now().date() - timedelta(days=180)
         to_refresh = students.filter(student__tests__last_test_date__gte=cutoff)
         to_refresh.update(status='A')
 

@@ -10,19 +10,20 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
+from django.utils import timezone
 from django.db import IntegrityError
 from core.forms import DateFilterForm
 from core.utils import render_to_csv
 from coaching.models import ElearnRecord
 from people.models import Student, Staff
 from people.forms import StudentSearchForm
-from .models import Section, Enrollment, Attendance
+from .models import Section, Enrollment, Attendance, Cancellation
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     StudentAddEnrollmentForm, SingleAttendanceForm,
                     AttendanceFormset, SectionSearchForm, AdminAttendanceForm,
                     AttendanceReportForm, EnrollmentReportForm,
                     SingleSkillMasteryForm, SkillMasteryFormset,
-                    EnrollmentUpdateForm)
+                    EnrollmentUpdateForm, CancellationForm)
 from .tasks import (participation_detail_task, section_skill_mastery_report_task,
                     mondo_attendance_report_task)
 
@@ -526,7 +527,7 @@ class ClassListView(LoginRequiredMixin, ListView, FormView):
     paginate_by = 20
 
     queryset = Section.objects.filter(
-        semester__end_date__gte=datetime.today().date()
+        semester__end_date__gte=timezone.now().date()
     ).order_by('site', 'program', 'title')
 
     def get_form_kwargs(self):
@@ -691,7 +692,7 @@ class StudentClassListView(LoginRequiredMixin, ListView):
             context['student'] = Student.objects.get(slug=self.kwargs['slug'])
             context.update(kwargs)
         if 'today' not in context:
-            context['today'] = datetime.today().date()
+            context['today'] = timezone.now().date()
             context.update(kwargs)
         return context
 
@@ -1011,14 +1012,15 @@ class AdminAttendanceView(LoginRequiredMixin, CreateView):
 
 class DailyAttendanceView(LoginRequiredMixin, UpdateView):
 
-    model = Section
+    model = Attendance
     form_class = SingleAttendanceForm
     template_name = 'sections/daily_attendance.html'
+    section = None
 
     def get_form_queryset(self):
         attendance_date = self.kwargs['attendance_date']
         queryset = Attendance.objects.filter(
-            enrollment__section=self.object,
+            enrollment__section=self.section,
             enrollment__status="A",
             attendance_date=attendance_date
         ).order_by(
@@ -1028,19 +1030,21 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
         return queryset
 
     def get(self, request, *args, **kwargs):
-        self.object = Section.objects.get(slug=self.kwargs['slug'])
+        self.object = None
+        self.section = Section.objects.get(slug=self.kwargs['slug'])
         attendance_date = self.kwargs['attendance_date']
         formset = AttendanceFormset(queryset=self.get_form_queryset())
         return self.render_to_response(
             self.get_context_data(
                 formset=formset,
-                section=self.object,
-                attendance_date=attendance_date
+                section=self.section,
+                attendance_date=attendance_date,
             )
         )
 
     def post(self, request, *args, **kwargs):
-        self.object = Section.objects.get(slug=self.kwargs['slug'])
+        self.object = None
+        self.section = Section.objects.get(slug=self.kwargs['slug'])
         attendance_date = self.kwargs['attendance_date']
         formset = AttendanceFormset(request.POST, queryset=self.get_form_queryset())
         if formset.is_valid():
@@ -1050,13 +1054,13 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
             return self.render_to_response(
                 self.get_context_data(
                     formset=formset,
-                    section=self.object,
+                    section=self.section,
                     attendance_date=attendance_date
                 )
             )
 
     def get_success_url(self):
-        section = self.object
+        section = self.section
         return reverse_lazy(
             'sections:attendance overview',
             kwargs={'slug': section.slug}
@@ -1242,3 +1246,64 @@ class MondoAttendanceReport(LoginRequiredMixin, FormView):
             to_date=form.cleaned_data['to_date']
         )
         return HttpResponseRedirect(reverse('report success'))
+
+
+class CancellationsListView(ListView):
+
+    model = Cancellation
+    template_name = 'sections/cancellations_list.html'
+    paginate_by = 25
+
+
+class CurrentCancellationsListView(CancellationsListView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'today' not in context:
+            context['today'] = timezone.now().date()
+            context.update(kwargs)
+        return context
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        return Cancellation.objects.filter(
+            cancellation_date=today
+        ).order_by(
+            "section__site",
+            "section__start_time"
+        )
+
+
+class CreateCancellationView(LoginRequiredMixin, CreateView):
+
+    model = Cancellation
+    template_name = 'sections/cancel_class.html'
+    form_class = CancellationForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'attendance_date' in self.kwargs:
+            context['today'] = self.kwargs['attendance_date']
+        context['section'] = Section.objects.get(slug=self.kwargs['slug'])
+        return context
+
+    def get_initial(self):
+        initial = {}
+        if 'attendance_date' in self.kwargs:
+            initial['cancellation_date'] = self.kwargs['attendance_date']
+        return initial
+
+    def form_valid(self, form):
+        section = Section.objects.get(slug = self.kwargs['slug'])
+        user = self.request.user
+        cancellation = form.save(commit=False)
+        cancellation.section = section
+        cancellation.cancelled_by = user
+        cancellation.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'sections:class detail',
+            kwargs={'slug': self.kwargs['slug']}
+        )

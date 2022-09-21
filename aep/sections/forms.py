@@ -4,13 +4,14 @@ from django.forms import (ModelForm, Form, ChoiceField, modelformset_factory,
                          ModelChoiceField, ModelMultipleChoiceField)
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from core.forms import DateFilterForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from people.models import Student
 from semesters.models import Semester
 from academics.models import SkillMastery
-from .models import Enrollment, Section, Attendance, Site
+from .models import Enrollment, Section, Attendance, Site, Cancellation
 
 
 class StudentAddEnrollmentForm(ModelForm):
@@ -41,8 +42,8 @@ class ClassAddEnrollmentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         site = kwargs.pop('site', None)
         program = kwargs.pop('program', None)
-        limit = datetime.datetime.today() - datetime.timedelta(days=14)
-        ell_limit = datetime.datetime.today() - datetime.timedelta(days=42)
+        limit = timezone.now() - datetime.timedelta(days=14)
+        ell_limit = timezone.now() - datetime.timedelta(days=42)
         qst = Section.objects.filter(
             semester__start_date__gte=limit
         ) | Section.objects.filter(
@@ -224,7 +225,7 @@ class SingleAttendanceForm(ModelForm):
                 'time_in',
                 'time_out',
                 wrapper_class="col-md-4",
-                required=True
+                required=True,
             )
         )
 
@@ -240,7 +241,7 @@ class AdminAttendanceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AdminAttendanceForm, self).__init__(*args, **kwargs)
-        self.fields['attendance_date'].initial = datetime.datetime.today().date()
+        self.fields['attendance_date'].initial = timezone.now().date()
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -309,3 +310,24 @@ class EnrollmentUpdateForm(ModelForm):
         labels = {
             'status': 'Enrollment Status'
         }
+
+
+class CancellationForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+            Field(
+                'cancellation_date',
+                'send_notification'
+            )
+        )
+
+    class Meta:
+        model = Cancellation
+        fields = ('cancellation_date', 'send_notification')
+

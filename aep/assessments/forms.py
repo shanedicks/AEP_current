@@ -99,7 +99,7 @@ class TestSignupForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TestSignupForm, self).__init__(*args, **kwargs)
-        limit = datetime.datetime.today()
+        limit = timezone.now()
         events = TestEvent.objects.filter(
             start__date__gte=limit,
             full=False
@@ -128,7 +128,7 @@ class OrientationSignupForm(TestSignupForm):
 
     def __init__(self, *args, **kwargs):
         super(OrientationSignupForm, self).__init__(*args, **kwargs)
-        limit = datetime.datetime.today() + datetime.timedelta(days=2) # we only want test events at least 2 days away
+        limit = timezone.now() + datetime.timedelta(days=2) # we only want test events at least 2 days away
         events = TestEvent.objects.filter(
             test='Orientation',
             start__date__gte=limit

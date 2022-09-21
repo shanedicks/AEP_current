@@ -472,8 +472,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
             else:
                 AceRecord.objects.create(
                     student=obj,
-                    intake_year=datetime.today().year,
-                    intake_semester=sem[str(datetime.today().month)]
+                    intake_year=timezone.now().year,
+                    intake_semester=sem[str(timezone.now().month)]
                 )
 
     def move_test_history(self, request, q):
@@ -691,10 +691,13 @@ class StudentAdmin(ImportExportActionModelAdmin):
         nid = n.WRU_ID
         n.WRU_ID = o.WRU_ID
         n.save()
-        o.WRU_ID = 'd' + nid.replace('x', '')
+        if nid is None:
+            o.WRU_ID = 'd' + o.WRU_ID
+        else:
+            o.WRU_ID = 'd' + nid.replace('x', '')
         o.duplicate_of = n
         o.duplicate = True
-        o.dupl_date = datetime.today().date()
+        o.dupl_date = timezone.now().date()
         o.save()
 
 

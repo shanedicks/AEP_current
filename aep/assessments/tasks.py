@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum, Q, Count
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.utils import timezone
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -401,4 +403,25 @@ def remove_duplicate_assessments():
         print("Removing {0}".format(dupes[1:]))
         remove = clas_es.filter(pk__in=dupes[1:])
         remove.delete()
+
+
+@shared_task
+def send_score_report_link_task(test_id, test_type):
+    test = apps.get_model('assessments', test_type).objects.get(id=test_id)
+    if test.student.student.email:
+        test.score_report_sent = True
+        test.save()
+        context = {
+            'student': test.student.student.first_name,
+            'date': test.test_date,
+            'link': test.score_report_link
+        }
+        html_message = render_to_string('emails/send_test_scores.html', context)
+        send_mail(
+            subject="Here is your score report",
+            message=strip_tags(html_message),
+            html_message=html_message,
+            from_email="score_report_robot@dccaep.org",
+            recipient_list=[test.student.student.email]
+        )
 

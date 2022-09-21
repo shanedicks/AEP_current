@@ -972,7 +972,7 @@ class Student(Profile):
         else:
             Elearn.objects.create(
                 student=self,
-                intake_date=datetime.today()
+                intake_date=timezone.now()
             )
 
     def create_pops(self):

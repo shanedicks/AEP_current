@@ -1,10 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 import csv
-from datetime import datetime
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.core.mail.message import EmailMessage
+from django.utils import timezone
 
 logger = get_task_logger(__name__)
 
@@ -18,7 +18,7 @@ def elearn_status_task(elearn_record_id):
 	loggerl.info("Updating status of ElearnRecord {0}".format(elearn_record_id))
 	elearn_record = get_elearn_record(elearn_record_id)
 	elearn_record.elearn_status = 'Pending'
-	elearn_record.status_updated = datetime.today()
+	elearn_record.status_updated = timezone.now()
 	elearn_record.save()
 	return True
 

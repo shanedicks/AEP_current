@@ -5,7 +5,8 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from people.models import Student
 from .models import TestEvent, TestHistory, TestAppointment, Tabe, Tabe_Loc, Clas_E, Clas_E_Loc, Gain, HiSET, HiSet_Practice, Message
-from .tasks import event_attendance_report_task, test_process_task, orientation_reminder_task, test_reminder_task, send_message_task
+from .tasks import (event_attendance_report_task, test_process_task, 
+    orientation_reminder_task, test_reminder_task, send_message_task, send_score_report_link_task)
 
 
 class TestEventAdmin(admin.ModelAdmin):
@@ -257,12 +258,17 @@ class TabeAdmin(ImportExportActionModelAdmin):
     ]
 
     actions = ImportExportActionModelAdmin.actions + [
-        'process_tests'
+        'process_tests',
+        'send_score_report'
     ]
 
     def process_tests(self, request, queryset):
         for obj in queryset:
             test_process_task.delay(obj.get_test_type(), obj.id)
+
+    def send_score_report(self, request, queryset):
+        for obj in queryset:
+            send_score_report_link_task(obj.id, obj.get_test_type())
 
 admin.site.register(Tabe, TabeAdmin)
 
@@ -315,13 +321,17 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
     )
 
     actions = ImportExportActionModelAdmin.actions + [
-        'process_tests'
+        'process_tests',
+        'send_score_report'
     ]
 
     def process_tests(self, request, queryset):
         for obj in queryset:
             test_process_task.delay(obj.get_test_type(), obj.id)
 
+    def send_score_report(self, request, queryset):
+        for obj in queryset:
+            send_score_report_link_task(obj.id, obj.get_test_type())
 
 
 admin.site.register(Clas_E, Clas_E_Admin)

@@ -22,7 +22,8 @@ from .forms import (
         Clas_E_ScoreReportLinkForm, TabeScoreReportLinkForm
     )
 from .tasks import (event_attendance_report_task,
-        accelerated_coaching_report_task, testing_eligibility_report
+        accelerated_coaching_report_task, testing_eligibility_report,
+        send_score_report_link_task
     )
 
 
@@ -1175,4 +1176,17 @@ class StudentAccuplacerAddView(StudentTestAddView):
 class StudentAccuplacerDetailView(StudentTestDetailView):
 
     model = Accuplacer
-    template_name = "assessments/student_accuplacer_detail.html"    
+    template_name = "assessments/student_accuplacer_detail.html" 
+
+
+class SendScoreReportView(LoginRequiredMixin, View):
+
+    test_type = None
+    redirects = {
+        'Tabe': 'assessments:student tabe list',
+        'Clas_E': 'assessments:student clas-e list'
+    }
+    
+    def get(self, request, *args, **kwargs):
+        send_score_report_link_task.delay(self.kwargs['pk'], self.test_type)
+        return HttpResponseRedirect(reverse(self.redirects[self.test_type], kwargs={'slug': self.kwargs['slug']}))

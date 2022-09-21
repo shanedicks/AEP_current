@@ -3,10 +3,14 @@ from datetime import datetime
 import csv
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.db.models import Q
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from core.tasks import send_sms_task, send_mail_task
 
 logger = get_task_logger(__name__)
 
@@ -360,3 +364,49 @@ def send_message_task(message_id):
 	message = apps.get_model('sections', 'Message').objects.get(id=message_id)
 	logger.info('Sending message {0}'.format(message.title))
 	message.send_message()
+
+@shared_task
+def cancel_class_task(cancellation_id):
+	cancellation = apps.get_model('sections', 'Cancellation').objects.get(id=cancellation_id)
+	section = cancellation.section
+	attendance = apps.get_model('sections', 'Attendance').objects.filter(
+		enrollment__section=section,
+		attendance_date=cancellation.cancellation_date
+	)
+	attendance.update(attendance_type='C')
+	students = apps.get_model('people', 'Student').objects.filter(classes__section=section)
+	cancellation_date = cancellation.cancellation_date.strptime("%m/%d/%y")
+	recipient_list = []
+	context = {
+		'student': student.first_name,
+		'class_title': section.title,
+		'teacher': section.teacher.first_name,
+		'start_time': section.start_time.strftime("%I:%M %p"),
+		'date': cancellation_date
+	}
+	for student in students:
+		if student.email:
+			recipient_list.append(student.email)
+		if student.elearn_record and student.elearn_record.g_suite_email:
+			recipient_list.append(student.elearn_record.g_suite_email)
+		if student.phone:
+			send_sms_task.delay(
+				dst=student.phone,
+				message="{0} with {1} at {2} is cancelled on {3}. Sorry for any inconvenience".format(
+					context['student'],
+					context['class_title'],
+					context['teacher'],
+					context['start_time'],
+					context['date']
+				)
+			)
+	html_message = render_to_string('emails/cancelled_class', context)
+	send_mail(
+        subject="{0} has been cancelled for {1}".format(cancellation.section.title, cancellation_date),
+        message=strip_tags(html_message),
+        html_message=html_message,
+        from_email='notification_robot@dccaep.org',
+        recipient_list=recipient_list
+    )
+	cancellation.notification_sent = True
+	cancellation.save()

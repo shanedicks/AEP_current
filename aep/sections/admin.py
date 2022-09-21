@@ -2,6 +2,7 @@ from apiclient import discovery
 from httplib2 import Http
 from datetime import timedelta
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils import timezone
 from import_export import resources, fields, widgets
@@ -9,8 +10,9 @@ from import_export.admin import ImportExportModelAdmin, ImportExportActionModelA
 from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff, Student
 from academics.models import Course
-from .models import Site, Section, Enrollment, Attendance, Message
-from .tasks import roster_to_classroom_task, send_g_suite_info_task, create_missing_g_suite_task, send_message_task
+from .models import Site, Section, Enrollment, Attendance, Message, Cancellation
+from .tasks import (roster_to_classroom_task, send_g_suite_info_task, 
+    create_missing_g_suite_task, send_message_task)
 
 class SiteResource(resources.ModelResource):
 
@@ -343,3 +345,32 @@ class MessageAdmin(admin.ModelAdmin):
         return super(MessageAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 admin.site.register(Message, MessageAdmin)
+
+
+class CancellationAdmin(admin.ModelAdmin):
+
+    list_display = [
+        "section",
+        "cancellation_date",
+        "cancelled_by"
+    ]
+
+    fields = [
+        "section",
+        "cancellation_date",
+        "cancelled_by",
+        'send_notification'
+    ]
+
+    def get_changeform_initial_data(self, request):
+        return {"cancelled_by": request.user}
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "cancelled_by":
+            kwargs["queryset"] = User.objects.exclude(staff=None).order_by('staff__last_name', 'staff__first_name')
+        if db_field.name == "section":
+            today = timezone.now().date()
+            kwargs["queryset"] = Section.objects.filter(semester__end_date__gte=today) | Section.objects.filter(ending__gte=today)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+admin.site.register(Cancellation, CancellationAdmin)
