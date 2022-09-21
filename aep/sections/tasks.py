@@ -392,15 +392,17 @@ def cancel_class_task(cancellation_id):
 		if student.phone:
 			send_sms_task.delay(
 				dst=student.phone,
-				message="{0} with {1} at {2} is cancelled on {3}. Sorry for any inconvenience".format(
-					context['student'],
+				message="""
+					Delgado Adult Ed Alert: {0} with {1} at {2} is cancelled on {3}. 
+					Sorry for any inconvenience
+					""".format(
 					context['class_title'],
 					context['teacher'],
 					context['start_time'],
 					context['date']
 				)
 			)
-	html_message = render_to_string('emails/cancelled_class', context)
+	html_message = render_to_string('emails/cancelled_class.html', context)
 	send_mail(
         subject="{0} has been cancelled for {1}".format(cancellation.section.title, cancellation_date),
         message=strip_tags(html_message),
