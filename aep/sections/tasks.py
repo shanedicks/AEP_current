@@ -377,14 +377,14 @@ def cancel_class_task(cancellation_id):
 	students = apps.get_model('people', 'Student').objects.filter(classes__section=section)
 	cancellation_date = cancellation.cancellation_date.strftime("%m/%d/%y")
 	recipient_list = []
-	context = {
-		'student': student.first_name,
-		'class_title': section.title,
-		'teacher': section.teacher.first_name,
-		'start_time': section.start_time.strftime("%I:%M %p"),
-		'date': cancellation_date
-	}
 	for student in students:
+		context = {
+			'student': student.first_name,
+			'class_title': section.title,
+			'teacher': section.teacher.first_name,
+			'start_time': section.start_time.strftime("%I:%M %p"),
+			'date': cancellation_date
+		}
 		if student.email:
 			recipient_list.append(student.email)
 		if student.elearn_record and student.elearn_record.g_suite_email:
