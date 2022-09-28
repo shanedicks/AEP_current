@@ -1332,6 +1332,7 @@ def employment_status(i):
 
 def migrant(i):
     mig = {
+        "0": 0,
         "1": 1,
         "2": 2,
         "3": 3,
