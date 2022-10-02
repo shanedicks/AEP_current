@@ -143,6 +143,7 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 			'Coach_First',
 			'Coach_Last',
 			'Coach_First_Coach_Last',
+			'Last_Coaching_Meeting',
 			'Site',
 			'Monday',
 			'Tuesday',
@@ -186,6 +187,11 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 				coach = coaching.coach
 			except ObjectDoesNotExist:
 				coach = None
+			if coach:
+				try:
+					last_meeting = coaching.notes.latest('meeting_date').meeting_date
+				except ObjectDoesNotExist:
+					last_meeting = ''
 			coach_last = getattr(coach, 'last_name', '')
 			coach_first = getattr(coach, 'first_name', '')
 			try:
@@ -216,6 +222,7 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 				coach_first,
 				coach_last,
 				"{0} {1}".format(coach_first, coach_last),
+				last_meeting,
 				section.site,
 				section.monday,
 				section.tuesday,

@@ -55,11 +55,11 @@ class ClassAddEnrollmentForm(ModelForm):
             starting__gte=ell_limit,
             program='ELL'
         )
-        qst.order_by('site', 'title', 'start_time')
         if site and site[0] != '':
             qst = qst.filter(site=site[0])
         if program and program[0] != '':
             qst = qst.filter(program=program[0])
+        qst = qst.order_by('site', 'title', 'start_time')
         self.base_fields['section'].queryset = qst
         self.base_fields['section'].empty_label = "Section"
         super(ClassAddEnrollmentForm, self).__init__(*args, **kwargs)

@@ -2,6 +2,7 @@
 {% block head_title %}DCCAEP | {{student}} Test Appointments{% endblock head_title %}
 {% block content %}
 <h1>Appointments for <a href="{% url 'assessments:student test history' slug=student.slug %}">{{student}}</a></h1>
+{%include 'components/student_nav.html' %}
 {% if is_paginated %}
     {% include 'components/pagination.html' %}
 {% endif %}

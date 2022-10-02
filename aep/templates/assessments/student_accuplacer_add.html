@@ -3,6 +3,7 @@
 {% block head_title %}DCCAEP | New Accuplacer{% endblock head_title %}
 {% block content %}
 <h1>Add Accuplacer Result for {{student}}</h1>
+{%include 'components/student_nav.html' %}
 <div class="well">
     <form method="post">
             {% crispy form %} 

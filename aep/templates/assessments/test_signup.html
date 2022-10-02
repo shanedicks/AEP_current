@@ -4,6 +4,7 @@
 
 {% block content %}
 <h1>Testing Signup for {{ student }}</h1>
+{%include 'components/student_nav.html' %}
 <form class="form_group" method="post">
     {% crispy form %}
     <button type="submit" class="btn btn-success">Signup</button>

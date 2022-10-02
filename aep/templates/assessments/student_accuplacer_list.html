@@ -2,6 +2,7 @@
 {% block head_title %}DCCAEP | {{student}} Accuplacer Scores{% endblock head_title %}
 {% block content %}
 <h1>Accuplacer Results for {{student}}</h1>
+{%include 'components/student_nav.html' %}
 <p><a class="btn btn-default" href="{% url 'assessments:student accuplacer add' slug=student.slug %}">Add Accuplacer</a></p>
 
     <div class="col-md-7">

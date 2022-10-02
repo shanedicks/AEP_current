@@ -2,6 +2,7 @@
 {% block head_title %}DCCAEP | {{student}} Official HiSET Scores{% endblock head_title %}
 {% block content %}
 <h1>Official HiSET Test Results for {{student}}</h1>
+{%include 'components/student_nav.html' %}
 <p><a class="btn btn-default" href="{% url 'assessments:student hiset add' slug=student.slug %}">Add HiSET Test</a></p>
 
     <div class="col-md-7">

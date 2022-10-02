@@ -1091,12 +1091,28 @@ class Staff(Profile):
     def current_classes(self):
         today = timezone.localdate()
         classes = self.classes.filter(
-            semester__end_date__gte=today
+            semester__end_date__gte=today,
+            semester__start_date__lte=today
         ) | self.classes.filter(
-            ending__gte=today
+            ending__gte=today,
+            starting__lte=today
         )
         return classes.order_by(
             '-ending',
+            '-monday',
+            'start_time'
+        )
+
+    def upcoming_classes(self):
+        today = timezone.localdate()
+        classes = self.classes.filter(
+            semester__start_date__gt=today
+        ) | self.classes.filter(
+            starting__gt=today
+        )
+        return classes.order_by(
+            'starting',
+            'semester__start_date',
             '-monday',
             'start_time'
         )

@@ -2,6 +2,7 @@
 {% block head_title %}DCCAEP | {{student}} TABE Scores{% endblock head_title %}
 {% block content %}
 <h1>TABE Results for {{student}}</h1>
+{%include 'components/student_nav.html' %}
 <p><a class="btn btn-default" href="{% url 'assessments:student tabe add' slug=student.slug %}">Add TABE Test</a></p>
 	<div class="col-md-7">
 	<table class="table">

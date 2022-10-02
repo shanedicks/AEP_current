@@ -2,6 +2,7 @@
 {% block head_title %}DCCAEP | {{student}} CLAS-E Scores {% endblock head_title %}
 {% block content %}
 <h1>CLAS-E Results for {{student}}</h1>
+{%include 'components/student_nav.html' %}
 <p><a class="btn btn-default" href="{% url 'assessments:student clas-e add' slug=student.slug %}">Add CLAS-E Test</a></p>
     <div class="col-md-7">
     <table class="table">

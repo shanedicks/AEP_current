@@ -1775,6 +1775,12 @@ class DisabilityForm(ModelForm):
 
 class AdditionalDetailsForm(ModelForm):
 
+    def clean_household_size(self):
+        data = self.cleaned_data['household_size']
+        if data < 1:
+            data = 1 
+        return data
+
     def __init__(self, *args, **kwargs):
         super(AdditionalDetailsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
