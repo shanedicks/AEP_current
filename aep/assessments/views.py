@@ -595,6 +595,11 @@ class TabeCSV(LoginRequiredMixin, FormView):
                 test_date__gte=pre).count() > 0:
                 test_type = 'Posttest'
             if test.read_ss:
+                if test.student.tabe_tests.filter(
+                    test_date__lt=date).filter(
+                    test_date__gte=pre,
+                    read_ss__isnull=False).count() > 0:
+                    test_type = 'Posttest'
                 lowest = 1
                 if m is not None:
                     if m < r:
@@ -623,6 +628,11 @@ class TabeCSV(LoginRequiredMixin, FormView):
                 ]
                 data.append(s)
             if test.total_math_ss:
+                if test.student.tabe_tests.filter(
+                    test_date__lt=date).filter(
+                    test_date__gte=pre,
+                    total_math_ss__isnull=False).count() > 0:
+                    test_type = 'Posttest'
                 lowest = 1
                 if r is not None:
                     if r < m:
@@ -651,6 +661,11 @@ class TabeCSV(LoginRequiredMixin, FormView):
                 ]              
                 data.append(s)
             if test.lang_ss:
+                if test.student.tabe_tests.filter(
+                    test_date__lt=date).filter(
+                    test_date__gte=pre,
+                    lang_ss__isnull=False).count() > 0:
+                    test_type = 'Posttest'
                 lowest = 1
                 if m is not None:
                     if m < l:
