@@ -15,11 +15,8 @@
         <h4>Please contact a Site Leader to correct this issue</h4>
     {% endif %} -->
     {% include 'components/student_nav.html' %}
-    {% if current %}
-    <h3>Current Classes <a href="{% url 'people:student past classes'  slug=student.slug %}" class="btn btn-default">Past</a></h3>
-    {% else %}
+    {% if past %}
     <h3>Past Classes <a href="{% url 'people:student current classes' slug=student.slug %}" class="btn btn-default">Current</a></h3>
-    {% endif %}
     <table class='table'>
         <tr>
             <th>Class Name</th>
@@ -39,6 +36,42 @@
         {% endif %}
     {% for enrollment in object_list %}
         <tr>
+            <td><a href="{{ enrollment.get_absolute_url }}">{{ enrollment.section.title }}</a></td>
+            <td>{{ enrollment.section.teacher }}</td>
+            <td>{{ enrollment.section.get_days_str }}</td>
+            <td>{{ enrollment.section.site }}</td>
+            <td>{{ enrollment.section.room }}</td>
+            <td>{{ enrollment.section.start_time }}</td>
+            <td>{{ enrollment.section.end_time }}</td>
+            <td>{{ enrollment.section.start_date }}</td>
+            <td>{{ enrollment.section.end_date }}</td>
+            <td>{{ enrollment.get_status_display }}</td>
+            {% if enrollment.schedule_sent %}
+                <td>Yes</td>
+            {% else %}
+                <td>No</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </table>
+    {% else %}
+    <h3>Current Classes <a href="{% url 'people:student past classes'  slug=student.slug %}" class="btn btn-default">Past</a></h3>
+    <table class='table'>
+        <tr>
+            <th>Class Name</th>
+            <th>Teacher</th>
+            <th>Days</th>
+            <th>Site</th>
+            <th>Room</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Enrollment Status</th>
+            <th>Schedule Sent</th>
+        </tr>
+    {% for enrollment in current %}
+        <tr>
         	<td><a href="{{ enrollment.get_absolute_url }}">{{ enrollment.section.title }}</a></td>
             <td>{{ enrollment.section.teacher }}</td>
             <td>{{ enrollment.section.get_days_str }}</td>
@@ -57,6 +90,44 @@
         </tr>
     {% endfor %}
     </table>
+        {% if upcoming.count > 0 %}
+            <h3>Upcoming Classes</h3>
+            <table class='table'>
+                <tr>
+                    <th>Class Name</th>
+                    <th>Teacher</th>
+                    <th>Days</th>
+                    <th>Site</th>
+                    <th>Room</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Enrollment Status</th>
+                    <th>Schedule Sent</th>
+                </tr>
+            {% for enrollment in upcoming %}
+                <tr>
+                    <td><a href="{{ enrollment.get_absolute_url }}">{{ enrollment.section.title }}</a></td>
+                    <td>{{ enrollment.section.teacher }}</td>
+                    <td>{{ enrollment.section.get_days_str }}</td>
+                    <td>{{ enrollment.section.site }}</td>
+                    <td>{{ enrollment.section.room }}</td>
+                    <td>{{ enrollment.section.start_time }}</td>
+                    <td>{{ enrollment.section.end_time }}</td>
+                    <td>{{ enrollment.section.start_date }}</td>
+                    <td>{{ enrollment.section.end_date }}</td>
+                    <td>{{ enrollment.get_status_display }}</td>
+                    {% if enrollment.schedule_sent %}
+                        <td>Yes</td>
+                    {% else %}
+                        <td>No</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </table>
+        {% endif %}
+    {% endif %}
     <!--{% if pretested %} --> <!-- {% endif %} -->
     <p><a class="btn btn-default" href="{% url 'people:add class' slug=student.slug %}" role="button">Add New Class &raquo;</a>
     <a class="btn btn-default" href="{%url 'people:print schedule' slug=student.slug %}" role="button">Print Schedule &raquo;</a>

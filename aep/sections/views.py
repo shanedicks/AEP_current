@@ -692,7 +692,7 @@ class StudentClassListView(LoginRequiredMixin, ListView):
             context['student'] = Student.objects.get(slug=self.kwargs['slug'])
             context.update(kwargs)
         if 'today' not in context:
-            context['today'] = timezone.now().date()
+            context['today'] = timezone.localdate()
             context.update(kwargs)
         return context
 
@@ -713,8 +713,22 @@ class StudentCurrentClassListView(StudentClassListView):
 
     def get_context_data(self, **kwargs):
         context = super(StudentCurrentClassListView, self).get_context_data(**kwargs)
+        if 'past' not in context:
+            context['past'] = False
+            context.update(kwargs)
+        if 'upcoming' not in context:
+            context['upcoming'] = self.object_list.filter(
+                section__semester__start_date__gt=timezone.localdate()
+            ) | self.object_list.filter(
+                section__starting__gt=timezone.localdate()
+            )
+            context.update(kwargs)
         if 'current' not in context:
-            context['current'] = True
+            context['current'] = self.object_list.filter(
+                section__semester__start_date__lte=timezone.localdate()
+            ) | self.object_list.filter(
+                section__starting__lte=timezone.localdate()
+            )
             context.update(kwargs)
         return context
 
@@ -736,8 +750,8 @@ class StudentPastClassListView(StudentClassListView):
 
     def get_context_data(self, **kwargs):
         context = super(StudentPastClassListView, self).get_context_data(**kwargs)
-        if 'current' not in context:
-            context['current'] = False
+        if 'past' not in context:
+            context['past'] = True
             context.update(kwargs)
         return context
 
@@ -1253,7 +1267,29 @@ class CancellationsListView(ListView):
     model = Cancellation
     template_name = 'sections/cancellations_list.html'
     paginate_by = 25
+    date_range = None
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'today' not in context:
+            context['today'] = timezone.now().date()
+            context.update(kwargs)
+        if "date_range" not in context:
+            context['date_range'] = self.date_range
+            context.update(kwargs)
+        return context
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        querysets = {
+            "current": Cancellation.objects.filter(cancellation_date=today),
+            "past": Cancellation.objects.filter(cancellation_date__lt=today),
+            "future": Cancellation.objects.filter(cancellation_date__gt=today),
+        }
+        return querysets[self.date_range].order_by(
+            "section__site",
+            "section__start_time"
+        )
 
 class CurrentCancellationsListView(CancellationsListView):
 

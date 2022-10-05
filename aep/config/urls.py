@@ -41,12 +41,16 @@ urlpatterns = [
         name='privacy'
     ),
     re_path(r'^cancelled/$',
-        CurrentCancellationsListView.as_view(),
+        CancellationsListView.as_view(date_range='current'),
         name="current cancellations list"
     ),
-    re_path(r'^cancelled/all$',
-        CancellationsListView.as_view(),
-        name="cancellations list"
+    re_path(r'^cancelled/past$',
+        CancellationsListView.as_view(date_range="past"),
+        name="past cancellations list"
+    ),
+    re_path(r'^cancelled/future$',
+        CancellationsListView.as_view(date_range="future"),
+        name="future cancellations list"
     ),
     # Django Admin Stuff
     re_path(r'^admin/', admin.site.urls),

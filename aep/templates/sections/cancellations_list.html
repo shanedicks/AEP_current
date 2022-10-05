@@ -3,13 +3,16 @@
 {% block head_title %}DCCAEP | Cancellations{% endblock head_title %}
 
 {% block content %}
-    {% if today %}
+    {% if date_range == "current" %}
     <h1>Cancelled Classes for {{today}}</h1>
-    <a class="btn btn-default" href="{% url 'cancellations list' %}">All</a>
-    {% else %}
-    <h1>Cancelled Classes</h1>
-    <a class="btn btn-default" href="{% url 'current cancellations list' %}">Today</a>
+    {% elif date_range == "past" %}
+    <h1>Past Cancelled Classes</h1>
+    {% elif date_range == "future" %}
+    <h1>Future Cancelled Classes</h1>
     {% endif %}
+    <a class="btn btn-default" href="{% url 'past cancellations list' %}">Past Cancellations</a>
+    <a class="btn btn-default" href="{% url 'current cancellations list' %}">Today's Cancellations</a>
+    <a class="btn btn-default" href="{% url 'future cancellations list' %}">Future Cancellations</a>
     <table class="table">
         <tr>
             <th>Date</th>

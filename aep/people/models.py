@@ -1504,7 +1504,7 @@ class WIOA(models.Model):
     EMPLOYMENT_STATUS_CHOICES = (
         ("1", "Employed - Full Time"),
         ("9", "Employed - Part Time"),
-        ("5", "Employed, but recieved notice of termination or Military seperation is pending"),
+        ("5", "Employed, but received notice of termination or Military separation is pending"),
         ("2", "Unemployed - Looking For Work"),
         ("4", "Not in labor force / Not looking for work"),
         ("7", "Retired")
@@ -1821,7 +1821,7 @@ class WIOA(models.Model):
     )
     TANF_2 = models.BooleanField(
         default=False,
-        verbose_name=_("Have you recieved TANF for more than two years in total?")
+        verbose_name=_("Have you received TANF for more than two years in total?")
     )
     SNAP = models.BooleanField(
         default=False,
@@ -1943,7 +1943,7 @@ class WIOA(models.Model):
     exhaust_tanf = models.BooleanField(
         default=False,
         verbose_name=_(
-            "Are you recieving TANF assistance that ends within 2 years?"
+            "Are you receiving TANF assistance that ends within 2 years?"
         )
     )
     job_corps = models.CharField(
@@ -1965,7 +1965,7 @@ class WIOA(models.Model):
     # A
     recieves_public_assistance = models.BooleanField(
         default=False,
-        verbose_name=_("Do you recieve public assistance?")
+        verbose_name=_("Do you receive public assistance?")
     )
     # B
     low_family_income = models.BooleanField(
