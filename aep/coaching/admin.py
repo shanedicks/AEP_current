@@ -304,7 +304,7 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
                     "<p>Sincerely,</p>"
                     "<p>The eLearn Team</p>"
                     "<p>apply@elearnclass.org</p>",
-                    from_email="elearn@dccaep.org",
+                    from_email="noreply@elearnclass.org",
                     recipient_list=[obj.student.email],
                 )
                 elearn_status_task.delay(obj.id)

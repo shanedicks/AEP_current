@@ -427,7 +427,7 @@ def send_score_report_link_task(test_id, test_type):
             subject="Here is your score report",
             message=strip_tags(html_message),
             html_message=html_message,
-            from_email="score_report_robot@dccaep.org",
+            from_email="noreply@elearnclass.org",
             recipient_list=recipient_list
         )
 

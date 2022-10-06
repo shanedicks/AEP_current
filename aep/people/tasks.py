@@ -42,7 +42,7 @@ def orientation_email_task(name, email_address, appt_id):
                     student=name,
                     event=orientation.event
                 ),
-        from_email="reminder@dccaep.org",
+        from_email="noreply@elearnclass.org",
         recipient_list=[email_address]
     )
 
@@ -683,6 +683,6 @@ def send_student_schedule_task(student_id):
             subject="Delgado Adult Education Class Schedule",
             message=message,
             html_message=html_message,
-            from_email="reminder@dccaep.org",
+            from_email="noreply@elearnclass.org",
             recipient_list=recipients,
         )
