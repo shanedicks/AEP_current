@@ -412,8 +412,10 @@ def send_score_report_link_task(test_id, test_type):
     recipient_list = []
     if student.email:
         recipient_list.append(student.email)
-    if student.elearn_record and student.elearn_record.g_suite_email:
+    try:
         recipient_list.append(student.elearn_record.g_suite_email)
+    except student._meta.model.elearn_record.RelatedObjectDoesNotExist:
+        pass
     if len(recipient_list) > 0:
         test.score_report_sent = True
         test.save()
