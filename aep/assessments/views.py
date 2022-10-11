@@ -407,6 +407,10 @@ class TestAppointmentListView(LoginRequiredMixin, ListView):
         ).order_by('-event__start')
         return qst
 
+class StudentEventAttendanceView(TestAppointmentListView):
+
+    template_name = "assessments/student_event_attendance.html"
+
 
 class StudentTestHistoryView(LoginRequiredMixin, DetailView):
 

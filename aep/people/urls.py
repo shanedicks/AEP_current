@@ -1,5 +1,6 @@
 from django.urls import re_path, include
 from django.views.generic import TemplateView
+from assessments.views import StudentEventAttendanceView
 from sections.views import (StudentCurrentClassListView,
     StudentPastClassListView, StudentScheduleView, AddClassView,
     StudentAttendanceView, StaffClassListView)
@@ -30,6 +31,9 @@ single_student_patterns = [
     re_path(r'^attendance/$',
         StudentAttendanceView.as_view(),
         name='student attendance'),
+    re_path(r'^attendance/events$',
+        StudentEventAttendanceView.as_view(),
+        name='student event attendance'),
     re_path(r'^edit/$',
         views.StudentUpdateView.as_view(),
         name='edit student'

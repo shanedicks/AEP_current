@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}} Event Attendance{% endblock head_title %}
+{% block content %}
+{% load static %}
+    <p></p>
+    <img src="{% static 'logo.png' %}" alt="Logo">
+    <h1>Official Attendance Record for {{student}}</h1>
+    {%include 'components/student_nav.html' %}
+    <p><a class="btn btn-default" href="{% url 'people:student attendance' slug=student.slug %}" role="button">Class Attendance</a></p>
+    {% if is_paginated %}
+      {% include 'components/pagination.html' %}
+    {% endif %}
+        <table class="table">
+            <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Hours</th>
+            </tr>
+	    {% for appt in object_list %}
+            <tr>
+                <td>{{ appt.event.title }}</td>
+                {% if appt.attendance_date %}
+	                <td>{{ appt.attendance_date }}</td>
+	            {% else %}
+	            	<td>{{ appt.event.start.date }}</td>
+	           	{% endif %}
+                <td>{{ appt.get_attendance_type_display }}</td>
+                <td>{{ appt.hours }}</td>
+            </tr>
+	    {% endfor %}    
+        </table>
+    </table>
+{% endblock %}
