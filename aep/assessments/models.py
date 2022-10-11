@@ -695,12 +695,31 @@ class Clas_E(NRSTest):
     read_level = models.CharField(
         max_length=1,
         choices=LEVEL_CHOICES,
+        blank=True
     )
 
     read_ss = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True
     )
 
     read_nrs = models.CharField(
+        max_length=1,
+        blank=True,
+        null=True
+    )
+    write_level = models.CharField(
+        max_length=1,
+        choices=LEVEL_CHOICES,
+        blank=True
+    )
+
+    write_ss = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True
+    )
+
+    write_nrs = models.CharField(
         max_length=1,
         blank=True,
         null=True

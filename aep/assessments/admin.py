@@ -285,6 +285,9 @@ class Clas_E_Resource(TestResource):
             'read_level',
             'read_ss',
             'read_nrs',
+            'write_level',
+            'write_ss',
+            'write_nrs'
         )
 
 
@@ -296,6 +299,7 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
         'student',
         'test_date',
         'read_nrs',
+        'write_nrs',
         'score_report_link'
     )
 
@@ -317,6 +321,9 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
         'read_level',
         'read_ss',
         'read_nrs',
+        'write_level',
+        'write_ss',
+        'write_nrs',
         'score_report_link'
     )
 
