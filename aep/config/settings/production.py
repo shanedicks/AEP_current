@@ -2,7 +2,9 @@ from .base import *
 
 # Celery Configuration
 CELERY_BROKER_URL = get_env_variable('CLOUDAMQP_URL')
-CELERY_RESULT_BACKEND = get_env_variable('REDIS_URL')
+celery_url = get_env_variable('REDIS_URL')
+parameters = "?ssl_cert_required=required"
+CELERY_RESULT_BACKEND = celery_url+parameters
 
 # Database Configuration
 import dj_database_url
