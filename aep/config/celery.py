@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-import os
+import os, ssl
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
@@ -11,6 +11,9 @@ app = Celery('config')
 # the configuration object to child processes.
 # - namespace='CELERY' means all celery-related configuration keys
 #   should have a `CELERY_` prefix.
+redis_background_use_ssl = {
+	'ssl_cert_reqs': ssl.CERT_NONE
+}
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # Load task modules from all registered Django app configs.
