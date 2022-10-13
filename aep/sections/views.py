@@ -25,7 +25,7 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     SingleSkillMasteryForm, SkillMasteryFormset,
                     EnrollmentUpdateForm, CancellationForm)
 from .tasks import (participation_detail_task, section_skill_mastery_report_task,
-                    mondo_attendance_report_task)
+                    mondo_attendance_report_task, cancel_class_task)
 
 
 class AttendanceCSV(LoginRequiredMixin, FormView):
@@ -1309,7 +1309,6 @@ class CurrentCancellationsListView(CancellationsListView):
             "section__start_time"
         )
 
-
 class CreateCancellationView(LoginRequiredMixin, CreateView):
 
     model = Cancellation
@@ -1339,7 +1338,21 @@ class CreateCancellationView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy(
-            'sections:class detail',
-            kwargs={'slug': self.kwargs['slug']}
-        )
+        return reverse('sections:confirm cancellation', kwargs={'pk': self.object.pk})
+
+
+class ConfirmCancellationView(LoginRequiredMixin, DetailView):
+
+    model = Cancellation
+    template_name = 'sections/confirm_cancellation.html'
+
+
+class CancelClassView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        cancellation = Cancellation.objects.get(pk=self.kwargs['pk'])
+        cancel_class_task.delay(self.kwargs['pk'])
+        return HttpResponseRedirect(reverse(
+            'sections:attendance overview',
+            kwargs={'slug': cancellation.section.slug}
+        ))

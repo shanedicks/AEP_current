@@ -923,9 +923,3 @@ class Cancellation(models.Model):
     def __str__(self):
         date = self.cancellation_date.strftime('%Y-%m-%d')
         return "|".join([date, self.section.__str__()])
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.notification_sent is False and self.send_notification is True:
-            cancel_class_task.delay(self.id)
-

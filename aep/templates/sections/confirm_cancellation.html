@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Confirm Cancellation{% endblock head_title %}
+
+{% block content %}
+	<h1>Confirm Cancellation</h1>
+	{% if cancellation.send_notification %}
+		<h4>Clicking confirm will mark attendance for {{ cancellation.section.title }} as cancelled on {{cancellation.cancellation_date}}</h4>
+		<h4>Students will recieve the following notification by text and email:</h4>
+		<h4>Delgado Adult Ed Alert: {{ cancellation.section.title }} at {{ cancellation.section.start_time|time:"h:i a" }} at {{cancellation.section.site.name}} with {{cancellation.section.teacher}} is cancelled on {{cancellation.cancellation_date}}. Sorry for any hassle</h4>
+	{% else %}
+		<h4>Clicking confirm will mark attendance for {{ cancellation.section.title }} as cancelled on {{cancellation.cancellation_date}}. Students will not be notififed.</h4>
+	{% endif %}
+	<h3>Are you sure you want to cancel?</h3>
+	<a class="btn btn-default btn-lg" href="{% url 'sections:cancel class task' pk=cancellation.pk %}" role="button">Confirm</a>
+{% endblock content %}

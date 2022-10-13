@@ -1,6 +1,6 @@
 import datetime
 from django.forms import (ModelForm, Form, ChoiceField, modelformset_factory,
-                         ValidationError, CharField, DateField,
+                         ValidationError, CharField, DateField, TextInput, Select,
                          ModelChoiceField, ModelMultipleChoiceField)
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -330,4 +330,7 @@ class CancellationForm(ModelForm):
     class Meta:
         model = Cancellation
         fields = ('cancellation_date', 'send_notification')
+        widgets = {
+            "cancellation_date": TextInput(attrs={'type': 'date'})
+        }
 

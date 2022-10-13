@@ -381,40 +381,41 @@ def cancel_class_task(cancellation_id):
 		attendance_date=cancellation.cancellation_date
 	)
 	attendance.update(attendance_type='C')
-	students = apps.get_model('people', 'Student').objects.filter(classes__section=section)
-	cancellation_date = cancellation.cancellation_date.strftime("%m/%d/%y")
-	recipient_list = []
-	for student in students:
-		context = {
-			'student': student.first_name,
-			'class_title': section.title,
-			'teacher': section.teacher.first_name,
-			'start_time': section.start_time.strftime("%I:%M %p"),
-			'site': section.site.name,
-			'date': cancellation_date
-		}
-		if student.email:
-			recipient_list.append(student.email)
-		if student.elearn_record and student.elearn_record.g_suite_email:
-			recipient_list.append(student.elearn_record.g_suite_email)
-		if student.phone:
-			send_sms_task.delay(
-				dst=student.phone,
-				message="Delgado Adult Ed Alert: {0} at {1} at {2} with {3} is cancelled on {4}. Sorry for any hassle".format(
-					context['class_title'],
-					context['start_time'],
-					context['site'],
-					context['teacher'],
-					context['date']
+	if cancellation.send_notification:
+		students = apps.get_model('people', 'Student').objects.filter(classes__section=section)
+		cancellation_date = cancellation.cancellation_date.strftime("%m/%d/%y")
+		recipient_list = []
+		for student in students:
+			context = {
+				'student': student.first_name,
+				'class_title': section.title,
+				'teacher': section.teacher.first_name,
+				'start_time': section.start_time.strftime("%I:%M %p"),
+				'site': section.site.name,
+				'date': cancellation_date
+			}
+			if student.email:
+				recipient_list.append(student.email)
+			if student.elearn_record and student.elearn_record.g_suite_email:
+				recipient_list.append(student.elearn_record.g_suite_email)
+			if student.phone:
+				send_sms_task.delay(
+					dst=student.phone,
+					message="Delgado Adult Ed Alert: {0} at {1} at {2} with {3} is cancelled on {4}. Sorry for any hassle".format(
+						context['class_title'],
+						context['start_time'],
+						context['site'],
+						context['teacher'],
+						context['date']
+					)
 				)
-			)
-	html_message = render_to_string('emails/cancelled_class.html', context)
-	send_mail(
-        subject="{0} has been cancelled for {1}".format(cancellation.section.title, cancellation_date),
-        message=strip_tags(html_message),
-        html_message=html_message,
-        from_email='noreply@elearnclass.org',
-        recipient_list=recipient_list
-    )
-	cancellation.notification_sent = True
-	cancellation.save()
+		html_message = render_to_string('emails/cancelled_class.html', context)
+		send_mail(
+	        subject="{0} has been cancelled for {1}".format(cancellation.section.title, cancellation_date),
+	        message=strip_tags(html_message),
+	        html_message=html_message,
+	        from_email='noreply@elearnclass.org',
+	        recipient_list=recipient_list
+	    )
+		cancellation.notification_sent = True
+		cancellation.save()

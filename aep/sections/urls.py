@@ -78,6 +78,15 @@ enrollment_patterns = [
         name='create admin attendance'),
 ]
 
+cancellations_patterns = [
+    re_path(r'^(?P<pk>[0-9]+)/$',
+        views.ConfirmCancellationView.as_view(),
+        name='confirm cancellation'),
+    re_path(r'^(?P<pk>[0-9]+)/cancel-class/$',
+        views.CancelClassView.as_view(),
+        name='cancel class task')
+]
+
 reports_patterns = [
     re_path(r'^active-students/$',
         views.ActiveStudentCSV.as_view(),
@@ -104,6 +113,8 @@ urlpatterns = [
         include(reports_patterns)),
     re_path(r'^enrollments/',
         include(enrollment_patterns)),
+    re_path(r'^cancellations/',
+        include(cancellations_patterns)),
     re_path(r'^teaching/',
         include(staff_patterns)),
     re_path(r'^attendance_csv/$',

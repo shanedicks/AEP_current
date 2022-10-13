@@ -11,7 +11,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff, Student
 from academics.models import Course
 from .models import Site, Section, Enrollment, Attendance, Message, Cancellation
-from .tasks import (roster_to_classroom_task, send_g_suite_info_task, 
+from .tasks import (roster_to_classroom_task, send_g_suite_info_task, cancel_class_task,
     create_missing_g_suite_task, send_message_task)
 
 class SiteResource(resources.ModelResource):
@@ -361,6 +361,14 @@ class CancellationAdmin(admin.ModelAdmin):
         "cancelled_by",
         'send_notification'
     ]
+
+    actions = [
+        "do cancellation"
+    ]
+
+    def do_cancellation(self, request, queryset):
+        for obj in queryset:
+            cancel_class_task.delay(obj.id)
 
     def get_changeform_initial_data(self, request):
         return {"cancelled_by": request.user}
