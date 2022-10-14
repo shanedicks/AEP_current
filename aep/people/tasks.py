@@ -661,6 +661,20 @@ def prospect_check_returner_task(prospect_id):
         prospect.save()
 
 @shared_task
+def student_link_prospect_task(student_id):
+    student = apps.get_model('people', "Student").objects.get(id=student_id)
+    logger.info("Prospect match check for {0} - id={1}".format(student, student.id))
+    matches = apps.get_model('people', 'Prospect').objects.filter(
+        first_name=student.first_name,
+        last_name=student.last_name,
+        email=student.email,
+        phone=student.phone,
+        dob=student.dob,
+    )
+    if matches.exists():
+        matches.update(student=student)
+
+@shared_task
 def send_student_schedule_task(student_id):
     student = apps.get_model('people', "Student").objects.get(id=student_id)
     current = student.current_classes().filter(status='A')

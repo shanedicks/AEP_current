@@ -29,7 +29,7 @@ from .forms import (
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm)
 from .tasks import (intake_retention_report_task, orientation_email_task, 
     prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
-    send_student_schedule_task)
+    send_student_schedule_task, student_link_prospect_task)
 
 
 # <<<<< Student Views >>>>>
@@ -217,6 +217,7 @@ class StudentCreateView(CreateView):
         if sf_valid and wf_valid:
             student = student_form.save(commit=False)
             student.save()
+            student_link_prospect_task.delay(student.id)
             wioa = wioa_form.save(commit=False)
             wioa.student = student
             wioa.save()
@@ -267,6 +268,7 @@ class StudentSignupWizard(SessionWizardView):
         details = self.get_cleaned_data_for_step('details')
         student = Student(**personal, **interest, **contact)
         student.save()
+        student_link_prospect_task.delay(student.id)
         wioa = WIOA(**ssn, **race, **eet, **disability, **details)
         wioa.student = student
         wioa.save()
@@ -593,6 +595,7 @@ class ProspectCreateStudentView(CreateView):
             prospect.active = True
             prospect.duplicate = False
             prospect.save()
+            student_link_prospect_task.delay(student.id)
             return HttpResponseRedirect(self.get_success_url())
         else:
             self.object = None
@@ -637,6 +640,7 @@ class ProspectCreateStudentWizard(StudentSignupWizard):
         details = self.get_cleaned_data_for_step('details')
         student = Student(**personal, **interest, **contact)
         student.save()
+        student_link_prospect_task.delay(student.id)
         wioa = WIOA(**ssn, **race, **eet, **disability, **details)
         wioa.student = student
         wioa.save()
