@@ -7,7 +7,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import (DetailView, ListView, CreateView,
                                   TemplateView, View, FormView, UpdateView)
-from core.utils import render_to_csv
+from core.utils import render_to_csv, clean_special_characters
 from core.forms import DateFilterForm
 from people.models import Student
 from .models import (
@@ -239,8 +239,8 @@ class TabeOnlineCSV(LoginRequiredMixin, View):
             s = [
                 "LA23680",
                 "LA20001",
-                student.student.WRU_ID,
-                student.student.last_name,
+                clean_special_characters(student.student.WRU_ID),
+                clean_special_characters(student.student.last_name),
                 student.student.first_name,
                 "",
                 student.student.gender,

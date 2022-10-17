@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from core.tasks import send_mail_task
+from core.utils import clean_special_characters
 from people.models import Staff, Student
 
 
@@ -837,7 +838,7 @@ class ElearnRecord(models.Model):
         else:
             first = self.student.first_name.split()[0]
             last = self.student.last_name.split()[0]
-            name = ".".join([first, last]).lower()
+            name = clean_special_characters(".".join([first, last]).lower())
             def check_email(name, x): # check g_suite for email, add numbers incrementally if email in use until email is valid
                 if x == 0:
                     email = "@".join([name, 'elearnclass.org'])
