@@ -526,9 +526,14 @@ class ClassListView(LoginRequiredMixin, ListView, FormView):
     template_name = 'sections/class_list.html'
     paginate_by = 20
 
-    queryset = Section.objects.filter(
-        semester__end_date__gte=timezone.now().date()
-    ).order_by('site', 'program', 'title')
+    def get_queryset(self):
+        queryset = Section.objects.filter(
+            semester__end_date__gte=timezone.now().date()
+        ) | Section.objects.filter(
+            ending__gte=timezone.now().date()
+        )
+        queryset = queryset.order_by('site', 'program', 'title')
+        return queryset
 
     def get_form_kwargs(self):
         return {

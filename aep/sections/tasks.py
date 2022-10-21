@@ -11,6 +11,7 @@ from django.utils.html import strip_tags
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from core.tasks import send_sms_task, send_mail_task
+from core.utils import g_suite_service
 
 logger = get_task_logger(__name__)
 
@@ -47,6 +48,7 @@ def participation_detail_task(email_address):
 		headers = [
 			'WRU_ID',
 			'Name',
+			'G_suite_email'
 			'Total',
 			'completed',
 			'MW',
@@ -69,9 +71,14 @@ def participation_detail_task(email_address):
 			if enrolled.count() == 0:
 				continue
 			completed = enrolled.filter(status='C')
+			try:
+				g_suite_email = student.elearn_record.g_suite_email
+			except ObjectDoesNotExist:
+				g_suite_email = ''
 			data = [
 				student.WRU_ID,
 				", ".join([student.last_name, student.first_name]),
+				g_suite_email,
 				enrolled.count(),
 				completed.count(),
 				enrolled.filter(section__monday=True).count(),
