@@ -267,8 +267,9 @@ class Section(models.Model):
             for email
             in active_emails
             if email not in rostered_emails
+            and email != ''
         ]
-
+        print("{1} new: {0}".format(new_emails, self.title))
         def drop_callback(request_id, response, exception):
             if exception is not None:
                 print("Error removing {0} from course:{1}".format(
