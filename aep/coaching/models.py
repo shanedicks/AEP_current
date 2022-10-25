@@ -836,9 +836,9 @@ class ElearnRecord(models.Model):
         if self.g_suite_email:
             pass
         else:
-            first = self.student.first_name.split()[0]
-            last = self.student.last_name.split()[0]
-            name = clean_special_characters(".".join([first, last]).lower())
+            first = clean_special_characters(self.student.first_name.split()[0])
+            last = clean_special_characters(self.student.last_name.split()[0])
+            name = ".".join([first, last]).lower()
             def check_email(name, x): # check g_suite for email, add numbers incrementally if email in use until email is valid
                 if x == 0:
                     email = "@".join([name, 'elearnclass.org'])
