@@ -19,14 +19,16 @@ from core.forms import DateFilterForm
 from core.utils import render_to_csv
 from core.tasks import send_mail_task, email_multi_alternatives_task
 from sections.forms import SectionFilterForm
-from .models import Staff, Student, CollegeInterest, WIOA, Prospect, ProspectNote
+from .models import (Staff, Student, CollegeInterest, WIOA, Prospect,
+    ProspectNote, Paperwork)
 from .forms import (
     StaffForm, StudentPersonalInfoForm, StudentSearchForm,
     StudentInterestForm, StudentContactForm, StudentUpdateForm, SSNForm, REForm,
     EETForm, AdditionalDetailsForm, DisabilityForm, StudentForm,
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
-    ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm)
+    ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm, 
+    PaperworkForm)
 from .tasks import (intake_retention_report_task, orientation_email_task, 
     prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
     send_student_schedule_task, student_link_prospect_task)
@@ -944,9 +946,44 @@ class ProspectMeetingAttendanceCSV(LoginRequiredMixin, FormView):
         data = self.get_data(prospect_dict)
         return render_to_csv(data=data, filename=filename)
 
+
 class SendStudentScheduleView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         student = Student.objects.get(slug = kwargs['slug'])
         send_student_schedule_task.delay(student.id)
         return HttpResponseRedirect(reverse('people:student current classes', kwargs={'slug': student.slug}))
+
+
+class SignPaperworkView(UpdateView):
+
+    model = Paperwork
+    form_class = PaperworkForm
+    template_name = 'people/sign_paperwork.html'
+    success_url = reverse_lazy('people:paperwork success')
+
+    def get_student(self, **kwargs):
+        return Student.objects.get(slug=self.kwargs['slug'])
+
+    def get_object(self):
+        student = self.get_student()
+        try:
+            obj = student.student_paperwork
+        except ObjectDoesNotExist:
+            student.track()
+            obj = student.student_paperwork
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(SignPaperworkView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = self.get_student(**kwargs)
+            context.update(kwargs)
+        return context
+
+    def form_valid(self, form):
+        paperwork = form.save(commit=False)
+        paperwork.writing = True
+        paperwork.disclosure = True
+        paperwork.save()
+        return super().form_valid(form)

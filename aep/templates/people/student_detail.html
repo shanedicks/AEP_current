@@ -19,11 +19,11 @@
         </tr>
         <tr>
           <td>Intake Date</td>
-          <td>{{ student.intake_date }}</td>
+          <td>{{ student.intake_date|date:"n/j/Y" }}</td>
         </tr>
         <tr>
           <td>Birthday</td>
-          <td>{{ student.dob }}</td>
+          <td>{{ student.dob|date:"n/j/Y" }}</td>
         </tr>
         <tr>
           <td>Native Language</td>

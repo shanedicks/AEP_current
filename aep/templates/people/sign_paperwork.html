@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | {{student}} paperwork{% endblock head_title %}
+{% block content %}
+<h1>Intake Paperwork for {{ student }}</h1>
+<form class="form_group" method="post">
+    {% crispy form %}
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+{% endblock content %}

@@ -23,6 +23,12 @@ student_class_patterns = [
         name='add class')
 ]
 
+single_student_paperwork_patterns = [
+    re_path(r'^update/$',
+        views.SignPaperworkView.as_view(),
+        name='sign paperwork')
+]
+
 single_student_patterns = [
     re_path(r'^$',
         views.StudentDetailView.as_view(),
@@ -62,7 +68,8 @@ single_student_patterns = [
     re_path(r'^my-classes/', include(student_class_patterns)),
     re_path(r'^send-schedule/$',
         views.SendStudentScheduleView.as_view(),
-        name="send student schedule")
+        name="send student schedule"),
+    re_path(r'^paperwork/', include(single_student_paperwork_patterns))
 ]
 
 student_patterns = [
@@ -228,7 +235,31 @@ urlpatterns = [
     re_path(r'^elearn-success/$',
         views.ElearnSignupSuccessView.as_view(),
         name='elearn success'),
+    re_path(r'^paperwork-success/$',
+        TemplateView.as_view(
+            template_name='people/paperwork_success.html'
+        ),
+        name='paperwork success'),
     re_path(r'^(?P<slug>[a-zA-Z0-9]{5})/',
-        include(prospect_intake_patterns))
-
+        include(prospect_intake_patterns)),
+    re_path(r'^FERPA/$',
+        TemplateView.as_view(
+            template_name="people/ferpa.html"
+        ),
+        name="ferpa"),
+    re_path(r'^student-contract/$',
+        TemplateView.as_view(
+            template_name="people/student_contract.html"
+        ),
+        name="student contract"),
+    re_path(r'^tech-policy/$',
+        TemplateView.as_view(
+            template_name="people/tech_policy.html"
+        ),
+        name="technology policy"),
+    re_path(r'^testing-agreement/$',
+        TemplateView.as_view(
+            template_name="people/testing_agreement.html"
+        ),
+        name="testing agreement"),
 ]

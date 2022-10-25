@@ -1139,41 +1139,108 @@ class Paperwork(models.Model):
         models.CASCADE,
         related_name='student_paperwork'
     )
-
     ferpa = models.BooleanField(
         default = False,
         verbose_name = 'FERPA'
     )
-
-    test_and_comp = models.BooleanField(
+    testing = models.BooleanField(
         default = False,
-        verbose_name = 'Test and Computer Usage Policy'
+        verbose_name = 'Testing Agreement'
     )
-
+    technology = models.BooleanField(
+        default = False,
+        verbose_name = 'Teechnology Usage Agreement'
+    )
     contract = models.BooleanField(
         default = False,
         verbose_name = 'Student Contract'
     )
-
     disclosure = models.BooleanField(
         default = False,
         verbose_name = 'Self-Disclosure Form'
     )
-
-    lsi = models.BooleanField(
-        default = False,
-        verbose_name = 'Learning Style Inventory'
-    )
-
     writing = models.BooleanField(
         default = False,
         verbose_name = 'Writing Sample'
     )
-
     pic_id = models.BooleanField(
         default = False,
         verbose_name = 'Picture ID'
     )
+    sd_reading = models.BooleanField(
+        default=False,
+        verbose_name='Reading'
+    )
+    sd_math = models.BooleanField(
+        default=False,
+        verbose_name='Math'
+    )
+    sd_language = models.BooleanField(
+        default=False,
+        verbose_name='Language'
+    )
+    sd_attention = models.BooleanField(
+        default=False,
+        verbose_name='Attention Deficit Disorder/Attention Deficit Hyperactivity Disorder'
+    )
+    sd_other = models.CharField(
+        max_length=140,
+        blank=True,
+        verbose_name='Other (explain)'
+    )
+    sh_self_se = models.BooleanField(
+        default = False,
+        verbose_name='Self-contained Special Education Classroom'
+    )
+    sh_resource_se = models.BooleanField(
+        default = False,
+        verbose_name='Resource Special Education Classroom'
+    )
+    sh_title1_read = models.BooleanField(
+        default = False,
+        verbose_name='Title 1 Reading'
+    )
+    sh_title1_math = models.BooleanField(
+        default = False,
+        verbose_name='Title 1 Math'
+    )
+    sh_504 = models.BooleanField(
+        default = False,
+        verbose_name='504 Accommodations'
+    )
+    sh_medication = models.BooleanField(
+        default = False,
+        verbose_name='Medication for A.D.D. or A.D.H.D'
+    )
+    sh_other = models.CharField(
+        max_length=140,
+        blank=True,
+        verbose_name = 'Other (explain)'
+    )
+    sh_request = models.TextField(
+        blank=True,
+        verbose_name='I feel I need help in the following area(s):'
+    )
+    writing_sample = models.TextField(
+        verbose_name = 'Student Writing Sample',
+        blank=True
+    )
+    signature = models.CharField(
+        max_length=140,
+        blank=True
+    )
+    sig_date = models.DateField(
+        null=True
+    )
+    guardian_signature = models.CharField(
+        max_length=140,
+        blank=True
+    )
+    g_sig_date = models.DateField(
+        null=True,
+        blank=True
+    )
+
 
     class Meta:
         verbose_name_plural = 'paperwork'

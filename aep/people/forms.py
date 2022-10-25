@@ -8,7 +8,7 @@ from django.utils import timezone
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML, Div
 from crispy_forms.bootstrap import PrependedText
-from .models import Student, Staff, WIOA, CollegeInterest, Prospect, ProspectNote
+from .models import Student, Staff, WIOA, CollegeInterest, Prospect, ProspectNote, Paperwork
 
 
 def make_username(first_name, last_name):
@@ -2170,7 +2170,7 @@ class WioaForm(ModelForm):
             "request_accommodation": """<strong>Check here to indicate that you 
                                         understand your responsibility to request 
                                         accommodations.</strong>""",
-            "referred_by": "<strong>How did you hear about us?"
+            "referred_by": "<strong>How did you hear about us?</strong>"
         }
         help_texts = {
             "SID": "This is used by the State of Louisiana as a means of matching student records, however it is not required for admission."
@@ -2460,5 +2460,138 @@ class ProspectNoteForm(ModelForm):
             'returning_student'
         )
 
+class PaperworkForm(ModelForm):
 
+    def clean_signature(self):
+        data = self.cleaned_data['signature']
+        if data == '':
+            raise ValidationError(
+                _("You must type your name to sign this form electronically."),
+                code="signature"
+            )
+        return data
+
+    def clean_writing_sample(self):
+        data = self.cleaned_data['writing_sample']
+        if data == '':
+            raise ValidationError(
+                _("Please write something in the area provided."),
+                code="writing_sample"
+            )
+        return data
+
+    def __init__(self, *args, **kwargs):
+        super(PaperworkForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Writing Activity',
+                HTML("""<p>Directions</p><p>Please answer the two questions:</p>
+                    <ol><li>What are your goals and dreams?</li><li>How will this 
+                    program help you?</li></ol><br><i>Keep in mind...</i><ul><li>This 
+                    is not a test. Use this space to express yourself. We want to
+                    help you with your goals.</li><li>If you have any questions, 
+                    ask a staff member</li></ul>
+                    """
+                ),
+                'writing_sample',
+            ),
+            Fieldset(
+                'Self-Disclosure Form',
+                HTML("""<p>I recieved special help when I was in school in one 
+                    or more of the following areas:</p>"""
+                ),
+                'sd_reading',
+                'sd_math',
+                'sd_language',
+                'sd_attention',
+                'sd_other',
+                HTML("""<br><p>What types of special help did you recieve ?</p>"""),
+                'sh_self_se',
+                "sh_resource_se",
+                "sh_title1_read",
+                "sh_title1_math",
+                "sh_504",
+                "sh_medication",
+                "sh_other",
+                'sh_request'
+            ),
+            Fieldset(
+                'Program Policies',
+                'contract',
+                'testing',
+                'technology',
+                'ferpa',
+                Row(
+                    Field(
+                        'signature',
+                        wrapper_class="col-md-6",
+                        required=True
+                    ),
+                    Field(
+                        'sig_date',
+                        wrapper_class="col-md-6"
+                    ),
+                ),
+                Row(
+                    Field(
+                        'guardian_signature',
+                        wrapper_class="col-md-6"
+                    ),
+                    Field(
+                        'g_sig_date',
+                        wrapper_class="col-md-6"
+                    ),
+                ),
+            ),
+        )
+
+    class Meta:
+        model = Paperwork
+        fields = (
+            "ferpa",
+            "testing",
+            "technology",
+            "contract",
+            "sd_reading",
+            "sd_math",
+            "sd_language",
+            "sd_attention",
+            "sd_other",
+            "sh_self_se",
+            "sh_resource_se",
+            "sh_title1_read",
+            "sh_title1_math",
+            "sh_504",
+            "sh_medication",
+            "sh_other",
+            "sh_request",
+            "writing_sample",
+            "signature",
+            "sig_date",
+            "guardian_signature",
+            "g_sig_date"
+        )
+
+        labels = {
+            'signature': 'Signature*',
+            'writing_sample': 'Student Writing Sample*',
+            "ferpa": """I have read and accept the 
+                    <a href="https://www.dccaep.org/FERPA/" target="_blank">
+                    FERPA and Student Records Policy</a>""",
+            "testing": """I have read and accept the 
+                    <a href="https://www.dccaep.org/testing-agreement/" target="_blank">
+                    Testing Agreement</a>""",
+            "technology": """I have read and accept the 
+                    <a href="https://www.dccaep.org/tech-policy/" target="_blank"">
+                    Technology Policy</a>""",
+            "contract": """I have read and accept the 
+                    <a href="https://www.dccaep.org/student-contract" target="_blank">
+                    Student Contract</a>""",
+        }
+        help_texts = {
+            'guardian_signature': '(If student is under 18)'
+        }
 

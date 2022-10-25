@@ -745,20 +745,20 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
     list_display = (
         'student',
         'ferpa',
-        'test_and_comp',
+        'testing',
+        'technology',
         'contract',
         'disclosure',
-        'lsi',
         'writing',
         'pic_id'
     )
 
     list_editable = (
         'ferpa',
-        'test_and_comp',
+        'testing',
+        'technology',
         'contract',
         'disclosure',
-        'lsi',
         'writing',
         'pic_id'
     )
@@ -771,10 +771,10 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
 
     fields = (
         'ferpa',
-        'test_and_comp',
+        'testing',
+        'technology',
         'contract',
         'disclosure',
-        'lsi',
         'writing',
         'pic_id'  
     )
