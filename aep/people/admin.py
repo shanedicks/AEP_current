@@ -237,15 +237,29 @@ class PaperworkResource(resources.ModelResource):
     class Meta:
         model = Paperwork
         fields = (
-            'id',
-            'student',
-            'ferpa',
-            'test_and_comp',
-            'contract',
-            'disclosure',
-            'lsi',
-            'writing',
-            'pic_id'
+            "ferpa",
+            "testing",
+            "technology",
+            "contract",
+            "sd_reading",
+            "sd_math",
+            "sd_language",
+            "sd_attention",
+            "sd_other",
+            "sh_self_se",
+            "sh_resource_se",
+            "sh_title1_read",
+            "sh_title1_math",
+            "sh_504",
+            "sh_medication",
+            "sh_other",
+            "sh_request",
+            "writing_sample",
+            "signature",
+            "guardian_signature",
+            "sig_date",
+            "g_sig_date",
+            "pic_id"
         )
 
 
@@ -770,13 +784,29 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = (
-        'ferpa',
-        'testing',
-        'technology',
-        'contract',
-        'disclosure',
-        'writing',
-        'pic_id'  
+        "ferpa",
+        "testing",
+        "technology",
+        "contract",
+        "pic_id",
+        "sd_reading",
+        "sd_math",
+        "sd_language",
+        "sd_attention",
+        "sd_other",
+        "sh_self_se",
+        "sh_resource_se",
+        "sh_title1_read",
+        "sh_title1_math",
+        "sh_504",
+        "sh_medication",
+        "sh_other",
+        "sh_request",
+        "writing_sample",
+        "signature",
+        "guardian_signature",
+        "sig_date",
+        "g_sig_date"
     )
 
 admin.site.register(Paperwork, PaperworkAdmin)

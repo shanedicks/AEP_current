@@ -982,7 +982,11 @@ class SignPaperworkView(UpdateView):
         return context
 
     def form_valid(self, form):
+        today = timezone.localdate()
         paperwork = form.save(commit=False)
+        paperwork.sig_date = today
+        if paperwork.guardian_signature != '':
+            paperwork.g_sig_date = today
         paperwork.writing = True
         paperwork.disclosure = True
         paperwork.save()

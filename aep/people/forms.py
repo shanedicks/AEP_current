@@ -2480,6 +2480,42 @@ class PaperworkForm(ModelForm):
             )
         return data
 
+    def clean_contract(self):
+        data = self.cleaned_data['contract']
+        if data == False:
+            raise ValidationError(
+                _("You must confirm you accept the Student Contract"),
+                code='contract'
+            )
+        return data
+
+    def clean_testing(self):
+        data = self.cleaned_data['testing']
+        if data == False:
+            raise ValidationError(
+                _("You must confirm you accept the Testing Agreement"),
+                code='testing'
+            )
+        return data
+
+    def clean_technology(self):
+        data = self.cleaned_data['technology']
+        if data == False:
+            raise ValidationError(
+                _("You must confirm you accept the Technology Policy"),
+                code='technology'
+            )
+        return data
+
+    def clean_ferpa(self):
+        data = self.cleaned_data['ferpa']
+        if data == False:
+            raise ValidationError(
+                _("You must confirm you accept FERPA and Student Records Policy"),
+                code='ferpa'
+            )
+        return data
+
     def __init__(self, *args, **kwargs):
         super(PaperworkForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -2531,17 +2567,7 @@ class PaperworkForm(ModelForm):
                         required=True
                     ),
                     Field(
-                        'sig_date',
-                        wrapper_class="col-md-6"
-                    ),
-                ),
-                Row(
-                    Field(
                         'guardian_signature',
-                        wrapper_class="col-md-6"
-                    ),
-                    Field(
-                        'g_sig_date',
                         wrapper_class="col-md-6"
                     ),
                 ),
@@ -2570,9 +2596,7 @@ class PaperworkForm(ModelForm):
             "sh_request",
             "writing_sample",
             "signature",
-            "sig_date",
             "guardian_signature",
-            "g_sig_date"
         )
 
         labels = {
@@ -2580,16 +2604,16 @@ class PaperworkForm(ModelForm):
             'writing_sample': 'Student Writing Sample*',
             "ferpa": """I have read and accept the 
                     <a href="https://www.dccaep.org/FERPA/" target="_blank">
-                    FERPA and Student Records Policy</a>""",
+                    FERPA and Student Records Policy*</a>""",
             "testing": """I have read and accept the 
                     <a href="https://www.dccaep.org/testing-agreement/" target="_blank">
-                    Testing Agreement</a>""",
+                    Testing Agreement*</a>""",
             "technology": """I have read and accept the 
                     <a href="https://www.dccaep.org/tech-policy/" target="_blank"">
-                    Technology Policy</a>""",
+                    Technology Policy*</a>""",
             "contract": """I have read and accept the 
                     <a href="https://www.dccaep.org/student-contract" target="_blank">
-                    Student Contract</a>""",
+                    Student Contract*</a>""",
         }
         help_texts = {
             'guardian_signature': '(If student is under 18)'
