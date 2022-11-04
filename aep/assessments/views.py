@@ -594,13 +594,9 @@ class TabeCSV(LoginRequiredMixin, FormView):
             version = 'TABE'
             if test.form in ('11', '12'):
                 version = 'TABE 11 & 12'
-            if test.student.tabe_tests.filter(
-                test_date__lt=date).filter(
-                test_date__gte=pre).count() > 0:
-                test_type = 'Posttest'
             if test.read_ss:
                 if test.student.tabe_tests.filter(
-                    test_date__lt=date).filter(
+                    test_date__lt=date,
                     test_date__gte=pre,
                     read_ss__isnull=False).count() > 0:
                     test_type = 'Posttest'
@@ -633,7 +629,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                 data.append(s)
             if test.total_math_ss:
                 if test.student.tabe_tests.filter(
-                    test_date__lt=date).filter(
+                    test_date__lt=date,
                     test_date__gte=pre,
                     total_math_ss__isnull=False).count() > 0:
                     test_type = 'Posttest'
@@ -666,7 +662,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
                 data.append(s)
             if test.lang_ss:
                 if test.student.tabe_tests.filter(
-                    test_date__lt=date).filter(
+                    test_date__lt=date,
                     test_date__gte=pre,
                     lang_ss__isnull=False).count() > 0:
                     test_type = 'Posttest'
@@ -796,33 +792,71 @@ class ClasECSV(LoginRequiredMixin, FormView):
         ]
         data.append(headers)
         for test in tests:
+            r = test.read_ss
+            w = test.write_ss
             date = test.test_date
             pre = test.test_date - timedelta(days=180)
             test_type = 'Pretest'
-            if test.student.clas_e_tests.filter(
-                test_date__lt=date).filter(
-                test_date__gte=pre).count() > 0:
-                test_type = 'Posttest'
-            s = [
-                test.student.student.partner,
-                test.student.student.WRU_ID,
-                test.student.student.last_name,
-                test.student.student.first_name,
-                test_type,
-                '2022-2023',
-                'TABE CLAS-E',
-                test.form,
-                test.read_level,
-                'READING',
-                datetime.strftime(test.test_date, "%m/%d/%Y"),
-                test.read_ss,
-                '',
-                nrs.get(test.read_nrs, ''),
-                '1',
-                '0',
-                '1',
-            ]
-            data.append(s)
+            if test.read_ss:
+                if test.student.clas_e_tests.filter(
+                    test_date__lt=date,
+                    test_date__gte=pre,
+                    read_ss__isnull=False).count() > 0:
+                    test_type = 'Posttest'
+                lowest = 1
+                if w is not None:
+                    if w < r:
+                        lowest = 0
+                s = [
+                    test.student.student.partner,
+                    test.student.student.WRU_ID,
+                    test.student.student.last_name,
+                    test.student.student.first_name,
+                    test_type,
+                    '2022-2023',
+                    'TABE CLAS-E',
+                    test.form,
+                    test.read_level,
+                    'WRITING',
+                    datetime.strftime(test.test_date, "%m/%d/%Y"),
+                    test.read_ss,
+                    '',
+                    nrs.get(test.read_nrs, ''),
+                    lowest,
+                    '0',
+                    '1',
+                ]
+                data.append(s)
+            if test.write_ss:
+                if test.student.clas_e_tests.filter(
+                    test_date__lt=date,
+                    test_date__gte=pre,
+                    write_ss__isnull=False).count() > 0:
+                    test_type = 'Posttest'
+                lowest = 1
+                if r is not None:
+                    if r < w:
+                        lowest = 0
+                s = [
+                    test.student.student.partner,
+                    test.student.student.WRU_ID,
+                    test.student.student.last_name,
+                    test.student.student.first_name,
+                    test_type,
+                    '2022-2023',
+                    'TABE CLAS-E',
+                    test.form,
+                    test.write_level,
+                    'READING',
+                    datetime.strftime(test.test_date, "%m/%d/%Y"),
+                    test.write_ss,
+                    '',
+                    nrs.get(test.write_nrs, ''),
+                    lowest,
+                    '0',
+                    '1',
+                ]
+                data.append(s)
         return data
 
     def form_valid(self, form):
