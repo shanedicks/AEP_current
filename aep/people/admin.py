@@ -764,7 +764,8 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
         'contract',
         'disclosure',
         'writing',
-        'pic_id'
+        'pic_id',
+        'pic_id_file'
     )
 
     list_editable = (

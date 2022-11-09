@@ -1240,6 +1240,10 @@ class Paperwork(models.Model):
         null=True,
         blank=True
     )
+    pic_id_file = models.CharField(
+        max_length=50,
+        blank=True
+    )
 
 
     class Meta:

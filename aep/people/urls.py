@@ -26,7 +26,10 @@ student_class_patterns = [
 single_student_paperwork_patterns = [
     re_path(r'^update/$',
         views.SignPaperworkView.as_view(),
-        name='sign paperwork')
+        name='sign paperwork'),
+    re_path(r'^upload-id/$',
+        views.PhotoIdUploadView.as_view(),
+        name='upload photo id')
 ]
 
 single_student_patterns = [

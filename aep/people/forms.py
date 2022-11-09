@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.forms import Form, ModelForm, CharField, ValidationError, DateField
+from django.forms import Form, ModelForm, CharField, ValidationError, DateField, FileField
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
@@ -2619,3 +2619,27 @@ class PaperworkForm(ModelForm):
             'guardian_signature': '(If student is under 18)'
         }
 
+
+class PhotoIdForm(ModelForm):
+
+    def clean_photo_id(self):
+        file = self.cleaned_data['photo_id']
+        if file.content_type not in ['image/png', 'image/jpeg']:
+            raise ValidationError(
+                _("Sorry that file type is not supported. Please upload a .jpg or .png image")
+            )
+        return file
+
+    photo_id = FileField()
+
+    def __init__(self, *args, **kwargs):
+        super(PhotoIdForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+
+    class Meta:
+        model = Paperwork
+
+        fields = (
+        )

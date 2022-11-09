@@ -168,6 +168,8 @@ MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = '/'
 
+FILE_UPLOAD_HANDLERS = ['django.core.files.uploadhandler.TemporaryFileUploadHandler']
+
 # django-crispy-forms template-pack setting
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -177,15 +179,15 @@ IMPORT_EXPORT_USE_TRANSACTIONS = True
 # Google Classroom settings
 KEYFILE_DICT = {
     "type": "service_account",
-    "project_id": "maximal-ceiling-171219",
+    "project_id": "greenbean-176303",
     "private_key_id": get_env_variable('GOOGLE_API_KEY_ID'),
     "private_key": get_env_variable('GOOGLE_API_KEY').encode('utf-8').decode('unicode-escape'),
-    "client_email": "admin-91@maximal-ceiling-171219.iam.gserviceaccount.com",
-    "client_id": "112317125717967002091",
+    "client_email": "admin-629@greenbean-176303.iam.gserviceaccount.com",
+    "client_id": "101999944561660409852",
     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://accounts.google.com/o/oauth2/token",
+    "token_uri": "https://oauth2.googleapis.com/token",
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/admin-91%40maximal-ceiling-171219.iam.gserviceaccount.com"
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/admin-629%40greenbean-176303.iam.gserviceaccount.com"
 }
 
 # Celery settings

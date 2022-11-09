@@ -267,18 +267,33 @@ def state_session():
 
     return session
 
-def g_suite_service():
-    scopes = ['https://www.googleapis.com/auth/admin.directory.user']
+def directory_service():
+    scopes = [
+        'https://www.googleapis.com/auth/admin.directory.user',
+    ]
 
     credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
         keyfile_dict=settings.KEYFILE_DICT,
         scopes=scopes
     )
 
-    shane = credentials.create_delegated('shane.dicks@elearnclass.org')
-    http_auth = shane.authorize(Http())
+    gb = credentials.create_delegated('greenbean@elearnclass.org')
+    http_auth = gb.authorize(Http())
     return discovery.build('admin', 'directory_v1', http=http_auth)
 
+def drive_service():
+    scopes = [
+        'https://www.googleapis.com/auth/drive.file',
+    ]
+
+    credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+        keyfile_dict=settings.KEYFILE_DICT,
+        scopes=scopes
+    )
+
+    gb = credentials.create_delegated('greenbean@elearnclass.org')
+    http_auth = gb.authorize(Http())
+    return discovery.build('drive', 'v3', http=http_auth)
 
 def clean_special_characters(input_string):
     cleaned_chars = [CHAR_MAP[c] if c in CHAR_MAP else c for c in input_string]

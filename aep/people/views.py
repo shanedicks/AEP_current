@@ -1,3 +1,5 @@
+from apiclient.http import MediaFileUpload
+from apiclient.errors import HttpError
 from datetime import timedelta
 from django.views.generic import (View,
     DetailView, ListView, UpdateView,
@@ -16,7 +18,7 @@ from django.views.generic.detail import SingleObjectMixin
 from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
 from core.forms import DateFilterForm
-from core.utils import render_to_csv
+from core.utils import render_to_csv, drive_service
 from core.tasks import send_mail_task, email_multi_alternatives_task
 from sections.forms import SectionFilterForm
 from .models import (Staff, Student, CollegeInterest, WIOA, Prospect,
@@ -28,7 +30,7 @@ from .forms import (
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm, 
-    PaperworkForm)
+    PaperworkForm, PhotoIdForm)
 from .tasks import (intake_retention_report_task, orientation_email_task, 
     prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
     send_student_schedule_task, student_link_prospect_task)
@@ -989,5 +991,61 @@ class SignPaperworkView(UpdateView):
             paperwork.g_sig_date = today
         paperwork.writing = True
         paperwork.disclosure = True
+        paperwork.save()
+        return super().form_valid(form)
+
+
+class PhotoIdUploadView(UpdateView):
+
+    model = Paperwork
+    form_class = PhotoIdForm
+    template_name = 'people/upload_photo_id.html'
+    success_url = reverse_lazy('people:paperwork success')
+
+    def get_student(self, **kwargs):
+        return Student.objects.get(slug=self.kwargs['slug'])
+
+    def get_object(self):
+        student = self.get_student()
+        try:
+            obj = student.student_paperwork
+        except ObjectDoesNotExist:
+            student.track()
+            obj = student.student_paperwork
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(PhotoIdUploadView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = self.get_student(**kwargs)
+            context.update(kwargs)
+        return context
+
+    def photo_id_to_drive(self, name, photo_id):
+        try: 
+            service = drive_service()
+            metadata = {
+                'name': name,
+                'parents': ['1DpE8QKUvuEKMCOaWHiuX4K7f7BGdzHS1']
+            }
+            media = MediaFileUpload(
+                photo_id.temporary_file_path(),
+                mimetype=photo_id.content_type,
+            )
+            file = service.files().create(
+                body=metadata,
+                media_body=media,
+                fields='id'
+            ).execute()
+        except HttpError:
+            file = None
+        return file.get('id')
+
+    def form_valid(self, form):
+        paperwork = self.object
+        photo_id = self.request.FILES['photo_id']
+        name = paperwork.student.__str__() + " picture id"
+        paperwork.pic_id_file = self.photo_id_to_drive(name, photo_id)
+        paperwork.photo_id = True
         paperwork.save()
         return super().form_valid(form)

@@ -10,7 +10,7 @@ from django.utils import timezone
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from core.tasks import send_mail_task
-from core.utils import g_suite_service
+from core.utils import directory_service
 
 logger = get_task_logger(__name__)
 
@@ -77,7 +77,7 @@ def create_missing_g_suite_task(semester_id):
         logger.info("Created elearn record for {0}".format(student))
     logger.info('Creating missing GSuite accounts for {0}'.format(semester.title))
     logger.info("Creating G Suite Service")
-    service = g_suite_service()
+    service = directory_service()
     for student in students:
         logger.info("Creating GSuite account for {0}".format(student))
         try:
