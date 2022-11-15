@@ -1138,7 +1138,7 @@ class StudentForm(ModelForm):
                     required=True
                 ),
                 Field(
-                    'ec_relation',
+                    'ec_email',
                     wrapper_class="col-md-4",
                 ),
                 Field(

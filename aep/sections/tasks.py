@@ -48,7 +48,7 @@ def participation_detail_task(email_address):
 		headers = [
 			'WRU_ID',
 			'Name',
-			'G_suite_email'
+			'G_suite_email',
 			'Total',
 			'completed',
 			'MW',

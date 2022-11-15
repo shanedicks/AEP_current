@@ -277,7 +277,7 @@ def directory_service():
         scopes=scopes
     )
 
-    gb = credentials.create_delegated('greenbean@elearnclass.org')
+    gb = credentials.create_delegated('shane.dicks@elearnclass.org')
     http_auth = gb.authorize(Http())
     return discovery.build('admin', 'directory_v1', http=http_auth)
 
@@ -291,7 +291,7 @@ def drive_service():
         scopes=scopes
     )
 
-    gb = credentials.create_delegated('greenbean@elearnclass.org')
+    gb = credentials.create_delegated('shane.dicks@elearnclass.org')
     http_auth = gb.authorize(Http())
     return discovery.build('drive', 'v3', http=http_auth)
 
