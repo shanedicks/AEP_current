@@ -212,7 +212,7 @@ class Section(models.Model):
             keyfile_dict=settings.KEYFILE_DICT,
             scopes=scopes
         )
-        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        shane = credentials.create_delegated('greenbean@elearnclass.org')
         http_auth = shane.authorize(Http())
         service = discovery.build('classroom', 'v1', http=http_auth)
 
@@ -324,7 +324,7 @@ class Section(models.Model):
             scopes=scopes
         )
 
-        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        shane = credentials.create_delegated('greenbean@elearnclass.org')
         http_auth = shane.authorize(Http())
         service = discovery.build('classroom', 'v1', http=http_auth)
         raw = {}
@@ -378,7 +378,7 @@ class Section(models.Model):
             scopes=scopes
         )
 
-        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
+        shane = credentials.create_delegated('greenbean@elearnclass.org')
         http_auth = shane.authorize(Http())
         service = discovery.build('classroom', 'v1', http=http_auth)
 

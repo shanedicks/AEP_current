@@ -8,6 +8,7 @@ from django.core.mail.message import EmailMessage
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils import timezone
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from core.tasks import send_sms_task, send_mail_task
