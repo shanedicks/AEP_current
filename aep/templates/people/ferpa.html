@@ -21,4 +21,15 @@
  
 <p>All authorizations for release of information shall be filed in the student’s administrative folder.</p>
 
+{% if paperwork %}
+<table class='table bordlerless'>
+<tr><td><i>{{paperwork.signature}}</i></td><td>{{paperwork.sig_date}}</td></tr>
+<tr><td>Signature</td><td>Date</td></tr>
+{% if paperwork.g_sig_date %}
+<tr><td><i>{{paperwork.guardian_signature}}</i></td><td>{{paperwork.g_sig_date}}</td></tr>
+<tr><td>Guardian Signature</td><td>Date</td></tr>
+{% endif %}
+</table>
+{% endif %}
+
 {% endblock content %}

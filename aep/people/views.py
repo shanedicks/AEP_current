@@ -957,6 +957,55 @@ class SendStudentScheduleView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse('people:student current classes', kwargs={'slug': student.slug}))
 
 
+class StudentPaperworkDetail(LoginRequiredMixin, DetailView):
+
+    model = Paperwork
+    template_name = "people/student_paperwork_detail.html"
+
+    def get_student(self, **kwargs):
+        return Student.objects.get(slug=self.kwargs['slug'])
+
+    def get_object(self):
+        student = self.get_student()
+        try:
+            obj = student.student_paperwork
+        except ObjectDoesNotExist:
+            student.track()
+            obj = student.student_paperwork
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentPaperworkDetail, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = self.get_student(**kwargs)
+            context.update(kwargs)
+        return context
+
+
+class StudentFerpaView(StudentPaperworkDetail):
+    template_name = "people/ferpa.html"
+
+
+class StudentContractView(StudentPaperworkDetail):
+    template_name = "people/student_contract.html"
+
+
+class StudentTestAgreementView(StudentPaperworkDetail):
+    template_name = "people/testing_agreement.html"
+
+
+class StudentTechPolicyView(StudentPaperworkDetail):
+    template_name = "people/tech_policy.html"
+
+
+class StudentSelfDisclosureView(StudentPaperworkDetail):
+    template_name = "people/student_self_disclosure.html"
+
+
+class StudentWritingSampleView(StudentPaperworkDetail):
+    template_name = "people/student_writing_sample.html"
+
+
 class SignPaperworkView(UpdateView):
 
     model = Paperwork
@@ -1046,6 +1095,6 @@ class PhotoIdUploadView(UpdateView):
         photo_id = self.request.FILES['photo_id']
         name = paperwork.student.__str__() + " picture id"
         paperwork.pic_id_file = self.photo_id_to_drive(name, photo_id)
-        paperwork.photo_id = True
+        paperwork.pic_id = True
         paperwork.save()
         return super().form_valid(form)

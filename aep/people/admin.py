@@ -241,6 +241,8 @@ class PaperworkResource(resources.ModelResource):
             "testing",
             "technology",
             "contract",
+            "disclosure",
+            "writing",
             "sd_reading",
             "sd_math",
             "sd_language",
@@ -259,7 +261,8 @@ class PaperworkResource(resources.ModelResource):
             "guardian_signature",
             "sig_date",
             "g_sig_date",
-            "pic_id"
+            "pic_id",
+            "pic_id_file"
         )
 
 
@@ -600,14 +603,31 @@ class StudentAdmin(ImportExportActionModelAdmin):
             try:
                 p.save()
             except IntegrityError:
+                bools = [
+                    f.name for f in type(p)._meta.get_fields() 
+                    if f.get_internal_type() == 'BooleanField'
+                ]
                 np = q[1].student_paperwork
-                np.ferpa = max(p.ferpa, np.ferpa)
-                np.test_and_comp = max(p.test_and_comp , np.test_and_comp)
-                np.contract = max(p.contract , np.contract)
-                np.disclosure = max(p.disclosure , np.disclosure)
-                np.lsi = max(p.lsi , np.lsi)
-                np.writing = max(p.writing , np.writing)
-                np.pic_id = max(p.pic_id , np.pic_id)
+                for field_name in bools:
+                    setattr(np, field_name, max(getattr(p, field_name), getattr(np, field_name)))
+                others = [
+                    'sd_other',
+                    'sh_other',
+                    'sh_request',
+                    'signature',
+                    'guardian_signature',
+                    'sig_date',
+                    'g_sig_date',
+                ]
+                if np.sig_date is not None and p.sig_date is not None:
+                    if p.sig_date < np.sig_date:
+                        for field_name in others:
+                            setattr(np, field_name,  getattr(p, field_name))
+                elif p.sig_date is not None:
+                    for field_name in others:
+                        setattr(np, field_name,  getattr(p, field_name))
+                if np.pic_id_file == '' and p.pic_id_file != '':
+                    np.pic_id_file = p.pic_id_file
                 np.save()
         except ObjectDoesNotExist:
             pass
@@ -789,7 +809,10 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
         "testing",
         "technology",
         "contract",
+        "disclosure",
+        "writing",
         "pic_id",
+        "pic_id_file",
         "sd_reading",
         "sd_math",
         "sd_language",
@@ -803,7 +826,6 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
         "sh_medication",
         "sh_other",
         "sh_request",
-        "writing_sample",
         "signature",
         "guardian_signature",
         "sig_date",

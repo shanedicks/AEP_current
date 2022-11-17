@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}}{% endblock head_title %}
+{% block content %}
+    <div>
+      <h1 style="display: inline-block">{{ student }} Writing Sample</h1>
+      {% if student.partner %}
+        <h3>Partner Student - {{student.partner}}</h3> 
+      {% endif %}
+    </div>
+    <div class='col-md-7'>
+      {%include 'components/student_nav.html' %}
+    </div>
+    <br>
+    <div class='col-md-7'>
+    <p><strong>Directions</strong></p>
+    <p>Please answer the two questions:</p>
+    <ol><li>What are your goals and dreams?</li>
+      <li>How will this program help you?</li>
+    </ol>
+    <i>Keep in mind...</i>
+    <ul><li>This is not a test. Use this space to express yourself. We want to help you with your goals.</li>
+      <li>If you have any questions, ask a staff member</li></ul>    
+    <br>
+    <p><strong>Student Response</strong></p>
+    <p>{{ paperwork.writing_sample }}</p>
+    </div>
+
+{%endblock content %}

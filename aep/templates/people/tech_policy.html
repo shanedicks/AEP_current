@@ -12,5 +12,11 @@
 <li>Students should know that there is no guarantee of privacy or security when using DCCAEP’s computers‑‑ which is another reason not to use these machines for anything other than academics.</li>
 </ul> 
 
+{% if paperwork %}
+<table class='table bordlerless'>
+<tr><td><i>{{paperwork.signature}}</i></td><td>{{paperwork.sig_date}}</td></tr>
+<tr><td>Signature</td><td>Date</td></tr>
+</table>
+{% endif %}
 
 {% endblock content %}

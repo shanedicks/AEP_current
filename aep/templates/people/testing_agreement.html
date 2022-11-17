@@ -10,4 +10,11 @@
 	<li>I will not talk to other students once testing has started. If the test proctor has to ask me to stop talking, he or she may assume I am cheang and reserves the right to take away my test and ask me to leave.</li> 
 	<li>If I am in need of accommodation for testing, I will submit a request in writing. The Main Office has a standardized request form that I must fill out, and I understand that further documentation may be needed and requested in order to provide specific accommodations.</li> 
 </ul>
+
+{% if paperwork %}
+<table class='table bordlerless'>
+<tr><td><i>{{paperwork.signature}}</i></td><td>{{paperwork.sig_date}}</td></tr>
+<tr><td>Signature</td><td>Date</td></tr>
+</table>
+{% endif %}
 {% endblock content %}

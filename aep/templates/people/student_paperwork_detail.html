@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}}{% endblock head_title %}
+{% block content %}
+    <div>
+      <h1 style="display: inline-block">{{ student }} Paperwork</h1>
+      {% if student.partner %}
+        <h3>Partner Student - {{student.partner}}</h3> 
+      {% endif %}
+    </div>
+      {%include 'components/student_nav.html' %}
+      <table class='table borderless'>
+        <tr>
+          <td>Writing Activity</td>
+          <td><a href="{% url 'people:student writing sample' slug=student.slug %}">{{ paperwork.writing|yesno:"Completed, Not Completed" }}</a></td>
+        </tr>
+        <tr>
+          <td>Self-Disclosure Form</td>
+          <td><a href="{% url 'people:student self-disclosure' slug=student.slug %}">{{ paperwork.disclosure|yesno:"Completed, Not Completed" }}</a></td>
+        </tr>
+        <tr>
+          <td>Student Contract</td>
+          <td><a href="{% url 'people:student contract' slug=student.slug %}">{{ paperwork.contract|yesno:"Completed, Not Completed" }}</a></td>
+        </tr>
+        <tr>
+          <td>Testing Agreement</td>
+          <td><a href="{% url 'people:student test agreement' slug=student.slug %}">{{ paperwork.testing|yesno:"Completed, Not Completed" }}</a></td>
+        </tr>
+        <tr>
+          <td>Technology Usage Agreement</a></td>
+          <td><a href="{% url 'people:student tech policy' slug=student.slug %}">{{ paperwork.technology|yesno:"Completed, Not Completed" }}</a></td>
+        </tr>
+        <tr>
+          <td>FERPA</a></td>
+          <td><a href="{% url 'people:student ferpa' slug=student.slug %}">{{ paperwork.ferpa|yesno:"Completed, Not Completed" }}</a></td>
+        </tr>
+        <tr>
+          <td>Picture ID</td>
+          <td><a href="{{ paperwork.pic_id_url }}" target="blank"> {{ paperwork.pic_id_url }} </a></td>
+        </tr>
+      </table>  
+
+{%endblock content %}

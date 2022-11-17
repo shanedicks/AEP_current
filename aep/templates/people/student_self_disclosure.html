@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}}{% endblock head_title %}
+{% block content %}
+    <div>
+      <h1 style="display: inline-block">{{ student }} Self-Disclosure</h1>
+    </div>
+    <div>
+      {%include 'components/student_nav.html' %}
+      
+      <table class="table">
+        <tr><td><strong>I recieved special help when I was in school in the following areas:</strong><td></tr>
+        <tr>
+          <td>Reading</td>
+          <td>{{paperwork.sd_reading|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>Math</td>
+          <td>{{paperwork.sd_math|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>Language</td>
+          <td>{{paperwork.sd_language|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>ADD/ADHD</td>
+          <td>{{paperwork.sd_attention|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>Other</td>
+          <td>{{paperwork.sd_other}}</td>
+        </tr>
+      <tr><td><strong>I recieved the following special help:</strong></td><tr>
+        <tr>
+          <td>Self-contained Special Education Classroom</td>
+          <td>{{paperwork.sh_self_se|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>Resource Special Education Classroom</td>
+          <td>{{paperwork.sh_resource_se|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>Title 1 Reading</td>
+          <td>{{paperwork.sh_title1_read|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>Title 1 Math</td>
+          <td>{{paperwork.sh_title1_math|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>504 Accommodations</td>
+          <td>{{paperwork.sh_504|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>Medication for ADD or ADHD</td>
+          <td>{{paperwork.sh_medication|yesno:"yes, no"}}</td>
+        </tr>
+        <tr>
+          <td>Other</td>
+          <td>{{paperwork.sh_other}}</td>
+        </tr>
+      </table>
+      <p><strong>I feel I need help in the following areas:</strong></p>
+      <p>{{paperwork.sh_request}}</p>
+    </div>   
+
+{%endblock content %}

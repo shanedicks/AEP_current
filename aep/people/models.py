@@ -9,6 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from core.tasks import send_mail_task, send_sms_task
 from core.utils import make_slug, make_AEP_ID, make_unique_slug, state_session
 
 # make_slug and make_AEP_ID callables were defaults for Profile and Student -have to be kept or migrations break
@@ -1149,7 +1150,7 @@ class Paperwork(models.Model):
     )
     technology = models.BooleanField(
         default = False,
-        verbose_name = 'Teechnology Usage Agreement'
+        verbose_name = 'Technology Usage Agreement'
     )
     contract = models.BooleanField(
         default = False,
@@ -1252,6 +1253,25 @@ class Paperwork(models.Model):
 
     def __str__(self):
         return '{0} Paperwork'.format(self.student)
+
+    def pic_id_url(self):
+        if self.pic_id_file == '':
+            return ""
+        else:
+            return "https://drive.google.com/file/d/{0}/view".format(self.pic_id_file)
+
+    def sign_paperwork_form_link(self):
+        return reverse('people:sign paperwork', kwargs={'slug': self.student.slug})
+
+    def pic_id_form_link(self):
+        return reverse('people:upload photo id', kwargs={'slug': self.student.slug})
+
+    def email_form_link(self, form_link):
+        subject = ''
+        message = 'Please '
+        html_message = ''
+
+
 
 def convert_date_format(date_string):
     date_i = datetime.strptime(date_string, "%m/%d/%y")
