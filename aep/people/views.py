@@ -33,7 +33,7 @@ from .forms import (
     PaperworkForm, PhotoIdForm)
 from .tasks import (intake_retention_report_task, orientation_email_task, 
     prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
-    send_student_schedule_task, student_link_prospect_task)
+    send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task)
 
 
 # <<<<< Student Views >>>>>
@@ -957,6 +957,22 @@ class SendStudentScheduleView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse('people:student current classes', kwargs={'slug': student.slug}))
 
 
+class SendPaperworkLinkView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        student = Student.objects.get(slug = kwargs['slug'])
+        send_paperwork_link_task.delay(student.id, 'sign paperwork')
+        return HttpResponseRedirect(reverse('people:link sent', kwargs={'slug': student.slug}))
+
+
+class SendUploadIdLinkView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        student = Student.objects.get(slug = kwargs['slug'])
+        send_paperwork_link_task.delay(student.id, 'upload photo id')
+        return HttpResponseRedirect(reverse('people:link sent', kwargs={'slug': student.slug}))
+
+
 class StudentPaperworkDetail(LoginRequiredMixin, DetailView):
 
     model = Paperwork
@@ -981,6 +997,9 @@ class StudentPaperworkDetail(LoginRequiredMixin, DetailView):
             context.update(kwargs)
         return context
 
+
+class LinkSentView(StudentPaperworkDetail):
+    template_name = 'people/link_sent.html'
 
 class StudentFerpaView(StudentPaperworkDetail):
     template_name = "people/ferpa.html"
@@ -1015,6 +1034,13 @@ class SignPaperworkView(UpdateView):
 
     def get_student(self, **kwargs):
         return Student.objects.get(slug=self.kwargs['slug'])
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.sig_date is None:
+            return super().get(request, *args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse_lazy('people:paperwork success'))
 
     def get_object(self):
         student = self.get_student()
@@ -1053,6 +1079,13 @@ class PhotoIdUploadView(UpdateView):
 
     def get_student(self, **kwargs):
         return Student.objects.get(slug=self.kwargs['slug'])
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.pic_id_file == '':
+            return super().get(request, *args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse_lazy('people:paperwork success'))
 
     def get_object(self):
         student = self.get_student()

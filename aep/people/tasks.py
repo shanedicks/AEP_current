@@ -700,3 +700,9 @@ def send_student_schedule_task(student_id):
             from_email="noreply@elearnclass.org",
             recipient_list=recipients,
         )
+
+@shared_task
+def send_paperwork_link_task(student_id, url_name):
+    student = apps.get_model('people', "Student").objects.get(id=student_id)
+    student.email_form_link(url_name)
+    student.text_form_link(url_name)

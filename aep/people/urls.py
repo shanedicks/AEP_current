@@ -50,7 +50,16 @@ single_student_paperwork_patterns = [
         name='sign paperwork'),
     re_path(r'^upload-id/$',
         views.PhotoIdUploadView.as_view(),
-        name='upload photo id')
+        name='upload photo id'),
+    re_path(r'^send-paperwork-link/$',
+        views.SendPaperworkLinkView.as_view(),
+        name='send paperwork link'),
+    re_path(r'^send-upload-id-link/$',
+        views.SendUploadIdLinkView.as_view(),
+        name='send upload id link'),
+    re_path(r'^link-sent/$',
+        views.LinkSentView.as_view(),
+        name='link sent')
 ]
 
 single_student_patterns = [

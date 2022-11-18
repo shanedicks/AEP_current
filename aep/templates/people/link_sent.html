@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}}{% endblock head_title %}
+{% block content %}
+    <div>
+      <h1 style="display: inline-block">{{ student }} Paperwork</h1>
+      {% if student.partner %}
+        <h3>Partner Student - {{student.partner}}</h3> 
+      {% endif %}
+    </div>
+      {%include 'components/student_nav.html' %}
+      <p>A link to complete the form has been emailed and texted to {{student}}</p>
+{%endblock content %}

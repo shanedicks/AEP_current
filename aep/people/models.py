@@ -1018,6 +1018,72 @@ class Student(Profile):
                     pass
                 pop.save()
 
+    def sign_paperwork_form_link(self):
+        return "https://www.dccaep.org{0}".format(
+            reverse('people:sign paperwork', kwargs={'slug': self.slug})
+        )
+
+    def pic_id_form_link(self):
+        return "https://www.dccaep.org{0}".format(
+            reverse('people:upload photo id', kwargs={'slug': self.slug})
+        )
+
+    def email_form_link(self, url_name):
+        if url_name == 'upload photo id':
+            try:
+                paperwork = self.student_paperwork
+                send = True if paperwork.pic_id_file == '' else False
+            except ObjectDoesNotExist:
+                send = False 
+            url = self.pic_id_form_link()
+            html_message = ''
+            message = 'Hello from Delgado Adult Education. Click the link to upload a picture of your photo id: {0}'.format(url)
+        if url_name == 'sign paperwork':
+            try:
+                paperwork = self.student_paperwork
+                send = True if paperwork.sig_date is None else False
+            except ObjectDoesNotExist:
+                send = False
+            url = self.sign_paperwork_form_link()
+            html_message = ''
+            message = 'Hello from Delgado Adult Education. Click the link to submit the rest of your registration paperwork: {0}'.format(url)
+        recipient_list = []
+        if self.email != '':
+            recipient_list.append(self.email)
+        try:
+            elearn = self.elearn_record
+            if elearn.g_suite_email != '':
+                recipient_list.append(elearn.g_suite_email)
+        except ObjectDoesNotExist:
+            pass
+        if len(recipient_list) > 0:
+            send_mail_task.delay(
+                subject = 'Delgado Adult Education Registration Paperwork',
+                message = message,
+                html_message = html_message,
+                from_email = 'no_reply@elearnclass.org',
+                recipient_list = recipient_list,
+            )
+
+    def text_form_link(self, url_name):
+        if url_name == 'upload photo id':
+            try:
+                paperwork = self.student_paperwork
+                send = True if paperwork.pic_id_file == '' else False
+            except ObjectDoesNotExist:
+                send = False            
+            url = self.pic_id_form_link()
+            message = 'Hello from Delgado Adult Education. Click the link to upload a picture of your photo id: {0}'.format(url)
+        if url_name == 'sign paperwork':
+            try:
+                paperwork = self.student_paperwork
+                send = True if paperwork.sig_date is None else False
+            except ObjectDoesNotExist:
+                send = False
+            url = self.sign_paperwork_form_link()
+            message = 'Hello from Delgado Adult Education. Click the link to submit the rest of your registration paperwork: {0}'.format(url)            
+        if self.phone != '' and send:
+            send_sms_task.delay(self.phone, message)
 
 class Staff(Profile):
 
@@ -1259,19 +1325,6 @@ class Paperwork(models.Model):
             return ""
         else:
             return "https://drive.google.com/file/d/{0}/view".format(self.pic_id_file)
-
-    def sign_paperwork_form_link(self):
-        return reverse('people:sign paperwork', kwargs={'slug': self.student.slug})
-
-    def pic_id_form_link(self):
-        return reverse('people:upload photo id', kwargs={'slug': self.student.slug})
-
-    def email_form_link(self, form_link):
-        subject = ''
-        message = 'Please '
-        html_message = ''
-
-
 
 def convert_date_format(date_string):
     date_i = datetime.strptime(date_string, "%m/%d/%y")
