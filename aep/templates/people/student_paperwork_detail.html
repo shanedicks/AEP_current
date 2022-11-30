@@ -8,6 +8,8 @@
       {% endif %}
     </div>
       {%include 'components/student_nav.html' %}
+      <p>WRU ID: {{student.WRU_ID}}</p>
+      <p>Intake Date {{student.intake_date}}</p>
       {% if paperwork.sig_date %}
       <table class='table borderless col-md-8'>
         <tr>

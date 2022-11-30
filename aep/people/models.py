@@ -1326,6 +1326,13 @@ class Paperwork(models.Model):
         else:
             return "https://drive.google.com/file/d/{0}/view".format(self.pic_id_file)
 
+    def save(self, *args, **kwargs):
+        super(Paperwork, self).save(*args, **kwargs)
+        if self.sig_date and self.pic_id_file:
+            student = self.student
+            student.paperwork = student.COMPLETE
+            student.save()
+
 def convert_date_format(date_string):
     date_i = datetime.strptime(date_string, "%m/%d/%y")
     return datetime.strftime(date_i, "%m/%d/%Y")

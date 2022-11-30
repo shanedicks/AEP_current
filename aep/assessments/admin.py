@@ -6,7 +6,8 @@ from import_export.admin import ImportExportModelAdmin, ImportExportActionModelA
 from people.models import Student
 from .models import TestEvent, TestHistory, TestAppointment, Tabe, Tabe_Loc, Clas_E, Clas_E_Loc, Gain, HiSET, HiSet_Practice, Message
 from .tasks import (event_attendance_report_task, test_process_task, 
-    orientation_reminder_task, test_reminder_task, send_message_task, send_score_report_link_task)
+    orientation_reminder_task, test_reminder_task, send_message_task,
+    send_score_report_link_task, send_link_task)
 
 
 class TestEventAdmin(admin.ModelAdmin):
@@ -53,7 +54,9 @@ class TestEventAdmin(admin.ModelAdmin):
     actions = [
         "orientation_reminder",
         "test_reminder",
-        "attendance_report"
+        "attendance_report",
+        'send_paperwork_form_link',
+        'send_photo_id_form_link'
     ]
 
     def orientation_reminder(self, request, queryset):
@@ -67,6 +70,14 @@ class TestEventAdmin(admin.ModelAdmin):
     def attendance_report(self, request, queryset):
         for obj in queryset:
             event_attendance_report_task.delay(obj.id, request.user.email)
+
+    def send_paperwork_form_link(self, request, queryset):
+        for obj in queryset:
+            send_link_task.delay(obj.id, 'sign paperwork')
+
+    def send_photo_id_form_link(self, request, queryset):
+        for obj in queryset:
+            send_link_task.delay(obj.id, 'upload photo id')
 
 
 admin.site.register(TestEvent, TestEventAdmin)

@@ -121,4 +121,11 @@ def send_schedules_task(semester_id_list):
                 recipient_list=recipients,
             )
 
-
+@shared_task
+def send_link_task(semester_id, url_name):
+    students = apps.get_model('people', 'Student').objects.filter(
+            classes__section__semester__id=semester_id
+        ).distinct()
+    for student in students:
+        student.email_form_link(url_name)
+        student.text_form_link(url_name)

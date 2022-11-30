@@ -286,6 +286,14 @@ def send_g_suite_info_task(section_id):
 	return True
 
 @shared_task
+def send_link_task(section_id, url_name):
+	section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+	students = section.students.all()
+	for student in students:
+		student.email_form_link(url_name)
+		student.text_form_link(url_name)
+
+@shared_task
 def enrollment_notification_task(enrollment_id):
 	enrollment = apps.get_model('sections', 'Enrollment').objects.get(id=enrollment_id)
 	email = EmailMessage(

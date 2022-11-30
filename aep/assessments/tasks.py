@@ -435,3 +435,10 @@ def send_score_report_link_task(test_id, test_type):
             recipient_list=recipient_list
         )
 
+@shared_task
+def send_link_task(event_id, url_name):
+    event = apps.get_model('asessments', 'TestEvent').objects.get(id=event_id)
+    students = section.students.all()
+    for student in students:
+        student.student.email_form_link(url_name)
+        student.student.text_form_link(url_name)

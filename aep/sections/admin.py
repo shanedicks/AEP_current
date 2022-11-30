@@ -12,7 +12,7 @@ from people.models import Staff, Student
 from academics.models import Course
 from .models import Site, Section, Enrollment, Attendance, Message, Cancellation
 from .tasks import (roster_to_classroom_task, send_g_suite_info_task, cancel_class_task,
-    create_missing_g_suite_task, send_message_task)
+    create_missing_g_suite_task, send_message_task, send_link_task)
 
 class SiteResource(resources.ModelResource):
 
@@ -123,6 +123,8 @@ class SectionAdmin(ImportExportActionModelAdmin):
         'send_course_welcome_email',
         'add_TA',
         'create_missing_g_suite',
+        'send_paperwork_form_link',
+        'send_photo_id_form_link'
     ]
 
     def get_active_enrollment_count(self, obj):
@@ -197,6 +199,14 @@ class SectionAdmin(ImportExportActionModelAdmin):
         for obj in queryset:
             for student in obj.students.all():
                 student.welcome_email()
+
+    def send_paperwork_form_link(self, request, queryset):
+        for obj in queryset:
+            send_link_task.delay(obj.id, 'sign paperwork')
+
+    def send_photo_id_form_link(self, request, queryset):
+        for obj in queryset:
+            send_link_task.delay(obj.id, 'upload photo id')
 
     def create_missing_g_suite(self, request, queryset):
         for obj in queryset:
