@@ -1,4 +1,0 @@
--r base.txt
-selenium==2.53.6
-coverage==4.2
-django-autofixture==0.12.1
