@@ -268,10 +268,10 @@ class TabeAdmin(ImportExportActionModelAdmin):
         'score_report_link'
     ]
 
-    actions = ImportExportActionModelAdmin.actions + [
+    actions = ImportExportActionModelAdmin.actions + (
         'process_tests',
         'send_score_report'
-    ]
+    )
 
     def process_tests(self, request, queryset):
         for obj in queryset:
@@ -338,10 +338,10 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
         'score_report_link'
     )
 
-    actions = ImportExportActionModelAdmin.actions + [
+    actions = ImportExportActionModelAdmin.actions + (
         'process_tests',
         'send_score_report'
-    ]
+    )
 
     def process_tests(self, request, queryset):
         for obj in queryset:

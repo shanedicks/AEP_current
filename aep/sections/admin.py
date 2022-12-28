@@ -114,7 +114,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
 
     search_fields = ["title", "program", 'WRU_ID', 'semester__title']
 
-    actions = ImportExportActionModelAdmin.actions + [
+    actions = ImportExportActionModelAdmin.actions + (
         "begin",
         "enforce_attendance",
         'create_classroom_section',
@@ -125,7 +125,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
         'create_missing_g_suite',
         'send_paperwork_form_link',
         'send_photo_id_form_link'
-    ]
+    )
 
     def get_active_enrollment_count(self, obj):
         return obj.students.filter(status="A").count()
@@ -272,7 +272,7 @@ class EnrollmentAdmin(ImportExportActionModelAdmin):
         'status',
     )
 
-    actions = ImportExportActionModelAdmin.actions + ['activate']
+    actions = ImportExportActionModelAdmin.actions + ('activate',)
 
     def activate(self, request, queryset):
         for obj in queryset:

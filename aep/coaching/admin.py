@@ -263,11 +263,11 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
         'g_suite_email'
     ]
 
-    actions = ImportExportActionModelAdmin.actions + [
+    actions = ImportExportActionModelAdmin.actions + (
         'DLA_email', 
         'create_g_suite_account',
         'send_g_suite_info'
-    ]
+    )
 
     def DLA_email(self, request, queryset):
         for obj in queryset:
@@ -414,9 +414,9 @@ class CoachingAdmin(ImportExportActionModelAdmin):
         'end_date',
     ]
 
-    actions = ImportExportActionModelAdmin.actions + [
-        'merge'
-    ]
+    actions = ImportExportActionModelAdmin.actions + (
+        'merge',
+    )
 
     def merge(self, request, queryset):
         q = queryset.order_by('pk')
