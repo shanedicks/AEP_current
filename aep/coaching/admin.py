@@ -11,7 +11,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from core.tasks import send_mail_task
 from people.models import Student, Staff
 from .models import AceRecord, Coaching, Profile, MeetingNote, ElearnRecord
-from .tasks import elearn_status_task
+from .tasks import elearn_status_task, create_g_suite_accounts_task
 
 
 
@@ -310,61 +310,9 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
                 elearn_status_task.delay(obj.id)
 
     def create_g_suite_account(self, request, queryset):
-
-        scopes = ['https://www.googleapis.com/auth/admin.directory.user']
-
-        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-            keyfile_dict=settings.KEYFILE_DICT,
-            scopes=scopes
-        )
-
-        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
-        http_auth = shane.authorize(Http())
-        service = discovery.build('admin', 'directory_v1', http=http_auth)
-
-        for obj in queryset:
-            if obj.g_suite_email:
-                pass
-            else:
-                first = obj.student.first_name.split()[0]
-                last = obj.student.last_name.split()[0]
-                name = ".".join([first, last]).lower()
-                def check_email(name, x): # check g_suite for email, add numbers incrementally if email in use until email is valid
-                    if x == 0:
-                        email = "@".join([name, 'elearnclass.org'])
-                        try:
-                            user = service.users().get(userKey=email).execute()
-                            return check_email(name, x + 1)
-                        except:
-                            return email
-                    else:
-                        new_name = "{0}{1}".format(name, x)
-                        new_email = "@".join([new_name, 'elearnclass.org'])
-                        try:
-                            user = service.users().get(userKey=new_email).execute()
-                            return check_email(name, x + 1)
-                        except:
-                            return new_email
-                email = check_email(name, 0)
-
-                record = {
-                    "primaryEmail": email,
-                    "name": {
-                        "givenName": first,
-                        "familyName": last
-                    },
-                    "password": "123456789",
-                    "externalIds": [
-                        {
-                            "value": obj.student.WRU_ID,
-                            "type": "custom",
-                            "customType": "wru"
-                        }
-                    ],
-                }
-                service.users().insert(body=record).execute()
-                obj.g_suite_email = email
-                obj.save()
+        id_list = [obj.id for obj in queryset]
+        create_g_suite_accounts_task.delay(id_list)
+        
 
     def send_g_suite_info(self, request, queryset):
         for obj in queryset:

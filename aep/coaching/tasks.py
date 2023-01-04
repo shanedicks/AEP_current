@@ -5,6 +5,7 @@ from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.core.mail.message import EmailMessage
 from django.utils import timezone
+from core.utils import directory_service
 
 logger = get_task_logger(__name__)
 
@@ -59,3 +60,15 @@ def coaching_export_task(email):
 	)
 	email.attach_file('coaching_export.csv')
 	email.send()
+
+@shared_task
+def create_g_suite_account_task(elearn_record_id_list):
+	ElearnRecord = apps.get_model('coaching', 'ElearnRecord')
+	service = directory_service()
+	records = ElearnRecord.objects.filter(pk__in=elearn_record_id_list)
+	for record in records:
+		logger.info("Creating GSuite account for {0}".format(record.student))
+        try:
+            record.create_g_suite_account(service)
+        except HttpError as e:
+            logger.info("{0}".format(e))
