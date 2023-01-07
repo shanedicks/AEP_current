@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Inventory{% endblock head_title %}
+
+{% block content %}
+	{% if category in context %}
+	<h1>{{ category }}</h1>
+	{% else%}
+    <h1>Items</h1>
+    {% endif %}
+    <table class="table">
+        <tr>
+            <th>Category</th>
+            <th>Name</th>
+            <th>ID</th>
+            <th>State Tag</th>
+            <th>Available</th>
+        </tr>
+        {% if is_paginated %}
+            {% include 'components/pagination2.html' with form_target='class-filter' %}
+        {% endif %}
+        {% for item in object_list %}
+        <tr>
+            <td>{{ item.category}}</td>
+            <td>{{ item.name }}</a></td>
+            <td>{{ item.id }}</td>
+            <td>{{ item.state_tag }}</td>
+            <td>{{ item.available|yesno:"yes,no" }}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

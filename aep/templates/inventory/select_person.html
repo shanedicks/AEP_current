@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Assign Item{% endblock head_title %}
+
+{% block content %}
+    <h1>Assign {{Item}}</h1>
+    <p>{% include 'components/student_search_filter.html' %}</p>
+    <p>{% include 'components/staff_search_filter.html' %}</p>
+    </form>
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>{% crispy form %}</p>
+       <p> <button type="submit" class="btn btn-success" value="Submit">Assign</button></p>
+    </form>
+{% endblock content %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Assign Item{% endblock head_title %}
+
+{% block content %}
+	{%if category%}
+		{%if student %}
+		<h1>Assign {{category}} to {{student}}</h1>
+		{% elif staff %}
+		<h1>Assign {{category}} to {{staff}}</h1>
+		{% endif%}
+	{%else%}
+		{%if student %}
+		<h1>Assign Item to {{student}}</h1>
+		{% elif staff %}
+		<h1>Assign Item to {{staff}}</h1>
+		{% endif %}
+	{% endif %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>{% crispy form %}</p>
+        <button type="submit" class="btn btn-success" value="Submit">Assign</button>
+    </form>
+{% endblock content %}

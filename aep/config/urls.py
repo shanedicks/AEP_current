@@ -62,6 +62,7 @@ urlpatterns = [
     re_path(r'^classes/', include('sections.urls')),
     re_path(r'^coaching/', include('coaching.urls')),
     re_path(r'^sessions/', include('semesters.urls')),
+    re_path(r'^inventory/', include('inventory.urls'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

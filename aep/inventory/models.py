@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models
 
 from people.models import Student, Staff
@@ -21,6 +22,22 @@ class Category(models.Model):
     class Meta:
         ordering = ["name"]
         verbose_name_plural = "Categories"
+
+    @property
+    def total_items(self):
+        return self.items.all().count()
+
+    def in_use(self):
+        self.items.filter(
+            tickets__issued_date__isnull=False,
+            tickets__returned_date__isnull=True,
+            )
+
+    def available(self):
+        return self.items.exclude(
+            tickets__issued_date__isnull=False,
+            tickets__returned_date__isnull=True,
+            )
 
 
 class Item(models.Model):
@@ -48,6 +65,15 @@ class Item(models.Model):
 
     def __str__(self):
         return "{0}: {1}".format(self.item_id, self.name)
+
+    def open_tickets(self):
+        return self.tickets.filter(
+            issued_date__isnull=False,
+            returned_date__isnull=True
+        )
+
+    def available(self):
+        return self.open_tickets().count() == 0
 
 
 class Ticket(models.Model):

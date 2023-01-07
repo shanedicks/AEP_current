@@ -168,6 +168,20 @@
               <p>There are no prospect records linked to this student</p>
             {% endif %}
       </div>
+      <div>
+          <h3>Inventory</h3>
+            {% if student.tickets.all.exists %}
+                {% for ticket in student.tickets.all %}
+                  {% if ticket.returned_date is None %}
+                    <p>{{ ticket.item.name }} issued {{ticket.issued_date}}</p>
+                    {% if ticket.return_req_date%}
+                    <p>Return requested {{ticket.return_req_date}}</p>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+            {% endif %}
+            <a class="btn btn-default" href="{% url 'inventory:select category' student_slug=student.slug %}" role="button">Assign Item</a>
+      </div>
     </div>      
 
 {%endblock content %}

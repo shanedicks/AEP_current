@@ -7,17 +7,11 @@
     <h1 style='color:red'> {{ section.title }} is full.</h1>
     <h3>Are you sure you want to add this student?</h3>
     {% endif %}
-	<form class='form-inline' method='get'>
-        <div class="form-group">
-            <label class="sr-only" for="id_name">Student Name or WRU</label>
-            <input class="form-control" id="id_name" name="name" type="text" placeholder="Student Name or WRU" />
-        </div>          
-    <button type="submit" class="btn btn-default btn-sm">Filter Students</button>
-    <a href="{% url 'people:student list' %}" class="btn btn-default btn-sm">Clear</a>
+	<p>{% include 'components/student_search_filter.html' %}</p>
     </form>
     <form action="" method="post">
         {% csrf_token %}
-        {{ form.as_ul }}
+        <p>{{ form}}</p>
         <button type="submit" class="btn btn-success" value="Submit">Enroll</button>
     </form>
 {% endblock content %}

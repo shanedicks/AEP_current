@@ -17,12 +17,12 @@ from .models import Enrollment, Section, Attendance, Site, Cancellation
 class StudentAddEnrollmentForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
-        name = kwargs.pop('name', None)
+        student = kwargs.pop('student', None)
         qst = Student.objects.none()
-        if name:
-            name = name[0]
+        if student:
+            student = student[0]
             qst = Student.objects.filter(
-                Q(first_name__icontains=name) | Q(last_name__icontains=name) | Q(WRU_ID__icontains=name),
+                Q(first_name__icontains=student) | Q(last_name__icontains=student) | Q(WRU_ID__icontains=student),
                 duplicate=False
             )
         self.base_fields['student'].queryset = qst

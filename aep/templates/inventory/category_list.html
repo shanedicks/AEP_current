@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Inventory{% endblock head_title %}
+
+{% block content %}
+    <h1>Inventory</h1>
+    <table class="table">
+        <tr>
+            <th>Category</th>
+            <th>Items</th>
+            <th>In Use</th>
+            <th>Available</th>
+        </tr>
+        {% if is_paginated %}
+            {% include 'components/pagination.html' %}
+        {% endif %}
+        {% for category in object_list %}
+        <tr>
+            <td>{{ category.name }}</td>
+            <td><a href="{% url 'inventory:items list' category=category.id %}">{{ category.total_items }}</a></td>
+            <td>{{ category.in_use.count }}</td>
+            <td><a href="{% url 'inventory:available items list' category=category.id %}">{{ category.available.count }}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}
