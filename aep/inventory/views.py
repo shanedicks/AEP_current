@@ -6,7 +6,7 @@ from django.views.generic import (
     DetailView, ListView, UpdateView,
     CreateView)
 from .models import Category, Item, Ticket
-from .forms import TicketForm, SelectTicketItemForm, SelectTicketPersonForm
+from .forms import TicketForm, SelectTicketItemForm
 
 
 
@@ -57,9 +57,20 @@ class CreateTicketView(LoginRequiredMixin, CreateView):
     form_class = TicketForm
     template_name = "inventory/create_ticket.html"
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if 'category' in self.kwargs:
+            kwargs['category'] = self.kwargs['category']
+        if self.request.GET:
+            kwargs.update(self.request.GET)
+        return kwargs
 
-class SelectTicketItemView(CreateTicketView):
+    def get_success_url(self):
+        return reverse("inventory:category list")
 
+class SelectTicketItemView(LoginRequiredMixin, CreateView):
+
+    model = Ticket
     form_class = SelectTicketItemForm
     template_name = "inventory/select_item.html"
 
@@ -111,8 +122,3 @@ class SelectTicketItemView(CreateTicketView):
     def get_success_url(self):
         person = self.get_person_dict().popitem()[1] 
         return person.get_absolute_url()
-
-class SelectTicketPersonView(CreateTicketView):
-
-    form_class = SelectTicketPersonForm
-    template_name = "inventory/select_person.html"

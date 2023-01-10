@@ -11,14 +11,14 @@ items_patterns = [
 		views.ItemListView.as_view(),
 		{'available': True},
 		name="available items list"),
-	path('<item>',
-		views.SelectTicketPersonView.as_view(),
-		name="select person")
 ]
 
 single_category_patterns = [
 	path('items/',
-		include(items_patterns))
+		include(items_patterns)),
+	path('assign/',
+		views.CreateTicketView.as_view(),
+		name="create ticket")
 ]
 
 person_patterns = [
