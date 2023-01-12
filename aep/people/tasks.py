@@ -10,9 +10,17 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from core.utils import state_session
 from core.tasks import send_mail_task
 
 logger = get_task_logger(__name__)
+
+@shared_task
+def send_to_state_task(wioa_id_list):
+    records = apps.get_model('people', 'WIOA').objects.filter(id__in=wioa_id_list)
+    session = state_session()
+    for record in records:
+        record.send(session)
 
 @shared_task
 def orientation_email_task(name, email_address, appt_id):

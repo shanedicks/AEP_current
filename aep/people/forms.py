@@ -575,7 +575,6 @@ class StudentInterestForm(ModelForm):
             "computer_access",
             "internet_access",
             "prior_registration"
-
         )
 
         labels = {
@@ -1670,7 +1669,6 @@ class EETForm(ModelForm):
             "long_term_unemployed",
             "current_industry",
             "industry_preference",
-            "migrant_seasonal_status"
         )
 
 

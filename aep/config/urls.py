@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, re_path
+from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
+from assessments.views import OrientationCheckView
 from sections.views import CurrentCancellationsListView, CancellationsListView
 
 
@@ -51,6 +52,10 @@ urlpatterns = [
     re_path(r'^cancelled/future$',
         CancellationsListView.as_view(date_range="future"),
         name="future cancellations list"
+    ),
+    path('orientationcheck/',
+        OrientationCheckView.as_view(),
+        name='orientation check'
     ),
     # Django Admin Stuff
     re_path(r'^admin/', admin.site.urls),

@@ -19,7 +19,8 @@ from .forms import (
         GainForm, HiSet_Practice_Form, CSVImportForm,
         TestAppointmentAttendanceForm, TestAttendanceFormSet,
         TestAppointmentNotesForm, HiSetForm, AccuplacerForm,
-        Clas_E_ScoreReportLinkForm, TabeScoreReportLinkForm
+        Clas_E_ScoreReportLinkForm, TabeScoreReportLinkForm,
+        OrientationSignupForm
     )
 from .tasks import (event_attendance_report_task,
         accelerated_coaching_report_task, testing_eligibility_report,
@@ -327,6 +328,11 @@ class PastEventListView(LoginRequiredMixin, ListView):
             context.update(kwargs)
         return context
 
+
+class OrientationCheckView(LoginRequiredMixin, FormView):
+
+    form_class = OrientationSignupForm
+    template_name = "assessments/orientation_check.html"
 
 
 class TestingSignupView(LoginRequiredMixin, CreateView):

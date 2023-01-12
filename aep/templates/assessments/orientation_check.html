@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Orientation Check{% endblock head_title %}
+
+{% block content %}
+<h1>Orientation Check</h1>
+<p>This is just for checking the signup form at the end of the student signup wizard. Don't try to submit it. You will get a 500 error. 
+<form class="form_group" method="post">
+    {% crispy form %}
+    <button type="submit" class="btn btn-success">Don't Click This</button>
+</form>
+{% endblock content %}

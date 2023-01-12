@@ -13,6 +13,7 @@ from .models import (
     Student, Staff, WIOA, PoP,
     CollegeInterest, Paperwork, Prospect, ProspectNote
     )
+from .tasks import send_to_state_task
 from coaching.models import ElearnRecord, AceRecord
 from core.utils import state_session
 
@@ -425,31 +426,70 @@ class StudentAdmin(ImportExportActionModelAdmin):
 
     fields = [
         "notes",
-        "first_name",
-        "last_name",
-        "title",
-        "nickname",
-        "pronoun",
+        'partner',
+        ("WRU_ID",
+         "slug"),
+        "intake_date",
+        ("first_name",
+         "last_name",
+         "nickname"),
+        ("title",
+         "pronoun"),
+        ("dob",
+         "gender",
+         "marital_status"),
+        "US_citizen",
         ("email",
          "alt_email"),
-        ("WRU_ID",
-         'program'),
-        'partner',
-        "US_citizen",
-        ("gender",
-         "marital_status"),
-        "slug",
-        "intake_date",
-        "dob",
         ("phone",
          "alt_phone"),
         ("street_address_1",
          "street_address_2"),
-        "city",
+        ("city",
+         "other_city"),
         ("state",
+         "parish",
          "zip_code"),
+        "emergency_contact",
+        ("ec_phone",
+         "ec_email",
+         "ec_relation"),
         ("duplicate",
-         "dupl_date")
+         "duplicate_of"),
+        "dupl_date",
+        "prior_registration",
+        ("ccr_app",
+         "ell_app",
+         "success_app",
+         'e_learn_app',
+         'accuplacer_app',
+         'ell_online_app',
+         'certifications_app'),
+        ("online_cohort",
+         "online_solo"),
+        ("on_campus",
+         "hybrid"),
+        ("morning",
+         "afternoon",
+         "evening",
+         "weekend"),
+        ("computer_access",
+         "internet_access"),
+        'primary_goal',
+        "check_goal_1",
+        "check_goal_2",
+        "check_goal_3",
+        "check_goal_4",
+        "check_goal_5",
+        "check_goal_6",
+        "check_goal_7",
+        "check_goal_8",
+        "check_goal_9",
+    ]
+
+    readonly_fields = [
+        "duplicate_of",
+        "slug",
     ]
 
     actions = ImportExportActionModelAdmin.actions + (
@@ -727,7 +767,10 @@ class StudentAdmin(ImportExportActionModelAdmin):
         n.WRU_ID = o.WRU_ID
         n.save()
         if nid is None:
-            o.WRU_ID = 'd' + o.WRU_ID
+            try:
+                o.WRU_ID = 'd' + o.WRU_ID
+            except TypeError:
+                o.WRU_ID = 'dNone'
         else:
             o.WRU_ID = 'd' + nid.replace('x', '')
         o.duplicate_of = n
@@ -839,7 +882,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
     resource_class = WIOAResource
 
-    list_display = ("__str__", "get_WRU_ID")
+    list_display = ("__str__", "get_WRU_ID", "state_id_checked")
 
     list_filter = ("student__intake_date",)
 
@@ -851,77 +894,87 @@ class WIOAAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = (
-        "hispanic_latino",
-        "amer_indian",
-        "asian",
-        "black",
-        "white",
-        "pacific_islander",
-        "current_employment_status",
-        "employer",
-        "occupation",
-        "migrant_seasonal_status",
-        "long_term_unemployed",
-        "single_parent",
-        "rural_area",
-        "displaced_homemaker",
-        "dislocated_worker",
-        "cult_barriers_hind_emp",
-        "in_foster_care",
-        "aged_out_foster_care",
-        "exhaust_tanf",
-        "job_corps",
-        "youth_build",
-        "recieves_public_assistance",
-        "low_family_income",
-        "state_payed_foster",
-        "disabled_in_poverty",
-        "youth_in_high_poverty_area",
-        "subject_of_criminal_justice",
-        "arrest_record_employment_barrier",
-        "lacks_adequate_residence",
-        "irregular_sleep_accomodation",
-        "migratory_child",
-        "runaway_youth",
-        "adult_one_stop",
-        "youth_one_stop",
-        "voc_rehab",
-        "wagner_peyser",
-        "school_status",
-        "recieved_training",
-        "etp_name",
-        "etp_program",
-        "etp_CIP_Code",
-        "training_type_1",
-        "training_type_2",
-        "training_type_3",
-        "adhd",
-        "autism",
-        "deaf_blind",
-        "deaf",
-        "emotional_disturbance",
-        "k12_iep",
-        "hard_of_hearing",
-        "intellectual_disability",
-        "multiple_disabilities",
-        "orthopedic_impairment",
-        "other_health_impairment",
-        "learning_disability",
-        "speech_or_lang_impairment",
-        "traumatic_brain_injury",
-        "visual_impairment",
-        "dyscalculia",
-        "dysgraphia",
-        "dyslexia",
-        "neurological_impairments",
-        "highest_level_completed",
-        "school_location",
-        "country",
-        "native_language",
-        "SID"
+            "student",
+            "SID",
+            (
+                "hispanic_latino",
+                "amer_indian",
+                "asian",
+                "black",
+                "white",
+                "pacific_islander"
+            ),(
+                "country",
+                "other_country",
+            ),(
+                "native_language",
+                "other_language"
+            ),(
+                "highest_level_completed",
+                "highet_level_at_entry",
+                "school_location"
+            ),(
+                "current_employment_status",
+                "employer",
+                "occupation",
+            ),(
+                "current_industry",
+                "industry_preference"
+            ),
+            "migrant_seasonal_status",
+            "long_term_unemployed",
+            "disability_notice",
+            (
+                "adhd",
+                "autism",
+                "deaf_blind",
+                "deaf",
+                "emotional_disturbance",
+                "k12_iep",
+                "hard_of_hearing",
+                "intellectual_disability",
+                "multiple_disabilities",
+                "orthopedic_impairment",
+                "other_health_impairment",
+                "learning_disability",
+                "speech_or_lang_impairment",
+                "traumatic_brain_injury",
+                "visual_impairment",
+                "dyscalculia",
+                "dysgraphia",
+                "dyslexia",
+                "neurological_impairments"
+            ),
+            "request_accommodation",
+            (
+                "household_income",
+                "household_size",
+            ),
+            "TANF",
+            "TANF_2",
+            "SNAP",
+            "SSI",
+            "Tstate",
+            "veteran",
+            "parental_status",
+            "single_parent",
+            "displaced_homemaker",
+            "lacks_adequate_residence",
+            "criminal_record",
+            "foster_care",
+            "help_with_schoolwork",
+            "student_teacher_contact",
+            "parent_volunteering",
+            "read_to_children",
+            "visit_library",
+            "purchase_books",
+            "referred_by",
+            "digital_signature",
     )
 
-    actions = ImportExportActionModelAdmin.actions + ('send_to_state', 'check_for_state_id', 'verify')
+    readonly_fields = ["student"]
+
+    actions = ImportExportActionModelAdmin.actions + ('send_to_state',)
 
     def get_AEP_ID(self, obj):
         return obj.student.AEP_ID
@@ -933,20 +986,9 @@ class WIOAAdmin(ImportExportActionModelAdmin):
     get_WRU_ID.admin_order_field = "WRU_ID"
     get_WRU_ID.short_description = "WRU ID"
 
-    def check_for_state_id(self, request, queryset):
-        session = state_session()
-        for obj in queryset:
-            obj.check_for_state_id(session)
-
     def send_to_state(self, request, queryset):
-        session = state_session()
-        for obj in queryset:
-            obj.send_to_state(session)
-
-    def verify(self, request, queryset):
-        session = state_session()
-        for obj in queryset:
-            obj.verify(session)
+        wioa_id_list = [obj.id for obj in queryset]
+        send_to_state_task.delay(wioa_id_list)
 
 admin.site.register(WIOA, WIOAAdmin)
 
