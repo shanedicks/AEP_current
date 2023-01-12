@@ -107,3 +107,32 @@ class TicketForm(ModelForm):
         widgets = {
             "issued_date": TextInput(attrs={'type': 'date'})
         }
+
+
+class TicketUpdateForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'item',
+            'student',
+            'staff',
+            'issued_date'
+        )
+
+    class Meta:
+        model=Ticket
+        fields = (
+            'return_req_date',
+            'returned_date'
+        )
+        labels = {
+            'return_req_date': "Enter date to request return",
+        }
+
+        widgets = {
+            'return_req_date': TextInput(attrs={'type': 'date'}),
+            'returned_date': TextInput(attrs={'type': 'date'})
+        }

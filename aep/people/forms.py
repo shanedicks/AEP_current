@@ -82,6 +82,7 @@ class StudentComplianceForm(ModelForm):
             )
         )
 
+
 class StudentSearchForm(Form):
     f_name = CharField(label=_('First Name'), required=False)
     l_name = CharField(label=_('Last Name'), required=False)
@@ -456,6 +457,7 @@ class StudentPersonalInfoForm(ModelForm):
             "US_citizen": "<strong>Check this box if you are a US Citizen*</strong>"
         }
 
+
 class StudentInterestForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -706,6 +708,7 @@ class StudentContactForm(ModelForm):
             "ec_phone": "Their Phone Number*",
             "ec_relation": "Their Relationship to You*",
         }
+
 
 class StudentUpdateForm(ModelForm):
 
@@ -1480,7 +1483,6 @@ class PartnerForm(ModelForm):
         }
 
 
-
 class SSNForm(ModelForm):
 
     def clean_SID(self):
@@ -1905,6 +1907,11 @@ class WioaForm(ModelForm):
                         collect occupation data from any employed applicants. """)
                 self.add_error("occupation", msg)
 
+    def clean_household_size(self):
+        data = self.cleaned_data['household_size']
+        if data < 1:
+            data = 1
+        return data
 
     def clean_request_accommodation(self):
         data = self.cleaned_data['request_accommodation']
@@ -2358,6 +2365,7 @@ class ProspectForm(ModelForm):
             'primary_language',
         )
 
+
 class ProspectStatusForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -2459,6 +2467,7 @@ class ProspectNoteForm(ModelForm):
             'notes',
             'returning_student'
         )
+
 
 class PaperworkForm(ModelForm):
 

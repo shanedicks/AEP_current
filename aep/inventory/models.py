@@ -64,7 +64,7 @@ class Item(models.Model):
     )
 
     def __str__(self):
-        return "{0}: {1}".format(self.category.name, self.name)
+        return f"{self.category.name}: {self.name}|{self.id}"
 
     def open_tickets(self):
         return self.tickets.filter(

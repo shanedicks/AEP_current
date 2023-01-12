@@ -6,7 +6,7 @@ from django.views.generic import (
     DetailView, ListView, UpdateView,
     CreateView)
 from .models import Category, Item, Ticket
-from .forms import TicketForm, SelectTicketItemForm
+from .forms import TicketForm, SelectTicketItemForm, TicketUpdateForm
 
 
 
@@ -53,7 +53,7 @@ class ItemListView(LoginRequiredMixin, ListView):
 
 class CreateTicketView(LoginRequiredMixin, CreateView):
 
-    model= Ticket
+    model = Ticket
     form_class = TicketForm
     template_name = "inventory/create_ticket.html"
 
@@ -67,6 +67,20 @@ class CreateTicketView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse("inventory:category list")
+
+
+class UpdateTicketView(LoginRequiredMixin, UpdateView):
+
+    model = Ticket
+    form_class = TicketUpdateForm
+    template_name = "inventory/update_ticket.html"
+
+    def get_success_url(self):
+        try:
+            url = self.object.student.get_absolute_url()
+        except AttributeError:
+            url = self.object.staff.get_absolute_url()
+        return url
 
 class SelectTicketItemView(LoginRequiredMixin, CreateView):
 

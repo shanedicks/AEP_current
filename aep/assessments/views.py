@@ -239,9 +239,9 @@ class TabeOnlineCSV(LoginRequiredMixin, View):
             s = [
                 "LA23680",
                 "LA20001",
-                clean_special_characters(student.student.WRU_ID),
+                student.student.WRU_ID,
                 clean_special_characters(student.student.last_name),
-                student.student.first_name,
+                clean_special_characters(student.student.first_name),
                 "",
                 student.student.gender,
                 student.student.dob.strftime('%m/%d/%Y'),

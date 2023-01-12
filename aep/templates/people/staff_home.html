@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block head_title %}DCCAEP | {{staff}} Home{% endblock head_title %}
 {% block content %}
+    <div class="col-md-12">
     <h1>{{ staff }} Home</h1>
     {% if staff.prospects.all.count > 0 %}
         <h3>My Prospects</h3>
@@ -69,9 +70,11 @@
             </tr>
         {% endfor %}
         </table>
-        <a type="button" class="btn btn-default" href="{% url 'people:staff class list' slug=staff.slug %}">All My Classes</a>
+        <a type="button" class="btn btn-default btn-lg" href="{% url 'people:staff class list' slug=staff.slug %}">All My Classes</a>
     {% endif %}
+    </div>
     {% if staff.coachees.all.count > 0 %}
+      <div class="col-md-6">
         <h3>My Coachees</h3>
         <a type="button" class="btn btn-default" href="{% url 'coaching:coachee export' slug=staff.slug %}">Coachee Export</a>
         <a type="button" class="btn btn-default" href="{% url 'coaching:update coachings' slug=staff.slug %}">Update Statuses</a>
@@ -82,5 +85,22 @@
             <h4><a href="{% url 'coaching:ell to ccr coachee list' slug=staff.slug %}">ELL to CCR: {{ staff.ell_ccr_coachees.count }}</a></h4>
             <h4><a href="{% url 'coaching:passed hiset coachee list' slug=staff.slug %}">Passed Hiset: {{staff.hiset_coachees.count }}</a></h4>
             <h4><a href="{% url 'coaching:enrolled coachee list' slug=staff.slug %}">Enrolled: {{ staff.enrolled_coachees.count }}</a></h4>
+      </div>
     {% endif %}
+      <div class="col-md-6">
+          <h3>Inventory</h3>
+            <p><a class="btn btn-default" href="{% url 'inventory:select category' staff_slug=staff.slug %}" role="button">Assign Item</a></p>
+            {% if staff.tickets.all.exists %}
+                {% for ticket in staff.tickets.all %}
+                  {% if ticket.returned_date is None %}
+                    <p><a href="{% url 'inventory:update ticket' pk=ticket.pk %}">{{ ticket.item.category }} issued {{ticket.issued_date}}</p>
+                    {% if ticket.return_req_date%}
+                    <p>Return requested {{ticket.return_req_date}}</p>
+                    {% endif %}
+                  {% else %}
+                    <p>{{ ticket.item.category }} returned {{ticket.returned_date}}</p>
+                  {% endif %}
+                {% endfor %}
+            {% endif %}
+      </div>
 {%endblock content %}

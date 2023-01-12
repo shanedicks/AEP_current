@@ -1125,7 +1125,7 @@ class Staff(Profile):
         ordering = ["last_name", "first_name"]
 
     def get_absolute_url(self):
-        return reverse('people:staff detail', kwargs={'slug': self.slug})
+        return reverse('people:staff home', kwargs={'slug': self.slug})
 
     def active_coachees(self):
         return self.coachees.filter(status='Active')

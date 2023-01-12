@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Update Ticket{% endblock head_title %}
+
+{% block content %}
+    <h1>Update Ticket</h1>
+    <p>Item: {{ ticket.item }}</p>
+    {% if ticket.student %}
+    	<p>Issued to {{ticket.student}} on {{ticket.issued_date}}</p>
+    {% else %}
+    	<p>Issued to {{ticket.staff}} on {{ticket.issued_date}}</p>
+    {% endif %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>{% crispy form %}</p>
+       <p> <button type="submit" class="btn btn-success" value="Submit">Update</button></p>
+    </form>
+{% endblock content %}
