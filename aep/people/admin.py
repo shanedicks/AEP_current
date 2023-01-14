@@ -974,7 +974,12 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
     readonly_fields = ["student"]
 
-    actions = ImportExportActionModelAdmin.actions + ('send_to_state',)
+    actions = ImportExportActionModelAdmin.actions + (
+        'check_for_state_id',
+        'send_to_state',
+        'verify',
+        'full_send'
+    )
 
     def get_AEP_ID(self, obj):
         return obj.student.AEP_ID
@@ -986,9 +991,21 @@ class WIOAAdmin(ImportExportActionModelAdmin):
     get_WRU_ID.admin_order_field = "WRU_ID"
     get_WRU_ID.short_description = "WRU ID"
 
+    def check_for_state_id(self, request, queryset):
+        wioa_id_list = [obj.id for obj in queryset]
+        send_to_state_task.delay(wioa_id_list, 'check_for_state_id')
+
     def send_to_state(self, request, queryset):
         wioa_id_list = [obj.id for obj in queryset]
-        send_to_state_task.delay(wioa_id_list)
+        send_to_state_task.delay(wioa_id_list, 'send_to_state')
+
+    def verify(self, request, queryset):
+        wioa_id_list = [obj.id for obj in queryset]
+        send_to_state_task.delay(wioa_id_list, 'verify')
+
+    def full_send(self, request, queryset):
+        wioa_id_list = [obj.id for obj in queryset]
+        send_to_state_task.delay(wioa_id_list, 'send')
 
 admin.site.register(WIOA, WIOAAdmin)
 

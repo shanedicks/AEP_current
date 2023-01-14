@@ -16,11 +16,19 @@ from core.tasks import send_mail_task
 logger = get_task_logger(__name__)
 
 @shared_task
-def send_to_state_task(wioa_id_list):
+def send_to_state_task(wioa_id_list, action):
     records = apps.get_model('people', 'WIOA').objects.filter(id__in=wioa_id_list)
     session = state_session()
     for record in records:
-        record.send(session)
+        match action:
+            case 'send':
+                record.send(session)
+            case 'check_for_state_id':
+                record.check_for_state_id(session)
+            case 'send_to_state':
+                record.send_to_state_task(session)
+            case 'verify':
+                record.verify(session)
 
 @shared_task
 def orientation_email_task(name, email_address, appt_id):
