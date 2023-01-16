@@ -45,6 +45,11 @@ phone_validator = RegexValidator(
     code='invalid_phone'
 )
 
+zip_code_validator = RegexValidator(
+    regex = r'^\d{5}(?:-\d{4})?$',
+    message='Please enter a valid US zip code. Format: ##### or #####-####',
+    code='invalid zip code'
+)
 
 class StudentComplianceForm(ModelForm):
 
@@ -604,6 +609,7 @@ class StudentContactForm(ModelForm):
         super(StudentContactForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
@@ -715,6 +721,7 @@ class StudentUpdateForm(ModelForm):
         super(StudentUpdateForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
@@ -966,6 +973,7 @@ class StudentForm(ModelForm):
         super(StudentForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
@@ -1303,6 +1311,7 @@ class PartnerForm(ModelForm):
         super(PartnerForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
@@ -1486,13 +1495,9 @@ class SSNForm(ModelForm):
 
     def clean_SID(self):
         data = self.cleaned_data['SID']
-        if data != "":
-            if WIOA.objects.filter(SID=data).count() > 0:
-                raise ValidationError(
-                    "Sorry, we have this SSN in our records "
-                    "already. Are you sure you haven't been with us before? "
-                    "Please call 504-671-5434 to speak to a staff member."
-                )
+        data = "".join([c for c in data if c.isdigit()])
+        if len(data) != 9 or len(set(data)) == 1:
+            data = ''
         return data
 
     def __init__(self, *args, **kwargs):
@@ -1920,6 +1925,13 @@ class WioaForm(ModelForm):
                 )
         return data
 
+    def clean_SID(self):
+        data = self.cleaned_data['SID']
+        data = "".join([c for c in data if c.isdigit()])
+        if len(data) != 9 or len(set(data)) == 1:
+            data = ''
+        return data
+
     def __init__(self, *args, **kwargs):
         super(WioaForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -2187,6 +2199,7 @@ class StaffForm(ModelForm):
         super(StaffForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'

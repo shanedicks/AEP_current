@@ -1649,7 +1649,6 @@ def recieved_assistance(wioa):
     else :
         return "false"
 
-
 class WIOA(models.Model):
 
     EMPLOYMENT_STATUS_CHOICES = (
@@ -2423,8 +2422,8 @@ class WIOA(models.Model):
                 "Suffix": title(self.student.title),
                 "Pronouns": pronouns(self.student.pronoun)[0],
                 "OtherPronouns": pronouns(self.student.pronoun)[1],
-                "Address.Street1": self.student.street_address_1,
-                "Address.Street2": self.student.street_address_2,
+                "Address.Street1": self.student.street_address_1[:50],
+                "Address.Street2": self.student.street_address_2[:50],
                 "Address.City": self.student.city,
                 "Address.OtherCity": self.student.other_city,
                 "Address.StateId": state(self.student.state),
