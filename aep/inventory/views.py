@@ -1,6 +1,7 @@
 from django.apps import apps
 from django.db.models import Exists, OuterRef
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import (
     DetailView, ListView, UpdateView,
