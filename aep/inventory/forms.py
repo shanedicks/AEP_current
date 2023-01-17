@@ -80,7 +80,7 @@ class TicketForm(ModelForm):
             )
         if staff:
             staff = staff[0]
-            staff = Staff.objects.filter(
+            staff_qst = Staff.objects.filter(
                 Q(first_name__icontains=staff) | Q(last_name__icontains=staff),
             )
         self.base_fields['item'].queryset = item_qst
