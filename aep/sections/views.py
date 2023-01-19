@@ -1104,7 +1104,12 @@ class GSuiteAttendanceView(LoginRequiredMixin, DetailView):
         service = discovery.build('classroom', 'v1', http=http_auth)
         raw = {}
         for student in self.object.get_all_students():
-            if student.student.elearn_record.g_suite_email:
+            try:
+                elearn = student.student.elearn_record
+            except ObjectDoesNotExist:
+                raw[student] = {'issue': 'Student needs elearn_record to recieve g-suite email'}
+                continue
+            if elearn.g_suite_email:
                 raw[student] = service.courses(
                 ).courseWork().studentSubmissions().list(
                     courseId=self.object.g_suite_id,
@@ -1112,13 +1117,16 @@ class GSuiteAttendanceView(LoginRequiredMixin, DetailView):
                     courseWorkId='-',
                     userId=student.student.elearn_record.g_suite_email
                 ).execute()
-        scores = {}
+            else:
+                raw[student] = {'issue': 'Student elearn record has no g-suite email'}
+        scores = []
+        issues = []
         for key, value in raw.items():
-            scores[key] = []
             subs = value.get('studentSubmissions')
             if subs is not None:
+                subs_list = []
                 for sub in subs:
-                    scores[key].insert(0,
+                    subs_list.insert(0,
                         [
                             datetime.strptime(
                                 sub['creationTime'].split('T')[0],
@@ -1127,9 +1135,18 @@ class GSuiteAttendanceView(LoginRequiredMixin, DetailView):
                             sub.get('assignedGrade', 0)
                         ]
                     )
+                scores.append((key, subs_list))
+            else:
+                issue = value.get('issue')
+                if issue is None:
+                    scores.append((key, []))
+                else:    
+                    issues.append((key, issue))
+        scores = sorted(scores, key = lambda tup: tup[0].student.last_name)
+        issues = sorted(issues, key = lambda tup: tup[0].student.last_name)
         context = super(GSuiteAttendanceView, self).get_context_data()
-        if 'scores' not in context:
-            context['scores'] = scores
+        context['scores'] = scores
+        context['issues'] = issues
         return context
 
 

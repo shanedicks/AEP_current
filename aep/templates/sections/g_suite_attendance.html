@@ -4,15 +4,26 @@
     <h1>G-Suite Assignment Attendance for {{ section.title }}</h1>
     <a class="btn btn-default" href="{{ section.get_absolute_url }}">Back to Class</a>
     <h3>{{ section.teacher }} | {{section.get_days_str }} | {{ section.start_time }}-{{section.end_time}}</h3>
-    <table class='table'>
-     <p>{% for key, value in scores.items %}
+    <table class="table">
+    <tr><h4>Issues</h4></tr>
+    <p>{% for enrollment, issue in issues %}
         <tr>
-            <td>{{ key.student }}</td>
-            {% for sub in value %}
+            <td>{{ enrollment.student }}</td>
+            <td>{{ issue }}</td>
+        </tr>
+        {% endfor %}
+    </p>        
+    </table>
+    <table class='table'>
+    <tr><h4>Submissions</h4></tr>
+     <p>{% for enrollment, sub_list in scores %}
+        <tr>
+            <td>{{ enrollment.student }}</td>
+            {% for sub in sub_list %}
                 <td>Date: {{ sub.0|date:"m-d-y" }} Hours: {{ sub.1 }}</td>
             {% endfor %}
         </tr>
         {% endfor %}
-    </p> 
+    </p>
     </table>
 {% endblock content %}
