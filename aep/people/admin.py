@@ -875,6 +875,13 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
         "g_sig_date"
     )
 
+    readonly_fields = (
+        "signature",
+        "guardian_signature",
+        "sig_date",
+        "g_sig_date"        
+    )
+
 admin.site.register(Paperwork, PaperworkAdmin)
 
 
