@@ -200,6 +200,8 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
 					last_meeting = coaching.notes.latest('meeting_date').meeting_date
 				except ObjectDoesNotExist:
 					last_meeting = ''
+			else:
+				last_meeting = ''
 			coach_last = getattr(coach, 'last_name', '')
 			coach_first = getattr(coach, 'first_name', '')
 			try:
