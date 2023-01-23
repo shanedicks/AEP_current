@@ -12,6 +12,15 @@
     </div>
     <div class='col-md-8'>
       {%include 'components/student_nav.html' %}
+      <div>
+        <h4>Notes</h4>
+            {% if student.notes != '' %}
+                <p> {{student.notes }} </p>
+            {% endif %}
+            <p>
+              <a class="btn btn-default" href="{% url 'people:edit notes' slug=student.slug %}" role="button">Edit Notes</a>
+            </p>
+      </div>
       <table class='table'>
         <tr>
           <td>WRU ID</td>
@@ -129,32 +138,6 @@
                   <a class="btn btn-default" href="{% url 'coaching:coaching create' slug=student.slug %}" role="button">Assign Coach</a>
                 </p>
             {% endif %}
-      </div>
-      <div>
-        <h3>Office Tracking</h3>
-            <p>Office Folder: {{ student.get_folder_display }}</p>
-            <p>Orientation: {{ student.get_orientation_display }}</p>
-            <p>Office Paperwork: {{ student.get_paperwork_display }}</p>
-            {% if student.intake_form %}
-            <p>Intake Form: Complete</p>
-            {% else %}
-            <p>Intake Form: Incomplete</p>
-            {% endif %}
-            {% if student.intake_quiz %}
-            <p>Intake Quiz: Complete</p>
-            {% else %}
-            <p>Intake Quiz: Incomplete</p>
-            {% endif %}
-            <a class="btn btn-default" href="{% url 'people:student compliance form' slug=student.slug %}" role="button">Update</a>
-      </div>
-      <div>
-        <h3>Notes</h3>
-            {% if student.notes != '' %}
-                <p> {{student.notes }} </p>
-            {% endif %}
-            <p>
-              <a class="btn btn-default" href="{% url 'people:edit notes' slug=student.slug %}" role="button">Edit Notes</a>
-            </p>
       </div>
       <div>
           <h3>Prospects</h3>
