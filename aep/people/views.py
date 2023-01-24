@@ -121,6 +121,7 @@ class NewStudentCSV(LoginRequiredMixin, FormView):
             "Last Name",
             "First Name",
             "Intake Date",
+            "Orientation",
             'Partner',
             "DOB",
             "Gender",
@@ -134,7 +135,7 @@ class NewStudentCSV(LoginRequiredMixin, FormView):
             "Phone",
             "Alt Phone",
             "Emergency Contact",
-            "Emergency Contact Phone"
+            "Emergency Contact Phone",
             "Notes"
         ]
         data.append(headers)
@@ -148,6 +149,7 @@ class NewStudentCSV(LoginRequiredMixin, FormView):
                 student.last_name,
                 student.first_name,
                 str(student.intake_date),
+                student.get_orientation_display(),
                 student.partner,
                 str(student.dob),
                 student.get_gender_display(),
