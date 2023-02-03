@@ -609,6 +609,7 @@ class StudentContactForm(ModelForm):
         super(StudentContactForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['ec_phone'].validators.append(phone_validator)
         self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -721,6 +722,7 @@ class StudentUpdateForm(ModelForm):
         super(StudentUpdateForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['ec_phone'].validators.append(phone_validator)
         self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -973,6 +975,7 @@ class StudentForm(ModelForm):
         super(StudentForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['ec_phone'].validators.append(phone_validator)
         self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -1311,6 +1314,7 @@ class PartnerForm(ModelForm):
         super(PartnerForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['ec_phone'].validators.append(phone_validator)
         self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -2199,6 +2203,7 @@ class StaffForm(ModelForm):
         super(StaffForm, self).__init__(*args, **kwargs)
         self.fields['phone'].validators.append(phone_validator)
         self.fields['alt_phone'].validators.append(phone_validator)
+        self.fields['ec_phone'].validators.append(phone_validator)
         self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False

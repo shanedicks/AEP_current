@@ -1349,9 +1349,9 @@ def get_age_at_intake(dob, intake_date):
 
 def citizen(i):
     if i == 1:
-        cit = "true"
+        cit = "True"
     else:
-        cit = "false"
+        cit = "False"
     return cit
 
 
@@ -2402,9 +2402,6 @@ class WIOA(models.Model):
 
     def send_to_state(self, session):
         if self.state_id_checked:
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
-            }
             student = {
                 "hdnRoleType": "2",
                 "FY": "11",
@@ -2543,11 +2540,19 @@ class WIOA(models.Model):
                 "StudentWIOADetail.Disability": self.disability_notice,
                 "StudentWIOADetail.RequestAccommodation": true_false(self.request_accommodation),
                 "btnSave": "Submit",
-                "alertTextBox": "txtSearchStudentFName"
+                "alertTextBox": ""
             }
-            session.post(
+            for k in student:
+                if type(student[k]) != str:
+                    student[k] = str(student[k])
+            m = MultipartEncoder(fields={**student})
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36',
+                'Content-Type': m.content_type
+            }
+            return session.post(
                 'https://workreadyu.lctcs.edu/Student/CreateWithWIOAStepWise/CreateLink',
-                data=student,
+                files={k: (None, v) for k,v in student.items()},
                 headers=headers,
                 proxies=settings.PROXIE_DICT
             )
