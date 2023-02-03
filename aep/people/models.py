@@ -1610,10 +1610,9 @@ def title(i):
 
 def ec_name(i):
     name = i.split(" ", 1)
-    if len(name) == 2:
-        return name
-    else:
-        return [name, ""]
+    if len(name) < 2:
+        name.append('')
+    return name
 
 def ec_relation(i):
     r = {
@@ -2400,8 +2399,9 @@ class WIOA(models.Model):
         self.student.WRU_ID = wru
         self.student.save()
 
-    def send_to_state(self, session):
-        if self.state_id_checked:
+    def prepare_student(self):
+
+
             student = {
                 "hdnRoleType": "2",
                 "FY": "11",
@@ -2544,6 +2544,11 @@ class WIOA(models.Model):
                 "btnSave": "Submit",
                 "alertTextBox": ""
             }
+            return student
+
+    def send_to_state(self, session):
+        if self.state_id_checked:
+            student = self.prepare_student()
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
             }

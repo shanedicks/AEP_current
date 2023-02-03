@@ -26,7 +26,7 @@ def send_to_state_task(wioa_id_list, action):
             case 'check_for_state_id':
                 record.check_for_state_id(session)
             case 'send_to_state':
-                record.send_to_state_task(session)
+                record.send_to_state(session)
             case 'verify':
                 record.verify(session)
 
