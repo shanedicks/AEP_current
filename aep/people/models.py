@@ -1368,8 +1368,8 @@ def marital(i):
 
 def gender(i):
     genders = {
-        "M": "2",
-        "F": "1"
+        "M": 2,
+        "F": 1
     }
     return genders[i]
 
@@ -2413,10 +2413,12 @@ class WIOA(models.Model):
                 "hdnInactiveProg": "2,5,7,13,",
                 "hdnInactiveEmpStat": ",4_UNL, 5_NLF,",
                 "IntakeOnlyProgram": "19",
+                "EnrollPStat.IntakeDate": datetime.strftime(self.student.intake_date, "%m/%d/%Y"),
                 "FirstName": self.student.first_name,
                 "MiddleInitial": "",
                 "LastName": self.student.last_name,
                 "Suffix": title(self.student.title),
+                "Suffixes": "",
                 "Pronouns": pronouns(self.student.pronoun)[0],
                 "OtherPronouns": pronouns(self.student.pronoun)[1],
                 "Address.Street1": self.student.street_address_1[:50],
@@ -2439,7 +2441,7 @@ class WIOA(models.Model):
                 "SSN": get_SID(self.SID),
                 "OtherID": "",
                 "USCitizen": citizen(self.student.US_citizen),
-                "DateOfBirth": self.student.dob,
+                "DateOfBirth": datetime.strftime(self.student.dob, "%m/%d/%Y"),
                 "Age": get_age_at_intake(self.student.dob, self.student.intake_date),
                 "Gender": gender(self.student.gender),
                 "MaritalStatusId": marital(self.student.marital_status),
