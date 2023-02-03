@@ -2542,13 +2542,8 @@ class WIOA(models.Model):
                 "btnSave": "Submit",
                 "alertTextBox": ""
             }
-            for k in student:
-                if type(student[k]) != str:
-                    student[k] = str(student[k])
-            m = MultipartEncoder(fields={**student})
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36',
-                'Content-Type': m.content_type
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
             }
             return session.post(
                 'https://workreadyu.lctcs.edu/Student/CreateWithWIOAStepWise/CreateLink',
