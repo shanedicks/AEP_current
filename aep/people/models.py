@@ -1,9 +1,10 @@
+import logging
 import requests
 import bs4
 import time
 from datetime import datetime, timedelta
 from django.apps import apps
-from django.db import models
+from django.db import models, IntegrityError
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
@@ -11,6 +12,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from core.tasks import send_mail_task, send_sms_task
 from core.utils import make_slug, make_AEP_ID, make_unique_slug, state_session
+
+logger = logging.getLogger(__name__)
 
 # make_slug and make_AEP_ID callables were defaults for Profile and Student -have to be kept or migrations break
 def make_student_slug():
@@ -21,6 +24,271 @@ def make_staff_slug():
 
 def make_prospect_slug():
     return make_unique_slug('people', 'Prospect')
+
+def move_test_history(orig, duplicate):
+    try:
+        t = orig.tests
+        t.student = duplicate
+        try:
+            t.save()
+        except IntegrityError:
+            tabe = duplicate.tests.tabe_tests.all()
+            tabe.update(student=t)
+            tabe_loc = duplicate.tests.tabe_loc_tests.all()
+            tabe_loc.update(student=t)
+            clas_e = duplicate.tests.clas_e_tests.all()
+            clas_e.update(student=t)
+            clas_e_loc = duplicate.tests.clas_e_loc_tests.all()
+            clas_e_loc.update(student=t)
+            gain = duplicate.tests.gain_tests.all()
+            gain.update(student=t)
+            hiset = duplicate.tests.hiset_practice_tests.all()
+            hiset.update(student=t)
+            if t.last_test_date == None:
+                t.last_test_date = duplicate.tests.last_test_date
+            duplicate.tests.delete()
+            t.save()
+    except ObjectDoesNotExist:
+        pass
+
+def move_classes(orig, duplicate):
+    for c in orig.classes.all():
+        c.student = duplicate
+        try:
+            c.save()
+        except IntegrityError:
+            pass
+
+def move_appointments(orig, duplicate):
+    for a in orig.test_appointments.all():
+        a.student = duplicate
+        try:
+            a.save()
+        except IntegrityError:
+            pass
+
+def move_elearn_record(orig, duplicate):
+    try:
+        e = duplicate.elearn_record
+        pass
+    except ObjectDoesNotExist:
+        try:
+            e = orig.elearn_record
+            e.student = duplicate
+            e.save()
+        except ObjectDoesNotExist:
+            pass
+
+def move_coaching(orig, duplicate):
+    try:
+        p = duplicate.coaching_profile
+        pass
+    except ObjectDoesNotExist:
+        try:
+            p = orig.coaching_profile
+            p.student = duplicate
+            p.save()
+        except ObjectDoesNotExist:
+            pass
+    for c in orig.coaches.all():
+        c.coachee = duplicate
+        try:
+            c.save()
+        except IntegrityError:
+            pass
+
+def move_ace_record(orig, duplicate):
+    try:
+        e = duplicate.ace_record
+        pass
+    except ObjectDoesNotExist:
+        try:
+            a = orig.ace_record
+            a.student = duplicate
+            a.save()
+        except ObjectDoesNotExist:
+            pass
+
+def move_college_interest(orig, duplicate):
+    try:
+        a = orig.college_interest
+        a.student = duplicate
+        a.save()
+    except ObjectDoesNotExist:
+        pass
+
+def copy_office_tracking(orig, duplicate):
+    n = duplicate
+    if n.paperwork != 'C' and orig.paperwork != 'P':
+        n.paperwork = orig.paperwork
+    if n.folder != 'C' and orig.folder != 'P':
+        n.folder = orig.folder
+    if n.orientation != 'C' and orig.orientation != 'P':
+        n.orientation = orig.orientation
+    n.save()
+
+def move_or_copy_paperwork(orig, duplicate):
+    try:
+        p = orig.student_paperwork
+        p.student = duplicate
+        try:
+            p.save()
+        except IntegrityError:
+            bools = [
+                f.name for f in type(p)._meta.get_fields()
+                if f.get_internal_type() == 'BooleanField'
+            ]
+            np = duplicate.student_paperwork
+            for field_name in bools:
+                setattr(np, field_name, max(getattr(p, field_name), getattr(np, field_name)))
+            others = [
+                'sd_other',
+                'sh_other',
+                'sh_request',
+                'signature',
+                'guardian_signature',
+                'sig_date',
+                'g_sig_date',
+            ]
+            if np.sig_date is not None and p.sig_date is not None:
+                if p.sig_date < np.sig_date:
+                    for field_name in others:
+                        setattr(np, field_name,  getattr(p, field_name))
+            elif p.sig_date is not None:
+                for field_name in others:
+                    setattr(np, field_name,  getattr(p, field_name))
+            if np.pic_id_file == '' and p.pic_id_file != '':
+                np.pic_id_file = p.pic_id_file
+            np.save()
+    except ObjectDoesNotExist:
+        pass
+
+def merge_pops(pop, pop2):
+        pop2.last_service_date = max(pop.last_service_date, pop2.last_service_date)
+        pop2.active = max(pop.active, pop2.active)
+        pop2.made_gain = max(pop.made_gain, pop2.made_gain)
+        if pop2.pretest_date is not None and pop.pretest_date is not None:
+            pop2.pretest_date = min(pop.pretest_date, pop2.pretest_date)
+        elif pop.pretest_date is not None:
+            pop2.pretest_date = pop.pretest_date
+        pop2.pretest_type = max(pop.pretest_type, pop2.pretest_type)
+        pop2.save()
+        pop.delete()
+
+def move_or_merge_pops(orig, duplicate):
+    og_pops = orig.pop.all()
+    for pop in og_pops:
+        try:
+            pop.student = duplicate
+            pop.save()
+        except IntegrityError:
+            conflict = duplicate.pop.get(
+                start_date=pop.start_date
+            )
+            merge_pops(pop, conflict)
+
+    new_pops = duplicate.pop.all()
+    i, j = 0, 1
+    while j < new_pops.count():
+        orig = new_pops[i]
+        duplicate = new_pops[j]
+        exit = orig.last_service_date + timedelta(days=90)
+        if duplicate.start_date <= exit:
+            merge_pops(duplicate, orig)
+        i += 1
+        j += 1
+
+def move_skill_masteries(orig, duplicate):
+    sm = orig.skillmasterys.all()
+    for record in sm:
+        try:
+            record.student = duplicate
+            record.save()
+        except IntegrityError:
+            pass
+
+def move_certificates(orig, duplicate):
+    c = orig.certificates.all()
+    for record in c:
+        try:
+            record.student = duplicate
+            record.save()
+        except IntegrityError:
+            pass
+
+def move_course_completions(orig, duplicate):
+    cc = orig.coursecompletions.all()
+    for record in cc:
+        try:
+            record.student = duplicate
+            record.save()
+        except IntegrityError:
+            pass
+
+def move_prospects(orig, duplicate):
+    p = orig.prospects.all()
+    for record in p:
+        try:
+            record.student = duplicate
+            record.save()
+        except IntegrityError:
+            pass
+
+def full_merge(orig, duplicate):
+    move_test_history(orig, duplicate)
+    move_classes(orig, duplicate)
+    move_appointments(orig, duplicate)
+    move_elearn_record(orig, duplicate)
+    move_coaching(orig, duplicate)
+    move_ace_record(orig, duplicate)
+    move_college_interest(orig, duplicate)
+    copy_office_tracking(orig, duplicate)
+    move_or_copy_paperwork(orig, duplicate)
+    move_or_merge_pops(orig, duplicate)
+    move_skill_masteries(orig, duplicate)
+    move_certificates(orig, duplicate)
+    move_course_completions(orig, duplicate)
+    move_prospects(orig, duplicate)
+    duplicate.intake_date = orig.intake_date
+    duplicate.notes = orig.notes
+    nid = duplicate.WRU_ID
+    duplicate.WRU_ID = orig.WRU_ID
+    duplicate.save()
+    if nid is None:
+        try:
+            orig.WRU_ID = 'd' + orig.WRU_ID
+        except TypeError:
+            orig.WRU_ID = 'dNone'
+    else:
+        orig.WRU_ID = 'd' + nid.replace('x', '')
+    orig.duplicate_of = duplicate
+    orig.duplicate = True
+    orig.dupl_date = timezone.now().date()
+    orig.save()
+
+def merge_duplicates(dupe_id):
+    orig_id = dupe_id.replace('x', '')
+    try:
+        orig = Student.objects.get(WRU_ID=orig_id, duplicate=False)
+    except ObjectDoesNotExist:
+        print(f"No student found with WRU_ID {orig_id}")
+        orig = None
+    if orig:
+        dupes = Student.objects.filter(
+            WRU_ID=dupe_id,
+            duplicate=False,
+            dob=orig.dob
+        ).order_by('pk')
+        while dupes.count() > 0:
+            dupe = dupes[0]
+            print(f"Merging orig {orig}-{orig_id} into dupe {dupe}-{dupe_id}")
+            full_merge(orig, dupe)
+            orig = Student.objects.get(WRU_ID=orig_id, duplicate=False)
+            dupes = Student.objects.filter(
+                WRU_ID=dupe_id,
+                duplicate=False,
+                dob=orig.dob
+            ).order_by('pk')
 
 
 class Profile(models.Model):
@@ -2581,6 +2849,8 @@ class WIOA(models.Model):
         if self.student.WRU_ID == 'No ID':
             self.send_to_state(session)
             self.verify(session)
+        elif 'x' in self.student.WRU_ID:
+            merge_duplicates(self.student.WRU_ID)
 
 
 class CollegeInterest(models.Model):
