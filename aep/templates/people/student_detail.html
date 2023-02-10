@@ -154,8 +154,8 @@
       </div>
       <div>
           <h3>Inventory</h3>
-            {% if student.tickets.all.exists %}
             <p><a class="btn btn-default" href="{% url 'inventory:select category' student_slug=student.slug %}" role="button">Assign Item</a></p>
+            {% if student.tickets.all.exists %}
                 {% for ticket in student.tickets.all %}
                   {% if ticket.returned_date is None %}
                     <p><a href="{% url 'inventory:update ticket' pk=ticket.pk %}">{{ ticket.item.category }} issued {{ticket.issued_date}}</p>
