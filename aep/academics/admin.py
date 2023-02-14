@@ -43,7 +43,9 @@ class CourseResource(resources.ModelResource):
             'description',
             'g_suite_id',
             'skills',
-            'resources'
+            'resources',
+            'nrs_min',
+            'nrs_max'
         )
 
 
