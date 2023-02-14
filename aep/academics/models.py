@@ -92,6 +92,16 @@ class Course(models.Model):
         default=False
     )
 
+    nrs_min = models.CharField(
+        max_length = 1,
+        blank = True
+    )
+
+    nrs_max = models.CharField(
+        max_length = 1,
+        blank = True
+    )
+
     class Meta:
         pass
 

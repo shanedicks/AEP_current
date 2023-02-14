@@ -160,7 +160,9 @@ class CourseAdmin(ImportExportActionModelAdmin):
 
     list_display = (
         'title',
-        'code'
+        'code',
+        'nrs_min',
+        'nrs_max'
     )
 
     search_fields = [
@@ -168,6 +170,7 @@ class CourseAdmin(ImportExportActionModelAdmin):
         'code',
         'description'
     ]
+
 
 admin.site.register(Course, CourseAdmin)
 
