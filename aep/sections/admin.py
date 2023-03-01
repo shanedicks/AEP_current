@@ -114,6 +114,11 @@ class SectionAdmin(ImportExportActionModelAdmin):
 
     search_fields = ["title", "program", 'WRU_ID', 'semester__title']
 
+    autocomplete_fields = [
+        "teacher",
+        "course"
+    ]
+
     actions = ImportExportActionModelAdmin.actions + (
         "begin",
         "enforce_attendance",
@@ -270,7 +275,14 @@ class EnrollmentAdmin(ImportExportActionModelAdmin):
 
     fields = (
         'status',
+        "student",
+        "section"
     )
+
+    readonly_fields = [
+        "student",
+        "section",
+    ]
 
     actions = ImportExportActionModelAdmin.actions + ('activate',)
 

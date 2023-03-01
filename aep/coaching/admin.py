@@ -195,6 +195,7 @@ class AceRecordAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = [
+        'student',
         'ace_status',
         'status_updated',
         'intake_semester',
@@ -212,6 +213,8 @@ class AceRecordAdmin(ImportExportActionModelAdmin):
         'math_092',
         'math_098'
     ]
+
+    readonly_fields = ['student']
 
     def ace_status_column(self, obj):
         return("%s as of %s" % (obj.ace_status, obj.status_updated))
@@ -257,11 +260,14 @@ class ElearnRecordAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = [
+        'student',
         'elearn_status',
         'status_updated',
         'intake_date',
         'g_suite_email'
     ]
+
+    readonly_fields = ['student']
 
     actions = ImportExportActionModelAdmin.actions + (
         'DLA_email', 
@@ -354,6 +360,7 @@ class CoachingAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = [
+        'coachee',
         'coach',
         'coaching_type',
         'status',
@@ -361,6 +368,11 @@ class CoachingAdmin(ImportExportActionModelAdmin):
         'start_date',
         'end_date',
     ]
+
+    readonly_fields = (
+        'coachee',
+        'coach'
+    )
 
     actions = ImportExportActionModelAdmin.actions + (
         'merge',
@@ -395,6 +407,7 @@ class ProfileAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = [
+        'student',
         'health_pathway_interest',
         'crafts_pathway_interest',
         'it_pathway_interest',
@@ -430,6 +443,8 @@ class ProfileAdmin(ImportExportActionModelAdmin):
         'frustrated',
         'anything_else'
     ]
+
+    readonly_fields = ['student']
 
 
 admin.site.register(Profile, ProfileAdmin)

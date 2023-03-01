@@ -11,7 +11,7 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
 from .models import (
     Student, Staff, WIOA, PoP,
-    CollegeInterest, Paperwork, Prospect, ProspectNote
+    CollegeInterest, Paperwork, Prospect, ProspectNote, full_merge
     )
 from .tasks import send_to_state_task
 from coaching.models import ElearnRecord, AceRecord
@@ -496,7 +496,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'testify',
         'create_elearn_record',
         'create_ace_record',
-        'full_merge',
+        'merge',
     )
 
     ordering = ['-id']
@@ -534,250 +534,11 @@ class StudentAdmin(ImportExportActionModelAdmin):
                     intake_semester=sem[str(timezone.now().month)]
                 )
 
-    def move_test_history(self, request, q):
-        try:
-            t = q[0].tests
-            t.student = q[1]
-            try:
-                t.save()
-            except IntegrityError:
-                tabe = q[1].tests.tabe_tests.all()
-                tabe.update(student=t)
-                tabe_loc = q[1].tests.tabe_loc_tests.all()
-                tabe_loc.update(student=t)
-                clas_e = q[1].tests.clas_e_tests.all()
-                clas_e.update(student=t)
-                clas_e_loc = q[1].tests.clas_e_loc_tests.all()
-                clas_e_loc.update(student=t)
-                gain = q[1].tests.gain_tests.all()
-                gain.update(student=t)
-                hiset = q[1].tests.hiset_practice_tests.all()
-                hiset.update(student=t)
-                if t.last_test_date == None:
-                    t.last_test_date = q[1].tests.last_test_date
-                q[1].tests.delete()
-                t.save()
-        except ObjectDoesNotExist:
-            pass
-
-    def move_classes(self, request, q):
-        for c in q[0].classes.all():
-            c.student = q[1]
-            try:
-                c.save()
-            except IntegrityError:
-                pass
-
-    def move_appointments(self, request, q):
-        for a in q[0].test_appointments.all():
-            a.student = q[1]
-            try:
-                a.save()
-            except IntegrityError:
-                pass
-
-    def move_elearn_record(self, request, q):
-        try:
-            e = q[1].elearn_record
-            pass
-        except ObjectDoesNotExist:
-            try:
-                e = q[0].elearn_record
-                e.student = q[1]
-                e.save()
-            except ObjectDoesNotExist:
-                pass
-
-    def move_coaching(self, request, q):
-        try:
-            p = q[1].coaching_profile
-            pass
-        except ObjectDoesNotExist:
-            try:
-                p = q[0].coaching_profile
-                p.student = q[1]
-                p.save()
-            except ObjectDoesNotExist:
-                pass
-        for c in q[0].coaches.all():
-            c.coachee = q[1]
-            try:
-                c.save()
-            except IntegrityError:
-                pass
-
-    def move_ace_record(self, request, q):
-        try:
-            e = q[1].ace_record
-            pass
-        except ObjectDoesNotExist:
-            try:
-                a = q[0].ace_record
-                a.student = q[1]
-                a.save()
-            except ObjectDoesNotExist:
-                pass
-
-    def move_college_interest(self, request, q):
-        try:
-            a = q[0].college_interest
-            a.student = q[1]
-            a.save()
-        except ObjectDoesNotExist:
-            pass
-
-    def copy_office_tracking(self, request, q):
-        n = q[1]
-        if n.paperwork != 'C' and q[0].paperwork != 'P':
-            n.paperwork = q[0].paperwork
-        if n.folder != 'C' and q[0].folder != 'P':
-            n.folder = q[0].folder
-        if n.orientation != 'C' and q[0].orientation != 'P':   
-            n.orientation = q[0].orientation
-        n.save()
-
-    def move_or_copy_paperwork(self, request, q):
-        try:
-            p = q[0].student_paperwork
-            p.student = q[1]
-            try:
-                p.save()
-            except IntegrityError:
-                bools = [
-                    f.name for f in type(p)._meta.get_fields() 
-                    if f.get_internal_type() == 'BooleanField'
-                ]
-                np = q[1].student_paperwork
-                for field_name in bools:
-                    setattr(np, field_name, max(getattr(p, field_name), getattr(np, field_name)))
-                others = [
-                    'sd_other',
-                    'sh_other',
-                    'sh_request',
-                    'signature',
-                    'guardian_signature',
-                    'sig_date',
-                    'g_sig_date',
-                ]
-                if np.sig_date is not None and p.sig_date is not None:
-                    if p.sig_date < np.sig_date:
-                        for field_name in others:
-                            setattr(np, field_name,  getattr(p, field_name))
-                elif p.sig_date is not None:
-                    for field_name in others:
-                        setattr(np, field_name,  getattr(p, field_name))
-                if np.pic_id_file == '' and p.pic_id_file != '':
-                    np.pic_id_file = p.pic_id_file
-                np.save()
-        except ObjectDoesNotExist:
-            pass
-
-    def merge_pops(self, pop, pop2):
-            pop2.last_service_date = max(pop.last_service_date, pop2.last_service_date)
-            pop2.active = max(pop.active, pop2.active)
-            pop2.made_gain = max(pop.made_gain, pop2.made_gain)
-            if pop2.pretest_date is not None and pop.pretest_date is not None:
-                pop2.pretest_date = min(pop.pretest_date, pop2.pretest_date)
-            elif pop.pretest_date is not None:
-                pop2.pretest_date = pop.pretest_date
-            pop2.pretest_type = max(pop.pretest_type, pop2.pretest_type)
-            pop2.save()
-            pop.delete()
-
-    def move_or_merge_pops(self, request, q):
-        og_pops = q[0].pop.all()
-        for pop in og_pops:
-            try:
-                pop.student = q[1]
-                pop.save()
-            except IntegrityError:
-                conflict = q[1].pop.get(
-                    start_date=pop.start_date
-                )
-                self.merge_pops(pop, conflict)
-
-        new_pops = q[1].pop.all()
-        i, j = 0, 1
-        while j < new_pops.count():
-            older = new_pops[i]
-            newer = new_pops[j]
-            exit = older.last_service_date + timedelta(days=90)
-            if newer.start_date <= exit:
-                self.merge_pops(newer, older)
-            i += 1
-            j += 1
-
-    def move_skill_masteries(self, request, q):
-        sm = q[0].skillmasterys.all()
-        for record in sm:
-            try:
-                record.student = q[1]
-                record.save()
-            except IntegrityError:
-                pass              
-                
-    def move_certificates(self, request, q):
-        c = q[0].certificates.all()
-        for record in c:
-            try:
-                record.student = q[1]
-                record.save()
-            except IntegrityError:
-                pass
-
-    def move_course_completions(self, request, q):
-        cc = q[0].coursecompletions.all()
-        for record in cc:
-            try:
-                record.student = q[1]
-                record.save()
-            except IntegrityError:
-                pass
-
-    def move_prospects(self,request, q):
-        p = q[0].prospects.all()
-        for record in p:
-            try:
-                record.student = q[1]
-                record.save()
-            except IntegrityError:
-                pass
-
-    def full_merge(self, request, queryset):
+    def merge(self, request, queryset):
         q = queryset.order_by('pk')
-        self.move_test_history(request, q)
-        self.move_classes(request, q)
-        self.move_appointments(request, q)
-        self.move_elearn_record(request, q)
-        self.move_coaching(request, q)
-        self.move_ace_record(request, q)
-        self.move_college_interest(request, q)
-        self.copy_office_tracking(request, q)
-        self.move_or_copy_paperwork(request, q)
-        self.move_or_merge_pops(request, q)
-        self.move_skill_masteries(request, q)
-        self.move_certificates(request, q)
-        self.move_course_completions(request, q)
-        self.move_prospects(request, q)
-        n = q[1]
-        o = q[0]
-        n.intake_date = o.intake_date
-        n.notes = o.notes
-        nid = n.WRU_ID
-        n.WRU_ID = o.WRU_ID
-        n.save()
-        if nid is None:
-            try:
-                o.WRU_ID = 'd' + o.WRU_ID
-            except TypeError:
-                o.WRU_ID = 'dNone'
-        else:
-            o.WRU_ID = 'd' + nid.replace('x', '')
-        o.duplicate_of = n
-        o.duplicate = True
-        o.dupl_date = timezone.now().date()
-        o.save()
-
+        duplicate = q[1]
+        orig = q[0]
+        full_merge(orig, duplicate)
 
 admin.site.register(Student, StudentAdmin)
 
@@ -809,6 +570,10 @@ class StaffAdmin(ImportExportActionModelAdmin):
     search_fields = [
         "first_name",
         "last_name",
+    ]
+
+    autocomplete_fields = [
+        "user"
     ]
 
 

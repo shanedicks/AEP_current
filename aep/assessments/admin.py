@@ -51,6 +51,10 @@ class TestEventAdmin(admin.ModelAdmin):
         'full'
     )
 
+    autocomplete_fields = [
+        "proctor"
+    ]
+
     actions = [
         "orientation_reminder",
         "test_reminder",
@@ -131,8 +135,11 @@ class TestAppointmentAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = (
+        'student',
         'event',
     )
+
+    readonly_fields = ['student']
 
 
 admin.site.register(TestAppointment, TestAppointmentAdmin)
@@ -159,11 +166,14 @@ class TestHistoryAdmin(admin.ModelAdmin):
     ]
 
     fields = (
-        'student_wru',
+        ('student',
+        'student_wru'),
         'last_test_type',
         'last_test_date',
         'test_assignment'
     )
+
+    readonly_fields = ['student']
 
 
 admin.site.register(TestHistory, TestHistoryAdmin)
@@ -245,6 +255,7 @@ class TabeAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = [
+        'student',
         'form',
         'test_date',
         'read_level',
@@ -267,6 +278,8 @@ class TabeAdmin(ImportExportActionModelAdmin):
         'lang_nrs',
         'score_report_link'
     ]
+
+    readonly_fields = ['student']
 
     actions = ImportExportActionModelAdmin.actions + (
         'process_tests',
@@ -327,6 +340,7 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
     ]
 
     fields = (
+        'student',
         'form',
         'test_date',
         'read_level',
@@ -337,6 +351,8 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
         'write_nrs',
         'score_report_link'
     )
+
+    readonly_fields = ['student']
 
     actions = ImportExportActionModelAdmin.actions + (
         'process_tests',
@@ -486,6 +502,7 @@ class Gain_Admin(ImportExportActionModelAdmin):
     ]
 
     fields = (
+        'student',
         'test_date',
         'form',
         'subject',
@@ -495,6 +512,7 @@ class Gain_Admin(ImportExportActionModelAdmin):
         'score_report_link'
     )
 
+    readonly_fields = ['student']
 
 admin.site.register(Gain, Gain_Admin)
 
@@ -546,6 +564,7 @@ class Hiset_Practice_Admin(ImportExportActionModelAdmin):
     ]
 
     fields = (
+        'student',
         'test_date',
         'subject',
         'test_version',
@@ -554,6 +573,8 @@ class Hiset_Practice_Admin(ImportExportActionModelAdmin):
         'grade',
 
     )
+
+    readonly_fields = ['student']
 
 
 admin.site.register(HiSet_Practice, Hiset_Practice_Admin)
@@ -598,10 +619,13 @@ class Hiset_Admin(ImportExportActionModelAdmin):
     ]
 
     fields = (
+        'student',
         'test_date',
         'subject',
         'score',
     )
+
+    readonly_fields = ['student']
 
 admin.site.register(HiSET, Hiset_Admin)
 
