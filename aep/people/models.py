@@ -28,25 +28,30 @@ def make_prospect_slug():
 def move_test_history(orig, duplicate):
     try:
         t = orig.tests
+        try:
+            d = duplicate.tests
+        except ObjectDoesNotExist:
+            pass
         t.student = duplicate
         try:
             t.save()
         except IntegrityError:
-            tabe = duplicate.tests.tabe_tests.all()
+            tabe = d.tabe_tests.all()
             tabe.update(student=t)
-            tabe_loc = duplicate.tests.tabe_loc_tests.all()
+            tabe_loc = d.tabe_loc_tests.all()
             tabe_loc.update(student=t)
-            clas_e = duplicate.tests.clas_e_tests.all()
+            clas_e = d.clas_e_tests.all()
             clas_e.update(student=t)
-            clas_e_loc = duplicate.tests.clas_e_loc_tests.all()
+            clas_e_loc = d.clas_e_loc_tests.all()
             clas_e_loc.update(student=t)
-            gain = duplicate.tests.gain_tests.all()
+            gain = d.gain_tests.all()
             gain.update(student=t)
-            hiset = duplicate.tests.hiset_practice_tests.all()
+            hiset = d.hiset_practice_tests.all()
             hiset.update(student=t)
             if t.last_test_date == None:
-                t.last_test_date = duplicate.tests.last_test_date
-            duplicate.tests.delete()
+                t.last_test_date = d.last_test_date
+            d.delete()
+            t.student = duplicate
             t.save()
     except ObjectDoesNotExist:
         pass
@@ -130,6 +135,10 @@ def copy_office_tracking(orig, duplicate):
 def move_or_copy_paperwork(orig, duplicate):
     try:
         p = orig.student_paperwork
+        try:
+            np = duplicate.student_paperwork
+        except ObjectDoesNotExist:
+            pass
         p.student = duplicate
         try:
             p.save()
@@ -138,7 +147,6 @@ def move_or_copy_paperwork(orig, duplicate):
                 f.name for f in type(p)._meta.get_fields()
                 if f.get_internal_type() == 'BooleanField'
             ]
-            np = duplicate.student_paperwork
             for field_name in bools:
                 setattr(np, field_name, max(getattr(p, field_name), getattr(np, field_name)))
             others = [
