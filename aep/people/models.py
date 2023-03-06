@@ -36,18 +36,23 @@ def move_test_history(orig, duplicate):
         try:
             t.save()
         except IntegrityError:
-            tabe = d.tabe_tests.all()
-            tabe.update(student=t)
-            tabe_loc = d.tabe_loc_tests.all()
-            tabe_loc.update(student=t)
-            clas_e = d.clas_e_tests.all()
-            clas_e.update(student=t)
-            clas_e_loc = d.clas_e_loc_tests.all()
-            clas_e_loc.update(student=t)
-            gain = d.gain_tests.all()
-            gain.update(student=t)
-            hiset = d.hiset_practice_tests.all()
-            hiset.update(student=t)
+            querysets = []
+            querysets.append(d.tabe_tests.all())
+            querysets.append(d.tabe_loc_tests.all())
+            querysets.append(d.clas_e_tests.all())
+            querysets.append(d.clas_e_loc_tests.all())
+            querysets.append(d.gain_tests.all())
+            querysets.append(d.hiset_practice_tests.all())
+            for queryset in querysets:
+                try:
+                    queryset.update(student=t)
+                except IntegrityError:
+                    for test in queryset:
+                        try:
+                            test.student = t
+                            test.save()
+                        except IntegrityError:
+                            test.delete()
             if t.last_test_date == None:
                 t.last_test_date = d.last_test_date
             d.delete()
