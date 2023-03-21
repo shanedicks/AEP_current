@@ -399,6 +399,7 @@ def create_classroom_section_task(section_id_list):
                 "section": obj.semester.title,
                 "ownerId": obj.teacher.g_suite_email
             }
+            logger.info(f"Creating classroom section for {obj}")
             post = service.courses().create(body=record).execute()
             obj.g_suite_id = post.get('id')
             obj.g_suite_link = post.get('alternateLink')
