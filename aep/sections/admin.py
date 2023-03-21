@@ -12,7 +12,7 @@ from people.models import Staff, Student
 from academics.models import Course
 from .models import Site, Section, Enrollment, Attendance, Message, Cancellation
 from .tasks import (roster_to_classroom_task, send_g_suite_info_task, cancel_class_task,
-    create_missing_g_suite_task, send_message_task, send_link_task)
+    create_missing_g_suite_task, create_classroom_section_task, send_message_task, send_link_task)
 
 class SiteResource(resources.ModelResource):
 
@@ -146,32 +146,8 @@ class SectionAdmin(ImportExportActionModelAdmin):
             obj.enforce_attendance()
 
     def create_classroom_section(self, request, queryset):
-
-        scopes = ['https://www.googleapis.com/auth/classroom.courses']
-
-        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-            keyfile_dict=settings.KEYFILE_DICT,
-            scopes=scopes
-        )
-
-        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
-        http_auth = shane.authorize(Http())
-        service = discovery.build('classroom', 'v1', http=http_auth)
-
-        for obj in queryset:
-            if obj.g_suite_id:
-                pass
-            else:
-                record = {
-                    "name": obj.title,
-                    "section": obj.semester.title,
-                    "ownerId": obj.teacher.g_suite_email
-                }
-
-                post = service.courses().create(body=record).execute()
-                obj.g_suite_id = post.get('id')
-                obj.g_suite_link = post.get('alternateLink')
-                obj.save()
+        section_ids = [obj.id for obj in queryset]
+        create_classroom_section_task.delay(section_ids)
 
     def add_TA(self, request, queryset):
 

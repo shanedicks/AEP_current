@@ -295,6 +295,22 @@ def drive_service():
     http_auth = gb.authorize(Http())
     return discovery.build('drive', 'v3', http=http_auth)
 
+def classroom_service():
+
+    scopes = [
+        'https://www.googleapis.com/auth/classroom.courses',
+        'https://www.googleapis.com/auth/classroom.rosters'
+    ]
+
+    credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
+        keyfile_dict=settings.KEYFILE_DICT,
+        scopes=scopes
+    )
+
+    shane = credentials.create_delegated('greenbean@elearnclass.org')
+    http_auth = shane.authorize(Http())
+    return discovery.build('classroom', 'v1', http=http_auth)
+
 def clean_special_characters(input_string):
     cleaned_chars = [CHAR_MAP[c] if c in CHAR_MAP else c for c in input_string]
     return "".join(cleaned_chars)
