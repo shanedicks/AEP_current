@@ -151,7 +151,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
 
     def add_TA(self, request, queryset):
         section_ids = [obj.id for obj in queryset]
-        addTA_task.delay(section_ids)
+        add_TA_task.delay(section_ids)
 
     def roster_to_classroom(self, request, queryset):
         for obj in queryset:
