@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 import csv
+from googleapiclient.errors import HttpError
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
