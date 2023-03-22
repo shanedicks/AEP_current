@@ -420,7 +420,7 @@ def add_TA_task(section_id_list):
         ta = program_ta[section.program]
         teachers = service.courses().teachers()
         try:
-            teachers.create(body={"userId": ta}).execute()
+            teachers.create(courseId=section.g_suite_id, body={"userId": ta}).execute()
             logger.info(f"Added {ta} to {section}")
         except HttpError as error:
             logger.error(error)
