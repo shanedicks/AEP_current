@@ -11,7 +11,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff, Student
 from academics.models import Course
 from .models import Site, Section, Enrollment, Attendance, Message, Cancellation
-from .tasks import (roster_to_classroom_task, send_g_suite_info_task, cancel_class_task, addTA_task,
+from .tasks import (roster_to_classroom_task, send_g_suite_info_task, cancel_class_task, add_TA_task,
     create_missing_g_suite_task, create_classroom_section_task, send_message_task, send_link_task)
 
 class SiteResource(resources.ModelResource):
