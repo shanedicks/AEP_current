@@ -404,6 +404,23 @@ def create_classroom_section_task(section_id_list):
             obj.g_suite_id = post.get('id')
             obj.g_suite_link = post.get('alternateLink')
             obj.save()
+            service.courses().create(courseId=obj.g_suite_id)
+
+@shared_task
+def add_TA_task(section_id_list):
+    sections = apps.get_model('sections', 'Section').objects.filter(id__in=section_id_list)
+    service = classroom_service()
+    program_ta = {
+        'ELL': 'eslta@elearnclass.org',
+        'ELRN': 'elearnta@elearnclass.org', 
+        'CCR': 'onlineta@elearnclass.org'
+    }
+    for obj in sections:
+        ta = {"userId": program_ta[obj.program]}
+        service.courses().create(
+            courseId=obj.g_suite_id,
+            body={"userId": program_ta[obj.program]}
+        ).execute()
 
 @shared_task
 def send_message_task(message_id):
