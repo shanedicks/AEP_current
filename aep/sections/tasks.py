@@ -415,12 +415,14 @@ def add_TA_task(section_id_list):
         'ELRN': 'elearnta@elearnclass.org', 
         'CCR': 'onlineta@elearnclass.org'
     }
-    for obj in sections:
-        ta = {
-            "courseId": obj.g_suite_id,
-            "userId": program_ta[obj.program]
-        }
-        service.courses().create(body=ta).execute()
+    for section in sections:
+        ta = program_ta[section.program]
+        teachers = service.courses().teachers()
+        try:
+            teachers.create(body={"userId": ta}).execute()
+            logger.info(f"Added {ta} to {section}")
+        except HttpError as error:
+            logger.error(error)
 
 @shared_task
 def send_message_task(message_id):
