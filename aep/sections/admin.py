@@ -93,18 +93,16 @@ class SectionAdmin(ImportExportActionModelAdmin):
     list_display = (
         "title",
         "WRU_ID",
-        "course",
-        "program",
-        'site',
-        "teacher",
+        'get_site_code',
+        "get_teacher",
         "get_days_str",
-        "seats",
         "get_active_enrollment_count",
         "start_time",
         "end_time",
         'semester',
         'g_suite_id',
-        'slug',
+        "get_course_code",
+        "program",
     )
 
     list_filter = (
@@ -112,7 +110,14 @@ class SectionAdmin(ImportExportActionModelAdmin):
         'program'
     )
 
-    search_fields = ["title", "program", 'WRU_ID', 'semester__title']
+    search_fields = [
+        "title",
+        "program",
+        'WRU_ID',
+        'semester__title',
+        'teacher__first_name',
+        'teacher__last_name'
+    ]
 
     autocomplete_fields = [
         "teacher",
@@ -133,9 +138,22 @@ class SectionAdmin(ImportExportActionModelAdmin):
     )
 
     def get_active_enrollment_count(self, obj):
-        return obj.students.filter(status="A").count()
+        a = obj.students.filter(status="A").count()
+        return f"{a} / {obj.seats}"
     get_active_enrollment_count.admin_order_field = "Students"
     get_active_enrollment_count.short_description = "Students"
+
+    def get_course_code(self, obj):
+        return getattr(obj.course, 'code', '-')
+    get_course_code.short_description = "Course"
+
+    def get_site_code(self, obj):
+        return obj.site.code
+    get_site_code.short_description = "Site"
+
+    def get_teacher(self, obj):
+        return f"{obj.teacher.first_name} {obj.teacher.last_name[0]}"
+    get_teacher.short_description = "Teacher"
 
     def begin(self, request, queryset):
         for obj in queryset:

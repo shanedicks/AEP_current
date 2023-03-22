@@ -21,6 +21,7 @@ class TestEvent(models.Model):
     TABE_LOC = 'TABE Locator'
     CLAS_E_LOC = 'CLAS-E Locator'
     ORIENTATION = 'Orientation'
+    CLOSED_ORIENTATION = 'Closed Orientaion'
     ONLINE_ORIENTATION = 'Online Orientation'
     HISET_PRACTICE = 'HiSET Practice'
     EXIT_EXAM = 'Exit Exam'
@@ -29,8 +30,9 @@ class TestEvent(models.Model):
         (TABE_LOC, 'TABE Locator'),
         (CLAS_E, 'CLAS-E Test'),
         (CLAS_E_LOC, 'CLAS-E Locator'),
-        (ORIENTATION, 'Orientation'),
-        (ONLINE_ORIENTATION, 'Online Orientation'),
+        (ORIENTATION, 'In Person Program Orientation'),
+        (CLOSED_ORIENTATION, 'eOO and ELLOO Google Classroom Orientation'),
+        (ONLINE_ORIENTATION, 'Online Program Orientation'),
         (HISET_PRACTICE, 'HiSET Practice'),
         (EXIT_EXAM, 'Exit Exam')
     )
@@ -112,16 +114,24 @@ class TestEvent(models.Model):
             self.save()
 
     def orientation_reminder(self):
+        templates = {
+            self.ORIENTATION: 'emails/orientation_reminder.html',
+            self.ONLINE_ORIENTATION: 'emails/online_orientation_reminder.html',
+            self.CLOSED_ORIENTATION: 'emails/classroom_orientation_reminder.html'
+        }
+        try:
+            template = templates[self.test]
+        except KeyError:
+            return
         for student in self.students.all():
             if student.student.email:
                 context = {
                     'student': student.student.first_name,
-                    'wru': ('', student.student.WRU_ID)[student.student.WRU_ID is not None]
+                    'wru': ('', student.student.WRU_ID)[student.student.WRU_ID is not None],
+                    'date': self.start.date(),
+                    'time': self.start.time()
                 }
-                if self.test == self.ONLINE_ORIENTATION:
-                    html_message = render_to_string('emails/online_orientation_reminder.html', context)
-                else:
-                    html_message = render_to_string('emails/orientation_reminder.html', context)
+                html_message = render_to_string(template, context)
                 message = strip_tags(html_message)
                 send_mail_task.delay(
                     subject="Orientation for the Delgado Adult Education Program!",

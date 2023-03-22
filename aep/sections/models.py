@@ -482,6 +482,7 @@ class Section(models.Model):
             if getattr(self, field.name):
                 days_str.append(day[1])
         return "".join(days_str)
+    get_days_str.short_description = "Days"
 
     def get_days_names(self):
         days = [s[0].title() for s in self.get_days()]

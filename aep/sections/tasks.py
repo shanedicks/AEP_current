@@ -417,7 +417,10 @@ def add_TA_task(section_id_list):
         'CCR': 'onlineta@elearnclass.org'
     }
     for section in sections:
-        ta = program_ta[section.program]
+        try:
+            ta = program_ta[section.program]
+        except KeyError:
+            continue
         teachers = service.courses().teachers()
         try:
             teachers.create(courseId=section.g_suite_id, body={"userId": ta}).execute()
