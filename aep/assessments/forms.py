@@ -130,7 +130,7 @@ class OrientationSignupForm(TestSignupForm):
         super(OrientationSignupForm, self).__init__(*args, **kwargs)
         limit = timezone.now() + datetime.timedelta(days=2) # we only want test events at least 2 days away
         events = TestEvent.objects.filter(
-            test='Orientation',
+            test__in=['Orientation', 'Online Orientation'],
             start__date__gte=limit
         ).exclude(
             full=True
