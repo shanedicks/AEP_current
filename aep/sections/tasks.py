@@ -416,11 +416,11 @@ def add_TA_task(section_id_list):
         'CCR': 'onlineta@elearnclass.org'
     }
     for obj in sections:
-        ta = {"userId": program_ta[obj.program]}
-        service.courses().create(
-            courseId=obj.g_suite_id,
-            body={"userId": program_ta[obj.program]}
-        ).execute()
+        ta = {
+            "courseId": obj.g_suite_id,
+            "userId": program_ta[obj.program]
+        }
+        service.courses().create(body=ta).execute()
 
 @shared_task
 def send_message_task(message_id):
