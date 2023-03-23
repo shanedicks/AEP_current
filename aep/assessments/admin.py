@@ -26,6 +26,7 @@ class TestEventAdmin(admin.ModelAdmin):
 
     list_filter = (
         'start',
+        'test',
         'site'
     )
 
