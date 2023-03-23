@@ -148,11 +148,14 @@ class SectionAdmin(ImportExportActionModelAdmin):
     get_course_code.short_description = "Course"
 
     def get_site_code(self, obj):
-        return obj.site.code
+        return getattr(obj.site, 'code', '-')
     get_site_code.short_description = "Site"
 
     def get_teacher(self, obj):
-        return f"{obj.teacher.first_name} {obj.teacher.last_name[0]}"
+        if obj.teacher:
+            return f"{obj.teacher.first_name} {obj.teacher.last_name[0]}"
+        else:
+            return "-"
     get_teacher.short_description = "Teacher"
 
     def begin(self, request, queryset):
