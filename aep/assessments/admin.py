@@ -48,7 +48,8 @@ class TestEventAdmin(admin.ModelAdmin):
         'seats',
         'start',
         'end',
-        'full'
+        'full',
+        'hidden'
     )
 
     autocomplete_fields = [
