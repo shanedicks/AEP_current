@@ -133,6 +133,7 @@ class OrientationSignupForm(TestSignupForm):
             test__in=['Orientation', 'Online Orientation'],
             start__date__gte=limit
         ).exclude(
+            hidden=True,
             full=True
         ).order_by('title')
         self.fields['event'].queryset = events

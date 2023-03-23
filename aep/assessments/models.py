@@ -78,6 +78,10 @@ class TestEvent(models.Model):
         default=False
     )
 
+    hidden = models.BooleanField(
+        default=False
+    )
+
     class Meta:
         verbose_name = "Test Event"
         verbose_name_plural = "Test Events"
