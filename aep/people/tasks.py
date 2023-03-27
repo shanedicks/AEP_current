@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import csv
+import os
 from datetime import datetime, timedelta
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
@@ -141,6 +142,7 @@ def intake_retention_report_task(from_date, to_date, email_address):
     )
     email.attach_file(filename)
     email.send()
+    os.remove(filename)
     return True
 
 @shared_task
@@ -231,6 +233,7 @@ def staff_report_task():
     email = EmailMessage('Staff Report Test', "Let's just see how it goes shall we?.", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
     email.attach_file('staff_report.csv')
     email.send()
+    os.remove('staff_report.csv')
     return True
 
 @shared_task
@@ -321,6 +324,7 @@ def participation_summary_task():
     email = EmailMessage('Participation Report', "This is a detailed participation report for all students", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
     email.attach_file('participation_report.csv')
     email.send()
+    os.remove('participation_report.csv')
     return True
 
 @shared_task
@@ -421,6 +425,7 @@ def summary_report_task(from_date, to_date):
     email = EmailMessage('Summary Report', "Student attendance summary report", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
     email.attach_file('summary_report.csv')
     email.send()
+    os.remove('summary_report.csv')
     return True
 
 @shared_task
@@ -557,6 +562,8 @@ def coachee_export_task(staff_id, email):
     email = EmailMessage('Coachee Export', "Here is the coachee export your requested", 'reporter@dccaep.org', [email])
     email.attach_file('coachees_export.csv')
     email.send()
+    os.remove("coachees_export.csv")
+    return True
 
 @shared_task
 def prospect_export_task(staff_id, email):
@@ -645,6 +652,8 @@ def prospect_export_task(staff_id, email):
     email = EmailMessage('Prospect Export', "Here is the prospect export your requested", 'reporter@dccaep.org', [email])
     email.attach_file('prospect_export.csv')
     email.send()
+    os.remove('prospect_export.csv')
+    return True
 
 @shared_task
 def prospect_check_duplicate_task(prospect_id):

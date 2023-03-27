@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import csv
+import os
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.apps import apps
@@ -60,6 +61,9 @@ def coaching_export_task(email):
     )
     email.attach_file('coaching_export.csv')
     email.send()
+    os.remove('coaching_export.csv')
+    return True
+
 
 @shared_task
 def create_g_suite_accounts_task(elearn_record_id_list):

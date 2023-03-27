@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 import csv
+import os
 from googleapiclient.errors import HttpError
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
@@ -108,6 +109,7 @@ def participation_detail_task(email_address):
     )
     email.attach_file('participation_detail_report.csv')
     email.send()
+    os.remove('participation_detail_report.csv')
     return True
 
 @shared_task
@@ -272,6 +274,7 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
     )
     email.attach_file('mondo_attendance_report.csv')
     email.send()
+    os.remove('mondo_attendance_report.csv')
     return True
 
 @shared_task
@@ -361,6 +364,7 @@ def section_skill_mastery_report_task(section_id, email_address):
     )
     email.attach_file(filename)
     email.send()
+    os.remove(filename)
     return True
 
 @shared_task
@@ -405,7 +409,6 @@ def create_classroom_section_task(section_id_list):
             obj.g_suite_id = post.get('id')
             obj.g_suite_link = post.get('alternateLink')
             obj.save()
-            service.courses().create(courseId=obj.g_suite_id)
 
 @shared_task
 def add_TA_task(section_id_list):

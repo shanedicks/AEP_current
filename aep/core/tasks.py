@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import csv
+import os
 from core.utils import plivo_num
 from django.apps import apps
 from django.conf import settings
@@ -82,4 +83,5 @@ def model_report_task(email_address, app, model):
     )
     email.attach_file(filename)
     email.send()
+    os.remove(filename)
     return True

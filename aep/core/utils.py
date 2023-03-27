@@ -1,10 +1,12 @@
 import csv
 import datetime
+import os
 import requests
 from apiclient import discovery
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
 from django.apps import apps
+from django.core.mail.message import EmailMessage
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.http import HttpResponse
@@ -236,8 +238,23 @@ def render_to_csv(data, filename):
     writer = csv.writer(response)
     for row in data:
         writer.writerow(row)
-
     return response
+
+def custom_report(data, filename, email_address):
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        for row in data:
+            writer.writerow(row)
+
+    email = EmailMessage(
+        'Custom report',
+        'This is a custom data report',
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+    os.remove(filename)
 
 def get_fiscal_year_start_date():
     today = timezone.now()

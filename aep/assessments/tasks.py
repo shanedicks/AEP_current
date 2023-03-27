@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import csv
+import os
 from datetime import datetime, timedelta
 from django.apps import apps
 from django.core.mail import send_mail
@@ -73,6 +74,7 @@ def event_attendance_report_task(event_id, email_address):
     )
     email.attach_file(filename)
     email.send()
+    os.remove(filename)
     return True
 
 @shared_task
@@ -257,6 +259,7 @@ def accelerated_coaching_report_task(from_date, to_date, email_address):
     )
     email.attach_file(filename)
     email.send()
+    os.remove(filename)
     return True
 
 @shared_task
@@ -343,6 +346,7 @@ def testing_eligibility_report(email_address):
     )
     email.attach_file(filename)
     email.send()
+    os.remove(filename)
     return True
 
 @shared_task
