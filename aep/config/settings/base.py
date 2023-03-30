@@ -193,7 +193,6 @@ KEYFILE_DICT = {
 
 # Celery settings
 CELERY_RESULT_BACKEND = 'redis://'
-CELERY_WORKER_MAX_TASKS_PER_CHILD = 1
 
 # WorkreadyU Settings
 LCTCS_PASS = get_env_variable('LCTCS_PASS')

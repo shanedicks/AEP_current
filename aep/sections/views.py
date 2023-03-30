@@ -1,4 +1,5 @@
 from apiclient import discovery
+from googleapiclient.errors import HttpError
 from datetime import datetime, date
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
@@ -1110,13 +1111,16 @@ class GSuiteAttendanceView(LoginRequiredMixin, DetailView):
                 raw[student] = {'issue': 'Student needs elearn_record to recieve g-suite email'}
                 continue
             if elearn.g_suite_email:
-                raw[student] = service.courses(
-                ).courseWork().studentSubmissions().list(
-                    courseId=self.object.g_suite_id,
-                    states='RETURNED',
-                    courseWorkId='-',
-                    userId=student.student.elearn_record.g_suite_email
-                ).execute()
+                try:
+                    raw[student] = service.courses(
+                    ).courseWork().studentSubmissions().list(
+                        courseId=self.object.g_suite_id,
+                        states='RETURNED',
+                        courseWorkId='-',
+                        userId=student.student.elearn_record.g_suite_email
+                    ).execute()
+                except HttpError:
+                    raw[student] = {'issue': 'Student not found in Google Classroom section'}
             else:
                 raw[student] = {'issue': 'Student elearn record has no g-suite email'}
         scores = []
