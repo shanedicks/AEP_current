@@ -363,6 +363,20 @@ class TestHistory(models.Model):
         if self.last_test_type == 'Clas_E':
             return self.latest_clas_e
 
+    @property
+    def last_test_nrs(self):
+        test = self.last_test
+        if self.last_test_type == 'Tabe':
+            r = max(test.read_nrs, '-')
+            m = max(test.math_nrs, '-')
+            l = max(test.lang_nrs, '-')
+            return f"{r} {m} {l}"
+        if self.last_test_type == 'Clas_E':
+            r = max(test.read_nrs, '-')
+            w = max(test.write_nrs, '-')
+            return f"{r} {w}"
+    
+
 
 class Test(models.Model):
 
