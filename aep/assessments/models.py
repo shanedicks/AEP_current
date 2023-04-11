@@ -360,22 +360,25 @@ class TestHistory(models.Model):
     def last_test(self):
         if self.last_test_type == 'Tabe':
             return self.latest_tabe
-        if self.last_test_type == 'Clas_E':
+        elif self.last_test_type == 'Clas_E':
             return self.latest_clas_e
+        else:
+            return None
 
     @property
     def last_test_nrs(self):
         test = self.last_test
+        if self.last_test is None:
+            return "No Test"
         if self.last_test_type == 'Tabe':
-            r = max(test.read_nrs, '-')
-            m = max(test.math_nrs, '-')
-            l = max(test.lang_nrs, '-')
+            r = max(test.read_nrs, '-') if test.read_nrs is not None else '-'
+            m = max(test.math_nrs, '-') if test.math_nrs is not None else '-'
+            l = max(test.lang_nrs, '-') if test.lang_nrs is not None else '-'
             return f"{r} {m} {l}"
-        if self.last_test_type == 'Clas_E':
-            r = max(test.read_nrs, '-')
-            w = max(test.write_nrs, '-')
+        elif self.last_test_type == 'Clas_E':
+            r = max(test.read_nrs, '-') if test.read_nrs is not None else '-'
+            w = max(test.write_nrs, '-') if test.write_nrs is not None else '-'
             return f"{r} {w}"
-    
 
 
 class Test(models.Model):
