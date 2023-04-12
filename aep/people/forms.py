@@ -517,34 +517,41 @@ class StudentInterestForm(ModelForm):
             ),
             Fieldset(
                 'Tell us more about your class preferences',
-                Column(    
-                    HTML(
-                        """<p><strong>How would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                Row(
+                    Column(    
+                        HTML(
+                            """<p><strong>How would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                        ),
+                        "on_campus",
+                        "online_solo",
+                        "online_cohort",
+                        "hybrid",
+                        css_class="col-md-4"
                     ),
-                    "on_campus",
-                    "online_solo",
-                    "online_cohort",
-                    "hybrid",
-                    css_class="col-md-4"
+                    Column(
+                        HTML(
+                            """<p><strong>What time of day would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                        ),
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "weekend",
+                        css_class="col-md-4"
+                    ),
+                    Column(
+                        HTML("""<p><strong>What days of the week would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                        ),
+                        "mw",
+                        "tr",
+                        "sat",
+                        css_class="col-md-4"
+                    ),
                 ),
-                Column(
-                    HTML(
-                        """<p><strong>When would you prefer to attend classes? (Check all that apply)</strong></p>"""
-                    ),
-                    "morning",
-                    "afternoon",
-                    "evening",
-                    "weekend",
-                    css_class="col-md-4"
+                HTML(
+                    """<p><strong>Can you access online classes or resources?</strong></p>"""
                 ),
-                Column(
-                    HTML(
-                        """<p><strong>Can you access online classes or resources?</strong></p>"""
-                    ),
-                    "computer_access",
-                    "internet_access",
-                    css_class="col-md-4"
-                )
+                "computer_access",
+                "internet_access",
             ),
             'prior_registration',  
         )
@@ -577,6 +584,9 @@ class StudentInterestForm(ModelForm):
             "afternoon",
             "evening",
             "weekend",
+            "mw",
+            "tr",
+            "sat",
             "computer_access",
             "internet_access",
             "prior_registration"

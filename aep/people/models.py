@@ -1134,19 +1134,31 @@ class Student(Profile):
     )
     morning = models.BooleanField(
         default = False,
-        verbose_name = _("Morning")
+        verbose_name = _("Morning (8:30am - 1:00pm)")
     )
     afternoon = models.BooleanField(
         default = False,
-        verbose_name = _("Afternoon")
+        verbose_name = _("Afternoon (1:00pm - 4:00pm)")
     )
     evening = models.BooleanField(
         default = False,
-        verbose_name = _("Evening")
+        verbose_name = _("Evening (5:30pm - 8:30pm)")
     )
     weekend = models.BooleanField(
         default = False,
         verbose_name = _("Weekend")
+    )
+    mw = models.BooleanField(
+        default = False,
+        verbose_name = _("Monday and Wednesday")
+    )
+    tr = models.BooleanField(
+        default = False,
+        verbose_name = _("Tuesday and Thursday")
+    )
+    sat = models.BooleanField(
+        default = False,
+        verbose_name = _("Saturday")
     )
     computer_access = models.BooleanField(
         default = False,
