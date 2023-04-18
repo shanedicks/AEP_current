@@ -12,6 +12,7 @@ from django.utils.html import strip_tags
 from django.utils import timezone
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from assessments import rules
 
 logger = get_task_logger(__name__)
 
@@ -282,6 +283,7 @@ def testing_eligibility_report(email_address):
             "Phone",
             "Native Language",
             "Program Area",
+            "Test Status",
             "Last Test Type",
             "Last Test Date",
             "Orienation Status",
@@ -316,6 +318,14 @@ def testing_eligibility_report(email_address):
                 active_hours = record.active_hours,
             except TypeError:
                 active_hours ="active_hours failed"
+            if rules.has_valid_test_record(student):
+                status = "No Test Needed"
+            elif rules.needs_pretest(student):
+                status = "Pretest needed"
+            elif rules.needs_post_test(student):
+                status = "Post test Needed"
+            else:
+                status = "Something is wrong"
             s = [
                 student.WRU_ID,
                 student.last_name,
@@ -326,6 +336,7 @@ def testing_eligibility_report(email_address):
                 student.phone,
                 native_language,
                 student.program,
+                status,
                 record.last_test_type,
                 record.last_test_date,
                 student.orientation,

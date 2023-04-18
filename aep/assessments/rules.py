@@ -1,22 +1,34 @@
 from datetime import timedelta
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 import rules
 
 # predicates
 
-
 @rules.predicate
 def has_tabe(student):
+    try:
+        tests = student.tests
+    except ObjectDoesNotExist:
+        return False
     return student.tests.tabe_tests.count() > 0
 
 
 @rules.predicate
 def has_clas_e(student):
+    try:
+        tests = student.tests
+    except ObjectDoesNotExist:
+        return False
     return student.tests.clas_e_tests.count() > 0
 
 
 @rules.predicate
 def has_gain(student):
+    try:
+        tests = student.tests
+    except ObjectDoesNotExist:
+        return False
     return student.tests.gain_tests.count() > 0
 
 
@@ -25,6 +37,10 @@ has_pretest = has_tabe | has_clas_e | has_gain
 
 @rules.predicate
 def within_six_months(student):
+    try:
+        tests = student.tests
+    except ObjectDoesNotExist:
+        return False
     if student.tests.last_test_date == None:
         return False
     else:
@@ -39,7 +55,7 @@ needs_pretest = ~has_current_pretest
 
 @rules.predicate
 def has_completed_classes(student):
-    return student.completed_classes.count() > 0
+    return student.completed_classes().count() > 0
 
 
 @rules.predicate
