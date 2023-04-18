@@ -79,9 +79,9 @@ def has_post_tested(student):
     semester_end = classes.latest('section__semester__end_date').section.semester.end_date
     section_end = classes.latest('section__ending').section.ending
     if section_end is not None:
-        return last_test_date > section_end
+        return last_test > section_end
     else:
-        return last_test_date > semester_end
+        return last_test > semester_end
 
 
 has_post_test = ~needs_post_test | has_post_tested
