@@ -50,8 +50,8 @@ def completed_class_since_last_test(student):
         last_test_date = student.tests.last_test_date
     except ObjectDoesNotExist:
         return completed_classes.count() > 0
-    ccslt = [c for c in completed_classes if c.start_date > last_test_date]
-        return len(ccslt) > 0
+    ccslt = [c for c in completed_classes if c.section.start_date > last_test_date]
+    return len(ccslt) > 0
 
 
 @rules.predicate
@@ -60,7 +60,7 @@ def can_post_test_by_hours(student):
         tests = student.tests
     except ObjectDoesNotExist:
         return False
-    if tests.last_test_type == 'Clas_E'
+    if tests.last_test_type == 'Clas_E':
         return tests.active_hours >= 50
     else:
         return tests.active_hours >= 40

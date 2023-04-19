@@ -332,7 +332,7 @@ class TestHistory(models.Model):
             )
             total_hours = 0
             total_hours += sum([a.hours for a in attendance_set])
-            total_hours += sum([float(a.hours) for a in appointment_set])
+            total_hours += sum([float(a.hours()) for a in appointment_set])
             return total_hours
 
     @property
