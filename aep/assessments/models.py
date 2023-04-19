@@ -330,13 +330,9 @@ class TestHistory(models.Model):
                 attendance_date__gte=self.last_test_date,
                 attendance_type='P'
             )
-
             total_hours = 0
-
-            for attendance in attendance_set:
-                total_hours += attendance.hours
-            for appt in appointment_set:
-                total_hours += float(appt.hours())
+            total_hours += sum([a.hours for a in attendance_set])
+            total_hours += sum([float(a.hours) for a in appointment_set])
             return total_hours
 
     @property

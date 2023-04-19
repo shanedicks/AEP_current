@@ -315,7 +315,7 @@ def testing_eligibility_report(email_address):
             except ObjectDoesNotExist:
                 native_language = ''
             try:
-                active_hours = record.active_hours,
+                active_hours = record.active_hours
             except TypeError:
                 active_hours ="active_hours failed"
             if rules.has_valid_test_record(student):

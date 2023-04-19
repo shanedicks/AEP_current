@@ -13,7 +13,6 @@ def has_tabe(student):
         return False
     return student.tests.tabe_tests.count() > 0
 
-
 @rules.predicate
 def has_clas_e(student):
     try:
@@ -22,21 +21,10 @@ def has_clas_e(student):
         return False
     return student.tests.clas_e_tests.count() > 0
 
+has_pretest = has_tabe | has_clas_e
 
 @rules.predicate
-def has_gain(student):
-    try:
-        tests = student.tests
-    except ObjectDoesNotExist:
-        return False
-    return student.tests.gain_tests.count() > 0
-
-
-has_pretest = has_tabe | has_clas_e | has_gain
-
-
-@rules.predicate
-def within_six_months(student):
+def test_within_six_months(student):
     try:
         tests = student.tests
     except ObjectDoesNotExist:
@@ -44,50 +32,42 @@ def within_six_months(student):
     if student.tests.last_test_date == None:
         return False
     else:
-        target = timezone.now().date() - timedelta(days=150)    
+        target = timezone.now().date() - timedelta(days=180)    
         return student.tests.last_test_date > target
 
-
-has_current_pretest = has_pretest & within_six_months
+has_current_pretest = has_pretest & test_within_six_months
 
 needs_pretest = ~has_current_pretest
 
-
 @rules.predicate
-def has_completed_classes(student):
-    return student.completed_classes().count() > 0
-
-
-@rules.predicate
-def needs_post_test(student):
-    classes = student.completed_classes().exclude(
+def completed_class_since_last_test(student):
+    completed_classes = student.completed_classes().exclude(
         section__program='ADMIN'
     ).exclude(
         section__program='TRANS'
     )
-    return classes.count() > 0
+    try:
+        last_test_date = student.tests.last_test_date
+    except ObjectDoesNotExist:
+        return completed_classes.count() > 0
+    ccslt = [c for c in completed_classes if c.start_date > last_test_date]
+        return len(ccslt) > 0
 
 
 @rules.predicate
-def has_post_tested(student):
-    last_test = student.tests.last_test_date
-    classes = student.completed_classes().exclude(
-        section__program='ADMIN'
-    ).exclude(
-        section__program='TRANS'
-    )
-    semester_end = classes.latest('section__semester__end_date').section.semester.end_date
-    section_end = classes.latest('section__ending').section.ending
-    if section_end is not None:
-        return last_test > section_end
+def can_post_test_by_hours(student):
+    try:
+        tests = student.tests
+    except ObjectDoesNotExist:
+        return False
+    if tests.last_test_type == 'Clas_E'
+        return tests.active_hours >= 50
     else:
-        return last_test > semester_end
+        return tests.active_hours >= 40
 
+needs_post_test = completed_class_since_last_test | can_post_test_by_hours
 
-has_post_test = ~needs_post_test | has_post_tested
-
-has_valid_test_record = has_current_pretest & has_post_test
-
+has_valid_test_record = has_current_pretest & ~needs_post_test
 
 rules.add_rule('pretested', has_current_pretest)
 rules.add_rule('can_enroll', has_valid_test_record)
