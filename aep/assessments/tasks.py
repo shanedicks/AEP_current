@@ -318,14 +318,6 @@ def testing_eligibility_report(email_address):
                 active_hours = record.active_hours
             except TypeError:
                 active_hours ="active_hours failed"
-            if rules.has_valid_test_record(student):
-                status = "No Test Needed"
-            elif rules.needs_pretest(student):
-                status = "Pretest needed"
-            elif rules.needs_post_test(student):
-                status = "Post test Needed"
-            else:
-                status = "Something is wrong"
             s = [
                 student.WRU_ID,
                 student.last_name,
@@ -336,7 +328,7 @@ def testing_eligibility_report(email_address):
                 student.phone,
                 native_language,
                 student.program,
-                status,
+                student.testing_status(),
                 record.last_test_type,
                 record.last_test_date,
                 student.orientation,

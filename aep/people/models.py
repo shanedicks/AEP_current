@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from assessments import rules
 from core.tasks import send_mail_task, send_sms_task
 from core.utils import make_slug, make_AEP_ID, make_unique_slug, state_session
 
@@ -1176,6 +1177,17 @@ class Student(Profile):
     def get_absolute_url(self):
         return reverse('people:student detail', kwargs={'slug': self.slug})
 
+    def testing_status(self):
+        if rules.has_valid_test_record(self):
+            status = "No Test Needed"
+        elif rules.needs_pretest(self):
+            status = "Pretest needed"
+        elif rules.needs_post_test(self):
+            status = "Post test Needed"
+        else:
+            status = "Something is wrong"
+        return status
+
     def future_appts(self):
         return self.test_appointments.filter(
             event__start__gte=timezone.now()
@@ -1446,7 +1458,6 @@ class Staff(Profile):
 
     def closed_prospects(self):
         return self.prospects.filter(active=True).exclude(student=None)
-
 
     def current_classes(self):
         today = timezone.localdate()
