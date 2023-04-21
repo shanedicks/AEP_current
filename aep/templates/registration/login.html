@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 {% block head_title %}DCCAEP | Login{% endblock head_title %}
 {% block content %}
+	<div>
     <form action="" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-success">Login</button>
     </form>
+	</div>
+	<div>
+	<p><a href="{% url password_change %}">I want to change my password</a></p>
+	<p><a href="{% url 'password_reset' %}">I forgot my password!</a></p>
 {% endblock content %}

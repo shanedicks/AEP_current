@@ -25,7 +25,7 @@ class Semester(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('semesters:semester detail', kwargs={'pk': self.pk})
+        return reverse('semesters:semester class list', kwargs={'pk': self.pk})
 
     def get_days(self):
         return self.days.all()

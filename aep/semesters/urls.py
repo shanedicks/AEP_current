@@ -1,4 +1,4 @@
-from django.urls import re_path, include
+from django.urls import re_path, include, path
 from . import views
 
 app_name = 'semesters'
@@ -16,10 +16,20 @@ single_semester_patterns = [
         name='semester times table')
 ]
 
+reports_patterns = [
+    path('teacher-attendance/',
+        views.TeacherAttendanceReportView.as_view(),
+        name='teacher attendance report'
+    )
+]
+
 urlpatterns = [
     re_path(r'^$',
         views.SemesterListView.as_view(),
         name='semester list'),
     re_path(r'^(?P<pk>\d+)/',
-        include(single_semester_patterns))
+        include(single_semester_patterns)
+    ),
+    path('reports/',
+        include(reports_patterns))
 ]

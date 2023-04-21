@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import csv
+import os
 from apiclient.errors import HttpError
 from django.apps import apps
 from django.core.mail.message import EmailMessage
@@ -120,6 +121,41 @@ def send_schedules_task(semester_id_list):
                 from_email="noreply@elearnclass.org",
                 recipient_list=recipients,
             )
+
+@shared_task
+def attendance_reminder_task(semester_id_list, email_address, send_mail=True):
+    semesters = apps.get_model('semesters', 'Semester').objects.filter(id__in=semester_id_list)
+    filename = 'teacher_attendance_report.csv'
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            'Session',
+            'Section',
+            'Teacher',
+            'Count',
+            'Reminder'
+        ]
+        writer.writerow(headers)
+        for semester in semesters:
+            for section in semester.get_sections():
+                data = [
+                    semester,
+                    section,
+                    section.teacher,
+                    section.attendance_reminder(send_mail),
+                    send_mail
+                ]
+                writer.writerow(data)
+    email = EmailMessage(
+        'Teacher Attendance Report',
+        'Attached report lists the number of missing attendance for each section',
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+    os.remove(filename)
+    return True
 
 @shared_task
 def send_link_task(semester_id, url_name):

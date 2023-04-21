@@ -263,7 +263,6 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
             ]
             for att in e.attendance.filter(attendance_type='P'):
                 data.extend([att.hours, att.attendance_date])
-
             writer.writerow(data)
 
         email = EmailMessage(
@@ -302,7 +301,7 @@ def send_link_task(section_id, url_name):
         student.text_form_link(url_name)
 
 @shared_task
-def enrollment_notification_task(enrollment_id):
+def enrollment_notification_task(enrollment_id, status):
     enrollment = apps.get_model('sections', 'Enrollment').objects.get(id=enrollment_id)
     email = EmailMessage(
         'Roster change for {section}'.format(section=enrollment.section.title),
@@ -436,6 +435,18 @@ def send_message_task(message_id):
     message = apps.get_model('sections', 'Message').objects.get(id=message_id)
     logger.info('Sending message {0}'.format(message.title))
     message.send_message()
+
+@shared_task
+def finalize_daily_attendance_task(section_id, attendance_date):
+    section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+    Attendance = apps.get_model('sections', 'Attendance')
+    attendance = Attendance.objects.filter(
+        enrollment__section=section,
+        attendance_date=attendance_date,
+        attendance_type=Attendance.PENDING
+    )
+    attendance.update(attendance_type=Attendance.ABSENT)
+
 
 @shared_task
 def cancel_class_task(cancellation_id):

@@ -2,8 +2,12 @@ from datetime import time
 from django.apps import apps
 from django.views.generic import DetailView, ListView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from sections.forms import SectionSearchForm
+from .forms import SemesterForm
 from .models import Semester
+from .tasks import attendance_reminder_task
 
 
 class SemesterListView(LoginRequiredMixin, ListView):
@@ -104,3 +108,18 @@ class SemesterClassListView(LoginRequiredMixin, ListView, FormView):
         return self.render_to_response(
             self.get_context_data(form=form, object_list=self.object_list)
         )
+
+class TeacherAttendanceReportView(LoginRequiredMixin, FormView):
+
+    form_class = SemesterForm
+    template_name = "semesters/teacher_attendance_report_csv.html"
+
+    def form_valid(self, form):
+        email_address = self.request.user.email
+        semester_id_list = [s.id for s in form.cleaned_data['semesters']]
+        attendance_reminder_task.delay(
+            semester_id_list=semester_id_list,
+            email_address=email_address,
+            send_mail=False
+        )
+        return HttpResponseRedirect(reverse('report success'))

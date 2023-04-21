@@ -26,7 +26,7 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     SingleSkillMasteryForm, SkillMasteryFormset,
                     EnrollmentUpdateForm, CancellationForm)
 from .tasks import (participation_detail_task, section_skill_mastery_report_task,
-                    mondo_attendance_report_task, cancel_class_task)
+                    mondo_attendance_report_task, cancel_class_task, finalize_daily_attendance_task)
 
 
 class AttendanceCSV(LoginRequiredMixin, FormView):

@@ -421,25 +421,28 @@ class Section(models.Model):
                         add=added),
                     "admin@dccaep.org",
                     [self.teacher.email],
-                    fail_silently=False
                 )
 
     def enforce_attendance(self):
         for student in self.get_active():
             drop_task.delay(enrollment_id=student.id)
 
-    def attendance_reminder(self):
-        if self.teacher.email:
-            today = timezone.now()
-            last_week = timezone.now() - td(days=7)
-            att = Attendance.objects.filter(
-                attendance_date__lt=today,
-                attendance_date__gte=last_week,
-                attendance_type='X',
-                enrollment__section=self,
-                enrollment__status='A'
-            ).count()
-            if att > 1:
+    def attendance_reminder(self, send_mail=True):
+        today = timezone.now()
+        last_week = timezone.now() - td(days=7)
+        att_count = Attendance.objects.filter(
+            attendance_date__lt=today,
+            attendance_date__gte=last_week,
+            attendance_type='X',
+            enrollment__section=self,
+            enrollment__status='A'
+        ).count()
+        try:
+            teacher = self.teacher
+            email = teacher.email
+        except ObjectDoesNotExist:
+            email = ''
+        if send_mail and att_count > 0 and email:
                 send_mail_task.delay(
                     "Delgado Adult Ed Attendance Reminder {day}".format(day=timezone.now().date()),
                     "Hi {teacher} \n"
@@ -454,8 +457,8 @@ class Section(models.Model):
                     ),
                     "admin@dccaep.org",
                     [self.teacher.email],
-                    fail_silently=False
                 )
+        return att_count
 
     def get_days(self):
         days = []
@@ -759,7 +762,6 @@ class Enrollment(models.Model):
             )
 
     def save(self, *args, **kwargs):
-        super(Enrollment, self).save(*args, **kwargs)
         mod = timezone.now().date()
         if self.section.starting is not None:
             start = self.section.starting
@@ -770,7 +772,9 @@ class Enrollment(models.Model):
         else:
             end = self.section.semester.end_date
         if mod > start and mod < end and self.status is not self.COMPLETED:
-            enrollment_notification_task.delay(self.id)
+            status = self.get_status_display()
+            enrollment_notification_task.delay(self.id, status)
+        super(Enrollment, self).save(*args, **kwargs)
 
 
 class Attendance(models.Model):

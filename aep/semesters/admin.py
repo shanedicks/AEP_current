@@ -3,7 +3,7 @@ from .models import Semester, Survey, Message
 from .tasks import (send_g_suite_info_task, semester_begin_task,
     validate_enrollments_task, refresh_enrollments_task, send_survey_task,
     create_missing_g_suite_task, send_message_task, send_schedules_task,
-    send_link_task)
+    send_link_task, attendance_reminder_task)
 
 # Register your models here.
 
@@ -38,8 +38,9 @@ class SemesterAdmin(admin.ModelAdmin):
     ]
 
     def attendance_reminder(self, request, queryset):
-        for obj in queryset:
-            obj.attendance_reminder()
+        id_list = [obj.id for obj in queryset]
+        email = request.user.email
+        attendance_reminder_task.delay(id_list, email)
 
     def begin(self, request, queryset):
         for obj in queryset:
