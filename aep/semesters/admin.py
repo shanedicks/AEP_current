@@ -21,7 +21,6 @@ class SemesterAdmin(admin.ModelAdmin):
     search_fields = ["title"]
 
     actions = [
-        "attendance_reminder",
         "begin",
         "end",
         "enforce_attendance",
