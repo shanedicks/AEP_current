@@ -442,6 +442,7 @@ class Section(models.Model):
             email = teacher.email
         except ObjectDoesNotExist:
             email = ''
+        sent = False
         if send_mail and att_count > 0 and email:
                 send_mail_task.delay(
                     "Delgado Adult Ed Attendance Reminder {day}".format(day=timezone.now().date()),
@@ -458,7 +459,8 @@ class Section(models.Model):
                     "admin@dccaep.org",
                     [self.teacher.email],
                 )
-        return att_count
+                sent = True
+        return (att_count, sent)
 
     def get_days(self):
         days = []

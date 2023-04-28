@@ -1069,6 +1069,10 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
         formset = AttendanceFormset(request.POST, queryset=self.get_form_queryset())
         if formset.is_valid():
             formset.save()
+            finalize_daily_attendance_task.delay(
+                section_id=self.section.id,
+                attendance_date=attendance_date
+            )
             return HttpResponseRedirect(self.get_success_url())
         else:
             return self.render_to_response(

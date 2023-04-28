@@ -16,6 +16,10 @@ class Semester(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
 
+    report_to = models.EmailField(
+        blank=True
+    )
+
     allowed_absences = models.SmallIntegerField(default=4)
 
     class Meta:
