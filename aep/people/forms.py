@@ -526,8 +526,17 @@ class StudentInterestForm(ModelForm):
                         "online_solo",
                         "online_cohort",
                         "hybrid",
-                        css_class="col-md-4"
+                        css_class="col-md-6"
                     ),
+                    Column(
+                        HTML(
+                            """<p><strong>If you would like to attend in-person classes, where would you prefer to attend classes? (Ctrl+click to select more than one option)</strong></p>"""
+                        ),
+                        "site_preference",
+                        css_class="col-md-6"
+                    ),
+                ),
+                Row(
                     Column(
                         HTML(
                             """<p><strong>What time of day would you prefer to attend classes? (Check all that apply)</strong></p>"""
@@ -536,7 +545,7 @@ class StudentInterestForm(ModelForm):
                         "afternoon",
                         "evening",
                         "weekend",
-                        css_class="col-md-4"
+                        css_class="col-md-6"
                     ),
                     Column(
                         HTML("""<p><strong>What days of the week would you prefer to attend classes? (Check all that apply)</strong></p>"""
@@ -544,7 +553,7 @@ class StudentInterestForm(ModelForm):
                         "mw",
                         "tr",
                         "sat",
-                        css_class="col-md-4"
+                        css_class="col-md-6"
                     ),
                 ),
                 HTML(
@@ -587,6 +596,7 @@ class StudentInterestForm(ModelForm):
             "mw",
             "tr",
             "sat",
+            "site_preference",
             "computer_access",
             "internet_access",
             "prior_registration"

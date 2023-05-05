@@ -1161,6 +1161,10 @@ class Student(Profile):
         default = False,
         verbose_name = _("Saturday")
     )
+    site_preference = models.ManyToManyField(
+        "sections.Site",
+        blank=True,
+    )
     computer_access = models.BooleanField(
         default = False,
         verbose_name = _("I have access to a computer or device to participate in online classes or resources")
