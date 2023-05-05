@@ -267,6 +267,7 @@ class StudentSignupWizard(SessionWizardView):
         ssn = self.get_cleaned_data_for_step('ssn')
         personal = self.get_cleaned_data_for_step('personal')
         interest = self.get_cleaned_data_for_step('interest')
+        site_preference = interest.pop('site_preference')
         contact = self.get_cleaned_data_for_step('contact')
         race = self.get_cleaned_data_for_step('race')
         eet = self.get_cleaned_data_for_step('EET')
@@ -275,6 +276,8 @@ class StudentSignupWizard(SessionWizardView):
         student = Student(**personal, **interest, **contact)
         student.save()
         student_link_prospect_task.delay(student.id)
+        student.save()
+        student.site_preference.set(site_preference)
         wioa = WIOA(**ssn, **race, **eet, **disability, **details)
         wioa.student = student
         wioa.save()
