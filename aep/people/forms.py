@@ -1113,25 +1113,50 @@ class StudentForm(ModelForm):
             ),
             Fieldset(
                 'Tell us more about your class preferences',
-                HTML(
-                    """<p><strong>How would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                Row(
+                    Column(    
+                        HTML(
+                            """<p><strong>How would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                        ),
+                        "on_campus",
+                        "online_solo",
+                        "online_cohort",
+                        "hybrid",
+                        css_class="col-md-6"
+                    ),
+                    Column(
+                        HTML(
+                            """<p><strong>If you would like to attend in-person classes, where would you prefer to attend classes? (Ctrl+click to select more than one option)</strong></p>"""
+                        ),
+                        "site_preference",
+                        css_class="col-md-6"
+                    ),
                 ),
-                "on_campus",
-                "online_solo",
-                "online_cohort",
-                "hybrid",
-                HTML(
-                    """<p><strong>When would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                Row(
+                    Column(
+                        HTML(
+                            """<p><strong>What time of day would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                        ),
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "weekend",
+                        css_class="col-md-6"
+                    ),
+                    Column(
+                        HTML("""<p><strong>What days of the week would you prefer to attend classes? (Check all that apply)</strong></p>"""
+                        ),
+                        "mw",
+                        "tr",
+                        "sat",
+                        css_class="col-md-6"
+                    ),
                 ),
-                "morning",
-                "afternoon",
-                "evening",
-                "weekend",
                 HTML(
                     """<p><strong>Can you access online classes or resources?</strong></p>"""
                 ),
                 "computer_access",
-                "internet_access"
+                "internet_access",
             ),
             'prior_registration',            
             Fieldset(
@@ -1291,6 +1316,10 @@ class StudentForm(ModelForm):
             "afternoon",
             "evening",
             "weekend",
+            "mw",
+            "tr",
+            "sat",
+            "site_preference",
             "internet_access",
             "computer_access"
         )

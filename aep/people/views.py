@@ -219,10 +219,12 @@ class StudentCreateView(CreateView):
         student_form = StudentForm(request.POST)
         wioa_form = WioaForm(request.POST)
         sf_valid = student_form.is_valid()
+        site_preference = student_form.cleaned_data['site_preference']
         wf_valid = wioa_form.is_valid()
         if sf_valid and wf_valid:
             student = student_form.save(commit=False)
             student.save()
+            student.site_preference.set(site_preference)
             student_link_prospect_task.delay(student.id)
             wioa = wioa_form.save(commit=False)
             wioa.student = student
