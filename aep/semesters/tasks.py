@@ -133,18 +133,19 @@ def attendance_reminder_task(semester_id_list, email_address, send_mail=True):
             'Section',
             'Teacher',
             'Count',
-            'Reminder'
+            'Completed'
         ]
         writer.writerow(headers)
         for semester in semesters:
             for section in semester.get_sections():
                 count, sent = section.attendance_reminder(send_mail)
+                completed = "No" if count > 0 else "Yes"
                 data = [
                     semester,
                     section,
                     section.teacher,
                     count,
-                    sent
+                    completed
                 ]
                 writer.writerow(data)
     email = EmailMessage(
