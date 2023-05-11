@@ -46,6 +46,8 @@ class OrientationView(ListView):
             event__test__in=self.orientations,
             event__start__lte=now,
             event__end__gte=now
+        ).order_by(
+            'student__first_name'
         )
         return queryset
 
