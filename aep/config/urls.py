@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
-from assessments.views import OrientationCheckView
+from assessments.views import OrientationCheckView, OrientationView
 from sections.views import CurrentCancellationsListView, CancellationsListView
 
 
@@ -57,6 +57,9 @@ urlpatterns = [
         OrientationCheckView.as_view(),
         name='orientation check'
     ),
+    path('orientation/',
+        OrientationView.as_view(),
+        name='orientation'),
     # Django Admin Stuff
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^accounts/', include('django.contrib.auth.urls')),
