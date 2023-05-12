@@ -78,6 +78,7 @@ class ItemAdmin(ImportExportActionModelAdmin):
 	resource_class = ItemResource
 
 	list_display = (
+		'id',
 		'item_id',
 		'category',
 		'name',

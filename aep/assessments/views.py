@@ -32,18 +32,13 @@ from .tasks import (event_attendance_report_task,
 class OrientationView(ListView):
 
     template_name = 'assessments/orientation.html'
-    orientations = [
-        TestEvent.ORIENTATION,
-        TestEvent.CLOSED_ORIENTATION,
-        TestEvent.ONLINE_ORIENTATION
-]
 
     def get_queryset(self):
         central_tz = pytz.timezone('US/Central')
         current_time_central = timezone.now().astimezone(central_tz)
         now = current_time_central.replace(tzinfo=pytz.utc)
         queryset = TestAppointment.objects.filter(
-            event__test__in=self.orientations,
+            event__test=TestEvent.ORIENTATION,
             event__start__lte=now,
             event__end__gte=now
         ).order_by(
