@@ -70,6 +70,8 @@ class TestEventDetailView(LoginRequiredMixin, DetailView):
             context.update(kwargs)
         return context
 
+class TestEventPaperworkView(TestEventDetailView):
+    template_name = 'assessments/orientation_paperwork_links.html'
 
 class TestEventAttendanceReport(LoginRequiredMixin, View):
 

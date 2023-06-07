@@ -8,6 +8,9 @@
 <a class="btn btn-default btn-sm" href="{% url 'assessments:test event csv' pk=event.pk %}" role="button">Export Student Details</a>
 <a class="btn btn-default btn-sm" href="{% url 'assessments:tabe online csv' pk=event.pk %}" role="button">Export TABE ONLINE Input</a>
 <a class="btn btn-default btn-sm" href="{% url 'assessments:test event attendance report' pk=event.pk %}" role="button">Get Attendance Report Email</a>
+{% if event.test == event.ORIENTATION %}
+<a class="btn btn-default btn-sm" href="{% url 'assessments:test event paperwork' pk=event.pk %}" role="button">Photo ID and Paperwork Forms</a>
+{% endif %}
 <table class="table">
 	<tr>
 		<th>ID</th>

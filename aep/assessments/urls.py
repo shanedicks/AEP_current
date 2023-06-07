@@ -1,4 +1,4 @@
-from django.urls import re_path, include
+from django.urls import path, re_path, include
 from . import views
 
 app_name = 'assessments'
@@ -156,7 +156,10 @@ single_event_patterns = [
         name="tabe online csv"),
     re_path(r'^attendance_report$',
         views.TestEventAttendanceReport.as_view(),
-        name="test event attendance report")
+        name="test event attendance report"),
+    path('paperwork',
+        views.TestEventPaperworkView.as_view(),
+        name='test event paperwork')
 ]
 
 single_appointment_patterns = [
