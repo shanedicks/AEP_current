@@ -2,6 +2,8 @@ import logging
 import requests
 import bs4
 import time
+import sys
+import csv
 from datetime import datetime, timedelta
 from django.apps import apps
 from django.db import models, IntegrityError
@@ -14,6 +16,7 @@ from assessments import rules
 from core.tasks import send_mail_task, send_sms_task
 from core.utils import make_slug, make_AEP_ID, make_unique_slug, state_session
 
+Q = models.Q
 logger = logging.getLogger(__name__)
 
 # make_slug and make_AEP_ID callables were defaults for Profile and Student -have to be kept or migrations break
@@ -304,6 +307,40 @@ def merge_duplicates(dupe_id):
                 dob=orig.dob
             ).order_by('pk')
 
+def get_program(student_id):
+    try:
+        student = Student.objects.get(WRU_ID=student_id)
+        try:
+            tests = student.tests
+            program_from_test = {
+                "Tabe": "CCR",
+                "Clas_E": "ELL"
+            }
+            if tests.last_test_type in program_from_test:
+                return program_from_test[tests.last_test_type]
+            else:
+                try:
+                    program = student.classes.latest('pk').section.program
+                    return program
+                except ObjectDoesNotExist:
+                    return "No Tests or Classes"
+        except ObjectDoesNotExist:
+            return "TestHistory not found"
+    except ObjectDoesNotExist:
+        return "Student not found"
+
+def wru_program_needs_updating(csv_filename):
+    with open(csv_filename, "rt", newline="") as review, open("student_programs.csv", "w", newline="") as output:
+        reader = csv.reader(review)
+        out = csv.writer(output)
+
+        for row in reader:
+            record = row
+            if row[0] == "StudentId":
+                record.append("Program")
+            else:
+                record.append(get_program(row[0]))
+            out.writerow(record)
 
 class Profile(models.Model):
     STATE_CHOICES = (
@@ -1393,6 +1430,39 @@ class Student(Profile):
             message = 'Hello from Delgado Adult Education. Click the link to submit the rest of your registration paperwork: {0}'.format(url)            
         if self.phone != '' and send:
             send_sms_task.delay(self.phone, message)
+
+    def content_filter(self, queryset):
+        return queryset
+
+    def schedule_filter(self, queryset):
+        time_filter_query = Q()
+        if self.morning:
+            time_filter_query |= Q(start_time__gte='08:30:00', end_time__lte='13:00:00')
+        if self.afternoon:
+            time_filter_query |= Q(start_time__gte='13:00:00', end_time__lte='16:00:00')
+        if self.evening:
+            time_filter_query |= Q(start_time__gte='17:30:00', end_time__lte='20:30:00')
+        if self.weekend:
+            time_filter_query |= Q(saturday=True) | Q(sunday=True)
+        day_filter_query = Q()
+        if self.mw:
+            day_filter_query |= Q(monday=True, wednesday=True)
+        if self.tr:
+            day_filter_query |= Q(tuesday=True, thursday=True)
+        if self.sat:
+            day_filter_query |= Q(saturday=True)
+        site_filter_query = Q()
+        if self.site_preference.exists():
+            site_filter_query = Q(site__in=self.site_preference.all())
+        return queryset.filter(time_filter_query, day_filter_query, site_filter_query)
+
+    def suggested_classes(self):
+        sections = apps.get_model('sections', 'Section').objects.filter(
+            Q(semester__end_date__gte=timezone.now()) | Q(ending__gte=timezone.now())
+        )
+        sections = self.schedule_filter(sections)
+        sections = self.content_filter(sections)
+        return sections
 
 class Staff(Profile):
 
@@ -2712,10 +2782,10 @@ class WIOA(models.Model):
 
             student = {
                 "hdnRoleType": "2",
-                "FY": "11",
-                "lblCurrentFY": "11",
-                "FYBginDate": "7/1/2022 12:00:00 AM",
-                "FYEndDate": "6/30/2023 12:00:00 AM",
+                "FY": "12",
+                "lblCurrentFY": "12",
+                "FYBginDate": "7/1/2023 12:00:00 AM",
+                "FYEndDate": "6/30/2024 12:00:00 AM",
                 "hdnProviderId": "DELGADO COMMUNITY COLLEGE",
                 "hdnInactiveStateKey": ",2,3,4,5,7,18",
                 "hdnInactiveProg": "2,5,7,13,",

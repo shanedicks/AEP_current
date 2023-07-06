@@ -102,6 +102,19 @@ class Course(models.Model):
         blank = True
     )
 
+    NRS_CHOICES = (
+        ('TABE R', 'TABE Reading'),
+        ('TABE M', 'TABE Math'),
+        ('TABE L', 'TABE Language'),
+        ('CLAS-E R', 'CLAS-E Reading'),
+    )
+
+    nrs_type = models.CharField(
+        max_length = 10,
+        choices = NRS_CHOICES,
+        blank=True
+    )
+
     class Meta:
         pass
 

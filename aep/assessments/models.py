@@ -376,6 +376,20 @@ class TestHistory(models.Model):
             w = max(test.write_nrs, '-') if test.write_nrs is not None else '-'
             return f"{r} {w}"
 
+    def nrs_max(self):
+        scores = {
+            't_read': [t.read_nrs for t in self.tabe_tests.all() if t.read_nrs],
+            't_math': [t.math_nrs for t in self.tabe_tests.all() if t.math_nrs],
+            't_lang': [t.lang_nrs for t in self.tabe_tests.all() if t.lang_nrs],
+            'c_read': [t.read_nrs for t in self.clas_e_tests.all() if t.read_nrs],
+            'c_write': [t.write_nrs for t in self.clas_e_tests.all() if t.write_nrs]
+        }
+        nrs = {}
+        for k,v in scores.items():
+            if len(v) > 0:
+                nrs[k] = max(v)
+        return nrs
+
 
 class Test(models.Model):
 
