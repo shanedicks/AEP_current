@@ -1672,7 +1672,7 @@ class Paperwork(models.Model):
 
     def save(self, *args, **kwargs):
         super(Paperwork, self).save(*args, **kwargs)
-        if self.sig_date and self.pic_id_file:
+        if self.sig_date:
             student = self.student
             student.paperwork = student.COMPLETE
             student.save()
