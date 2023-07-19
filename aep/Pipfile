@@ -74,6 +74,7 @@ whitenoise = "*"
 xlrd = "*"
 xlwt = "*"
 zipp = "*"
+selenium = "*"
 
 [dev-packages]
 

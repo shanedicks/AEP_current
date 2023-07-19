@@ -307,40 +307,6 @@ def merge_duplicates(dupe_id):
                 dob=orig.dob
             ).order_by('pk')
 
-def get_program(student_id):
-    try:
-        student = Student.objects.get(WRU_ID=student_id)
-        try:
-            tests = student.tests
-            program_from_test = {
-                "Tabe": "CCR",
-                "Clas_E": "ELL"
-            }
-            if tests.last_test_type in program_from_test:
-                return program_from_test[tests.last_test_type]
-            else:
-                try:
-                    program = student.classes.latest('pk').section.program
-                    return program
-                except ObjectDoesNotExist:
-                    return "No Tests or Classes"
-        except ObjectDoesNotExist:
-            return "TestHistory not found"
-    except ObjectDoesNotExist:
-        return "Student not found"
-
-def wru_program_needs_updating(csv_filename):
-    with open(csv_filename, "rt", newline="") as review, open("student_programs.csv", "w", newline="") as output:
-        reader = csv.reader(review)
-        out = csv.writer(output)
-
-        for row in reader:
-            record = row
-            if row[0] == "StudentId":
-                record.append("Program")
-            else:
-                record.append(get_program(row[0]))
-            out.writerow(record)
 
 class Profile(models.Model):
     STATE_CHOICES = (
@@ -2779,7 +2745,6 @@ class WIOA(models.Model):
 
     def prepare_student(self):
 
-
             student = {
                 "hdnRoleType": "2",
                 "FY": "12",
@@ -2888,7 +2853,7 @@ class WIOA(models.Model):
                 "StudentWIOADetail.MigrantAndSeasonalFarmworker": migrant(self.migrant_seasonal_status),
                 "chkFarmworker": check_farm(self),
                 "chkNoneOfThese": check_statements(self),
-                "StudentWIOADetail.PrimaryGoal": 1,
+                "StudentWIOADetail.PrimaryGoal": self.student.primary_goal,
                 "chkPreferences_1": true_false(self.student.check_goal_1),
                 "chkPreferences_2": true_false(self.student.check_goal_2),
                 "chkPreferences_3": true_false(self.student.check_goal_3),

@@ -6,4 +6,4 @@ __pycache__/
 htmlcov/ 
 .DS_Store
 .env
-.log
+*.log

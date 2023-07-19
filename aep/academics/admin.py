@@ -45,7 +45,8 @@ class CourseResource(resources.ModelResource):
             'skills',
             'resources',
             'nrs_min',
-            'nrs_max'
+            'nrs_max',
+            'nrs_type'
         )
 
 
@@ -164,7 +165,14 @@ class CourseAdmin(ImportExportActionModelAdmin):
         'title',
         'code',
         'nrs_min',
-        'nrs_max'
+        'nrs_max',
+        'nrs_type'
+    )
+
+    list_editable = (
+        'nrs_min',
+        'nrs_max',
+        'nrs_type'
     )
 
     search_fields = [
