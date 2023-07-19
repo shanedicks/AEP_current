@@ -75,6 +75,7 @@ xlrd = "*"
 xlwt = "*"
 zipp = "*"
 selenium = "*"
+crispy-bootstrap3 = "*"
 
 [dev-packages]
 

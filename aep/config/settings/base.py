@@ -58,6 +58,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'crispy_forms',
+    'crispy_bootstrap3',
     'import_export',
     'formtools',
     'rules.apps.AutodiscoverRulesConfig',
@@ -172,6 +173,7 @@ LOGIN_REDIRECT_URL = '/'
 FILE_UPLOAD_HANDLERS = ['django.core.files.uploadhandler.TemporaryFileUploadHandler']
 
 # django-crispy-forms template-pack setting
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap3'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # import_export settings
