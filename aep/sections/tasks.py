@@ -30,6 +30,9 @@ def activate_task(enrollment_id):
 @shared_task
 def end_task(enrollment_id):
     enrollment = get_enrollment(enrollment_id)
+    absent_count = enrollment.attendance.filter(attendance_type='A').count()
+    if absent_count > enrollment.section.semester.allowed_absences:
+        enrollment.status = enrollment.DROPPED
     if enrollment.status == enrollment.ACTIVE:
         enrollment.status = enrollment.COMPLETED
     return enrollment.save()

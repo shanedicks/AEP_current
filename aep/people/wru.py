@@ -132,6 +132,17 @@ def get_required_fields(student_id, program):
     if wioa.student.city == "Metairie":
         required['1']['select']["Address.City"] = "Other"
         required['1']['input']["Address.OtherCity"] = wioa.student.city
+    emp_status = employment_status(wioa.current_employment_status)
+    if emp_status in ["1_EM", "11_EMR"]:
+        employer = wioa.employer if wioa.employer != '' else 'not provided'
+        occupation = wioa.occupation if wioa.occupation != '' else 'not provided'
+        required['3'] = {
+            'input': {
+                'EnrollPStat.EmploymentLocation': employer,
+                'EnrollPStat.Occupation': occupation
+            },
+            'select': {}
+        }
     return required
 
 def complete_step(driver, step, step_dict):
