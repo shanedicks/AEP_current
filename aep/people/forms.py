@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.forms import Form, ModelForm, CharField, ValidationError, DateField, FileField
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
+from django.utils.safestring import mark_safe
 from django.utils import timezone
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML, Div
@@ -459,7 +460,7 @@ class StudentPersonalInfoForm(ModelForm):
             'title': "Title (titulo)*",
             'nickname': "Preferred Name or Nickname (nombre o apodo preferido)",
             'pronoun': "Pronouns (pronombres)",
-            "US_citizen": "<strong>Check this box if you are a US Citizen*</strong>"
+            "US_citizen": mark_safe("<strong>Check this box if you are a US Citizen*</strong>")
         }
 
 
@@ -2705,18 +2706,18 @@ class PaperworkForm(ModelForm):
         labels = {
             'signature': 'Signature*',
             'writing_sample': 'Student Writing Sample*',
-            "ferpa": """I have read and accept the 
-                    <a href="https://www.dccaep.org/FERPA/" target="_blank">
-                    FERPA and Student Records Policy*</a>""",
-            "testing": """I have read and accept the 
+            "ferpa": mark_safe("""I have read and accept the 
+                    <a href='https://www.dccaep.org/FERPA/' target='_blank'>
+                    FERPA and Student Records Policy*</a>"""),
+            "testing": mark_safe("""I have read and accept the 
                     <a href="https://www.dccaep.org/testing-agreement/" target="_blank">
-                    Testing Agreement*</a>""",
-            "technology": """I have read and accept the 
+                    Testing Agreement*</a>"""),
+            "technology": mark_safe("""I have read and accept the 
                     <a href="https://www.dccaep.org/tech-policy/" target="_blank"">
-                    Technology Policy*</a>""",
-            "contract": """I have read and accept the 
+                    Technology Policy*</a>"""),
+            "contract": mark_safe("""I have read and accept the 
                     <a href="https://www.dccaep.org/student-contract" target="_blank">
-                    Student Contract*</a>""",
+                    Student Contract*</a>"""),
         }
         help_texts = {
             'guardian_signature': '(If student is under 18)'
