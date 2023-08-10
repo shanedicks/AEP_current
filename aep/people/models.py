@@ -147,11 +147,11 @@ def move_or_copy_paperwork(orig, duplicate):
         try:
             np = duplicate.student_paperwork
         except ObjectDoesNotExist:
-            pass
-        p.student = duplicate
-        try:
+            np = None
+        if np is None:
+            p.student = duplicate
             p.save()
-        except IntegrityError:
+        else:
             bools = [
                 f.name for f in type(p)._meta.get_fields()
                 if f.get_internal_type() == 'BooleanField'

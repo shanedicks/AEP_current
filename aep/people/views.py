@@ -33,7 +33,8 @@ from .forms import (
     PaperworkForm, PhotoIdForm)
 from .tasks import (intake_retention_report_task, orientation_email_task, 
     prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
-    send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task)
+    send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
+    student_check_duplicate_task)
 
 
 # <<<<< Student Views >>>>>
@@ -230,6 +231,7 @@ class StudentCreateView(CreateView):
             wioa.student = student
             wioa.save()
             self.object = student
+            student_check_duplicate_task.delay(student.id)
             return HttpResponseRedirect(self.get_success_url())
         else:
             self.object = None
@@ -286,6 +288,7 @@ class StudentSignupWizard(SessionWizardView):
         orientation = form_dict["signup"].save(commit=False)
         orientation.student = student
         orientation.save()
+        student_check_duplicate_task.delay(student.id)
         return HttpResponseRedirect(reverse_lazy('people:signup success', kwargs={'pk' : orientation.event.pk}))
 
 
@@ -607,6 +610,7 @@ class ProspectCreateStudentView(CreateView):
             prospect.duplicate = False
             prospect.save()
             student_link_prospect_task.delay(student.id)
+            student_check_duplicate_task.delay(student.id)
             return HttpResponseRedirect(self.get_success_url())
         else:
             self.object = None
@@ -661,6 +665,7 @@ class ProspectCreateStudentWizard(StudentSignupWizard):
         orientation = form_dict["signup"].save(commit=False)
         orientation.student = student
         orientation.save()
+        student_check_duplicate_task.delay(student.id)
         return HttpResponseRedirect(reverse_lazy('people:signup success', kwargs={'pk' : orientation.event.pk}))
 
 

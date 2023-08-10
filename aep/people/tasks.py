@@ -13,6 +13,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from core.utils import state_session
 from core.tasks import send_mail_task
+from people.models import full_merge
 
 logger = get_task_logger(__name__)
 
@@ -430,7 +431,6 @@ def summary_report_task(from_date, to_date):
 
 @shared_task
 def pop_update_task(student_id, date):
-    date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S').date()
     student = apps.get_model('people', 'Student').objects.get(id=student_id)
     PoP = apps.get_model('people', 'PoP')
     exit = date - timedelta(days=90)
@@ -738,3 +738,32 @@ def send_paperwork_link_task(student_id, url_name):
     student = apps.get_model('people', "Student").objects.get(id=student_id)
     student.email_form_link(url_name)
     student.text_form_link(url_name)
+
+@shared_task
+def student_check_duplicate_task(student_id):
+    Student = apps.get_model('people', 'Student')
+    student = Student.objects.get(id=student_id)
+    logger.info("Duplicate check for {0} - id={1}".format(student, student.id))
+    ignore_ids = ['', 'No ID', None]
+    def get_matches():
+        matches = Student.objects.filter(
+            first_name=student.first_name,
+            last_name=student.last_name,
+            dob=student.dob,
+            duplicate=False,
+            id__lt=student.id
+        ).exclude(
+            id=student.id
+        ).exclude(
+            WRU_ID__in=ignore_ids
+        ).order_by('-pk')
+        return matches
+    matches = get_matches()
+    if not matches.exists():
+        logger.info(f"No matches found for {student}")
+    else:
+        while matches.exists():
+            orig = matches[0]
+            logger.info(f"Merging orig {orig}-{orig.slug} into dupe {student}-{student.slug}")
+            full_merge(orig, student)
+            matches = get_matches()
