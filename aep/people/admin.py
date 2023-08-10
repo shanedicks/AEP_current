@@ -454,10 +454,16 @@ class StudentAdmin(ImportExportActionModelAdmin):
         ("ec_phone",
          "ec_email",
          "ec_relation"),
-        ("duplicate",
-         "duplicate_of"),
-        "dupl_date",
-        "prior_registration",
+        'primary_goal',
+        "check_goal_1",
+        "check_goal_2",
+        "check_goal_3",
+        "check_goal_4",
+        "check_goal_5",
+        "check_goal_6",
+        "check_goal_7",
+        "check_goal_8",
+        "check_goal_9",
         ("ccr_app",
          "ell_app",
          "success_app",
@@ -479,16 +485,10 @@ class StudentAdmin(ImportExportActionModelAdmin):
         "site_preference",
         ("computer_access",
          "internet_access"),
-        'primary_goal',
-        "check_goal_1",
-        "check_goal_2",
-        "check_goal_3",
-        "check_goal_4",
-        "check_goal_5",
-        "check_goal_6",
-        "check_goal_7",
-        "check_goal_8",
-        "check_goal_9",
+        ("duplicate",
+         "duplicate_of"),
+        "dupl_date",
+        "prior_registration",
     ]
 
     readonly_fields = [
@@ -658,7 +658,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
     resource_class = WIOAResource
 
-    list_display = ("__str__", "get_WRU_ID", "state_id_checked")
+    list_display = ("__str__", "get_WRU_ID")
 
     list_filter = ("student__intake_date",)
 
@@ -689,17 +689,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
                 "highest_level_completed",
                 "highet_level_at_entry",
                 "school_location"
-            ),(
-                "current_employment_status",
-                "employer",
-                "occupation",
-            ),(
-                "current_industry",
-                "industry_preference"
             ),
-            "migrant_seasonal_status",
-            "long_term_unemployed",
-            "disability_notice",
             (
                 "adhd",
                 "autism",
@@ -721,11 +711,19 @@ class WIOAAdmin(ImportExportActionModelAdmin):
                 "dyslexia",
                 "neurological_impairments"
             ),
-            "request_accommodation",
             (
                 "household_income",
                 "household_size",
+            ),(
+                "current_employment_status",
+                "employer",
+                "occupation",
+            ),(
+                "current_industry",
+                "industry_preference"
             ),
+            "migrant_seasonal_status",
+            "long_term_unemployed",
             "TANF",
             "TANF_2",
             "SNAP",
@@ -746,6 +744,8 @@ class WIOAAdmin(ImportExportActionModelAdmin):
             "purchase_books",
             "referred_by",
             "digital_signature",
+            "disability_notice",
+            "request_accommodation",
     )
 
     readonly_fields = ["student"]
