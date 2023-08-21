@@ -79,7 +79,8 @@ def create_missing_g_suite_task(semester_id):
     logger.info('Creating missing GSuite accounts for {0}'.format(semester.title))
     logger.info("Creating G Suite Service")
     service = directory_service()
-    for student in students:
+    missing_g_suite = students.filter(elearn_record__g_suite_email='')
+    for student in missing_g_suite:
         logger.info("Creating GSuite account for {0}".format(student))
         try:
             student.elearn_record.create_g_suite_account(service)
