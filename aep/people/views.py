@@ -102,8 +102,8 @@ class IntakeRetentionCSV(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('report success')
 
     def form_valid(self, form):
-        from_date = form.cleaned_data['from_date']
-        to_date = form.cleaned_data['to_date']
+        from_date = form.cleaned_data['from_date'].strftime('%Y-%m-%d')
+        to_date = form.cleaned_data['to_date'].strftime('%Y-%m-%d')
         email = self.request.user.email
         intake_retention_report_task.delay(from_date, to_date, email)
         return super().form_valid(form)

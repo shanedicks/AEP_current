@@ -69,10 +69,10 @@ def orientation_email_task(name, email_address, appt_id):
 def intake_retention_report_task(from_date, to_date, email_address):
     filename = 'intake_retention_report.csv'
     students = apps.get_model('people', 'Student').objects.filter(duplicate=False)
-    from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S').date()
-    to_date = datetime.strptime(to_date, '%Y-%m-%dT%H:%M:%S').date()
-    min_id = students.filter(intake_date=from_date).aggregate(Min('id'))['id__min']
-    max_id = students.filter(intake_date=to_date).aggregate(Max('id'))['id__max']
+    from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+    to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
+    min_id = students.filter(intake_date__gte=from_date).aggregate(Min('id'))['id__min']
+    max_id = students.filter(intake_date__lte=to_date).aggregate(Max('id'))['id__max']
     new_students = students.filter(id__gte=min_id, id__lte=max_id)
     with open(filename, 'w', newline='') as out:
         writer = csv.writer(out)
@@ -87,6 +87,7 @@ def intake_retention_report_task(from_date, to_date, email_address):
             "Phone",
             "Alt Phone",
             "City",
+            "Other City",
             "DOB",
             "Profile Link",
             "Intake Date",
@@ -124,6 +125,7 @@ def intake_retention_report_task(from_date, to_date, email_address):
                 student.phone,
                 student.alt_phone,
                 student.city,
+                student.other_city,
                 str(student.dob),
                 "".join(["dccaep.org",
                     student.get_absolute_url()]),
@@ -331,8 +333,8 @@ def participation_summary_task():
 @shared_task
 def summary_report_task(from_date, to_date):
 
-    from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S').date()
-    to_date = datetime.strptime(to_date, '%Y-%m-%dT%H:%M:%S').date()
+    from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+    to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
 
     Student = apps.get_model('people', 'Student')
     Attendance = apps.get_model('sections', 'Attendance')
