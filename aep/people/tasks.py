@@ -6,7 +6,7 @@ from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
-from django.db.models import Sum, Min, Max
+from django.db.models import Sum, Min, Max, Count, Q
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from celery import shared_task
@@ -769,3 +769,48 @@ def student_check_duplicate_task(student_id):
             logger.info(f"Merging orig {orig}-{orig.slug} into dupe {student}-{student.slug}")
             full_merge(orig, student)
             matches = get_matches()
+
+@shared_task
+def minor_student_report_task(email_address):
+    today = datetime.today().date()
+    try:
+        from_date = today.replace(year=today.year - 18)
+    except ValueError:
+        from_date = today.replace(year=today.year - 18, day=28)
+    to_date = today.replace(year=today.year - 16)
+    students = apps.get_model('people', 'Student').objects.filter(duplicate=False, dob__gte=from_date, dob__lte=to_date)
+    
+    with open("minor_student_report.csv", 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            "WRU_ID",
+            "Last Name",
+            "First Name",
+            "DOB",
+            "Intake Date",
+            "Total Enrollments",
+            "Enrolled w/good attendance",
+            "Parish"
+        ]
+        writer.writerow(headers)
+
+        for student in students:
+            current_classes = student.current_classes().annotate(absences=Count('attendance', filter=Q(attendance__attendance_type='A')))
+            row = [
+                student.WRU_ID,
+                student.last_name,
+                student.first_name,
+                student.dob,
+                student.intake_date,
+                current_classes.count(),
+                current_classes.filter(absences__lte=5).count(),
+                student.get_parish_display()
+            ]
+            writer.writerow(row)
+    email = EmailMessage('Minor Student Report', "Here is the minor student report requested", 'reporter@dccaep.org', [email_address])
+    email.attach_file('minor_student_report.csv')
+    email.send()
+    os.remove("minor_student_report.csv")
+    return True
+
+
