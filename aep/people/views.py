@@ -299,13 +299,15 @@ class StudentCreateSuccessView(TemplateView):
 
 class StudentSignupSuccessView(TemplateView):
 
-    template_name = 'people/temp_signup_success.html'
-
     def get_context_data(self, **kwargs):
         context = super(StudentSignupSuccessView, self).get_context_data(**kwargs)
         if 'event' not in context:
             Events = apps.get_model('assessments', 'TestEvent')
             event = Events.objects.get(id=self.kwargs['pk'])
+            if event.test == 'Online Orientation':
+                self.template_name = 'people/signup_success_oo.html'
+            else:
+                self.template_name = 'people/signup_success_ipo.html'
             context['event'] = event
             context.update(kwargs)
         return context
