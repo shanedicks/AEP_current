@@ -904,10 +904,13 @@ def student_nrs_report_task(email_address):
     return True
 
 @shared_task
-def possible_duplicate_report_task(email_address):
+def possible_duplicate_report_task(email_address, id_list=None):
     filename = "possible_duplicates_report.csv"
     Student = apps.get_model('people', 'Student')
-    new_students = Student.objects.filter(WRU_ID=None)
+    if id_list is not None:
+        new_students = Student.objects.filter(id__in=id_list)
+    else:
+        new_students = Student.objects.filter(WRU_ID=None)
     students = Student.objects.filter(duplicate=False).exclude(WRU_ID=None)
     with open(filename, 'w', newline='') as out:
         writer = csv.writer(out)

@@ -13,7 +13,7 @@ from .models import (
     Student, Staff, WIOA, PoP,
     CollegeInterest, Paperwork, Prospect, ProspectNote, full_merge
     )
-from .tasks import send_to_state_task
+from .tasks import send_to_state_task, possible_duplicate_report_task
 from coaching.models import ElearnRecord, AceRecord
 from core.utils import state_session
 
@@ -501,6 +501,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'create_elearn_record',
         'create_ace_record',
         'merge',
+        'duplicate_report'
     )
 
     ordering = ['-id']
@@ -543,6 +544,10 @@ class StudentAdmin(ImportExportActionModelAdmin):
         duplicate = q[1]
         orig = q[0]
         full_merge(orig, duplicate)
+
+    def duplicate_report(self, request, queryset):
+        id_list = [obj.id for obj in queryset]
+        possible_duplicate_report_task.delay(request.user.email, id_list)
 
 admin.site.register(Student, StudentAdmin)
 
