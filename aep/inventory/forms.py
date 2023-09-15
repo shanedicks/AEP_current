@@ -13,7 +13,7 @@ class SelectTicketItemForm(ModelForm):
         category = kwargs.pop('category', None)
         item_qst = Item.objects.all()
         if category:
-            category = Category.objects.get(pk=category[0])
+            category = Category.objects.get(pk=category)
             item_qst = category.available()
         else:
             item_qst = Item.objects.exclude(
@@ -59,7 +59,7 @@ class TicketForm(ModelForm):
         category = kwargs.pop('category', None)
         item_qst = Item.objects.all()
         if category:
-            category = Category.objects.get(pk=category[0])
+            category = Category.objects.get(pk=category)
             item_qst = category.available()
         else:
             item_qst = Item.objects.exclude(
