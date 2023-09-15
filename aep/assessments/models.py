@@ -657,6 +657,12 @@ class Tabe(NRSTest):
         else:
             return False
 
+    def nrs(self):
+        r = max(self.read_nrs, '-') if self.read_nrs is not None else '-'
+        m = max(self.math_nrs, '-') if self.math_nrs is not None else '-'
+        l = max(self.lang_nrs, '-') if self.lang_nrs is not None else '-'
+        return f"{r} {m} {l}"
+
 
 class Tabe_Loc(NRSTest):
 
@@ -822,6 +828,11 @@ class Clas_E(NRSTest):
             return self.read_nrs > pretest.read_nrs
         except TypeError:
             return False
+
+    def nrs(self):
+        r = max(self.read_nrs, '-') if self.read_nrs is not None else '-'
+        w = max(self.write_nrs, '-') if self.write_nrs is not None else '-'
+        return f"{r} {w}"
 
 
 class Clas_E_Loc(NRSTest):

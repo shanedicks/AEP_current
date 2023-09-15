@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from core.utils import state_session
+from core.utils import state_session, get_fiscal_year_start_date, get_fiscal_year_end_date
 from core.tasks import send_mail_task
 from people.models import full_merge
 
@@ -779,7 +779,7 @@ def minor_student_report_task(email_address):
         from_date = today.replace(year=today.year - 18, day=28)
     to_date = today.replace(year=today.year - 16)
     students = apps.get_model('people', 'Student').objects.filter(duplicate=False, dob__gte=from_date, dob__lte=to_date)
-    
+
     with open("minor_student_report.csv", 'w', newline='') as out:
         writer = csv.writer(out)
         headers = [
@@ -813,4 +813,165 @@ def minor_student_report_task(email_address):
     os.remove("minor_student_report.csv")
     return True
 
+@shared_task
+def student_nrs_report_task(email_address):
+    filename = "student_nrs_report.csv"
+    start_date = get_fiscal_year_start_date()
+    end_date =  get_fiscal_year_end_date()
+    attendance = apps.get_model('sections', 'Attendance').objects.filter(
+            attendance_date__gte=start_date,
+            attendance_date__lte=end_date
+        )
+    appointments = apps.get_model('assessments', 'TestAppointment').objects.filter(
+            attendance_date__gte=start_date,
+            attendance_date__lte=end_date
+        )
+    fiscal_tabes = apps.get_model('assessments', 'Tabe').objects.filter(
+            test_date__gte=start_date,
+            test_date__lte=end_date
+        )
+    fiscal_clas_es = apps.get_model('assessments', 'Clas_E').objects.filter(
+            test_date__gte=start_date,
+            test_date__lte=end_date
+        )
+    Student = apps.get_model('people', 'Student')
+    students = Student.objects.filter(
+            Q(duplicate=False),
+            Q(classes__attendance__in=attendance) | Q(test_appointments__in=appointments)
+        ).distinct()
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        data = []
+        headers = [
+            "WRU Id",
+            "Last Name",
+            "First Name",
+            "Intake Date",
+            "Orientation",
+            "Class Hours",
+            "Test Hours",
+            "Total Hours",
+            "Num Tabes",
+            "Num Clas-Es",
+            "Tabes",
+            "Clas-Es"
+        ]
+        writer.writerow(headers)
 
+        for student in students:
+            student_attendance = attendance.filter(
+                    attendance_type='P',
+                    enrollment__student=student
+                )
+            att_hours = sum([a.hours for a in student_attendance])
+            tabes = fiscal_tabes.filter(student__student=student)
+            clas_es = fiscal_clas_es.filter(student__student=student)
+            test_hours = 2 * (tabes.count() + clas_es.count())
+            row = [
+                student.WRU_ID,
+                student.last_name,
+                student.first_name,
+                student.intake_date,
+                student.orientation,
+                att_hours,
+                test_hours,
+                att_hours + test_hours,
+                tabes.count(),
+                clas_es.count()
+            ]
+            if tabes.exists():
+                cell = "\n".join([f"{t.test_date} {t.nrs()}" for t in tabes])
+                row.append(cell)
+            else:
+                row.append("None")
+            if clas_es.exists():
+                cell = "\n".join([f"{t.test_date} {t.nrs()}" for t in clas_es])
+                row.append(cell)
+            else:
+                row.append("None")
+            writer.writerow(row)
+
+
+    email = EmailMessage(
+        'Student NRS Report',
+        "Student attendance and testing progress for students active in current fiscal year",
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+    os.remove(filename)
+    return True
+
+@shared_task
+def possible_duplicate_report_task(email_address):
+    filename = "possible_duplicates_report.csv"
+    Student = apps.get_model('people', 'Student')
+    new_students = Student.objects.filter(WRU_ID=None)
+    students = Student.objects.filter(duplicate=False).exclude(WRU_ID=None)
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        data = []
+        headers1 = [
+            "Last Name",
+            "First Name",
+            "DOB"
+        ]
+        writer.writerow(headers1)
+        headers2 = [
+            "",
+            "",
+            "DOB",
+            "Last Name",
+            "First Name",
+        ]
+        writer.writerow(headers2)
+
+        for student in new_students:
+            row = [student.last_name, student.first_name, student.dob]
+            writer.writerow(row)
+            try:
+                ssn = student.WIOA.SID
+                if len(ssn) == 9:
+                    ssn_match = students.filter(WIOA__SID=ssn)
+                    for match in ssn_match:
+                        match_row = [
+                            "",
+                            "SSN Match",
+                            match.dob,
+                            match.last_name,
+                            match.first_name
+                        ]
+                        writer.writerow(match_row)
+            except ObjectDoesNotExist:
+                writer.writerow("Student has no WIOA record")
+            l_search = student.last_name[:3]
+            f_search = student.first_name[:3]
+            dob_start = student.dob - timedelta(days=365*3)
+            dob_end = student.dob + timedelta(days=365*3)
+            name_match = students.filter(
+                last_name__istartswith=l_search,
+                first_name__istartswith=f_search,
+                dob__gte=dob_start,
+                dob__lte=dob_end
+            ).order_by('-dob')
+            for match in name_match:
+                match_row = [
+                    "",
+                    "Name Match",
+                    match.dob,
+                    match.last_name,
+                    match.first_name
+                ]
+                writer.writerow(match_row)
+
+    email = EmailMessage(
+        'Possible Duplicate Report',
+        "Report on possible duplicates for all unregistered students",
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+    os.remove(filename)
+    return True

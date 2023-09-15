@@ -262,8 +262,15 @@ def get_fiscal_year_start_date():
         year = today.year
     else:
         year = today.year - 1
-    return timezone.make_aware(datetime.date(year, 7, 1))
+    return datetime.date(year, 7, 1)
 
+def get_fiscal_year_end_date():
+    today = timezone.now()
+    if today.month >= 7:
+        year = today.year +1
+    else:
+        year = today.year
+    return datetime.date(year, 6, 30)
 
 def state_session():
     session = requests.Session()
