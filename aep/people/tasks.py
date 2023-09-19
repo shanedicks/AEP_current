@@ -153,7 +153,7 @@ def new_student_report_task(from_date, to_date, email_address):
     pass
 
 @shared_task
-def staff_report_task():
+def staff_report_task(email_address):
     with open('staff_report.csv', 'w', newline='') as out:
         writer = csv.writer(out)
         Staff = apps.get_model('people', 'Staff')
@@ -233,7 +233,7 @@ def staff_report_task():
 
             )
 
-    email = EmailMessage('Staff Report Test', "Let's just see how it goes shall we?.", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
+    email = EmailMessage('Staff Report Test', "Let's just see how it goes shall we?.", 'reporter@dccaep.org', [email_address])
     email.attach_file('staff_report.csv')
     email.send()
     os.remove('staff_report.csv')
