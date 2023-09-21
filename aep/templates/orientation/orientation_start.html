@@ -4,7 +4,7 @@
 
 <h1 class="text-center">Welcome!</h1>
 <h1 class="text-center">¡Bienvenido!</h1>
-<p><a class="btn btn-primary btn-lg center-block" href="{% url 'people:orientation overview' %}" role="button">Orienation in English</a></p>
-<p><a class="btn btn-primary btn-lg center-block" href="{% url 'people:spanish orientation overview' %}" role="button">Orientación en Español</a></p>
+<p><a class="btn btn-primary btn-lg center-block" href="{% url 'people:orientation overview' slug=slug %}" role="button">Orienation in English</a></p>
+<p><a class="btn btn-primary btn-lg center-block" href="{% url 'people:spanish orientation overview' slug=slug %}" role="button">Orientación en Español</a></p>
 
 {% endblock content %}
