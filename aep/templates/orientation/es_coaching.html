@@ -1,0 +1,22 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-center text-primary">Guía Académico</h1>
+<br>
+<p><strong>Si desea discutir sus metas académicas o necesita ayuda escogiendo sus clases, haga una cita  con un guía académico.</strong></p>
+<p>Estamos aquí para apoyarle y ayudarle a lograr sus metas. </p>
+<p>Razones para hacer una cita: </p>
+<ul>
+	<li>Interesado en obtener una certificación.</li>
+	<li>Quiere asistir a la universidad. </li>
+	<li>Quiere saber más sobre recursos educativos o recursos locales.</li>
+</ul>
+<br>
+<h3 class="text-primary">Para hacer una cita envíe un mensaje a <a href="mailto:coach@elearnclass.org" target="_blank">coach@elearnclass.org</a></h3>
+<hr>
+<p class=text-center>
+	<a class="btn btn-default btn-lg" href="{% url 'people:spanish orientation testing' slug=slug%}" role="button">&laquo Sección Previa</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:spanish orientation paperwork' slug=slug%}" role="button">Próxima Sección &raquo</a>
+</p>
+<hr>
+{% endblock content %}

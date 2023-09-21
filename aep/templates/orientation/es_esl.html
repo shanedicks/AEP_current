@@ -1,0 +1,39 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-primary text-center">ESL</h1>
+	<div class="embed-responsive embed-responsive-16by9">
+		<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/ctzEQli8zoA?si=wy2KClI9imXV9QKG" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+	</div>
+	<div>
+		<h2 class="text-primary">Inglés como Segundo Idioma (ESL)</h2>
+		<p>Las clases son diseñadas para ayudarle aumentar su habilidad de leer, escribir, hablar, y entender inglés. </p>
+		<p>Las clases duran 8 semanas y se dan completamente en inglés. </p>
+		<p>La clase que tomara depende en su nivel de inglés que se determina con un examen de ubicación. </p>
+		<p>Ofrecemos acomodaciones para el examen a pedido y son disponibles para todos. </p>
+		<br>
+		<p>Ofrecemos clases de varios niveles- empezando con el Nivel 1 (la clase mas básica) hasta el 6 (para las personas mas avanzadas en el idioma). </p>
+		<p><strong>Ahora que estás registrado como estudiante con DCCAEP</strong>, nunca tendrás que registrarte en www.DCCAEP.org. Si por cualquier razón, ocurre una disrupción en sus clases solo tienes que comunicarse con la oficina o haz una cita con un guía académico.    </p>
+	</div>
+<br>
+<h2 class="text-primary">DCCAEP Clases de Inglés como Segundo Idioma </h2>
+<br>
+<div>
+	<p><strong>Las clases de Inglés como Segundo Idioma de DCCAEP son...</strong></p>
+	<ul>
+		<li>Gratuito</li>
+		<li>Ocurren dos días de la semana y se ofrecen en la mañana y el la tarde </li>
+		<li>Diseñadas para ayudarle en su vida personalmente, socialmente, y profesionalmente (pero no son clases acreditadas) </li>
+		<li>Recurrente -- y no hay limite de cuantas clases puede asistir </li>
+	</ul>
+</div>
+<br>
+<h2 class="text-primary">Tipos de Clases</h2>
+<p><strong>Clases presenciales--</strong> Ofrecen lo mismo que las clases en línea pero en persona.  Favor de tomar en cuenta que solo las personas registradas como estudiantes se permiten en las clases. No se ofrece cuida de niños, ni se permite menores de edad en el salón de clase.</p>
+<br>
+<p><strong>Clases en línea--</strong>Usamos videos, presentaciones, y reuniones virtuales para enseñar las clases de inglés.  También, siempre puede hacer cita con su maestra si necesita ayuda adicional. </p>
+<p><em>Para tomar clases en línea se necesita computadora o teléfono y conocimientos informáticos básicos (pero también se ofrece asistencia técnico).</em></p>
+<hr>
+<p class="text-center"><a class="btn btn-primary btn-lg" href="{% url 'people:spanish orientation class types' slug=slug%}" role="button">Tipos de Clases</a></p>
+<hr>
+{% endblock content %}

@@ -1,0 +1,21 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+
+<h1 class="text-center text-primary">Formulario</h1>
+<div class="bg-primary">
+<hr>
+<h2><em>Es necesario llenar el formulario para terminar el proceso de ingresar como un estudiante.</em></h2>
+</div>
+<br>
+<h3>Necesitaremos que firme y envíe estos documentos electrónicamente utilizando el formulario de la página siguiente.<p></p>
+<small>Si haces clic en tu idioma en la parte superior de la siguiente página, podrás leer una traducción de la documentación, pero debes ENVIAR la documentación a través del formulario proporcionado.</small></h3>
+<br>
+<h3>Ingresar tu nombre en la parte inferior del formulario representa una firma electrónica.</h3>
+<hr>
+<p class=text-center>
+	<a class="btn btn-default btn-lg" href="{% url 'people:spanish orientation coaching' slug=slug%}" role="button">&laquo Sección Previa</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:orientation finish' slug=slug%}" role="button">Formulario &raquo</a>
+</p>
+<hr>
+{% endblock content %}

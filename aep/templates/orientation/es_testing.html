@@ -1,0 +1,32 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-center text-primary">Exámen de Ubicación</h1>
+<div class="bg-primary">
+<hr>
+<h2><em>Es necesario tomar el exámen antes de inscribirse en clases. </em></h2>
+</div>
+<h3>A continuación una lista de los exámenes que ofrecemos:</h3>
+<h3>Estudiantes de CCR- TABE.</h3>
+<ul>
+	<li>Este examen puede durar de 2 horas.</li>
+</ul>
+<br>
+<h3>Estudiantes de ESL- CLAS-E.</h3>
+<ul>
+	<li>Este exámen no tiene duración fija, pero usualmente dura de 1-2 horas</li> 
+</ul>
+<br>
+<div class="well">
+	<h4>Se espera que los estudiantes que completen con éxito una sesión de 8 semanas también prueben al final de la misma.</h4>
+	<h4> Lo que utilizamos para determinar qué clases debe tomar a medida que avanza en el programa es tener puntajes de prueba actualizados.</h4>
+</div>
+<h3>Acomodaciones</h3>
+<p>Si necesita acomodación para el exámen, comuníquese con un Asesor de admisión.</p>
+<hr>
+<p class=text-center>
+	<a class="btn btn-default btn-lg" href="{% url 'people:spanish orientation class structure' slug=slug%}" role="button">&laquo Sección Previa</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:spanish orientation coaching' slug=slug%}" role="button">Próxima Sección &raquo</a>
+</p>
+<hr>
+{% endblock content %}

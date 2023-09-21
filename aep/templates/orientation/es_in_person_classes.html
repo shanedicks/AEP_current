@@ -1,0 +1,113 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-primary text-center">Clases Presenciales</h1>
+<div class="bg-primary">
+<hr>
+<h2>Cuando se darán las clases?</h2>
+</div>
+<div class="row">
+	<div class="col-md-6">
+		<h3 class="text-primary">CCR Classes</h3>
+		<p><strong>Clases duran por 1.5 (hora y media) horas. </strong></p>
+		<ul>
+			<li>ejemplo: 8:30-10:00 AM</li>
+			<li>ejemplo: 5:30-7:00 PM</li>
+		</ul>
+		<p><strong>Clases se reúnen dos dias de la semana:</strong></p>
+		<ul>
+			<li><strong>Lunes y Miercoles</strong></li>
+		</ul>
+		<p>O</p>
+		<ul>
+			<li><strong>Martes y Jueves</strong></li>
+		</ul>
+		<p><strong>Esas son las únicas opciones. por ejemplo: no hay clases que se reúnen el lunes y martes</strong></p>
+		<br>
+		<br>
+	</div>
+	<div class="col-md-6">
+		<h3 class="text-primary">Clases de Inglés como Segundo Idioma </h3>
+		<p><strong>Clases duran por 3 horas.</strong></p>
+		<ul>
+			<li>ejemplo: 8:30-11:30 AM</li>
+			<li>ejemplo: 5:30-8:30 PM</li>
+		</ul>
+		<p><strong>Clases se reúnen dos dias de la semana:</strong></p>
+		<ul>
+			<li><strong>Lunes y Miercoles</strong></li>
+		</ul>
+		<p>O</p>
+		<ul>
+			<li><strong>Martes y Jueves</strong></li>
+		</ul>
+		<p><strong>Esas son las únicas opciones. por ejemplo: no hay clases que se reúnen el lunes y martes</strong></p>
+	</div>
+</div>
+<br>
+<hr>
+
+<h3>Niños & Acompañantes </h3>
+<p><strong>No se permiten.</strong>Por razones legales no podemos admitir personas que no sean estudiantes en el salón de clase-- las únicas personas que se permiten asistir una clase son personas que esten registrado como estudiante con Delgado. Nadie le puede acompañar a menos que sea un compañero de clase.</p>
+<div class="bg-primary">
+<hr>
+<h2>Donde se dan las clases?</h2>
+</div>
+<p>Tenemos muchas ubicaciones en el área metropolitana de Nueva Orleans.</p>
+<p>No todas nuestras ubicaciones ofrecen el mismo tipo de clases, por lo que le recomendamos que eche un vistazo a los listados a continuación.</p>
+<p><em>Hemos enumerado todas las ubicaciones a continuación, pero deberá consultar con su asesor de admisión para saber qué sitios estarán disponibles.</em></p>
+<div class="embed-responsive embed-responsive-16by9">
+	<iframe class="embed-responsive-item" sandbox="allow-scripts allow-popups allow-forms allow-same-origin allow-popups-to-escape-sandbox allow-downloads allow-modals" aria-label="Map, DCCAEP Locations" src="https://www.google.com/maps/d/embed?authuser=0&amp;mid=1GnkjDaa7XoKLS_5PgUKexKkKLdY" allowfullscreen=""></iframe>
+</div>
+<br>
+<div class="row">
+	<div class="col-md-4">
+		<p><strong>City Park</strong> - 615 City Park Ave</p>
+		<ul>
+			<li>CCR classes</li>
+			<li>ESL classes</li>
+			<li>Certification classes</li>
+			<li>on-site coaching</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>West Bank</strong> - 2600 Gen. Meyer</p>
+		<ul>
+			<li>CCR classes</li>
+			<li>ESL classes</li>
+			<li>on-site coaching</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>New Orleans Adult Learning Center</strong> (Midcity) - 139 S. Broad St</p>
+		<ul>
+			<li>ESL classes</li>
+		</ul>
+	</div>
+</div>
+<br>
+<div class="row">
+	<div class="col-md-4">
+		<p><strong>JOB1</strong> -3400 Tulane Ave.</p>
+		<ul>
+			<li>CCR Drop-in Lab</li>
+			<li>Certification classes</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>River City</strong> - 709 Churchill Pkwy </p>
+		<ul>
+			<li>CCR/ESL Drop-in Lab</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>Hispanic Chamber of Commerce</strong> - 2200 Veterans Memorial Blvd</p>
+		<ul>
+			<li>ESL classes</li>
+		</ul>
+	</div>
+</div>
+<hr>
+<p class="text-center"><a class="btn btn-primary btn-lg" href="{% url 'people:spanish orientation class structure' slug=slug%}" role="button">Estructura de Clase</a></p>
+<hr>
+{% endblock content %}

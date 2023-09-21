@@ -1,0 +1,27 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<div class="text-center">
+<h1 class="text-primary">Class Structure</h1>
+<br>
+<p><strong>Queremos acomodar las clases a tu estilo de vida, por eso ofrecemos dos opciones de clases.</strong></p>
+<p>(Si finalmente quieres tomar ambos, ¡también está bien!)</p>
+<br>
+<div class="row well well-lg">
+<div class="col-md-4 col-md-offset-2">
+	<h3><a href="{% url 'people:spanish orientation online classes' slug=slug%}">Clases en línea</a></h3>
+	<p>Tomar clases en línea usando una computadora.</p>
+</div>
+<div class="col-md-4">
+	<h3><a href="{% url 'people:spanish orientation in-person classes' slug=slug%}">Clases en persona</a></h3>
+	<p>Tomar clases en persona en un horario y lugar específicos.</p>
+</div>
+</div>
+<hr>
+<p>
+	<a class="btn btn-default btn-lg" href="{% url 'people:spanish orientation class types' slug=slug%}" role="button">&laquo Sección Previa</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:spanish orientation testing' slug=slug%}" role="button">Próxima Sección &raquo</a>
+</p>
+<hr>
+</div>
+{% endblock content %}

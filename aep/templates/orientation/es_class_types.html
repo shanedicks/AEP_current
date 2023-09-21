@@ -1,0 +1,29 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<div class="text-center">
+<h1 class="text-primary">Tipos de Clase</h1>
+<br>
+<p>Presione las fotos para obtener más información sobre los dos tipos de clases que ofrecemos.</p>
+<p>Si tiene interés en más de un tipo, favor de visitar la página de ambos.</p>
+<br>
+<div class="row well well-lg">
+	<div class="col-md-4 col-md-offset-2">
+		<h3><a href="{% url 'people:spanish orientation ccr' slug=slug%}">College & Career Readiness</a></h3>
+		<p>HiSET / Equivalencia de diploma de la Secundaria </p>
+		<p>(Lectura, Escritura, Matemática, Ciencia, & Estudios Sociales)</p>
+	</div>
+	<div class="col-md-4">
+		<h3><a href="{% url 'people:spanish orientation esl' slug=slug%}">English as a Second Language</a></h3>
+		<p>Inglés como Segundo Idioma</p>
+		<p>Capacidad de la lectura, la escritura, la comprensión auditiva y la capacidad de hablar.</p>
+	</div>
+</div>
+<hr>
+<p>
+	<a class="btn btn-default btn-lg" href="{% url 'people:spanish orientation overview' slug=slug%}" role="button">&laquo Sección Previa</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:spanish orientation class structure' slug=slug%}" role="button">Próxima Sección &raquo</a>
+</p>
+<hr>
+</div>
+{% endblock content %}

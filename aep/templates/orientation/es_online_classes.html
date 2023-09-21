@@ -1,0 +1,33 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-primary text-center">Online Classes</h1>
+
+<div class="bg-primary">
+<hr>
+<h2>Que puedo anticipar de las clases en línea?</h2>
+</div>
+<div class="embed-responsive embed-responsive-16by9">
+	<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/hXHK9pGSYx4?si=hH07hIYQV0GIorGE" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>		
+</div>
+<hr>
+<p>En este programa, le asignaremos clases enfocadas en ciertas destrezas dentro de un objeto de estudio.</p>
+<br>
+<p>Todas las clases se enseñan a través Google classroom, y podrás conectarse por computadora o usando la aplicación de Google classroom en su teléfono.</p>
+<br>
+<p>Su maestra/o le dará apoyo e instrucción individualizada y proveer acceso a otros recursos académicos.</p>
+<br>
+<p>Con las clases en línea se completan las lecciones a su propio ritmo, pero le damos fecha de entrega semanales para ayudarle a mantenerse al día. Adicionalmente, siempre puede trabajar con un guía académico si necesita más ayuda durante la sesión.</p>
+<br>
+<div class="bg-primary">
+<hr>
+<h2>Cuales son mis próximos pasos después de completar orientación?</h2>
+</div>
+<p>Primero, ¡aún necesitará programar una cita para la prueba!</p>
+<p>Después de la prueba, se le programará otra cita con su asesor de admisión. Durante esta cita, le enviarán un correo electrónico con instrucciones e información de inicio de sesión para configurar su cuenta de Google, que utilizará para acceder a sus clases en el aula de Google.</p>
+<br>
+<p>Su nueva cuenta de Google será una dirección de correo electrónico con su nombre completo @ elearnclass.org. Entonces, un ejemplo para el presidente Obama sería: barack.obama@elearnclass.org</p>
+<hr>
+<p class="text-center"><a class="btn btn-primary btn-lg" href="{% url 'people:spanish orientation class structure' slug=slug%}" role="button">Estructura de Clase</a></p>
+<hr>
+{% endblock content %}

@@ -1,0 +1,41 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-primary text-center">CCR</h1>
+<h2 class="text-primary">College and Career Readiness</h2>
+<p>Su trayecto con nuestro programa, dependiendo de su interés, puede llevarse hacia clases de CCR. </p>
+<p>Las clases de CCR son diseñadas para prepararle en disciplinas tales como Matemática, Lectura, y Escritura. </p>
+<p><strong>Clases de CCR le pudiese servir si sus metas son:</strong></p>
+<ul>
+	<li>Estudiar para el examen de HISET (equivalencia de diploma de la secundaria)</li>
+	<li>Preparación para estudios universitarios, o examen de ubicación para estudios universitarios</li>
+	<li>Simplemente repasando tus habilidades</li>
+</ul>
+<h2 class="text-primary">Clases y Sesiones</h2>
+<p><strong>DCCAEP is un programa gratuito!</strong> No ofrecemos clases que tengan créditos universitarios, por eso ninguna de las clases requieren un pago.</p>
+<p>Escogerá su horario dependiendo del resultado del examen TABE. Ofrecemos acomodaciónes para el examen a pedido y son disponibles para todos.</p>
+<p>Las clases que ofrecemos para el HISET incluyen:</p>
+<ul>
+	<li>Algebra</li>
+	<li>Escritura Narrative</li>
+	<li>HiSET Ciencia, y mas</li>
+</ul>
+<br>
+<p><strong>Cada sesión de clase dura por 8 semanas, y no hay límite en la cantidad de clases que puedas inscribirse.</strong> Las clases se pueden repetir hasta que logres destreza, y no hay límite en el número de sesiones a las que puede asistir.</p>
+<br>
+<p><strong>Ahora que estás registrado como estudiante con DCCAEP, nunca tendrás que registrarte en www.DCCAEP.org.</strong> Si por cualquier razón, ocurre una disrupción en sus clases solo tienes que comunicarse con la oficina o haz una cita con un guía académico.</p>
+<br>
+<p><strong>Normalmente ofrecemos clases en línea y en persona.</strong>  Favor de tomar en cuenta que solo las personas registradas como estudiantes se permiten en las clases. No se ofrece cuida de niños, ni se permite menores de edad en el salón de clase.</p>
+<div class="bg-primary">
+<hr>
+<h2>HiSET? Highschool Equivalency? GED?</h2>
+</div>
+<br>
+<h2 class="text-primary">Exámen de HiSET</h2>
+<p>Si tiene preguntas sobre el exámen favor de hacer una cita con un guía académico o vistite el sitio web.</p>
+<p><a href="www.hiset.ets.org">www.hiset.ets.org</a></p>
+<p><strong>***El exámen de HiSET se ofrece en inglés y español pero las clases que ofrecemos para el HiSET solo se ofrecen an inglés.*** </strong></p>
+<hr>
+<p class="text-center"><a class="btn btn-primary btn-lg" href="{% url 'people:spanish orientation class types' slug=slug%}" role="button">Tipos de Clases</a></p>
+<hr>
+{% endblock content %}

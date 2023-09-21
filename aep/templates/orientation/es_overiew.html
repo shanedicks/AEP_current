@@ -1,0 +1,31 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-center">Proceso para Estudiantes Nuevos</h1>
+<h2 class="text-primary">Resúmen del Contenido</h2>
+	<p>Lea atentamente esta página para obtener más información sobre los pasos necesarios para completar el Proceso de Nuevo Estudiante.</p>
+	<p><strong>1) Conozca información clave del programa en este sitio web de ORIENTACIÓN</strong></p>
+	<p><strong>2) Complete su FORMULARIO</strong></p>
+	<p><strong>3) Haga una cita para PRUEBAS </strong></p>
+	<p>Cuando termine de leer esta sección, presione el botón que dice <strong>"Próxima Sección"</strong> al final de la página.</p>
+	<p>Si en algún momento está preocupado o tiene un problema, siempre puede comunicarse con: <a href="mailto:intake@elearnclass.org" target="_blank">intake@elearnclass.org</a></p>
+	<p><em>Para ayudarnos a encontrarlo en nuestro sistema<strong>incluya su nombre completo y fecha de nacimiento</strong> en cualquier mensaje que envíe.</em></p>
+<h2 class="text-primary">Formulario</h2>
+<ul>
+	<li><p>Al final de esta orientación, se le pedirá que responda algunas preguntas y confirme que ha leído y acepta las políticas del programa. Se le pedirá que escriba su nombre para indicar una firma electrónica.</p></li>
+	<br>
+	<li><p>Debes completar el papeleo de admisión para completar el proceso de estudiante nuevo; no podrás tomar clases sin haber firmado primero nuestros documentos obligatorios.</p></li>
+</ul>
+<h2 class="text-primary">Examinación</h2>
+	<p>El siguiente paso después de completar su papeleo es inscribirse para una cita de prueba.</p>
+	<p>Podrá inscribirse para una cita:
+		<ul>
+			<li>En línea: debe tener una computadora con una cámara web para realizar la prueba en línea</li>
+			<li>En persona: tenemos opciones de prueba en los campus de City Park y West Bank</li>
+		</ul>
+	</p>
+	<p><strong>Tendrá que tomar una prueba corta que nos dará una idea aproximada de dónde se encuentra académicamente antes de poder programar las clases.</strong></p>
+<hr>
+<p><a class="btn btn-primary btn-lg center-block" href="{% url 'people:spanish orientation class types' slug=slug%}" role="button">Próxima Sección &raquo</a></p>
+<hr>
+{% endblock content %}
