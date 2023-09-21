@@ -1,0 +1,32 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-center">New Student Orientation</h1>
+<h2 class="text-primary">General Overview</h2>
+	<p>Please read this page carefully to learn more about what steps are necessary for you to complete the New Student Process.</p>
+	<p><strong>1) Learn key program information on this ORIENTATION website</strong></p>
+	<p><strong>2) Fill out and submit your electronic PAPERWORK</strong></p>
+	<p><strong>3) Prepare for your NEXT STEPS </strong></p>
+	<p>When you're done reading this section, please click on the <strong>"Next Section"</strong> button at the very bottom of the page!</p>
+	<p>If at anytime you are concerned or have a problem, you can always reach out to -- <a href="mailto:intake@elearnclass.org" target="_blank">intake@elearnclass.org</a></p>
+	<p><em>In order to help us find you in our system, <strong>please include your full name and date of birth</strong> in any message you send!</em></p>
+<h2 class="text-primary">Paperwork</h2>
+<ul>
+	<li><p>At the end of this orientation you will be asked to answer some questions and confirm that you have read and accept program policies. You will be asked to type in your name to signify an electronic signature.</p></li>
+	<br>
+	<li><p>You must finish the Intake Paperwork in order to complete the New Student Process-- you will not be able to take classes without having signed our mandatory documents first.</p></li>
+</ul>
+<h2 class="text-primary">Next Steps</h2>
+	<p>Your next step in the new student process depends on <em>what type of classes you want</em>.</p>
+	<p><strong>All in-person and English Language Learning classes:</strong> you will receive an email with information to schedule your testing appointment as soon as we process your paperwork.</p>
+	<p><strong>Online classes or eLearn:</strong> you will receive an email with your new school Google account, so that you can begin lessons in Google Classroom. You will make a testing appointment as part of a testing lesson in your eLearn class. </p>
+	<p>Whether you are testing as your next step or later as an eLearn student, you will have these options when you sign up for your testing appointment:</p>
+<ul>
+	<li><p>Online -- you *have* to have a computer with a web-camera in order to test online</p></li>
+	<li><p>In-Person -- we have testing options at the City Park, West Bank, and Jefferson campuses</p></li>
+</ul>
+	<p><strong>You will have to take is a short test that will give us a rough idea of where you are academically before you will be able to schedule classes.</strong></span></p>
+<hr>
+<p><a class="btn btn-primary btn-lg center-block" href="{% url 'people:orientation class types' slug=slug%}" role="button">Next Section >></a></p>
+<hr>
+{% endblock content %}

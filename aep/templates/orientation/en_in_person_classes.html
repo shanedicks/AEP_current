@@ -1,0 +1,138 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-primary text-center">In-Person Classes</h1>
+<div class="bg-primary">
+<hr>
+<h2>When are the classes?</h2>
+</div>
+<div class="row">
+	<div class="col-md-6">
+		<h3 class="text-primary">CCR Classes</h3>
+		<p><strong>Classes last for 1.5 (one & a half) hours.</strong></p>
+		<ul>
+			<li>example: 8:30-10:00 AM</li>
+			<li>example: 5:30-7:00 PM</li>
+		</ul>
+		<p><strong>Classes are held twice a week</strong> on either:</p>
+		<ul>
+			<li><strong>Monday & Wednesday</strong></li>
+		</ul>
+		<p>OR</p>
+		<ul>
+			<li><strong>Tuesday & Thursday</strong></li>
+		</ul>
+		<p>There is <strong>no</strong> option for different combinations</p>
+		<ul><li>example: there are no classes that are Monday & Tuesday</li></ul>
+		<br>
+		<br>
+	</div>
+	<div class="col-md-6">
+		<h3 class="text-primary">ESL Classes</h3>
+		<p><strong>Classes last for 3 (three) hours.</strong></p>
+		<ul>
+			<li>example: 8:30-11:30 AM</li>
+			<li>example: 5:30-8:30 PM</li>
+		</ul>
+		<p><strong>Classes are held twice a week</strong> on either:</p>
+		<ul>
+			<li><strong>Monday & Wednesday</strong></li>
+		</ul>
+		<p>OR</p>
+		<ul>
+			<li><strong>Tuesday & Thursday</strong></li>
+		</ul>
+		<p>There is <strong>no</strong> option for different combinations</p>
+		<ul><li>example: there are no classes that are Monday & Tuesday</li></ul>
+		<br>
+		<br>
+	</div>
+</div>
+<hr>
+<h3>Attendance</h3>
+<p>Both ESL & CCR in-person classes have a maximum number of absences -- 4 absences are allowed, on the 5th absence you will be dropped from the class.   This is NOT the same thing as being dropped from the program! You will still have access to coaching appointments, study labs, and any classes you have not been dropped from.</p>
+<p>Even if you are dropped from a class, you can always sign up for new classes in the next session! Once you finish your New Student Process, you will never need to re-register.</p>
+<br>
+<h3>Children & Guests</h3>
+<p><strong>Not allowed. </strong>This is a liability issue for us-- the only people who are allowed in our classes are the folks who are on the class roster. You are not allowed to bring anyone with you to class who is not a fellow student.</p>
+<div class="bg-primary">
+<hr>
+<h2>Where are the classes?</h2>
+</div>
+<div class="embed-responsive embed-responsive-16by9">
+	<iframe class="embed-responsive-item" sandbox="allow-scripts allow-popups allow-forms allow-same-origin allow-popups-to-escape-sandbox allow-downloads allow-modals" aria-label="Map, DCCAEP Locations" src="https://www.google.com/maps/d/embed?authuser=0&amp;mid=1GnkjDaa7XoKLS_5PgUKexKkKLdY" allowfullscreen=""></iframe>
+</div>
+<br>
+<div class="row">
+	<div class="col-md-4">
+		<p><strong>City Park</strong> - 615 City Park Ave</p>
+		<ul>
+			<li>CCR classes</li>
+			<li>ESL classes</li>
+			<li>Certification classes</li>
+			<li>on-site coaching</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>West Bank</strong> - 2600 Gen. Meyer</p>
+		<ul>
+			<li>CCR classes</li>
+			<li>ESL classes</li>
+			<li>on-site coaching</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>Jefferson</strong> - 5200 Blair Dr</p>
+		<ul>
+			<li>CCR classes</li>
+			<li>ESL classes</li>
+		</ul>
+	</div>
+</div>
+<br>
+<div class="row">
+	<div class="col-md-4">
+		<p><strong>Sidney Collier</strong> - 3727 Louisa St</p>
+		<ul>
+			<li>ESL classes</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>New Orleans Adult Learning Center</strong> (Midcity) - 139 S. Broad St</p>
+		<ul>
+			<li>ESL classes</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>Charity School of Nursing</strong> - 450 S. Claiborne </p>
+		<ul>
+			<li>ESL classes</li>
+		</ul>
+	</div>
+</div>
+<br>
+<div class="row">
+	<div class="col-md-4">
+		<p><strong>JOB1</strong> -3400 Tulane Ave.</p>
+		<ul>
+			<li>CCR Drop-in Lab</li>
+			<li>Certification classes</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>River City</strong> - 709 Churchill Pkwy </p>
+		<ul>
+			<li>CCR/ESL Drop-in Lab</li>
+		</ul>
+	</div>
+	<div class="col-md-4">
+		<p><strong>Hispanic Chamber of Commerce</strong> - 2200 Veterans Memorial Blvd</p>
+		<ul>
+			<li>ESL classes</li>
+		</ul>
+	</div>
+</div>
+<hr>
+<p class="text-center"><a class="btn btn-primary btn-lg" href="{% url 'people:orientation class structure' slug=slug%}" role="button">Class Structure</a></p>
+<hr>
+{% endblock content %}

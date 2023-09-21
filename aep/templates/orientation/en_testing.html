@@ -1,0 +1,50 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-center text-primary">Testing</h1>
+<div class="bg-primary">
+<hr>
+<h2><em>You must test before beginning classes.</em></h2>
+</div>
+<h3>CCR Students take the TABE test</h3>
+<ul>
+	<li><h5>This test normally lasts around 2 hours, depending on how quickly you read & move through it.</h5></li>
+	<li><h5>The TABE test is done via computer.</h5>
+		<ul>
+			<li>There is a paper-based version, but students wanting to test that way will need to file an Accommodations Request.</li>
+			<li>There are audio, read-aloud directions available for the computer based test that can also be assigned after filing an Accommodations Request.</li>
+		</ul>
+	</li>
+	<li><h5>The TABE test has three sections</h5>
+		<ul>
+			<li>Math - part 1</li>
+			<li>Math - part 2</li>
+			<li>Language</li>
+		</ul>
+	</li>
+</ul>
+<br>
+<h3>ESL Students take the CLAS-E test</h3>
+<ul>
+	<li><h5>This test normally lasts between 1-2 hours, depending on how quickly you read & move through it.</h5></li>
+	<li><h5>The CLAS-E test is done via computer & paper</h5></li>
+	<li><h5>The CLAS-E test has one mandatory sections</h5>
+		<ul>
+			<li>Reading</li>
+		</ul>
+	</li>
+</ul>
+<br>
+<div class="well">
+	<h4>It is expected for students who successfully complete an 8 week session to also test at the end of it.</h4>
+	<h4> Having up-to-date test scores is what we use to determine what classes you should take as you move through the program.</h4>
+</div>
+<h3>Accommodations</h3>
+<p>If you would like to request accommodations for testing or classes, please tell your Intake Advisor!</p>
+<hr>
+<p class=text-center>
+	<a class="btn btn-default btn-lg" href="{% url 'people:orientation class structure' slug=slug%}" role="button">&laquo Previous Section</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:orientation coaching' slug=slug%}" role="button">Next Section &raquo</a>
+</p>
+<hr>
+{% endblock content %}

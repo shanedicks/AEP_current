@@ -1,0 +1,22 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-center text-primary">Coaching</h1>
+<br>
+<p><strong>If you want to talk with someone about your academic goals or which classes to take and would like some help, schedule an appointment with a coach!</strong></p>
+<p>We are here to help <u>you</u> figure out the best path to take to achieve your goals.</p>
+<p>Here’s some example of why students book a Coaching Appointment.</p>
+<ul>
+	<li>You are interested in a Certification </li>
+	<li>You want to talk about college options.</li>
+	<li>You want to learn more about local resources, or study strategies.</li>
+</ul>
+<br>
+<h3 class="text-primary">Email <a href="mailto:coach@elearnclass.org" target="_blank">coach@elearnclass.org</a> to schedule an appointment today!</h3>
+<hr>
+<p class=text-center>
+	<a class="btn btn-default btn-lg" href="{% url 'people:orientation testing' slug=slug%}" role="button">&laquo Previous Section</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:orientation paperwork' slug=slug%}" role="button">Next Section &raquo</a>
+</p>
+<hr>
+{% endblock content %}

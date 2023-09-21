@@ -1,0 +1,21 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+
+<h1 class="text-center text-primary">Paperwork</h1>
+<div class="bg-primary">
+<hr>
+<h2><em>In order to complete the New Student Process, you must fill out the following Paperwork and SUBMIT.</em></h2>
+</div>
+<br>
+<h3>We can only receive your paperwork through the form on the next page <p></p>
+<small>If you click on your language at the top of the next page, you may read a translation of the paperwork, but you must SUBMIT the paperwork through the provided form.</small></h3>
+<br>
+<h3>Typing your name at the bottom of the form signifies an electronic signature</h3>
+<hr>
+<p class=text-center>
+	<a class="btn btn-default btn-lg" href="{% url 'people:orientation testing' slug=slug%}" role="button">&laquo Previous Section</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:orientation finish' slug=slug%}" role="button">Paperwork Form &raquo</a>
+</p>
+<hr>
+{% endblock content %}

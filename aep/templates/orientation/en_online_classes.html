@@ -1,0 +1,35 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-primary text-center">Online Classes</h1>
+
+<div class="bg-primary">
+<hr>
+<h2>What can I expect from online classes?</h2>
+</div>
+<div class="embed-responsive embed-responsive-16by9">
+	<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/hXHK9pGSYx4?si=hH07hIYQV0GIorGE" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>		
+</div>
+<hr>
+<p>When you enroll in our program, you will be assigned classes that focus on particular skills within a subject area. These classes consist of 7 lessons and run for 8 weeks. </p>
+<br>
+<p>All classes are delivered through <strong>Google classroom</strong>, and you will be able to access them on any computer with an internet connection, or through the Google classroom app downloaded on any mobile device.</p>
+<br>
+<p>You will get <strong>individualized feedback</strong> from an instructor, who will provide support, engage with your work, and link you to further resources. </p>\
+<br>
+<p>You can work through lessons as they post every week <strong>at your own pace</strong>, but there are flexible weekly deadlines to keep you on track and give you timely feedback.  Additionally, there are coaches who can check-in with you to help guide you throughout the session.</p>
+<br>
+<div class="bg-primary">
+<hr>
+<h2>What are my next steps after this orientation?</h2>
+</div>
+<p>First, you will still need to schedule a testing appointment!</p>
+<p>After testing, you will be booked for another appointment with your Intake Advisor. During this appointment, they will <strong>email you with instructions and login information</strong> for setting up your Google account, which you will use to access your classes in Google classroom. </p>
+<br>
+<p>Your new Google account will be an email address with your full name @elearnclass.org.  So an example for President Obama would be: barack.obama@elearnclass.org </p>
+<br>
+<p>Even if you have an existing Gmail account, we will need for you to use this new email account for schoolwork and classes.</p>
+<hr>
+<p class="text-center"><a class="btn btn-primary btn-lg" href="{% url 'people:orientation class structure' slug=slug%}" role="button">Class Structure</a></p>
+<hr>
+{% endblock content %}

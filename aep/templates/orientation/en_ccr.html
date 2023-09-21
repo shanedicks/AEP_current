@@ -1,0 +1,46 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-primary text-center">CCR</h1>
+<h2 class="text-primary">College and Career Readiness</h2>
+<p>Your journey in our program, depending on your interests, might lead you towards CCR classes.</p>
+<p>Our CCR Classes are designed to prepare you in Math, Reading, & Writing for several different goals.</p>
+<p><strong>Your goals might include:</strong></p>
+<ul>
+	<li>studying for the HiSET exam & high school equivalency (formerly GED)</li>
+	<li>preparing for college, or college placement exams</li>
+	<li>simply brushing up on your skills!</li>
+</ul>
+<h2 class="text-primary">Classes and Sessions</h2>
+<p><strong>DCCAEP is a free program!</strong> We do not offer credit-earning courses, so none of our classes have a fee.</p>
+<p>You will schedule classes based on your placement scores from the TABE test and what growth-areas the assessment tells us you have-- accommodations for testing & classes are available for students. </p>
+<p>We offer classes in a variety of subjects, such as:  </p>
+<ul>
+	<li>Algebra</li>
+	<li>Narrative Writing</li>
+	<li>HiSET Science, and more</li>
+</ul>
+<br>
+<p><strong>Sessions generally last for 8 weeks, and you can take as few or as many classes as you like.</strong> You can repeat a class until you feel you have mastered it, and there is no limit to the number of sessions you can attend.</p>
+<br>
+<p><strong>Once you are registered with DCCAEP, you never have to re-register again! </strong> Even if you need to take a break for awhile, you do not need to re-register. You can just talk to the Main Office or make a coaching appointment to get back in.</p>
+<br>
+<p><strong>We offer CCR classes both online & in-person!</strong> Please keep in mind that no children or guests are allowed for our in-person classes, so you may want to consider that when choosing which mode of instruction works best with your life and schedule.</p>
+<div class="bg-primary">
+<hr>
+<h2>HiSET? Highschool Equivalency? GED?</h2>
+</div>
+<br>
+<h2 class="text-primary">HiSET Exam</h2>
+<p>In 2014 Louisiana switched from using the GED exam to the HiSET exam.</p>
+<p>The HiSET exam is a test someone can take in order to prove they have the same knowledge-level as someone who graduated from highschool. All colleges & universities will accept a HiSET diploma the same way they would accept a highschool diploma-- that is what makes it a highschool equivalency.</p>
+<p>If you are 19 and older, whenever you feel ready, you can sign up through HiSET’s website to take the test without having to go through our program.</p>
+<p><a href="www.hiset.ets.org">www.hiset.ets.org</a></p>
+<br>
+<h2 class="text-primary">Is this the test you take to get into the Adult Education Program?</h2>
+<p>No, the HiSET is different from the placement test you take with us--  the test that we use for placement into CCR classes is the Test of Adult Basic Education -- TABE test.  The TABE lets us know where you are in your Math, Reading, and Writing skills.</p>
+<p>We can however help guide you to Practice HiSET exams for students to use to check their own progress.</p>
+<hr>
+<p class="text-center"><a class="btn btn-primary btn-lg" href="{% url 'people:orientation class types' slug=slug%}" role="button">Class Types</a></p>
+<hr>
+{% endblock content %}

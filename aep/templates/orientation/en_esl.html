@@ -1,0 +1,62 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<h1 class="text-primary text-center">ESL</h1>
+	<div class="embed-responsive embed-responsive-16by9">
+		<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/ctzEQli8zoA?si=wy2KClI9imXV9QKG" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+	</div>
+	<div>
+		<h2 class="text-primary">English as a Second language (ESL)</h2>
+		<p>Our ESL Classes are designed to help you increase your Reading, Writing, and Speaking skills in English.</p>
+		<p>The classes are usually eight weeks long and are taught entirely in English. The teacher will speak English 100% of the time.</p>
+		<p>The classes you can take will depend on the level of English you currently have and how you test on our placement exam-- accommodations for testing & classes are available for students.</p>
+		<br>
+		<p>We have classes from Level 1 (No English Ability)  to  Level 6 (High Fluency in English).</p>
+		<p>Once you are registered with our program, you never have to re-register again!</p>
+		<p>Even if you need to take a break for awhile, you do not need to re-register. You can just talk to the Main Office or make a coaching appointment to get back in.</p>
+	</div>
+<br>
+<h2 class="text-primary">Difference Between DCCAEP ESL & For-Credit ESL</h2>
+<br>
+<div class="row">
+	<div class="col-md-5">
+		<p><strong>DCCAEP English as a Second Language (ESL) classes are…</strong></p>
+		<ul>
+			<li>Free</li>
+			<li>Offered in the morning and evening and meet twice a week</li>
+			<li>Meant to help you socially, personally, and professionally (but don’t give you school credit)</li>
+			<li>Repeatable! You can take classes until you feel ready to move on.</li>
+		</ul>
+	</div>
+	<div class="col-md-5">
+		<p><strong>Delgado Community College also offers college credit ESL classes</strong> for students studying for a degree or certificate.  Some differences are...</p>
+		<ul>
+			<li>You pay for college classes</li>
+			<li>You get college credit</li>
+			<li>You earn a grade</li>
+		</ul>
+		<p>None of these things are true for DCCAEP classes.</p>
+	</div>
+</div>
+<br>
+<h2 class="text-primary">Modes of Instruction</h2>
+<p><strong>On campus classes--</strong> We use textbooks, websites, reading, writing and conversation to practice together in a classroom.</p>
+<p>All materials are provided, but no children or guests are allowed.</p>
+<br>
+<p><strong>Online classes--</strong>We use videos, slides, questions, live video classes to practice. In addition, you may book appointments with your teacher when you need help.</p>
+<p><em>You do need a device and computer skills to study in online classes.</em></p>
+<br>
+<p>Both types of classes (on campus and online) cover topics like…</p>
+<ul>
+	<li>Personal Information</li>
+	<li>Hobbies</li>
+	<li>School</li>
+	<li>Work</li>
+	<li>Health & Medicine</li>
+	<li>Holidays & Traditions</li>
+	<li>Daily Living</li>
+</ul>
+<hr>
+<p class="text-center"><a class="btn btn-primary btn-lg" href="{% url 'people:orientation class types' slug=slug%}" role="button">Class Types</a></p>
+<hr>
+{% endblock content %}

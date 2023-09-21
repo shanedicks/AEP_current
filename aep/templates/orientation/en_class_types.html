@@ -1,0 +1,29 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<div class="text-center">
+<h1 class="text-primary">Class Types</h1>
+<br>
+<p>Please click on the class types to learn more about them.</p>
+<p>If you think you might be interested in more than one type, please visit all of the ones you like.</p>
+<br>
+<div class="row well well-lg">
+	<div class="col-md-4 col-md-offset-2">
+		<h3><a href="{% url 'people:orientation ccr' slug=slug%}">College & Career Readiness</a></h3>
+		<p>HiSET / Highschool Equivalency</p>
+		<p>(Reading, Writing, Math, Science, & Social Studies)</p>
+	</div>
+	<div class="col-md-4">
+		<h3><a href="{% url 'people:orientation esl' slug=slug%}">English as a Second Language</a></h3>
+		<p>ESL (English as a second language)</p>
+		<p>Focus on reading, writing, listening comprehension, and speaking ability</p>
+	</div>
+</div>
+<hr>
+<p>
+	<a class="btn btn-default btn-lg" href="{% url 'people:orientation overview' slug=slug%}" role="button">&laquo Previous Section</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:orientation class structure' slug=slug%}" role="button">Next Section &raquo</a>
+</p>
+<hr>
+</div>
+{% endblock content %}

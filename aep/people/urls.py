@@ -1,4 +1,4 @@
-from django.urls import re_path, include
+from django.urls import path, re_path, include
 from django.views.generic import TemplateView
 from assessments.views import StudentEventAttendanceView
 from sections.views import (StudentCurrentClassListView,
@@ -249,6 +249,81 @@ prospect_intake_patterns = [
         name='prospect intake success')
 ]
 
+english_orientation_patterns = [
+    path('overview/',
+        TemplateView.as_view(template_name='orientation/en_overiew.html'),
+        name="orientation overview"),
+    path('class-types/',
+        TemplateView.as_view(template_name='orientation/en_class_types.html'),
+        name="orientation class types"),
+    path('class-types/ccr',
+        TemplateView.as_view(template_name='orientation/en_ccr.html'),
+        name="orientation ccr"),
+    path('class-types/esl',
+        TemplateView.as_view(template_name='orientation/en_esl.html'),
+        name="orientation esl"),
+    path('class-structure/',
+        TemplateView.as_view(template_name='orientation/en_class_structure.html'),
+        name="orientation class structure"),
+    path('class-structure/online-classes',
+        TemplateView.as_view(template_name='orientation/en_online_classes.html'),
+        name="orientation online classes"),
+    path('class-structure/in-person-classes',
+        TemplateView.as_view(template_name='orientation/en_in_person_classes.html'),
+        name="orientation in-person classes"),
+    path('testing/',
+        TemplateView.as_view(template_name='orientation/en_testing.html'),
+        name="orientation testing"),
+    path('coaching/',
+        TemplateView.as_view(template_name='orientation/en_coaching.html'),
+        name="orientation coaching"),
+    path('paperwork/',
+        TemplateView.as_view(template_name='orientation/en_paperwork.html'),
+        name="orientation paperwork"),
+
+]
+
+spanish_orientation_patterns = [
+    path('overview/',
+        TemplateView.as_view(template_name='orientation/es_overiew.html'),
+        name="spanish orientation overview"),
+    path('class-types/',
+        TemplateView.as_view(template_name='orientation/es_class_types.html'),
+        name="spanish orientation class types"),
+    path('class-types/ccr',
+        TemplateView.as_view(template_name='orientation/en_ccr.html'),
+        name="spanish orientation ccr"),
+    path('class-types/esl',
+        TemplateView.as_view(template_name='orientation/en_esl.html'),
+        name="spanish orientation esl"),
+    path('class-structure/',
+        TemplateView.as_view(template_name='orientation/es_class_structure.html'),
+        name="spanish orientation class structure"),
+    path('testing/',
+        TemplateView.as_view(template_name='orientation/es_testing.html'),
+        name="spanish orientation testing"),
+    path('coaching/',
+        TemplateView.as_view(template_name='orientation/es_coaching.html'),
+        name="spanish orientation coaching"),
+    path('paperwork/',
+        TemplateView.as_view(template_name='orientation/es_paperwork.html'),
+        name="spanish orientation paperwork"),
+]
+
+
+orientation_patterns = [
+    path('start/',
+        TemplateView.as_view(
+            template_name="orientation/orientation_start.html"
+        ),
+        name="orientation start"),
+    path('en/', include(english_orientation_patterns)),
+    path('es/', include(spanish_orientation_patterns)),
+    path('finish/',
+        views.OrientationFinishView.as_view(),
+        name="orientation finish")
+]
+
 urlpatterns = [
     re_path(r'^students/', include(student_patterns)),
     re_path(r'^staff/', include(staff_patterns)),
@@ -295,4 +370,5 @@ urlpatterns = [
             template_name="people/testing_agreement.html"
         ),
         name="testing agreement"),
+    path('orientation/<slug>/', include(orientation_patterns))
 ]

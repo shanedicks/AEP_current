@@ -189,7 +189,7 @@ def staff_report_task(email_address):
                 'email': staff.email,
                 'active': staff.active,
             }
-            data['num_classes'] = staff.classes.count(),
+            data['num_classes'] = staff.classes.count()
             data['num_students'] =  students.count()
             data['unique'] = students.distinct('student').count()
             seats = staff.classes.aggregate(Sum('seats'))['seats__sum']

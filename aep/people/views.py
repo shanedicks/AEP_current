@@ -1148,3 +1148,11 @@ class PhotoIdUploadView(UpdateView):
         paperwork.pic_id = True
         paperwork.save()
         return super().form_valid(form)
+
+class OrientationFinishView(View):
+
+    def get(self, request, *args, **kwargs):
+        student = Student.objects.get(slug = kwargs['slug'])
+        student.orientation = 'C'
+        student.save()
+        return HttpResponseRedirect(reverse('people:sign paperwork', kwargs={'slug': student.slug}))    

@@ -1,0 +1,27 @@
+{% extends "orientation_base.html" %}
+{% block head_title %}DCCAEP | Orientation{% endblock head_title %}
+{% block content %}
+<div class="text-center">
+<h1>Class Structure</h1>
+<br>
+<p><strong>We want your classes to fit in with your life-schedule, so we offer two different ways of taking classes.</strong></p>
+<p>(If you want to take both eventually, that's okay too!)</p>
+<br>
+<div class="row well well-lg">
+<div class="col-md-4 col-md-offset-2">
+	<h3><a href="{% url 'people:orientation online classes' slug=slug%}">Online Classes</a></h3>
+	<p>Take courses online using a computer</p>
+</div>
+<div class="col-md-4">
+	<h3><a href="{% url 'people:orientation in-person classes' slug=slug%}">In-Person Classes</a></h3>
+	<p>Take courses in-person at a specific time and place</p>
+</div>
+</div>
+<hr>
+<p>
+	<a class="btn btn-default btn-lg" href="{% url 'people:orientation class types' slug=slug%}" role="button">&laquo Previous Section</a>
+	<a class="btn btn-primary btn-lg" href="{% url 'people:orientation testing' slug=slug%}" role="button">Next Section &raquo</a>
+</p>
+<hr>
+</div>
+{% endblock content %}
