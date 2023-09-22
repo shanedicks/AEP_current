@@ -31,7 +31,7 @@ from .forms import (
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm, 
     PaperworkForm, PhotoIdForm)
-from .tasks import (intake_retention_report_task, orientation_email_task, 
+from .tasks import (intake_retention_report_task, send_orientation_confirmation_task,
     prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
     student_check_duplicate_task)
@@ -1153,6 +1153,7 @@ class OrientationFinishView(View):
 
     def get(self, request, *args, **kwargs):
         student = Student.objects.get(slug = kwargs['slug'])
+        send_orientation_confirmation_task.delay(student.id)
         student.orientation = 'C'
         student.save()
         return HttpResponseRedirect(reverse('people:sign paperwork', kwargs={'slug': student.slug}))    

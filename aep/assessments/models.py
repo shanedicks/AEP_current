@@ -131,7 +131,7 @@ class TestEvent(models.Model):
             if student.student.email:
                 context = {
                     'student': student.student.first_name,
-                    'wru': ('', student.student.WRU_ID)[student.student.WRU_ID is not None],
+                    'link': student.student.orientation_link,
                     'date': self.start.date(),
                     'time': self.start.time()
                 }

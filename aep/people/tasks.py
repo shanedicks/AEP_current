@@ -33,37 +33,21 @@ def send_to_state_task(wioa_id_list, action):
                 record.verify(session)
 
 @shared_task
-def orientation_email_task(name, email_address, appt_id):
-    orientation = apps.get_model('assessments', 'TestAppointment').objects.get(id=appt_id)
-    logger.info('Sent orientation confirmation to {0}.'.format(email_address))
-    return send_mail(
-        subject="Thank you for registering for the Delgado "
-                "Community College Adult Education Program!",
-        message="",
-        html_message="<p>Hi, {student}</p><p>You have successfully registered for Delgado’s Adult Education Program!</p>"
-        "<p><strong>Your next step is to complete the program’s Online Orientation.</strong></p>"
-        "<p>Be on the lookout for the <strong>{event}</strong>, so please check your email on that day!"
-        " (You may also want to check your spam folder too, just in case.)</p>"
-        "<p>Once you get your email invitation, it will give instructions on how to complete your Orientation. "
-        "Students need to finish their Orientation before they can begin classes.</p>"
-        "<p>If you have any difficulties, you can also reach out to our coaching staff for help at coach@elearnclass.org</p>"
-        "<p>Thank you,<br>The Adult Education Program<br>Delgado Community College</p>"
-        "<hr>"
-        "<p>Hola {student},</p><p>¡Te has registrado con éxito en el Programa de educación para adultos de Delgado!</p>"
-        "<p><strong>El siguiente paso es completar la orientación en línea del programa.</strong></p>"
-        "<p>Esté atento a su <strong>{event}</strong>, así que revise su correo electrónico ese día."
-        " (También puede consultar su carpeta de correo no deseado, por si acaso).</p>"
-        "<p>Una vez que reciba su invitación por correo electrónico, le dará instrucciones sobre cómo completar su Orientación."
-        " Los estudiantes necesitan terminar su Orientación antes de que puedan comenzar las clases.</p>"
-        "Si tiene alguna dificultad, también puede comunicarse con nuestro personal de coaching para obtener ayuda en coach@elearnclass.org "
-        "<p>Gracias,<br>The Adult Education Program<br>Delgado Community College</p>".format(
-                    student=name,
-                    event=orientation.event
-                ),
-        from_email="noreply@elearnclass.org",
-        recipient_list=[email_address]
-    )
-
+def send_orientation_confirmation_task(student_id):
+    student = apps.get_model('people', 'Student').objects.get(pk=student_id)
+    if student.email:
+        context = {
+            'student': student.first_name,
+        }
+        html_message = render_to_string('emails/orientation_confirmation.html', context)
+        message = strip_tags(html_message)
+        send_mail_task.delay(
+            subject="Orientation Completed for Delgado Adult Education Program!",
+            message=message,
+            html_message=html_message,
+            from_email="noreply@elearnclass.org",
+            recipient_list=[student.email],
+        )
 
 @shared_task
 def intake_retention_report_task(from_date, to_date, email_address):

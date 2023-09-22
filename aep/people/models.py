@@ -1342,6 +1342,11 @@ class Student(Profile):
             reverse('people:upload photo id', kwargs={'slug': self.slug})
         )
 
+    def orientation_link(self):
+        return "https://www.dccaep.org{0}".format(
+            reverse('people:orientation start', kwargs={'slug': self.slug})
+        )        
+
     def email_form_link(self, url_name):
         if url_name == 'upload photo id':
             try:
