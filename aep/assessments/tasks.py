@@ -180,8 +180,6 @@ def test_process_task(test_type, test_id):
 @shared_task
 def accelerated_coaching_report_task(from_date, to_date, email_address):
     filename = 'accelerated_coaching_report.csv'
-    from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S').date()
-    to_date = datetime.strptime(to_date, '%Y-%m-%dT%H:%M:%S').date()
     tabes = apps.get_model(
         'assessments',
         'Tabe'
