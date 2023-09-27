@@ -1,4 +1,5 @@
 import datetime
+from django.apps import apps
 from django.db.models import Q
 from django.forms import ModelForm, Form, FileField, modelformset_factory, ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -142,6 +143,25 @@ class OrientationSignupForm(TestSignupForm):
                 'event'
             )
         )
+
+class StudentAddAppointmentForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        student = kwargs.pop('student', None)
+        Student = apps.get_model('people', 'Student')
+        qst = Student.objects.none()
+        if student:
+            student = student[0]
+            qst = Student.objects.filter(
+                Q(first_name__icontains=student) | Q(last_name__icontains=student) | Q(WRU_ID__icontains=student),
+                duplicate=False
+            )
+        self.base_fields['student'].queryset = qst
+        super(StudentAddAppointmentForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = TestAppointment
+        fields = ('student',)
 
 
 class TabeForm(ModelForm):

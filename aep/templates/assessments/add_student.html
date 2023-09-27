@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | Add Student{% endblock head_title %}
+
+{% block content %}
+    {% if event.full %}
+    <h1 style='color:red'> {{ event.title }} is full.</h1>
+    <h3>Are you sure you want to add this student?</h3>
+    {% endif %}
+	<p>{% include 'components/student_search_filter.html' %}</p>
+    </form>
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>{{ form}}</p>
+        <button type="submit" class="btn btn-success" value="Submit">Add Student</button>
+    </form>
+{% endblock content %}

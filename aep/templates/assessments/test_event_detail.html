@@ -11,6 +11,7 @@
 {% if event.test == event.ORIENTATION %}
 <a class="btn btn-default btn-sm" href="{% url 'assessments:test event paperwork' pk=event.pk %}" role="button">Photo ID and Paperwork Forms</a>
 {% endif %}
+<a class="btn btn-default btn-sm" href="{% url 'assessments:add student' pk=event.pk %}" role="button">Add Student</a>
 <table class="table">
 	<tr>
 		<th>ID</th>
@@ -20,6 +21,9 @@
 		<th>Phone</th>
 		<th>Email</th>
 		<th>Notes</th>
+		{% if event.test == event.ORIENTATION %}
+		<th>Orientation</th>
+		{% endif %}
 		<th><a href="{% url 'assessments:test event attendance' pk=event.pk %}">Attendance</a></th>
 	</tr>
 {% for student in students %}
@@ -31,6 +35,9 @@
 		<td>{{ student.student.phone }}</td>
 		<td>{{ student.student.email }}</td>
 		<td><a href="{% url 'assessments:test appointment notes' pk=student.pk %}">-{{ student.notes }}-</a></td>
+		{% if event.test == event.ORIENTATION %}
+		<td>{{ student.student.get_orientation_display }}</td>
+		{% endif %}
 		<td><a href="{% url 'assessments:test appointment attendance' pk=student.pk %}">{{student.get_attendance_type_display}}</a></td>
 	</tr>
 {% endfor %}

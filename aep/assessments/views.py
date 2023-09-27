@@ -21,7 +21,7 @@ from .forms import (
         TestAppointmentAttendanceForm, TestAttendanceFormSet,
         TestAppointmentNotesForm, HiSetForm, AccuplacerForm,
         Clas_E_ScoreReportLinkForm, TabeScoreReportLinkForm,
-        OrientationSignupForm
+        OrientationSignupForm, StudentAddAppointmentForm
     )
 from .tasks import (event_attendance_report_task,
         accelerated_coaching_report_task, testing_eligibility_report,
@@ -1270,3 +1270,40 @@ class SendScoreReportView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         send_score_report_link_task.delay(self.kwargs['pk'], self.test_type)
         return HttpResponseRedirect(reverse(self.redirects[self.test_type], kwargs={'slug': self.kwargs['slug']}))
+
+class AddStudentView(LoginRequiredMixin, CreateView):
+
+    model = TestAppointment
+    template_name = 'assessments/add_student.html'
+    form_class = StudentAddAppointmentForm
+
+    def form_valid(self, form):
+        appointment = form.save(commit=False)
+        event = TestEvent.objects.get(pk=self.kwargs['pk'])
+        appointment.event = event
+        try:
+            appointment.save()
+            return super(AddStudentView, self).form_valid(form)
+        except IntegrityError:
+            form.add_error(
+                'student',
+                'The selected student is already signed up for this event'
+            )
+            return self.form_invalid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super(AddStudentView, self).get_form_kwargs()
+        if self.request.GET:
+            kwargs.update(self.request.GET)
+        return kwargs
+
+    def get_success_url(self):
+        url = self.object.event.get_absolute_url()
+        return url
+
+    def get_context_data(self, **kwargs):
+        context = super(AddStudentView, self).get_context_data(**kwargs)
+        if 'event' not in context:
+            context['event'] = TestEvent.objects.get(pk=self.kwargs['pk'])
+            context.update(kwargs)
+        return context

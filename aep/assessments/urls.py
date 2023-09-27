@@ -157,9 +157,12 @@ single_event_patterns = [
     re_path(r'^attendance_report$',
         views.TestEventAttendanceReport.as_view(),
         name="test event attendance report"),
-    path('paperwork',
+    path('paperwork/',
         views.TestEventPaperworkView.as_view(),
-        name='test event paperwork')
+        name='test event paperwork'),
+    path('add-student/',
+        views.AddStudentView.as_view(),
+        name='add student')
 ]
 
 single_appointment_patterns = [
