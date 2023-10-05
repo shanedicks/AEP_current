@@ -1189,10 +1189,8 @@ class Student(Profile):
     def testing_status(self):
         if rules.has_valid_test_record(self):
             status = "No Test Needed"
-        elif rules.needs_pretest(self):
-            status = "Pretest needed"
-        elif rules.needs_post_test(self):
-            status = "Post test Needed"
+        elif rules.needs_pretest(self) | rules.needs_post_test(self):
+            status = "Test Needed"
         else:
             status = "Something is wrong"
         return status

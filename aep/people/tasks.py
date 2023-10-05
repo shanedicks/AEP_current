@@ -902,7 +902,8 @@ def possible_duplicate_report_task(email_address, id_list=None):
         headers1 = [
             "Last Name",
             "First Name",
-            "DOB"
+            "DOB",
+            "Intake"
         ]
         writer.writerow(headers1)
         headers2 = [
@@ -915,7 +916,7 @@ def possible_duplicate_report_task(email_address, id_list=None):
         writer.writerow(headers2)
 
         for student in new_students:
-            row = [student.last_name, student.first_name, student.dob]
+            row = [student.last_name, student.first_name, student.dob, student.intake_date]
             writer.writerow(row)
             try:
                 ssn = student.WIOA.SID

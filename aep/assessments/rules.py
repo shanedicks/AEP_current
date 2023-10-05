@@ -62,7 +62,7 @@ def test_within_six_months(student):
         target = timezone.now().date() - timedelta(days=180)    
         return student.tests.last_test_date > target
 
-has_current_pretest = has_pretest & test_within_six_months
+has_current_pretest = has_tabe_pretest | has_clas_e_pretest
 
 needs_pretest = ~has_current_pretest
 
@@ -92,7 +92,7 @@ def can_post_test_by_hours(student):
     else:
         return tests.active_hours >= 40
 
-needs_post_test = completed_class_since_last_test | can_post_test_by_hours
+needs_post_test = can_post_test_by_hours
 
 has_valid_test_record = has_current_pretest & ~needs_post_test
 

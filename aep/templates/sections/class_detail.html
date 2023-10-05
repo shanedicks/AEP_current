@@ -21,6 +21,7 @@
             <th>Test Assignment</th>
             <th># Attended</th>
             <th># Absent</th>
+            <th>Drop</th>
         </tr>
         {% for student in students %}
         <tr>
@@ -37,6 +38,7 @@
             {% endif %}
             <td>{{ student.times_attended }}</td>
             <td>{{ student.times_absent }}</td>
+            <td><a class="btn btn-default btn-sm" href="{% url 'sections:drop enrollment' pk=student.pk %}" role="button">Drop Student</a></td>
         </tr>
         {% endfor %}
     </table>

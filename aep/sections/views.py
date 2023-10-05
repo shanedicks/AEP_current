@@ -921,6 +921,18 @@ class EnrollmentUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "sections/enrollment_update.html"
 
 
+class EnrollmentDropView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        enrollment = Enrollment.objects.get(pk=self.kwargs['pk'])
+        enrollment.status = enrollment.DROPPED
+        enrollment.save()
+        return HttpResponseRedirect(reverse(
+            'sections:class detail',
+            kwargs={'slug': enrollment.section.slug}
+        ))
+
+
 class EnrollmentDeleteView(LoginRequiredMixin, DeleteView):
 
     model = Enrollment
