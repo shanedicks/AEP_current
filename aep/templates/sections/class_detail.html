@@ -31,11 +31,7 @@
             <td>{{ student.student.email }}</td>
             <td>{{ student.student.elearn_record.g_suite_email }}</td>
             <td>{{ student.get_status_display }}</td>
-            {% if student.status == 'A' %}
-                <td>{{ student.student.tests.test_assignment }}</td>
-            {% else %}
-                <td></td>
-            {% endif %}
+            <td><a href="{% url 'assessments:test signup' slug=student.student.slug %}">{{ student.student.testing_status}}</a></td>
             <td>{{ student.times_attended }}</td>
             <td>{{ student.times_absent }}</td>
             <td><a class="btn btn-default btn-sm" href="{% url 'sections:drop enrollment' pk=student.pk %}" role="button">Drop Student</a></td>

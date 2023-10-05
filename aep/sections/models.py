@@ -145,6 +145,9 @@ class Section(models.Model):
     def get_all_students(self):
         return self.students.all()
 
+    def get_students(self):
+        return self.students.exclude(status='D')
+
     def get_active(self):
         return self.students.filter(status='A')
 
@@ -178,7 +181,7 @@ class Section(models.Model):
 
     @property
     def over_full(self):
-        return self.get_waiting().count() > 4
+        return self.get_waiting().count() > 12
 
     @property
     def start_date(self):
@@ -720,6 +723,9 @@ class Enrollment(models.Model):
                     from_email="noreply@elearnclass.org",
                     recipient_list=[self.student.email]
                 )
+            return True
+        else:
+            return False
 
     def welcome_email(self):
         try:

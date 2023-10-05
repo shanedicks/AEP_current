@@ -39,18 +39,6 @@ def send_g_suite_info_task(semester_id):
     return True
 
 @shared_task
-def validate_enrollments_task(semester_id):
-    Semester = apps.get_model('semesters', 'Semester')
-    s = Semester.objects.get(id=semester_id)
-    s.validate_enrollments()
-
-@shared_task
-def refresh_enrollments_task(semester_id):
-    Semester = apps.get_model('semesters', 'Semester')
-    s = Semester.objects.get(id=semester_id)
-    s.refresh_enrollments()
-
-@shared_task
 def send_survey_task(survey_id):
     survey = apps.get_model('semesters', 'Survey').objects.get(id=survey_id)
     logger.info('Sending survey {0}'.format(survey.title))

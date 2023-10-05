@@ -5,7 +5,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from core.tasks import send_mail_task, send_sms_task
-from sections.tasks import roster_to_classroom_task
+from sections.tasks import roster_to_classroom_task, waitlist_update_task
 from .tasks import enforce_attendance_task
 
 Q = models.Q
@@ -103,7 +103,7 @@ class Semester(models.Model):
 
     def waitlist(self):
         for section in self.get_sections():
-            section.waitlist_update()
+            waitlist_update_task.delay(section_id)
 
     def enforce_attendance(self):
         for section in self.get_sections():
@@ -116,24 +116,6 @@ class Semester(models.Model):
     def roster_to_classroom(self):
         for section in self.get_sections():
             roster_to_classroom_task.delay(section.id)
-
-    def validate_enrollments(self):
-        partner_check = ['', 'Job1', 'JeffPar']
-        students = self.get_enrollment_queryset().filter(
-            status='A',
-            student__partner__in=partner_check
-        )
-        cutoff = timezone.now().date() - timedelta(days=180)
-        to_hold = students.filter(
-            Q(student__tests__last_test_date__lte=cutoff) | Q(student__tests__last_test_date=None)
-        )
-        to_hold.update(status='W')
-
-    def refresh_enrollments(self):
-        students = self.get_enrollment_queryset().filter(status='W')
-        cutoff = timezone.now().date() - timedelta(days=180)
-        to_refresh = students.filter(student__tests__last_test_date__gte=cutoff)
-        to_refresh.update(status='A')
 
     def get_att_rate_list(self, section_queryset):
         students = self.get_enrollment_queryset().filter(section__in=section_queryset)

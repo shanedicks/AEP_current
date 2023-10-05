@@ -38,10 +38,18 @@ def end_task(enrollment_id):
     return enrollment.save()
 
 @shared_task
+def waitlist_update_task(section_id):
+    section = apps.get_model('sections', 'Section').get(id=section_id)
+    section.waitlist_update()
+
+@shared_task
 def drop_task(enrollment_id):
-    logger.info('Dropping enrollment {0}'.format(enrollment_id))
+    logger.info('Attendance check for enrollment {0}'.format(enrollment_id))
     enrollment = get_enrollment(enrollment_id)
-    return enrollment.attendance_drop()
+    dropped = enrollment.attendance_drop()
+    if dropped:
+        logger.info('Dropping enrollment {0}'.format(enrollment_id))
+    return True
 
 @shared_task
 def participation_detail_task(email_address):

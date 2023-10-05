@@ -1,9 +1,8 @@
 from django.contrib import admin
 from .models import Semester, Survey, Message
 from .tasks import (send_g_suite_info_task, semester_begin_task,
-    validate_enrollments_task, refresh_enrollments_task, send_survey_task,
     create_missing_g_suite_task, send_message_task, send_schedules_task,
-    send_link_task, attendance_reminder_task)
+    send_survey_task, send_link_task, attendance_reminder_task)
 
 # Register your models here.
 
@@ -70,21 +69,12 @@ class SemesterAdmin(admin.ModelAdmin):
         for obj in queryset:
             obj.roster_to_classroom()
 
-    def validate_enrollments(self, request, queryset):
-        for obj in queryset:
-            validate_enrollments_task.delay(obj.id)
-
-    def refresh_enrollments(self, request, queryset):
-        for obj in queryset:
-            refresh_enrollments_task.delay(obj.id)
-
     def create_missing_g_suite(self, request, queryset):
         for obj in queryset:
             create_missing_g_suite_task.delay(obj.id)
 
     def send_schedules(self, request, queryset):
         send_schedules_task.delay([obj.id for obj in queryset])
-
 
     def send_paperwork_form_link(self, request, queryset):
         for obj in queryset:

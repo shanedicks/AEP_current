@@ -971,6 +971,11 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(AttendanceOverview, self).get_context_data()
+        needs_testing = [
+            s.id for s 
+            in self.object.get_students() 
+            if s.student.testing_status() == 'Test Needed'
+        ]
         if 'days' not in context:
             context['days'] = self.object.get_class_dates()
         if 'count' not in context:
@@ -981,6 +986,16 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
             context['daily_absent'] = self.get_daily_totals()[1]
         if 'active' not in context:
             context['active'] = self.object.get_active(
+            ).exclude(
+                id__in=needs_testing
+            ).order_by(
+                'student__last_name',
+                'student__first_name'
+            )
+        if 'a_needs_testing' not in context:
+            context['a_needs_testing'] = self.object.get_active(
+            ).filter(
+                id__in=needs_testing
             ).order_by(
                 'student__last_name',
                 'student__first_name'
@@ -999,10 +1014,10 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
             )
         if 'waitlist' not in context:
             context['waitlist'] = self.object.get_waiting(
-            ).order_by(
-                'student__last_name',
-                'student__first_name'
-            )
+            ).exclude(id__in=needs_testing)
+        if 'w_needs_testing' not in context:
+            context['w_needs_testing'] = self.object.get_waiting(
+            ).filter(id__in=needs_testing)       
         if 'withdrawn' not in context:
             context['withdrawn'] = self.object.get_withdrawn(
             ).order_by(

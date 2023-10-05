@@ -27,6 +27,64 @@
             {% endfor %}
         </tr>
     {% endfor %}
+    <tr><th><h5>Need Testing</h5></th></tr>
+    {% for student in a_needs_testing %}
+        <tr>
+            <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
+            <td>{{ student.total_hours }}</td>
+            {% for att in student.attendance.all %}
+                <td>
+                    <a href='{{ att.get_absolute_url }}'>
+                    {% if att.attendance_type == "X" %}
+                        -
+                    {% elif att.attendance_type == 'C' %}
+                        <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                    {% else %}
+                        {{ att.hours }}
+                    {% endif %}
+                    </a>
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    {% endif %}
+    {% if section.get_waiting %}
+    <tr><td><h4>Waitlist</h4></td></tr>
+        {% for student in waitlist %}
+            <tr>
+                <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
+                <td></td>
+                {% for att in student.attendance.all %}
+                    <td>
+                        {% if att.attendance_type == "X" %}
+                            -
+                        {% elif att.attendance_type == 'C' %}
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                        {% else %}
+                            {{ att.hours }}
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    <tr><td><h5>Need Testing</h5></td></tr>
+        {% for student in w_needs_testing %}
+            <tr>
+                <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
+                <td></td>
+                {% for att in student.attendance.all %}
+                    <td>
+                        {% if att.attendance_type == "X" %}
+                            -
+                        {% elif att.attendance_type == 'C' %}
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                        {% else %}
+                            {{ att.hours }} 
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
     {% endif %}
     {% if section.get_completed %}
     <tr><td><h4>Completed</h4></td></tr>
@@ -74,26 +132,6 @@
             <tr>
                 <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
                 <td>{{ student.total_hours }}</td>
-                {% for att in student.attendance.all %}
-                    <td>
-                        {% if att.attendance_type == "X" %}
-                            -
-                        {% elif att.attendance_type == 'C' %}
-                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
-                        {% else %}
-                            {{ att.hours }} 
-                        {% endif %}
-                    </td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-    {% endif %}
-    {% if section.get_waiting %}
-    <tr><td><h4>Waitlist</h4></td></tr>
-        {% for student in waitlist %}
-            <tr>
-                <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
-                <td></td>
                 {% for att in student.attendance.all %}
                     <td>
                         {% if att.attendance_type == "X" %}
