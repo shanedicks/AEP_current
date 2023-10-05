@@ -3,6 +3,7 @@ from googleapiclient.errors import HttpError
 from datetime import datetime, date
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
+from urllib.parse import urlencode
 from django.apps import apps
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView, FormView, View)
@@ -13,6 +14,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.db import IntegrityError
+from django.db.models import Count, F, Q
 from core.forms import DateFilterForm
 from core.utils import render_to_csv
 from coaching.models import ElearnRecord
@@ -533,8 +535,27 @@ class ClassListView(LoginRequiredMixin, ListView, FormView):
         ) | Section.objects.filter(
             ending__gte=timezone.now().date()
         )
+        queryset = queryset.annotate(
+            open_seats=F('seats') - Count('students', filter=Q(students__status__in=['A', 'W']))
+        )
         queryset = queryset.order_by('site', 'program', 'title')
+        if self.request.GET.get('sort') == 'seats':
+            queryset = queryset.order_by("-open_seats")
+        elif self.request.GET.get('sort') == 'days': 
+            queryset = queryset.order_by('-monday', '-tuesday')
+        elif self.request.GET.get('sort') == 'time': 
+            queryset = queryset.order_by('start_time')
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query_dict = self.request.GET.copy()
+        sort = query_dict.pop('sort', None)
+        querystring = f"{urlencode(query_dict)}"
+        if len(query_dict) > 0:
+            querystring = querystring + '&'
+        context['querystring'] = querystring
+        return context
 
     def get_form_kwargs(self):
         return {

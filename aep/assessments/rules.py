@@ -1,5 +1,6 @@
 from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.utils import timezone
 import rules
 
@@ -14,12 +15,38 @@ def has_tabe(student):
     return student.tests.tabe_tests.count() > 0
 
 @rules.predicate
+def has_tabe_pretest(student):
+    try:
+        tests = student.tests
+    except ObjectDoesNotExist:
+        return False
+    target = timezone.now().date() - timedelta(days=180)
+    tabes = tests.tabe_tests.filter(
+        Q(math_nrs__gte=1) | Q(lang_nrs__gte=1),
+        test_date__gte=target
+    ) 
+    return tabes.exists() 
+
+@rules.predicate
 def has_clas_e(student):
     try:
         tests = student.tests
     except ObjectDoesNotExist:
         return False
     return student.tests.clas_e_tests.count() > 0
+
+@rules.predicate
+def has_clas_e_pretest(student):
+    try:
+        tests = student.tests
+    except ObjectDoesNotExist:
+        return False
+    target = timezone.now().date() - timedelta(days=180)
+    clas_e_tests = tests.clas_e_tests.filter(
+        read_nrs__gte=1,
+        test_date__gte=target
+    )
+    return clas_e_tests.exists()
 
 has_pretest = has_tabe | has_clas_e
 
