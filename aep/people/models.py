@@ -1435,6 +1435,15 @@ class Student(Profile):
         sections = self.content_filter(sections)
         return sections
 
+    @property
+    def program_from_interest(self):
+        program = []
+        if any([self.ccr_app, self.e_learn_app, self.accuplacer_app, self.success_app, self.certifications_app]):
+            program.append("CCR")
+        if any([self.ell_app, self.ell_online_app]):
+            program.append("ELL")
+        return ", ".join(program)
+
 class Staff(Profile):
 
     user = models.OneToOneField(
