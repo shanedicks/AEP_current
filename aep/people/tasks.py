@@ -9,6 +9,7 @@ from django.core.mail.message import EmailMessage
 from django.db.models import Sum, Min, Max, Count, Q
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils import timezone
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from core.utils import state_session, get_fiscal_year_start_date, get_fiscal_year_end_date
@@ -963,3 +964,92 @@ def possible_duplicate_report_task(email_address, id_list=None):
     email.send()
     os.remove(filename)
     return True
+
+@shared_task
+def intercession_report_task(email_address):
+    filename = 'intercession_report.csv'
+    Enrollments = apps.get_model('sections', 'Enrollment')
+    target = timezone.now() - timedelta(days=70)
+    last_session_enrollments = Enrollments.objects.filter(
+        section__semester__start_date__gte=target,
+        section__semester__start_date__lte=timezone.now().date()
+    )
+    upcoming_enrollments = Enrollments.objects.filter(
+        section__semester__start_date__gte=timezone.now().date()
+    )
+    students = apps.get_model('people', 'Student').objects.filter(
+        classes__in=last_session_enrollments
+    ).distinct()
+
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            'WRU ID',
+            'Last Name',
+            'First Name',
+            'Email',
+            'Site',
+            'Attendance Rate',
+            'Test Status',
+            'Last Test Date',
+            'Last Test NRS',
+            'Test Assignment',
+            'Hours',
+            'Test Appointments',
+            'Upcoming Enrollments',
+        ]
+        writer.writerow(headers)
+
+        for student in students:
+            enrollments = last_session_enrollments.filter(student=student)
+            site = {e.section.site.code for e in enrollments}
+            present = sum([e.times_attended() for e in enrollments])
+            absent = sum([e.times_absent() for e in enrollments])
+            if present > 0: 
+                attendance_rate = present / (absent + present)
+            else:
+                attendance_rate = 0
+            try:
+                tests = student.tests
+                last_test_date = tests.last_test_date
+                last_test_nrs = f"{tests.last_test_type}: {tests.last_test_nrs}"
+                assignment = tests.test_assignment
+                active_hours = tests.active_hours
+            except ObjectDoesNotExist:
+                last_test = "No Test History"
+                last_test_nrs = "No Test History"
+                assignment = "No Test History"
+                active_hours = "No Test History"
+            appointments = student.test_appointments.filter(
+                event__start__gte=timezone.now(),
+                event__test__in=['TABE', 'CLAS-E']
+            )
+            has_appointments = appointments.count() > 0
+            row = [
+                student.WRU_ID,
+                student.last_name,
+                student.first_name,
+                student.email,
+                ", ".join(list(site)),
+                "{:.2f}".format(attendance_rate),
+                student.testing_status(),
+                last_test_date,
+                last_test_nrs,
+                assignment,
+                active_hours,
+                has_appointments,
+                upcoming_enrollments.filter(student=student).count()
+            ]
+            writer.writerow(row)
+
+    email = EmailMessage(
+        'Intercession Report',
+        """Attached report lists students active in the current session with attendance rate, test status,
+        test appointments, last test date, and attendance hours""",
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+    os.remove(filename) 
+

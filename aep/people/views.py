@@ -34,7 +34,7 @@ from .forms import (
 from .tasks import (intake_retention_report_task, send_orientation_confirmation_task,
     prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
-    student_check_duplicate_task)
+    student_check_duplicate_task, intercession_report_task)
 
 
 # <<<<< Student Views >>>>>
@@ -107,6 +107,13 @@ class IntakeRetentionCSV(LoginRequiredMixin, FormView):
         email = self.request.user.email
         intake_retention_report_task.delay(from_date, to_date, email)
         return super().form_valid(form)
+
+class IntercessionReportCSV(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        email = request.user.email
+        intercession_report_task.delay(email)
+        return HttpResponseRedirect(reverse_lazy('report success'))
 
 
 class NewStudentCSV(LoginRequiredMixin, FormView):

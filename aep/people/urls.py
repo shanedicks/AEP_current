@@ -376,5 +376,8 @@ urlpatterns = [
             template_name="people/testing_agreement.html"
         ),
         name="testing agreement"),
+    path('intercession-report/',
+        views.IntercessionReportCSV.as_view(),
+        name='intercession report'),
     path('orientation/<slug>/', include(orientation_patterns))
 ]
