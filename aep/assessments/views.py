@@ -618,9 +618,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
             date = test.test_date
             pre = test.test_date - timedelta(days=180)
             test_type = 'Pretest'
-            version = 'TABE'
-            if test.form in ('11', '12'):
-                version = 'TABE 11 & 12'
+            version = 'TABE 11 & 12'
             if test.read_ss:
                 if test.student.tabe_tests.filter(
                     test_date__lt=date,
@@ -831,9 +829,6 @@ class ClasECSV(LoginRequiredMixin, FormView):
                     read_ss__isnull=False).count() > 0:
                     test_type = 'Posttest'
                 lowest = 1
-                if w is not None:
-                    if w < r:
-                        lowest = 0
                 s = [
                     test.student.student.partner,
                     test.student.student.WRU_ID,
@@ -860,10 +855,7 @@ class ClasECSV(LoginRequiredMixin, FormView):
                     test_date__gte=pre,
                     write_ss__isnull=False).count() > 0:
                     test_type = 'Posttest'
-                lowest = 1
-                if r is not None:
-                    if r < w:
-                        lowest = 0
+                lowest = 0
                 s = [
                     test.student.student.partner,
                     test.student.student.WRU_ID,

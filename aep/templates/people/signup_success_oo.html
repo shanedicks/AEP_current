@@ -5,7 +5,7 @@
 	<h1 class="text-center">Success!</h1>
 	<p class="text-center lead">You're successfully registered for the Delgado Adult Education Program</p>
 	<p class="text-center">In order to begin classes, you MUST attend orientation.</p>
-	<p class="text-center">You will be receiving an email with next steps and directions on the date you selected:<br><strong>{{event}}</strong></p>
+	<p class="text-center">You will be receiving an email with next steps and directions on the date you selected:<br><strong>{{ event.start|date:'h:ia l m/d/Y' }}</strong></p>
 	<p class="text-center">Please make sure to bring a picture ID and check your email on that date-- including any spam folders, just in case. If you have any difficulty with these email directions or you have any questions or concerns, please feel free to contact <a href='mailto:coach@elearnclass.org'>coach@elearnclass.org</a> for help.</p>
 </div>
 <div class="col-md-6 col-md-offset-3">

@@ -16,6 +16,11 @@ from .models import Enrollment, Section, Attendance, Site, Cancellation
 
 class StudentAddEnrollmentForm(ModelForm):
 
+    STATUS_CHOICES = (
+        ('A', 'Active'),
+        ('W', 'Waitlist'),
+    )
+
     def __init__(self, *args, **kwargs):
         student = kwargs.pop('student', None)
         qst = Student.objects.none()
@@ -27,10 +32,11 @@ class StudentAddEnrollmentForm(ModelForm):
             )
         self.base_fields['student'].queryset = qst
         super(StudentAddEnrollmentForm, self).__init__(*args, **kwargs)
+        self.fields['status'].choices = self.STATUS_CHOICES
 
     class Meta:
         model = Enrollment
-        fields = ('student',)
+        fields = ('student', 'status')
 
 
 class ClassAddEnrollmentForm(ModelForm):
