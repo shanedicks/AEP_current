@@ -911,7 +911,7 @@ class ElearnRecord(models.Model):
                     "Si tiene alguna pregunta, comuníquese con coach@elearnclass.org.</p>".format(
                     g_suite=g_suite
                 ),
-                from_email='noreply@elearnclass.org',
+                from_email='robot@elearnclass.org',
                 recipient_list=recipient_list
             )
             return True

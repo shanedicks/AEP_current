@@ -141,7 +141,7 @@ class TestEvent(models.Model):
                     subject="Orientation for the Delgado Adult Education Program!",
                     message=message,
                     html_message=html_message,
-                    from_email="noreply@elearnclass.org",
+                    from_email="robot@elearnclass.org",
                     recipient_list=[student.student.email],
                 )
 
@@ -170,7 +170,7 @@ class TestEvent(models.Model):
                     "Community College Adult Education Program",
                     message=message,
                     html_message=html_message,
-                    from_email="noreply@elearnclass.org",
+                    from_email="robot@elearnclass.org",
                     recipient_list=[student.student.email],
                 )
 

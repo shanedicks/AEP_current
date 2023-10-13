@@ -673,7 +673,7 @@ class Enrollment(models.Model):
                     "are dropped to make room for waitlisted students.\n"
                     "Please stop by our main office or call "
                     "504-671-5434 for more information.",
-                    from_email="noreply@elearnclass.org",
+                    from_email="enrollment_robot@elearnclass.org",
                     recipient_list=[self.student.email],
                 )
             return True
@@ -696,7 +696,7 @@ class Enrollment(models.Model):
                     "stop by our main office or call 504-671-5434".format(
                         student=self.student.first_name,
                         section=self.section.title),
-                    from_email="noreply@elearnclass.org",
+                    from_email="enrollment_robot@elearnclass.org",
                     recipient_list=[self.student.email],
                 )
             return True
@@ -720,7 +720,7 @@ class Enrollment(models.Model):
                     "You're still part of our program, you're just dropped from this class.\n"
                     "Please stop by our main office or call "
                     "504-671-5434 for more information.",
-                    from_email="noreply@elearnclass.org",
+                    from_email="enrollment_robot@elearnclass.org",
                     recipient_list=[self.student.email]
                 )
             return True
@@ -765,7 +765,7 @@ class Enrollment(models.Model):
                 "</a></p><p>Esperamos con interés trabajar con usted en esta sesión.</p><p>"
                 "¡Esté seguro y manténgase saludable!</p><p>Todo lo mejor,<br>Programa de "
                 "educación para adultos Delgado</p>".format(g_suite_email=g_suite_email),
-                from_email="noreply@elearnclass.org",
+                from_email="enrollment_robot@elearnclass.org",
                 recipient_list=recipients,
             )
 

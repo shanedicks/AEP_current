@@ -501,7 +501,7 @@ def cancel_class_task(cancellation_id):
             subject="{0} has been cancelled for {1}".format(cancellation.section.title, cancellation_date),
             message=strip_tags(html_message),
             html_message=html_message,
-            from_email='noreply@elearnclass.org',
+            from_email='robot@elearnclass.org',
             recipient_list=recipient_list
         )
         cancellation.notification_sent = True

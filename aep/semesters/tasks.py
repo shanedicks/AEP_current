@@ -107,7 +107,7 @@ def send_schedules_task(semester_id_list):
                 subject="Delgado Adult Education Class Schedule",
                 message=message,
                 html_message=html_message,
-                from_email="noreply@elearnclass.org",
+                from_email="robot@elearnclass.org",
                 recipient_list=recipients,
             )
 

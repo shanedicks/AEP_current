@@ -206,7 +206,7 @@ class Survey(models.Model):
                     first_name=student.first_name,
                     form_link=self.form_link,
                 ),
-                from_email="noreply@elearnclass.org",
+                from_email="robot@elearnclass.org",
                 recipient_list=recipients
             )
 

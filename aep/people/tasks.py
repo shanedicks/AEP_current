@@ -46,7 +46,7 @@ def send_orientation_confirmation_task(student_id):
             subject="Orientation Completed for Delgado Adult Education Program!",
             message=message,
             html_message=html_message,
-            from_email="noreply@elearnclass.org",
+            from_email="robot@elearnclass.org",
             recipient_list=[student.email],
         )
 
@@ -716,7 +716,7 @@ def send_student_schedule_task(student_id):
             subject="Delgado Adult Education Class Schedule",
             message=message,
             html_message=html_message,
-            from_email="noreply@elearnclass.org",
+            from_email="robot@elearnclass.org",
             recipient_list=recipients,
         )
 
