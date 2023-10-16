@@ -660,7 +660,10 @@ class Enrollment(models.Model):
     def waitlist_drop(self):
         absent = self.times_absent()
         present = self.times_attended()
-        if absent > 1 and present < 1:
+        needs_test = False:
+        if self.student.testing_status() == "Test Needed":
+            needs_test = True
+        if absent > 1 and present < 1 and needs_test:
             self.status = "D"
             self.save()
             if self.student.email:

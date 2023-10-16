@@ -11,7 +11,6 @@
 {% if event.test == event.ORIENTATION %}
 <a class="btn btn-default btn-sm" href="{% url 'assessments:test event paperwork' pk=event.pk %}" role="button">Photo ID and Paperwork Forms</a>
 {% endif %}
-<a class="btn btn-default btn-sm" href="{% url 'assessments:add student' pk=event.pk %}" role="button">Add Student</a>
 <table class="table">
 	<tr>
 		<th>ID</th>
