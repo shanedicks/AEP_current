@@ -114,13 +114,14 @@ class TestEventCSV(LoginRequiredMixin, View):
             "Student ID",
             "Student Last Name",
             "Student First Name",
+            "Last Test Date",
             "Test Assignment",
+            "Testing Status",
             "Intake Date",
-            "CCR",
-            "ELL",
-            "ACE",
-            "eLearn",
-            "Success",
+            "CCR On Campus",
+            "CCR Online",
+            "ELL On Campus",
+            "ELL Online",
             "Gender",
             "Date of Birth",
             "Marital Status",
@@ -144,20 +145,23 @@ class TestEventCSV(LoginRequiredMixin, View):
                 g_suite_email = ""
             try:
                 test_assignment = student.student.tests.test_assignment
+                last_test_date = student.student.tests.last_test_date
             except ObjectDoesNotExist:
-                test_assignment = 'Missing Test History'
+                test_assignment = "No Test History"
+                last_test_date = "None"
             s = [
                 student.student.partner,
                 student.student.WRU_ID,
                 student.student.last_name,
                 student.student.first_name,
+                last_test_date,
                 test_assignment,
+                student.student.testing_status,
                 student.student.intake_date,
                 student.student.ccr_app,
-                student.student.ell_app,
-                student.student.ace_app,
                 student.student.e_learn_app,
-                student.student.success_app,
+                student.student.ell_app,
+                student.student.ell_online_app,
                 student.student.gender,
                 str(student.student.dob),
                 student.student.get_marital_status_display(),
