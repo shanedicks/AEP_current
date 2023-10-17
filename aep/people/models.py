@@ -58,10 +58,14 @@ def move_test_history(orig, duplicate):
                         except IntegrityError:
                             test.delete()
             if d.last_test_date is not None:
+                def copy_fields(t, d):
+                    t.last_test_date = d.last_test_date
+                    t.last_test_type = d.last_test_type
+                    t.test_assignment = d.test_assignment
                 if t.last_test_date is None:
-                    t.last_test_date = d.last_test_date
+                    copy_fields(t, d)
                 elif t.last_test_date < d.last_test_date:
-                    t.last_test_date = d.last_test_date
+                    copy_fields(t, d)
             d.delete()
             t.student = duplicate
             t.save()
@@ -275,6 +279,12 @@ def full_merge(orig, duplicate):
     if rules.needs_pretest(duplicate):
         duplicate.WRU_ID = orig.WRU_ID
         duplicate.save()
+    try:
+        tests = duplicate.tests
+        tests.student_wru = duplicate.WRU_ID
+        tests.save()
+    except ObjectDoesNotExist:
+        pass
     if nid is None:
         try:
             orig.WRU_ID = 'd' + orig.WRU_ID
