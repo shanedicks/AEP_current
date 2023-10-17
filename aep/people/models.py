@@ -37,6 +37,7 @@ def move_test_history(orig, duplicate):
         except ObjectDoesNotExist:
             pass
         t.student = duplicate
+        t.student_wru = duplicate.WRU_ID
         try:
             t.save()
         except IntegrityError:
@@ -68,6 +69,7 @@ def move_test_history(orig, duplicate):
                     copy_fields(t, d)
             d.delete()
             t.student = duplicate
+            t.student_wru = duplicate.WRU_ID
             t.save()
     except ObjectDoesNotExist:
         pass
@@ -259,6 +261,18 @@ def move_prospects(orig, duplicate):
             pass
 
 def full_merge(orig, duplicate):
+    nid = None
+    if rules.needs_pretest(duplicate):
+        nid = duplicate.WRU_ID
+        duplicate.WRU_ID = orig.WRU_ID
+        duplicate.save()
+    if nid is None:
+        try:
+            orig.WRU_ID = 'd' + orig.WRU_ID
+        except TypeError:
+            orig.WRU_ID = 'dNone'
+    else:
+        orig.WRU_ID = 'd' + nid.replace('x', '')
     move_test_history(orig, duplicate)
     move_classes(orig, duplicate)
     move_appointments(orig, duplicate)
@@ -275,23 +289,6 @@ def full_merge(orig, duplicate):
     move_prospects(orig, duplicate)
     duplicate.intake_date = orig.intake_date
     duplicate.notes = orig.notes
-    nid = duplicate.WRU_ID
-    if rules.needs_pretest(duplicate):
-        duplicate.WRU_ID = orig.WRU_ID
-        duplicate.save()
-    try:
-        tests = duplicate.tests
-        tests.student_wru = duplicate.WRU_ID
-        tests.save()
-    except ObjectDoesNotExist:
-        pass
-    if nid is None:
-        try:
-            orig.WRU_ID = 'd' + orig.WRU_ID
-        except TypeError:
-            orig.WRU_ID = 'dNone'
-    else:
-        orig.WRU_ID = 'd' + nid.replace('x', '')
     orig.duplicate_of = duplicate
     orig.duplicate = True
     orig.dupl_date = timezone.now().date()
