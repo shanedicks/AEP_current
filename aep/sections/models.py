@@ -404,7 +404,7 @@ class Section(models.Model):
         if len(dropped) > 0:
             if self.teacher.email:
                 send_mail_task.delay(
-                    "Delgado Adult Ed Dropped Student Notice {day}".format(day=timezone.now().date()),
+                    "Delgado Adult Ed Dropped Student Notice | {section} - {day}".format(day=timezone.now().date()),
                     "Hi {teacher},\n"
                     "In accordance with our attendance policy, "
                     "we have dropped the following students from {section}:\n"
@@ -423,7 +423,7 @@ class Section(models.Model):
                         drop=dropped,
                         add=added),
                     "admin@dccaep.org",
-                    [self.teacher.email],
+                    [self.teacher.email, "adulted@dcc.edu"],
                 )
 
     def enforce_attendance(self):
@@ -692,13 +692,19 @@ class Enrollment(models.Model):
                     subject="Good News! You've been added to {section}".format(
                         section=self.section.title
                     ),
-                    message="Hi {student} \n"
-                    "Space has opened up in {section} and you have been added the roster.\n"
-                    "To keep your spot, please attend this class the next time it meets.\n"
-                    "If you are unsure when that is, "
-                    "stop by our main office or call 504-671-5434".format(
-                        student=self.student.first_name,
-                        section=self.section.title),
+                    message="""Hi {student} \n"
+                    The wait is over!  A seat is open in {teacher}'s {section}.
+                    Please visit {site},  Room {room} on {days} at {start_time} to begin class.
+                    If you have any questions, please call the office at 504-671-5434.
+                    """.format(
+                            student=self.student.first_name,
+                            teacher=self.section.teacher.first_name,
+                            site = self.section.site.name,
+                            room = self.section.room,
+                            days = self.sections.get_days_names(),
+                            start_time = self.section.start_time,
+                            section=self.section.title
+                        ),
                     from_email="enrollment_robot@elearnclass.org",
                     recipient_list=[self.student.email],
                 )
