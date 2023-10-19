@@ -265,7 +265,6 @@ def full_merge(orig, duplicate):
     if rules.needs_pretest(duplicate):
         nid = duplicate.WRU_ID
         duplicate.WRU_ID = orig.WRU_ID
-        duplicate.save()
     if nid is None:
         try:
             orig.WRU_ID = 'd' + orig.WRU_ID
@@ -289,6 +288,7 @@ def full_merge(orig, duplicate):
     move_prospects(orig, duplicate)
     duplicate.intake_date = orig.intake_date
     duplicate.notes = orig.notes
+    duplicate.save()
     orig.duplicate_of = duplicate
     orig.duplicate = True
     orig.dupl_date = timezone.now().date()
