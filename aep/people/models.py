@@ -88,7 +88,7 @@ def move_appointments(orig, duplicate):
         try:
             a.save()
         except IntegrityError:
-            pass
+            a.delete()
 
 def move_elearn_record(orig, duplicate):
     try:
