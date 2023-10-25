@@ -80,7 +80,7 @@ def move_classes(orig, duplicate):
         try:
             c.save()
         except IntegrityError:
-            pass
+            c.delete()
 
 def move_appointments(orig, duplicate):
     for a in orig.test_appointments.all():

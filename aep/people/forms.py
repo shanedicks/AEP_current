@@ -614,11 +614,11 @@ class StudentInterestForm(ModelForm):
         }
 
         help_texts = {
-            "ccr_app": "(high school equivalency test, was the GED)<br />Math, Science, Social Studies, Reading and Writing",
-            "ell_app": "(not a native English speaker)<br />Aprendices del idioma inglés en persona<br />(no un hablante nativo de inglés)",
-            "ell_online_app": "(not a native English speaker)<br />Aprendices del idioma inglés en persona<br />(no un hablante nativo de inglés)",
+            "ccr_app": "(high school equivalency test, was the GED)<br/>Math, Science, Social Studies, Reading and Writing",
+            "ell_app": "(not a native English speaker)<br/>Aprendices del idioma inglés en persona<br/>(no un hablante nativo de inglés)",
+            "ell_online_app": "(not a native English speaker)<br/>Aprendices del idioma inglés en persona<br/>(no un hablante nativo de inglés)",
             "success_app": "(examples: Citizenship, Computer Basics, Public Speaking)",
-            'e_learn_app': "(high school equivalency test, was the GED)<br />Math, Science, Social Studies, Reading and Writing ",
+            'e_learn_app': "(high school equivalency test, was the GED)<br/>Math, Science, Social Studies, Reading and Writing ",
             'accuplacer_app': "study for college entrance exams",
             'certifications_app': '(NCCER, ServSafe, Basic Life Support, Microsoft Word)'
         }
@@ -1857,7 +1857,7 @@ class DisabilityForm(ModelForm):
 
         labels = {
             "disability_notice": "Are you an Individual with a Disability?*",
-            "request_accommodation": "<strong>Check here to indicate that you understand your responsibility to request accommodations.*</strong>"
+            "request_accommodation": mark_safe("<strong>Check here to indicate that you understand your responsibility to request accommodations.*</strong>")
         }
 
 
@@ -1962,7 +1962,7 @@ class AdditionalDetailsForm(ModelForm):
 
         labels = {
             "parental_status": "Are you a parent?*",
-            "referred_by": "<strong>How did you hear about us?*</strong>",
+            "referred_by": mark_safe("<strong>How did you hear about us?*</strong>"),
             "digital_signature": "DISCLAIMER: By typing your name below, you are signing this application electronically. You agree that your electronic signature is the legal equivalent of your manual signature on this application.*"
         }
 
@@ -2266,10 +2266,10 @@ class WioaForm(ModelForm):
         )
 
         labels = {
-            "veteran": "<strong> Check this box if you are a veteran</strong>",
-            "request_accommodation": """<strong>Check here to indicate that you 
+            "veteran": mark_safe("<strong> Check this box if you are a veteran</strong>"),
+            "request_accommodation": mark_safe("""<strong>Check here to indicate that you 
                                         understand your responsibility to request 
-                                        accommodations.</strong>""",
+                                        accommodations.</strong>"""),
             "referred_by": "<strong>How did you hear about us?</strong>"
         }
         help_texts = {
