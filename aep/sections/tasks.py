@@ -39,7 +39,7 @@ def end_task(enrollment_id):
 
 @shared_task
 def waitlist_update_task(section_id):
-    section = apps.get_model('sections', 'Section').get(id=section_id)
+    section = apps.get_model('sections', 'Section').objects.get(id=section_id)
     section.waitlist_update()
 
 @shared_task
