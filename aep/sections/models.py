@@ -404,7 +404,7 @@ class Section(models.Model):
         if len(dropped) > 0:
             if self.teacher.email:
                 send_mail_task.delay(
-                    "Delgado Adult Ed Dropped Student Notice | {section} - {day}".format(day=timezone.now().date()),
+                    "Delgado Adult Ed Dropped Student Notice | {section} - {day}".format(section=self.title, day=timezone.now().date()),
                     "Hi {teacher},\n"
                     "In accordance with our attendance policy, "
                     "we have dropped the following students from {section}:\n"
