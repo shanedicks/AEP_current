@@ -103,7 +103,7 @@ class Semester(models.Model):
 
     def waitlist(self):
         for section in self.get_sections():
-            waitlist_update_task.delay(section_id)
+            waitlist_update_task.delay(section.id)
 
     def enforce_attendance(self):
         for section in self.get_sections():
