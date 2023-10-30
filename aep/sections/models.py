@@ -414,8 +414,6 @@ class Section(models.Model):
                     "{add}\n"
                     "All these students listed have been notified "
                     "by email that their status has changed.\n"
-                    "Please understand that waitlisted students "
-                    "are not excused for days missed while on the waitlist. "
                     "Consider calling these newly added students to be sure "
                     "they are aware of the change. Thanks".format(
                         section=self.title,

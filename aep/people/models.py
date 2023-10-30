@@ -1194,6 +1194,12 @@ class Student(Profile):
     class Meta:
         ordering = ["last_name", "first_name"]
 
+    def __str__(self):
+        string = super().__str__()
+        if self.partner not in ['', "Job1", 'JeffPar']:
+            string = f"{self.partner}- " + string
+        return string
+
     def get_absolute_url(self):
         return reverse('people:student detail', kwargs={'slug': self.slug})
 

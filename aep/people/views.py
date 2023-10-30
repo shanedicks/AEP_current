@@ -85,7 +85,8 @@ class StudentListView(LoginRequiredMixin, ListView, FormView):
         }
 
     def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
+        partners = ['', 'Job1', 'JeffPar']
+        self.object_list = self.get_queryset().filter(partner__in=partners)
         form = self.get_form(self.get_form_class())
         if form.is_valid():
             self.object_list = form.filter_queryset(request, self.object_list)
