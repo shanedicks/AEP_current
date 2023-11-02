@@ -1447,6 +1447,11 @@ class ImportAttendanceView(LoginRequiredMixin, FormView):
     form_class = CSVImportForm
     template_name = 'sections/import_attendance.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['section'] = Section.objects.get(slug=self.kwargs['slug'])
+        return context
+
     def form_valid(self, form):
         section = Section.objects.get(slug=self.kwargs['slug'])
         file = self.request.FILES['csv_file']
