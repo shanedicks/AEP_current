@@ -613,6 +613,9 @@ class Enrollment(models.Model):
     def times_absent(self):
         return self.attendance.filter(attendance_type='A').count()
 
+    def last_attended(self):
+        return self.attendance.filter(attendance_type='P').latest('attendance_date').attendance_date
+
     def get_attendance(self):
         return self.attendance.order_by('attendance_date')
 

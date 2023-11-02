@@ -1,3 +1,5 @@
+import csv
+import os
 from apiclient import discovery
 from googleapiclient.errors import HttpError
 from datetime import datetime, date
@@ -9,14 +11,15 @@ from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView, FormView, View)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail.message import EmailMessage
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.db import IntegrityError
 from django.db.models import Count, F, Q
-from core.forms import DateFilterForm
-from core.utils import render_to_csv
+from core.forms import DateFilterForm, CSVImportForm
+from core.utils import render_to_csv, time_string_to_hours
 from coaching.models import ElearnRecord
 from people.models import Student, Staff
 from people.forms import StudentSearchForm
@@ -1435,4 +1438,70 @@ class CancelClassView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse(
             'sections:attendance overview',
             kwargs={'slug': cancellation.section.slug}
+        ))
+
+
+class ImportAttendanceView(LoginRequiredMixin, FormView):
+
+    model = Section
+    form_class = CSVImportForm
+    template_name = 'sections/import_attendance.html'
+
+    def form_valid(self, form):
+        section = Section.objects.get(slug=self.kwargs['slug'])
+        file = self.request.FILES['csv_file']
+        errors = False
+        missing_students = []
+        broken_records = []
+        reader = csv.DictReader(file.read().decode('utf-8').splitlines())
+        headers = reader.fieldnames
+        for row in reader:
+            try:
+                student = section.students.get(
+                    student__first_name=row['First Name'],
+                    student__last_name=row['Last Name']
+                )
+                date = datetime.strptime(row['Date'], "%m/%d/%Y")
+                att_hours = time_string_to_hours(row['Total Time on Task'])
+                attendance = Attendance(
+                    enrollment=student,
+                    attendance_type='P',
+                    attendance_date=date,
+                    att_hours=att_hours,
+                    online=True
+                    )
+                try:
+                    attendance.save()
+                except IntegrityError:
+                    broken_records.append(list(row.values()))
+                    errors = True
+            except ObjectDoesNotExist:
+                missing_students.append(list(row.values()))
+                errors = True
+
+        if errors:
+            with open('errors.csv', 'w', newline='') as error_file:
+                writer = csv.writer(error_file)
+                if missing_students:
+                    writer.writerow(["These records were not imported because the students were not found in the class"])
+                    writer.writerow(headers)
+                    for row in missing_students:
+                        writer.writerow(row)
+                if broken_records:
+                    writer.writerow(["These records were not imported because the attendance instance failed to save. Maybe this attendance was already imported?"])
+                    writer.writerow(headers)
+                    for row in broken_records:
+                        writer.writerow(row)
+            email = EmailMessage(
+                'Attendance Import Report',
+                'These records were not imported',
+                'admin@dccaep.org',
+                [self.request.user.email]
+            )
+            email.attach_file('errors.csv')
+            email.send()
+            os.remove('errors.csv')
+        return HttpResponseRedirect(reverse(
+            'sections:attendance overview',
+            kwargs={'slug': section.slug}
         ))

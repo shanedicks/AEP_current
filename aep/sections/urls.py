@@ -1,4 +1,4 @@
-from django.urls import re_path, include
+from django.urls import path, re_path, include
 from . import views
 
 app_name = 'sections'
@@ -22,6 +22,9 @@ single_class_attendance_patterns = [
     re_path(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/print-sign-in/$',
         views.PrintSignInView.as_view(),
         name='sign in'),
+    path('import/',
+        views.ImportAttendanceView.as_view(),
+        name='import attendance')
 ]
 
 single_class_skills_patterns = [

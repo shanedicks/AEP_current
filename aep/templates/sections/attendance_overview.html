@@ -10,6 +10,7 @@
     {% if section.program not in summary %}
         {% include 'sections/attendance_table.html' %}
     {% else %}
+    <a class="btn btn-default" href="{% url 'sections:import attendance' slug=section.slug %}">Import Attendance</a>
         {% include 'sections/attendance_summary.html' %}
     {% endif %}
 

@@ -9,19 +9,6 @@ from crispy_forms.layout import Layout, Field, Fieldset
 from .models import (TestEvent, TestAppointment,
                      Tabe, Clas_E, HiSet_Practice, Gain, HiSET, Accuplacer)
 
-class CSVImportForm(Form):
-    csv_file = FileField()
-
-    def __init__(self, *args, **kwargs):
-        super(CSVImportForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.help_text_inline = False
-        self.helper.form_show_labels = False
-        self.helper.layour = Layout(
-            'csv_file'
-        )
 
 class TestAppointmentForm(ModelForm):
     class Meta:

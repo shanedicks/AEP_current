@@ -1,5 +1,6 @@
-from django.forms import ModelForm, Form, DateField
+from django.forms import ModelForm, Form, DateField, FileField
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field
 
 class NoColonModelForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -32,3 +33,18 @@ class DateFilterForm(Form):
         self.helper.form_tag = False
         self.helper.help_text_inline = False
         self.helper.disable_csrf = True
+
+class CSVImportForm(Form):
+
+    csv_file = FileField()
+
+    def __init__(self, *args, **kwargs):
+        super(CSVImportForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.form_show_labels = False
+        self.helper.layour = Layout(
+            'csv_file'
+        )

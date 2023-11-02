@@ -338,3 +338,10 @@ def classroom_service():
 def clean_special_characters(input_string):
     cleaned_chars = [CHAR_MAP[c] if c in CHAR_MAP else c for c in input_string]
     return "".join(cleaned_chars)
+
+
+def time_string_to_hours(time_str):
+    hours, minutes, seconds = map(int, time_str.split(':'))
+    total_seconds = hours * 3600 + minutes * 60 + seconds
+    hours_float = total_seconds / 3600.0
+    return round(hours_float,2)

@@ -349,4 +349,3 @@ class CancellationForm(ModelForm):
         widgets = {
             "cancellation_date": TextInput(attrs={'type': 'date'})
         }
-

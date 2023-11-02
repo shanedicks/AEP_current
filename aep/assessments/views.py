@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.views.generic import (DetailView, ListView, CreateView,
                                   TemplateView, View, FormView, UpdateView)
 from core.utils import render_to_csv, clean_special_characters
-from core.forms import DateFilterForm
+from core.forms import DateFilterForm, CSVImportForm
 from people.models import Student
 from .models import (
         TestEvent, TestAppointment, TestHistory,                 
@@ -17,7 +17,7 @@ from .models import (
     )
 from .forms import (
         TestSignupForm, TabeForm, Clas_E_Form,
-        GainForm, HiSet_Practice_Form, CSVImportForm,
+        GainForm, HiSet_Practice_Form,
         TestAppointmentAttendanceForm, TestAttendanceFormSet,
         TestAppointmentNotesForm, HiSetForm, AccuplacerForm,
         Clas_E_ScoreReportLinkForm, TabeScoreReportLinkForm,
