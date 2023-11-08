@@ -418,6 +418,8 @@ def summary_report_task(from_date, to_date):
 
 @shared_task
 def pop_update_task(student_id, date):
+    date = date.date()
+    logger.info(f"Student ID: {student_id}, Date: {date}")
     student = apps.get_model('people', 'Student').objects.get(id=student_id)
     PoP = apps.get_model('people', 'PoP')
     exit = date - timedelta(days=90)
