@@ -1466,7 +1466,7 @@ class ImportAttendanceView(LoginRequiredMixin, FormView):
                     student__first_name=row['First Name'],
                     student__last_name=row['Last Name']
                 )
-                date = datetime.strptime(row['Date'], "%m/%d/%Y")
+                date = datetime.strptime(row['Date'], "%m/%d/%Y").date()
                 att_hours = time_string_to_hours(row['Total Time on Task'])
                 attendance = Attendance(
                     enrollment=student,
