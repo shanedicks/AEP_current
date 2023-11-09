@@ -45,6 +45,7 @@ def event_attendance_report_task(event_id, email_address):
             'DOB',
             'Phone',
             'Email',
+            'G Suite',
             'Date',
             'Attendance',
             'Hours'
@@ -53,6 +54,10 @@ def event_attendance_report_task(event_id, email_address):
 
         for appt in students:
             student = appt.student
+            try:
+                g_suite = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist
+                g_suite = 'No elearn_record'
             data = [
                 appt.id,
                 student.WRU_ID,
@@ -61,6 +66,7 @@ def event_attendance_report_task(event_id, email_address):
                 student.dob,
                 student.phone,
                 student.email,
+                g_suite,
                 appt.attendance_date,
                 appt.attendance_type,
                 appt.hours()
