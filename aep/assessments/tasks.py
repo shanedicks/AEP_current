@@ -56,7 +56,7 @@ def event_attendance_report_task(event_id, email_address):
             student = appt.student
             try:
                 g_suite = student.elearn_record.g_suite_email
-            except ObjectDoesNotExist
+            except ObjectDoesNotExist:
                 g_suite = 'No elearn_record'
             data = [
                 appt.id,

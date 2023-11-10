@@ -610,6 +610,7 @@ class ClassRosterCSV(LoginRequiredMixin, View):
             "Student Last Name",
             "Student First Name",
             "Student Middle Initial",
+            "Language",
             "Gender",
             "Date of Birth",
             "Intake Date",
@@ -627,13 +628,21 @@ class ClassRosterCSV(LoginRequiredMixin, View):
                 g_suite = student.student.elearn_record.g_suite_email
             except ObjectDoesNotExist:
                 g_suite = ''
-
+            try:
+                languages = [
+                    student.student.WIOA.native_language,
+                    student.student.WIOA.other_language
+                ]
+            except ObjectDoesNotExist:
+                languages = []
+            language = ", ".join([l for l in languages if l != ''])
             s = [
                 student.student.partner,
                 student.student.WRU_ID,
                 student.student.last_name,
                 student.student.first_name,
                 "",
+                language,
                 student.student.get_gender_display(),
                 str(student.student.dob),
                 student.student.intake_date,
