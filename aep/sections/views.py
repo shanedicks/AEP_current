@@ -4,6 +4,7 @@ from apiclient import discovery
 from googleapiclient.errors import HttpError
 from datetime import datetime, date
 from httplib2 import Http
+from io import TextIOWrapper
 from oauth2client.service_account import ServiceAccountCredentials
 from urllib.parse import urlencode
 from django.apps import apps
@@ -1463,35 +1464,51 @@ class ImportAttendanceView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         section = Section.objects.get(slug=self.kwargs['slug'])
-        file = self.request.FILES['csv_file']
+        csv_file = self.request.FILES['csv_file']
+        decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+        description = decoded_file.readline()
+        headers = decoded_file.readline().strip().split(",")
         errors = False
         missing_students = []
         broken_records = []
-        reader = csv.DictReader(file.read().decode('utf-8').splitlines())
+        reader = csv.DictReader(decoded_file, fieldnames=headers)
         headers = reader.fieldnames
+        def handle_row(row, student):
+            date = datetime.strptime(row['Date'], "%m/%d/%Y").date()
+            att_hours = time_string_to_hours(row['Total Time on Task'])
+            attendance = Attendance(
+                enrollment=student,
+                attendance_type='P',
+                attendance_date=date,
+                att_hours=att_hours,
+                online=True
+                )
+            try:
+                attendance.save()
+            except IntegrityError:
+                broken_records.append(list(row.values()))
+                errors = True
         for row in reader:
             try:
                 student = section.students.get(
-                    student__first_name=row['First Name'],
-                    student__last_name=row['Last Name']
+                    student__elearn_record__g_suite_email__iexact=row['Username/Email']
                 )
-                date = datetime.strptime(row['Date'], "%m/%d/%Y").date()
-                att_hours = time_string_to_hours(row['Total Time on Task'])
-                attendance = Attendance(
-                    enrollment=student,
-                    attendance_type='P',
-                    attendance_date=date,
-                    att_hours=att_hours,
-                    online=True
-                    )
-                try:
-                    attendance.save()
-                except IntegrityError:
-                    broken_records.append(list(row.values()))
-                    errors = True
+                handle_row(row, student)
             except ObjectDoesNotExist:
-                missing_students.append(list(row.values()))
-                errors = True
+                try:
+                    student = section.students.get(
+                        student__email__iexact=row['Username/Email']
+                    )
+                    handle_row(row, student)
+                except ObjectDoesNotExist:
+                    try:
+                        student = section.students.get(
+                            student__alt_email__iexact=row['Username/Email']
+                        )
+                        handle_row(row, student)
+                    except ObjectDoesNotExist:
+                        missing_students.append(list(row.values()))
+                        errors = True
 
         if errors:
             with open('errors.csv', 'w', newline='') as error_file:
