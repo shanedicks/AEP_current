@@ -1489,6 +1489,8 @@ class ImportAttendanceView(LoginRequiredMixin, FormView):
                 broken_records.append(list(row.values()))
                 errors = True
         for row in reader:
+            if row['Username/Email'] in [None, "Username/Email"]:
+                continue
             try:
                 student = section.students.get(
                     student__elearn_record__g_suite_email__iexact=row['Username/Email']
