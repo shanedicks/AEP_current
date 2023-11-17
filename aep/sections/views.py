@@ -999,6 +999,12 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
             context['daily_present'] = self.get_daily_totals()[0]
         if 'daily_absent' not in context:
             context['daily_absent'] = self.get_daily_totals()[1]
+        if 'all_active' not in context:
+            context['all_active'] = self.object.get_active(
+            ).order_by(
+                'student__last_name',
+                'student__first_name'
+            )
         if 'active' not in context:
             context['active'] = self.object.get_active(
             ).exclude(

@@ -6,7 +6,7 @@
         <th>Last Attended</th>
         <th></th>
     </tr>
-    {% for student in active %}
+    {% for student in all_active %}
         <tr>
             <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
             <td>{{ student.total_hours }}</td>
