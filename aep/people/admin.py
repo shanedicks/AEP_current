@@ -425,6 +425,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
     ]
 
     fields = [
+        ("WIOA",
+         "tests"),
         "notes",
         'partner',
         ("WRU_ID",
@@ -492,6 +494,8 @@ class StudentAdmin(ImportExportActionModelAdmin):
     ]
 
     readonly_fields = [
+        "WIOA",
+        "tests",
         "duplicate_of",
         "slug",
     ]
