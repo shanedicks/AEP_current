@@ -5,6 +5,12 @@
 {% block content %}
 <h2>Attendance for {{ section.title }} on {{ attendance_date }}</h2>
 <a class="btn btn-default" href="{% url 'sections:sign in' slug=section.slug attendance_date=attendance_date %}" role="button">Print Sign-in&raquo;</a>
+{% if section.site.code == 'OL' %}
+  <a class="btn btn-default" href="{% url 'sections:daily hours attendance' slug=section.slug attendance_date=attendance_date %}">Hours Form</a>
+  {% if section.program == 'ELL' %}
+  <a class="btn btn-default" href="{% url 'sections:import duolingo' slug=section.slug attendance_date=attendance_date %}">Import Duolingo Attendance</a>
+  {% endif %}
+{% endif %}
 <form method="post">
     {% csrf_token %}
     {{ formset.management_form }}

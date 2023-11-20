@@ -253,6 +253,32 @@ class SingleAttendanceForm(ModelForm):
 AttendanceFormset = modelformset_factory(Attendance, form=SingleAttendanceForm, extra=0)
 
 
+class SingleHoursAttendanceForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(SingleHoursAttendanceForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+            Field(
+                'att_hours',
+                wrapper_class="col-md-6",
+            )
+        )
+
+    class Meta:
+        model = Attendance
+        fields = ('att_hours',)
+
+        labels = {
+            'att_hours': "Hours"
+        }
+
+
+HoursAttendanceFormset = modelformset_factory(Attendance, form=SingleHoursAttendanceForm, extra=0)
+
 class AdminAttendanceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):

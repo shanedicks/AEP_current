@@ -453,10 +453,14 @@ def finalize_daily_attendance_task(section_id, attendance_date):
     Attendance = apps.get_model('sections', 'Attendance')
     attendance = Attendance.objects.filter(
         enrollment__section=section,
-        attendance_date=attendance_date,
+        attendance_date=attendance_date
+    )
+    has_hours = attendance.exclude(att_hours=None)
+    has_hours.update(attendance_type=Attendance.PRESENT)
+    pending_attendance = attendance.filter(
         attendance_type=Attendance.PENDING
     )
-    attendance.update(attendance_type=Attendance.ABSENT)
+    pending_attendance.update(attendance_type=Attendance.ABSENT)
 
 
 @shared_task

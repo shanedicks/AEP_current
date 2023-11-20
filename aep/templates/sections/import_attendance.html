@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1> Import Attendance for {{ section.title }}</h1>
-    <p>This tool imports attendance from the Essential Ed daily report. Please make sure to save the file as .csv and remove the description line</p>
+    <p>This tool imports attendance from {{ source }}. Please make sure to save the file as .csv</p>
     <p>Any errors will be sent to your user email. Please check your email for an error report</p>
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}

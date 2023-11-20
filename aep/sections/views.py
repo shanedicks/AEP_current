@@ -30,7 +30,8 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     AttendanceFormset, SectionSearchForm, AdminAttendanceForm,
                     AttendanceReportForm, EnrollmentReportForm,
                     SingleSkillMasteryForm, SkillMasteryFormset,
-                    EnrollmentUpdateForm, CancellationForm)
+                    EnrollmentUpdateForm, CancellationForm,
+                    SingleHoursAttendanceForm, HoursAttendanceFormset)
 from .tasks import (participation_detail_task, section_skill_mastery_report_task,
                     mondo_attendance_report_task, cancel_class_task, finalize_daily_attendance_task)
 
@@ -1103,8 +1104,15 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
 
     model = Attendance
     form_class = SingleAttendanceForm
+    formset_class = AttendanceFormset
     template_name = 'sections/daily_attendance.html'
     section = None
+
+    def get_formset(self, data=None):
+        return self.formset_class(
+            data,
+            queryset=self.get_form_queryset()
+        )
 
     def get_form_queryset(self):
         attendance_date = self.kwargs['attendance_date']
@@ -1122,7 +1130,7 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
         self.object = None
         self.section = Section.objects.get(slug=self.kwargs['slug'])
         attendance_date = self.kwargs['attendance_date']
-        formset = AttendanceFormset(queryset=self.get_form_queryset())
+        formset = self.get_formset()
         return self.render_to_response(
             self.get_context_data(
                 formset=formset,
@@ -1135,7 +1143,7 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
         self.object = None
         self.section = Section.objects.get(slug=self.kwargs['slug'])
         attendance_date = self.kwargs['attendance_date']
-        formset = AttendanceFormset(request.POST, queryset=self.get_form_queryset())
+        formset = self.get_formset(request.POST)
         if formset.is_valid():
             formset.save()
             finalize_daily_attendance_task.delay(
@@ -1158,6 +1166,12 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
             'sections:attendance overview',
             kwargs={'slug': section.slug}
         )
+
+
+class DailyAttendanceHourlyView(DailyAttendanceView):
+
+    form_class = SingleHoursAttendanceForm
+    formset_class = HoursAttendanceFormset
 
 
 class GSuiteAttendanceView(LoginRequiredMixin, DetailView):
@@ -1457,7 +1471,7 @@ class CancelClassView(LoginRequiredMixin, View):
         ))
 
 
-class ImportAttendanceView(LoginRequiredMixin, FormView):
+class ImportEssentialEdAttendanceView(LoginRequiredMixin, FormView):
 
     model = Section
     form_class = CSVImportForm
@@ -1466,6 +1480,7 @@ class ImportAttendanceView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['section'] = Section.objects.get(slug=self.kwargs['slug'])
+        context['source'] = "the Essential Ed daily report"
         return context
 
     def form_valid(self, form):
@@ -1481,7 +1496,10 @@ class ImportAttendanceView(LoginRequiredMixin, FormView):
         headers = reader.fieldnames
         def handle_row(row, student):
             date = datetime.strptime(row['Date'], "%m/%d/%Y").date()
-            att_hours = time_string_to_hours(row['Total Time on Task'])
+            att_hours = time_string_to_hours(
+                time_str=row['Total Time on Task'],
+                source="Essential Ed"
+            )
             attendance = Attendance(
                 enrollment=student,
                 attendance_type='P',
@@ -1501,22 +1519,20 @@ class ImportAttendanceView(LoginRequiredMixin, FormView):
                 student = section.students.get(
                     student__elearn_record__g_suite_email__iexact=row['Username/Email']
                 )
-                handle_row(row, student)
             except ObjectDoesNotExist:
                 try:
                     student = section.students.get(
                         student__email__iexact=row['Username/Email']
                     )
-                    handle_row(row, student)
                 except ObjectDoesNotExist:
                     try:
                         student = section.students.get(
                             student__alt_email__iexact=row['Username/Email']
                         )
-                        handle_row(row, student)
                     except ObjectDoesNotExist:
                         missing_students.append(list(row.values()))
                         errors = True
+            handle_row(row, student)
 
         if errors:
             with open('errors.csv', 'w', newline='') as error_file:
@@ -1540,6 +1556,108 @@ class ImportAttendanceView(LoginRequiredMixin, FormView):
             email.attach_file('errors.csv')
             email.send()
             os.remove('errors.csv')
+        return HttpResponseRedirect(reverse(
+            'sections:attendance overview',
+            kwargs={'slug': section.slug}
+        ))
+
+class ImportDuolingoAttendanceView(LoginRequiredMixin, FormView):
+
+    model = Section
+    form_class = CSVImportForm
+    template_name = 'sections/import_attendance.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['section'] = Section.objects.get(slug=self.kwargs['slug'])
+        context['source'] = "the Duolingo time spent learning report"
+        return context
+
+    def form_valid(self, form):
+        section = Section.objects.get(slug=self.kwargs['slug'])
+        csv_file = self.request.FILES['csv_file']
+        decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+        headers = decoded_file.readline().strip().split(",")
+        errors = False
+        missing_students = []
+        missing_attendance = []
+        broken_records = []
+        reader = csv.DictReader(decoded_file, fieldnames=headers)
+        headers = reader.fieldnames
+        def handle_row(row, student):
+            att_hours = time_string_to_hours(
+                time_str=row['Time Spent Learning'],
+                source="Duolingo"
+            )
+            try:
+                attendance = Attendance.objects.get(
+                    enrollment=student,
+                    attendance_date=self.kwargs['attendance_date'],
+                    )
+                attendance.attendance_type = 'P'
+                attendance.online = True
+                attendance.att_hours = att_hours
+                attendance.save()
+            except ObjectDoesNotExist:
+                missing_attendance.append(list(row.values()))
+                errors = True
+            except IntegrityError:
+                broken_records.append(list(row.values()))
+                errors = True
+        for row in reader:
+            if row['Email'] in [None, "Email"]:
+                continue
+            try:
+                student = section.students.get(
+                    student__elearn_record__g_suite_email__iexact=row['Email']
+                )
+            except ObjectDoesNotExist:
+                try:
+                    student = section.students.get(
+                        student__email__iexact=row['Email']
+                    )
+
+                except ObjectDoesNotExist:
+                    try:
+                        student = section.students.get(
+                            student__alt_email__iexact=row['Email']
+                        )
+                    except ObjectDoesNotExist:
+                        missing_students.append(list(row.values()))
+                        errors = True
+            handle_row(row, student)
+
+        if errors:
+            with open('errors.csv', 'w', newline='') as error_file:
+                writer = csv.writer(error_file)
+                if missing_students:
+                    writer.writerow(["These records were not imported because the students were not found in the class"])
+                    writer.writerow(headers)
+                    for row in missing_students:
+                        writer.writerow(row)
+                if broken_records:
+                    writer.writerow(["These records were not imported because the attendance instance failed to save. Maybe this attendance was already imported?"])
+                    writer.writerow(headers)
+                    for row in broken_records:
+                        writer.writerow(row)
+                if missing_attendance:
+                    writer.writerow(["These records were not imported because the appropriate attendance record was not found"])
+                    writer.writerow(headers)
+                    for row in missing_attendance:
+                        writer.writerow(row)
+            email = EmailMessage(
+                'Attendance Import Report',
+                'These records were not imported',
+                'admin@dccaep.org',
+                [self.request.user.email]
+            )
+            email.attach_file('errors.csv')
+            email.send()
+            os.remove('errors.csv')
+        finalize_daily_attendance_task.delay(
+            section_id=section.id,
+            attendance_date=self.kwargs['attendance_date']
+        )
         return HttpResponseRedirect(reverse(
             'sections:attendance overview',
             kwargs={'slug': section.slug}

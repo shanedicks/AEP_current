@@ -340,8 +340,12 @@ def clean_special_characters(input_string):
     return "".join(cleaned_chars)
 
 
-def time_string_to_hours(time_str):
-    hours, minutes, seconds = map(int, time_str.split(':'))
-    total_seconds = hours * 3600 + minutes * 60 + seconds
-    hours_float = total_seconds / 3600.0
+def time_string_to_hours(time_str, source):
+    if source == "Essential Ed":
+        hours, minutes, seconds = map(int, time_str.split(':'))
+        total_seconds = hours * 3600 + minutes * 60 + seconds
+        hours_float = total_seconds / 3600.0
+    if source == "Duolingo":
+        hours, minutes = map(int, [part.strip('hm') for part in time_str.split()])
+        hours_float = hours + minutes / 60.0
     return round(hours_float,2)

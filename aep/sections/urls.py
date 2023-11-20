@@ -3,6 +3,24 @@ from . import views
 
 app_name = 'sections'
 
+single_day_attendance_patterns = [
+    re_path(r'^$',
+        views.DailyAttendanceView.as_view(),
+        name='daily attendance'),
+    re_path(r'^cancel/$',
+        views.CreateCancellationView.as_view(),
+        name='cancel dated class'),
+    re_path(r'^print-sign-in/$',
+        views.PrintSignInView.as_view(),
+        name='sign in'),
+    path('import/',
+        views.ImportDuolingoAttendanceView.as_view(),
+        name='import duolingo'),
+    path('hours-form/',
+        views.DailyAttendanceHourlyView.as_view(),
+        name='daily hours attendance')
+]
+
 single_class_attendance_patterns = [
     re_path(r'^$',
         views.AttendanceOverview.as_view(),
@@ -13,17 +31,10 @@ single_class_attendance_patterns = [
     re_path(r'^(?P<pk>[0-9]+)/$',
         views.SingleAttendanceView.as_view(),
         name='single attendance'),
-    re_path(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/$',
-        views.DailyAttendanceView.as_view(),
-        name='daily attendance'),
-    re_path(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/cancel/$',
-        views.CreateCancellationView.as_view(),
-        name='cancel dated class'),
-    re_path(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/print-sign-in/$',
-        views.PrintSignInView.as_view(),
-        name='sign in'),
+    re_path(r'^(?P<attendance_date>[0-9]{4}-[0-9]{2}-[0-9]{2})/',
+        include(single_day_attendance_patterns)),
     path('import/',
-        views.ImportAttendanceView.as_view(),
+        views.ImportEssentialEdAttendanceView.as_view(),
         name='import attendance')
 ]
 
