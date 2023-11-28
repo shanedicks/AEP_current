@@ -1589,21 +1589,22 @@ class ImportDuolingoAttendanceView(LoginRequiredMixin, FormView):
                 time_str=row['Time Spent Learning'],
                 source="Duolingo"
             )
-            try:
-                attendance = Attendance.objects.get(
-                    enrollment=student,
-                    attendance_date=self.kwargs['attendance_date'],
-                    )
-                attendance.attendance_type = 'P'
-                attendance.online = True
-                attendance.att_hours = att_hours
-                attendance.save()
-            except ObjectDoesNotExist:
-                missing_attendance.append(list(row.values()))
-                errors = True
-            except IntegrityError:
-                broken_records.append(list(row.values()))
-                errors = True
+            if att_hours > 0.0:
+                try:
+                    attendance = Attendance.objects.get(
+                        enrollment=student,
+                        attendance_date=self.kwargs['attendance_date'],
+                        )
+                    attendance.attendance_type = 'P'
+                    attendance.online = True
+                    attendance.att_hours = att_hours
+                    attendance.save()
+                except ObjectDoesNotExist:
+                    missing_attendance.append(list(row.values()))
+                    errors = True
+                except IntegrityError:
+                    broken_records.append(list(row.values()))
+                    errors = True
         for row in reader:
             if row['Email'] in [None, "Email"]:
                 continue
