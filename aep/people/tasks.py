@@ -316,7 +316,7 @@ def participation_summary_task():
     return True
 
 @shared_task
-def summary_report_task(from_date, to_date):
+def summary_report_task(from_date, to_date, email_address):
 
     from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
     to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
@@ -379,7 +379,7 @@ def summary_report_task(from_date, to_date):
         writer.writerow(headers)
 
         for student in all_students:
-            enrollments = student.classes.filter(attendance__in=attendance)
+            enrollments = student.classes.filter(attendance__in=attendance).distinct()
             student_attendance = attendance.filter(enrollment__in=enrollments)
             try:
                 last_attended = student_attendance.last().attendance_date
@@ -390,6 +390,7 @@ def summary_report_task(from_date, to_date):
             num_clas_es = clas_e_tests.filter(student__student=student).count()
             test_hours = 2 * (num_tabes + num_clas_es)
             prospect = 1 if notes.filter(prospect__student=student).exists() else 0
+            total_hours = sum([att_hours, prospect, test_hours])
             try:
                 g_suite = student.elearn_record.g_suite_email
             except ObjectDoesNotExist:
@@ -407,10 +408,10 @@ def summary_report_task(from_date, to_date):
                 att_hours,
                 prospect,
                 test_hours,
-                sum([att_hours, prospect, test_hours])
+                f"{total_hours:.2f}"
             ]
             writer.writerow(record)
-    email = EmailMessage('Summary Report', "Student attendance summary report", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
+    email = EmailMessage('Summary Report', "Student attendance summary report", 'reporter@dccaep.org', [email_address])
     email.attach_file('summary_report.csv')
     email.send()
     os.remove('summary_report.csv')

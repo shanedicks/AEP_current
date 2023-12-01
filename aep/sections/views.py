@@ -1532,6 +1532,7 @@ class ImportEssentialEdAttendanceView(LoginRequiredMixin, FormView):
                     except ObjectDoesNotExist:
                         missing_students.append(list(row.values()))
                         errors = True
+                        continue
             handle_row(row, student)
 
         if errors:
