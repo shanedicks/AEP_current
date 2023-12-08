@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, DateField, FileField
+from django.forms import ModelForm, Form, DateField, FileField, ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 
@@ -45,10 +45,10 @@ class CSVImportForm(Form):
         if csv_file:
             content_type = csv_file.content_type
             if 'text/csv' not in content_type:
-                raise forms.ValidationError('Sorry, please provide a CSV file.')
+                raise ValidationError('Sorry, please provide a CSV file.')
             file_name = csv_file.name
             if not file_name.endswith('.csv'):
-                raise forms.ValidationError('Sorry, please provide a CSV file.')
+                raise ValidationError('Sorry, please provide a CSV file.')
 
         return csv_file
 
