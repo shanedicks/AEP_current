@@ -38,6 +38,20 @@ class CSVImportForm(Form):
 
     csv_file = FileField()
 
+
+    def clean_csv_file(self):
+        csv_file = self.cleaned_data.get('csv_file')
+
+        if csv_file:
+            content_type = csv_file.content_type
+            if 'text/csv' not in content_type:
+                raise forms.ValidationError('Sorry, please provide a CSV file.')
+            file_name = csv_file.name
+            if not file_name.endswith('.csv'):
+                raise forms.ValidationError('Sorry, please provide a CSV file.')
+
+        return csv_file
+
     def __init__(self, *args, **kwargs):
         super(CSVImportForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
