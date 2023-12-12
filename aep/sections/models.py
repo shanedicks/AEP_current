@@ -6,6 +6,7 @@ from googleapiclient.errors import HttpError
 from django.apps import apps
 from django.db import models, IntegrityError
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils import timezone
@@ -542,6 +543,30 @@ class Section(models.Model):
                 in daily_matrix
             ]
         return rates
+
+    def copy_roster(self, new_section, user=None, student_list=None):
+        User = get_user_model()
+
+        if not user:
+            user = self.teacher.user
+
+        if not student_list:
+            student_list = [
+                student.student for student
+                in self.students.exclude(
+                    status__in=[Enrollment.DROPPED, Enrollment.WITHDRAWN]
+                )
+            ]
+
+        for student in student_list:
+            try:
+                Enrollment.objects.create(
+                    creator=user,
+                    student=student,
+                    section=new_section
+                )
+            except IntegrityError:
+                pass
 
 
 class Enrollment(models.Model):
