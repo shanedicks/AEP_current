@@ -111,6 +111,9 @@ class Section(models.Model):
         null=True,
         blank=True
     )
+    closed = models.BooleanField(
+        default=False
+    )
     starting = models.DateField(null=True, blank=True)
     ending = models.DateField(null=True, blank=True)
     seats = models.IntegerField(null=True, blank=True)
