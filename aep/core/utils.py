@@ -3,6 +3,8 @@ import datetime
 import os
 import requests
 from apiclient import discovery
+from apiclient.errors import HttpError
+from apiclient.http import MediaFileUpload
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
 from django.apps import apps
@@ -349,3 +351,24 @@ def time_string_to_hours(time_str, source):
         hours, minutes = map(int, [part.strip('hm') for part in time_str.split()])
         hours_float = hours + minutes / 60.0
     return round(hours_float,2)
+
+
+def file_to_drive(name, file, folder_id):
+    try: 
+        service = drive_service()
+        metadata = {
+            'name': name,
+            'parents': [folder_id]
+        }
+        media = MediaFileUpload(
+            file.temporary_file_path(),
+            mimetype=file.content_type,
+        )
+        file = service.files().create(
+            body=metadata,
+            media_body=media,
+            fields='id'
+        ).execute()
+    except HttpError:
+        file = None
+    return file.get('id')

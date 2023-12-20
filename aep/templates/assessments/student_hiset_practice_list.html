@@ -3,7 +3,13 @@
 {% block content %}
 <h1>HiSET Practice Test Results for {{student}}</h1>
 {%include 'components/student_nav.html' %}
-<p><a class="btn btn-default" href="{% url 'assessments:student hiset practice add' slug=student.slug %}">Add HiSET Practice Test</a></p>
+<p><a class="btn btn-default" href="{% url 'assessments:student hiset practice add' slug=student.slug %}">Add HiSET Practice Test</a>
+<a class="btn btn-default" href="{% url 'assessments:hiset auth upload' slug=student.slug %}">Upload HiSet Auth</a>
+{% if student.tests.hiset_authorization_form != '' %}
+<a class="btn btn-default" href={{student.tests.hiset_auth_url}}>View HiSet Authorization</a></p>
+{%endif%}
+</p>
+
 
     <div class="col-md-7">
     <table class="table">

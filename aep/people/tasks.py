@@ -765,8 +765,10 @@ def minor_student_report_task(email_address):
     except ValueError:
         from_date = today.replace(year=today.year - 18, day=28)
     to_date = today.replace(year=today.year - 16)
+    fy_start = get_fiscal_year_start_date()
+    attendance = apps.get_model('sections', 'Attendance').filter(attendance_date__gte=fy_start)
     students = apps.get_model('people', 'Student').objects.filter(duplicate=False, dob__gte=from_date, dob__lte=to_date)
-
+    orientation_events = ['Orientation', 'Online Orientation', 'Closed Orientation']
     with open("minor_student_report.csv", 'w', newline='') as out:
         writer = csv.writer(out)
         headers = [
@@ -775,6 +777,12 @@ def minor_student_report_task(email_address):
             "First Name",
             "DOB",
             "Intake Date",
+            "Orientation Date",
+            "Last Tested",
+            "Math NRS",
+            "Lang NRS",
+            "Test Assignment",
+            "Att Hours",
             "Total Enrollments",
             "Enrolled w/good attendance",
             "Parish"
@@ -783,6 +791,8 @@ def minor_student_report_task(email_address):
 
         for student in students:
             current_classes = student.current_classes().annotate(absences=Count('attendance', filter=Q(attendance__attendance_type='A')))
+            attendance = attendance.filter(enrollment__student=student)
+            att_hours = sum([a.hours() for a in attendance])
             row = [
                 student.WRU_ID,
                 student.last_name,

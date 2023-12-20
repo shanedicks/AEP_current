@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | {{student}} HiSET Auth{% endblock head_title %}
+{% block content %}
+<h1>Upload HiSET Authorization Form for {{ student }}</h1>
+<form class="form_group" method="post" enctype="multipart/form-data">
+    {% crispy form %}
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+{% endblock content %}

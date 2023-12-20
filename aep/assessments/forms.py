@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset
-from .models import (TestEvent, TestAppointment,
+from .models import (TestEvent, TestAppointment, TestHistory,
                      Tabe, Clas_E, HiSet_Practice, Gain, HiSET, Accuplacer)
 
 
@@ -448,3 +448,28 @@ TestAttendanceFormSet = modelformset_factory(
         form=TestAppointmentAttendanceForm, 
         extra=0
     )
+
+
+class HisetAuthForm(ModelForm):
+
+    def clean_hiset_auth(self):
+        file = self.cleaned_data['hiset_auth']
+        if file.content_type not in ['image/png', 'image/jpeg', 'application/pdf']:
+            raise ValidationError(
+                _("Sorry that file type is not supported. Please upload a .jpg or .png image or .pdf file")
+            )
+        return file
+
+    hiset_auth = FileField()
+
+    def __init__(self, *args, **kwargs):
+        super(HisetAuthForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+
+    class Meta:
+        model = TestHistory
+
+        fields = (
+        )

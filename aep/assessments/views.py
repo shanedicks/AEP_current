@@ -8,7 +8,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import (DetailView, ListView, CreateView,
                                   TemplateView, View, FormView, UpdateView)
-from core.utils import render_to_csv, clean_special_characters
+from core.utils import render_to_csv, clean_special_characters, file_to_drive
 from core.forms import DateFilterForm, CSVImportForm
 from people.models import Student
 from .models import (
@@ -21,7 +21,7 @@ from .forms import (
         TestAppointmentAttendanceForm, TestAttendanceFormSet,
         TestAppointmentNotesForm, HiSetForm, AccuplacerForm,
         Clas_E_ScoreReportLinkForm, TabeScoreReportLinkForm,
-        OrientationSignupForm, StudentAddAppointmentForm
+        OrientationSignupForm, StudentAddAppointmentForm, HisetAuthForm
     )
 from .tasks import (event_attendance_report_task,
         accelerated_coaching_report_task, testing_eligibility_report,
@@ -1309,3 +1309,37 @@ class AddStudentView(LoginRequiredMixin, CreateView):
             context['event'] = TestEvent.objects.get(pk=self.kwargs['pk'])
             context.update(kwargs)
         return context
+
+class HisetAuthUploadView(UpdateView):
+
+    model = TestHistory
+    form_class = HisetAuthForm
+    template_name = 'assessments/upload_hiset_auth.html'
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('assessments:student_test_history', kwargs={'slug': self.kwargs['slug']})
+
+    def get_student(self, **kwargs):
+        return Student.objects.get(slug=self.kwargs['slug'])
+
+    def get_object(self, **kwargs):
+        return TestHistory.objects.get(student=self.get_student())
+
+    def get_context_data(self, **kwargs):
+        context = super(HisetAuthUploadView, self).get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = self.get_student(**kwargs)
+            context.update(kwargs)
+        return context
+
+    def form_valid(self, form):
+        test_history = self.object
+        hiset_auth = self.request.FILES['hiset_auth']
+        name = test_history.student.__str__() + " hiset auth form"
+        test_history.hiset_authorization_form = file_to_drive(
+            name=name, 
+            file=hiset_auth,
+            folder_id='1tKbe5YWgQO4z2JpgP4sHVWZ6dh4uhCJw'
+        )
+        test_history.save()
+        return super().form_valid(form)

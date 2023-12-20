@@ -18,7 +18,7 @@ from django.views.generic.detail import SingleObjectMixin
 from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
 from core.forms import DateFilterForm
-from core.utils import render_to_csv, drive_service
+from core.utils import render_to_csv, drive_service, file_to_drive
 from core.tasks import send_mail_task, email_multi_alternatives_task
 from sections.forms import SectionFilterForm
 from .models import (Staff, Student, CollegeInterest, WIOA, Prospect,
@@ -1128,31 +1128,15 @@ class PhotoIdUploadView(UpdateView):
             context.update(kwargs)
         return context
 
-    def photo_id_to_drive(self, name, photo_id):
-        try: 
-            service = drive_service()
-            metadata = {
-                'name': name,
-                'parents': ['1DpE8QKUvuEKMCOaWHiuX4K7f7BGdzHS1']
-            }
-            media = MediaFileUpload(
-                photo_id.temporary_file_path(),
-                mimetype=photo_id.content_type,
-            )
-            file = service.files().create(
-                body=metadata,
-                media_body=media,
-                fields='id'
-            ).execute()
-        except HttpError:
-            file = None
-        return file.get('id')
-
     def form_valid(self, form):
         paperwork = self.object
         photo_id = self.request.FILES['photo_id']
         name = paperwork.student.__str__() + " picture id"
-        paperwork.pic_id_file = self.photo_id_to_drive(name, photo_id)
+        paperwork.pic_id_file = file_to_drive(
+            name=name, 
+            file=photo_id,
+            folder_id='1DpE8QKUvuEKMCOaWHiuX4K7f7BGdzHS1'
+        )
         paperwork.pic_id = True
         paperwork.save()
         return super().form_valid(form)

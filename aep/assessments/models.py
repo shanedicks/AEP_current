@@ -290,6 +290,11 @@ class TestHistory(models.Model):
         blank=True
     )
 
+    hiset_authorization_form = models.CharField(
+        max_length=50,
+        blank=True
+    )
+
     class Meta:
         verbose_name = "Test History"
         verbose_name_plural = "Testing Histories"
@@ -302,6 +307,12 @@ class TestHistory(models.Model):
             "assessments:student test history",
             kwargs={'slug': self.student.slug}
         )
+
+    def hiset_auth_url(self):
+        if self.hiset_authorization_form == '':
+            return ""
+        else:
+            return "https://drive.google.com/file/d/{0}/view".format(self.hiset_authorization_form)
 
     def update_status(self, test):
         if not self.last_test_date:
