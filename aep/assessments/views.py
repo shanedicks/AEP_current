@@ -1317,7 +1317,7 @@ class HisetAuthUploadView(UpdateView):
     template_name = 'assessments/upload_hiset_auth.html'
 
     def get_success_url(self, **kwargs):
-        return reverse_lazy('assessments:student_test_history', kwargs={'slug': self.kwargs['slug']})
+        return reverse_lazy('assessments:student test history', kwargs={'slug': self.kwargs['slug']})
 
     def get_student(self, **kwargs):
         return Student.objects.get(slug=self.kwargs['slug'])
