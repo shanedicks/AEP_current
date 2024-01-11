@@ -7,6 +7,7 @@ import csv
 from datetime import datetime, timedelta
 from django.apps import apps
 from django.db import models, IntegrityError
+from django.db.models import Sum
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
@@ -1274,11 +1275,29 @@ class Student(Profile):
         else:
             return semester_start
 
-    def all_attendance(self):
-        return apps.get_model('sections', 'Attendance').objects.filter(enrollment__student=self)
+    def all_attendance(self, from_date=None, to_date=None):
+        queryset = apps.get_model('sections', 'Attendance').objects.filter(enrollment__student=self)
+        if from_date:
+            queryset = queryset.filter(attendance_date__gte=from_date)
+        if to_date:
+            queryset = queryset.filter(attendance_date__lte=to_date)
+        return queryset
 
     def last_attendance(self):
         return self.all_attendance().filter(attendance_type='P').latest('attendance_date').attendance_date
+
+    def all_test_appointments(self, from_date=None, to_date=None):
+        queryset = self.test_appointments.all()
+        if from_date:
+            queryset = queryset.filter(event__start__gte=from_date)
+        if to_date:
+            queryset = queryset.filter(event__end__lte=to_date)
+        return queryset
+
+    def total_hours(self, from_date=None, to_date=None):
+        class_attendance = sum(a.hours for a in self.all_attendance(from_date, to_date))
+        event_attendance = sum(a.hours for a in self.all_test_appointments(from_date, to_date))
+        return class_attendance + event_attendance
 
     def testify(self):
         TestHistory = apps.get_model('assessments', 'TestHistory')
@@ -3275,24 +3294,7 @@ class PoP(models.Model):
         get_latest_by = 'last_service_date'
 
     def total_hours(self):
-        att_set = apps.get_model('sections', 'Attendance').objects.filter(
-            enrollment__student=self.student,
-            attendance_date__gte=self.start_date,
-            attendance_date__lte=self.last_service_date,
-            attendance_type='P'
-        )
-        appt_set = apps.get_model('assessments', 'TestAppointment').objects.filter(
-            student=self.student,
-            attendance_date__gte=self.start_date,
-            attendance_date__lte=self.last_service_date,
-            attendance_type='P'
-        )
-        hours = 0.0
-        for att in att_set:
-            hours += att.hours
-        for appt in appt_set:
-            hours += float(appt.hours())
-        return hours
+        return self.student.total_hours(from_date=self.start_date, to_date=self.last_service_date)
 
     def __str__(self):
         period = " - ".join([self.start_date.strftime('%m/%d/%Y'), self.last_service_date.strftime('%m/%d/%Y')])

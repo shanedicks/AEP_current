@@ -791,14 +791,13 @@ def minor_student_report_task(email_address):
 
         for student in students:
             current_classes = student.current_classes().annotate(absences=Count('attendance', filter=Q(attendance__attendance_type='A')))
-            attendance = attendance.filter(enrollment__student=student)
-            att_hours = sum([a.hours() for a in attendance])
             row = [
                 student.WRU_ID,
                 student.last_name,
                 student.first_name,
                 student.dob,
                 student.intake_date,
+                student.total_hours(),
                 current_classes.count(),
                 current_classes.filter(absences__lte=5).count(),
                 student.get_parish_display()

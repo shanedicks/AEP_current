@@ -69,7 +69,7 @@ def event_attendance_report_task(event_id, email_address):
                 g_suite,
                 appt.attendance_date,
                 appt.attendance_type,
-                appt.hours()
+                appt.hours
             ]
             writer.writerow(data)
 

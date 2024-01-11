@@ -7,6 +7,7 @@
     <h1>Official Attendance Record for {{student}}</h1>
     {%include 'components/student_nav.html' %}
     <p><a class="btn btn-default" href="{% url 'people:student event attendance' slug=student.slug %}" role="button">Event Attendance</a></p>
+    <h3>Total Hours: {{student.total_hours}}
     {% for enrollment in object_list %}
         <table class="table">
             <tr>

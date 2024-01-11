@@ -240,9 +240,10 @@ class TestAppointment(models.Model):
             kwargs={'pk': self.pk}
         )
 
+    @property
     def hours(self):
         if self.att_hours is not None:
-            return self.att_hours
+            return float(self.att_hours)
         else:
             if self.attendance_type == 'P':
                 d1 = datetime.combine(self.attendance_date, self.time_in)
@@ -331,20 +332,7 @@ class TestHistory(models.Model):
         if self.last_test_date is None:
             return 0
         else:
-            attendance_set = Attendance.objects.filter(
-                enrollment__student=self.student,
-                attendance_date__gte=self.last_test_date,
-                attendance_type='P'
-            )
-            appointment_set = TestAppointment.objects.filter(
-                student=self.student,
-                attendance_date__gte=self.last_test_date,
-                attendance_type='P'
-            )
-            total_hours = 0
-            total_hours += sum([a.hours for a in attendance_set])
-            total_hours += sum([float(a.hours()) for a in appointment_set])
-            return total_hours
+            return self.student.total_hours(from_date=self.last_test_date)
 
     @property
     def latest_tabe(self):

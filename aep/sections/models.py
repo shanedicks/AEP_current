@@ -898,8 +898,8 @@ class Attendance(models.Model):
 
     @property
     def enrolled_hours(self):
-        d1 = datetime.combine(self.attendance_date, self.time_in)
-        d2 = datetime.combine(self.attendance_date, self.time_out)
+        d1 = datetime.combine(self.attendance_date, self.enrollment.section.start_time)
+        d2 = datetime.combine(self.attendance_date, self.enrollment.section.end_time)
         delta = d2 - d1
         hours = delta.total_seconds() / 3600
         return float("{0:.2f}".format(hours))
