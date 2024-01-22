@@ -140,7 +140,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
     def get_active_enrollment_count(self, obj):
         a = obj.students.filter(status="A").count()
         return f"{a} / {obj.seats}"
-    get_active_enrollment_count.admin_order_field = "Students"
+    get_active_enrollment_count.admin_order_field = "students"
     get_active_enrollment_count.short_description = "Students"
 
     def get_course_code(self, obj):

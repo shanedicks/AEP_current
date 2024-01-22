@@ -19,6 +19,7 @@ class TestEventAdmin(admin.ModelAdmin):
         'site',
         'room',
         'seats',
+        'get_open_seats',
         'start',
         'end',
         'full'
@@ -64,6 +65,11 @@ class TestEventAdmin(admin.ModelAdmin):
         'send_paperwork_form_link',
         'send_photo_id_form_link'
     ]
+
+    def get_open_seats(self, obj):
+        return obj.open_seats()
+    get_open_seats.admin_order_field = "students"
+    get_open_seats.short_description = "Open Seats"
 
     def orientation_reminder(self, request, queryset):
         for obj in queryset:
