@@ -379,5 +379,8 @@ urlpatterns = [
     path('intercession-report/',
         views.IntercessionReportCSV.as_view(),
         name='intercession report'),
+    path('minor-student-report/',
+        views.MinorStudentReportCSV.as_view(),
+        name='minor student report'),
     path('orientation/<slug>/', include(orientation_patterns))
 ]

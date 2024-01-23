@@ -1284,7 +1284,11 @@ class Student(Profile):
         return queryset
 
     def last_attendance(self):
-        return self.all_attendance().filter(attendance_type='P').latest('attendance_date').attendance_date
+        attendance_queryset = self.all_attendance().filter(attendance_type='P')
+        if attendance_queryset.exists():
+            return attendance_queryset.latest('attendance_date').attendance_date
+        else:
+            return "No attendance"
 
     def all_test_appointments(self, from_date=None, to_date=None):
         queryset = self.test_appointments.all()

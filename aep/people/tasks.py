@@ -766,9 +766,9 @@ def minor_student_report_task(email_address):
         from_date = today.replace(year=today.year - 18, day=28)
     to_date = today.replace(year=today.year - 16)
     fy_start = get_fiscal_year_start_date()
-    attendance = apps.get_model('sections', 'Attendance').filter(attendance_date__gte=fy_start)
     students = apps.get_model('people', 'Student').objects.filter(duplicate=False, dob__gte=from_date, dob__lte=to_date)
-    orientation_events = ['Orientation', 'Online Orientation', 'Closed Orientation']
+    orientation_event_types = ['Orientation', 'Online Orientation', 'Closed Orientation']
+    orientation_events = apps.get_model('assessments', 'TestEvent').objects.filter(start__gte=fy_start, test__in=orientation_event_types)
     with open("minor_student_report.csv", 'w', newline='') as out:
         writer = csv.writer(out)
         headers = [
@@ -777,29 +777,40 @@ def minor_student_report_task(email_address):
             "First Name",
             "DOB",
             "Intake Date",
-            "Orientation Date",
             "Last Tested",
-            "Math NRS",
-            "Lang NRS",
+            "Last Test NRS",
+            "NRS Max",
             "Test Assignment",
             "Att Hours",
+            "Last Attendance",
             "Total Enrollments",
             "Enrolled w/good attendance",
+            "Current Classes",
+            "Orientation Appointments in FY",
             "Parish"
         ]
         writer.writerow(headers)
 
         for student in students:
+            TH = getattr(student, 'tests', None)
             current_classes = student.current_classes().annotate(absences=Count('attendance', filter=Q(attendance__attendance_type='A')))
+            orientation_appts = student.test_appointments.filter(event__in=orientation_events)
             row = [
                 student.WRU_ID,
                 student.last_name,
                 student.first_name,
                 student.dob,
                 student.intake_date,
+                TH.last_test_date if TH else "No Test History",
+                TH.last_test_nrs if TH else "No Test History",
+                TH.nrs_max() if TH else "No Test History",
+                TH.test_assignment if TH else "No Test History",
                 student.total_hours(),
+                student.last_attendance(),
                 current_classes.count(),
                 current_classes.filter(absences__lte=5).count(),
+                [e.section for e in current_classes],
+                [a.event for a in orientation_appts],
                 student.get_parish_display()
             ]
             writer.writerow(row)
