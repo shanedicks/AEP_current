@@ -5,8 +5,9 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from core.tasks import send_mail_task, send_sms_task
-from sections.tasks import roster_to_classroom_task, waitlist_update_task
-from .tasks import enforce_attendance_task
+from sections.tasks import roster_to_classroom_task
+from .tasks import (enforce_attendance_task, waitlist_update_task, semester_begin_task,
+            semester_end_task, attendance_reminder_task, g_suite_attendance_task)
 
 Q = models.Q
 
@@ -90,28 +91,28 @@ class Semester(models.Model):
         return sum([att.hours for att in self.get_attendance_queryset()])
 
     def begin(self):
-        for section in self.get_sections():
-            section.begin()
+        section_ids = [section.id for section in self.get_sections()]
+        semester_begin_task.delay(section_ids)
 
     def end(self):
-        for section in self.get_sections():
-            section.end()
+        section_ids = [section.id for section in self.get_sections()]
+        semester_end_task.delay(section_ids)
 
     def attendance_reminder(self):
-        for section in self.get_sections():
-            section.attendance_reminder()
+        section_ids = [section.id for section in self.get_sections()]
+        attendance_reminder_task.delay(section_ids)
 
     def waitlist(self):
-        for section in self.get_sections():
-            waitlist_update_task.delay(section.id)
+        section_ids = [section.id for section in self.get_sections()]
+        waitlist_update_task.delay(section_ids)
 
     def enforce_attendance(self):
-        for section in self.get_sections():
-            enforce_attendance_task.delay(section.id)
+        section_ids = [section.id for section in self.get_sections()]
+        enforce_attendance_task.delay(section_ids)
 
     def g_suite_attendance(self):
-        for section in self.get_sections():
-            section.g_suite_attendance()
+        section_ids = [section.id for section in self.get_sections()]
+        g_suite_attendance_task.delay()
 
     def roster_to_classroom(self):
         for section in self.get_sections():

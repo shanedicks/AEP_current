@@ -42,7 +42,7 @@ class SemesterAdmin(admin.ModelAdmin):
 
     def begin(self, request, queryset):
         for obj in queryset:
-            semester_begin_task.delay(obj.id)
+            obj.begin()
 
     def end(self, request, queryset):
         for obj in queryset:

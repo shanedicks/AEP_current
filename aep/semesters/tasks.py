@@ -24,10 +24,46 @@ def semester_begin_task(semester_id):
     return True
 
 @shared_task
-def enforce_attendance_task(section_id):
-    logger.info('Enforcing Attendance for Section {0}'.format(section_id))
-    section = apps.get_model('sections', 'Section').objects.get(id=section_id)
-    return section.enforce_attendance()
+def waitlist_update_task(section_id_list):
+    for section_id in section_id_list:
+        logger.info('Waitlist Update for Section {0}'.format(section_id))
+        section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+        section.waitlist_update()
+
+@shared_task
+def attendance_reminder_task(section_id_list):
+    for section_id in section_id_list:
+        logger.info('Attendance Reminders for Section {0}'.format(section_id))
+        section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+        section.attendance_reminder()
+
+@shared_task
+def semester_end_task(section_id_list):
+    for section_id in section_id_list:
+        logger.info('Ending Section {0}'.format(section_id))
+        section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+        section.end()
+
+@shared_task
+def semester_begin_task(section_id_list):
+    for section_id in section_id_list:
+        logger.info('Beginning Section {0}'.format(section_id))
+        section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+        section.begin()
+
+@shared_task
+def g_suite_attendance_task(section_id_list):
+    for section_id in section_id_list:
+        logger.info('Getting G Suite Attendance for Section {0}'.format(section_id))
+        section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+        section.g_suite_attendance()
+
+@shared_task
+def enforce_attendance_task(section_id_list):
+    for section_id in section_id_list:
+        logger.info('Enforcing Attendance for Section {0}'.format(section_id))
+        section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+        section.enforce_attendance()
 
 @shared_task
 def send_g_suite_info_task(semester_id):
