@@ -729,7 +729,7 @@ class Enrollment(models.Model):
                             teacher=self.section.teacher.first_name,
                             site = self.section.site.name,
                             room = self.section.room,
-                            days = self.sections.get_days_names(),
+                            days = self.section.get_days_names(),
                             start_time = self.section.start_time,
                             section=self.section.title
                         ),
