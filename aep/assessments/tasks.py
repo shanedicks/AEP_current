@@ -391,8 +391,8 @@ def remove_duplicate_assessments():
         math_nrs=dupes['math_nrs'],
         lang_nrs=dupes['lang_nrs']
         )
-        print("Keeping {0}".format(dupes[0]))
-        print("Removing {0}".format(dupes[1:]))
+        logger.info("Keeping {0}".format(dupes[0]))
+        logger.info("Removing {0}".format(dupes[1:]))
         remove = tabes.filter(pk__in=dupes[1:])
         remove.delete()
 
@@ -412,8 +412,8 @@ def remove_duplicate_assessments():
         read_level=dupes['read_level'],
         read_nrs=dupes['read_nrs'],
         )
-        print("Keeping {0}".format(dupes[0]))
-        print("Removing {0}".format(dupes[1:]))
+        logger.info("Keeping {0}".format(dupes[0]))
+        logger.info("Removing {0}".format(dupes[1:]))
         remove = clas_es.filter(pk__in=dupes[1:])
         remove.delete()
 

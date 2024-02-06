@@ -1,3 +1,4 @@
+import logging
 from apiclient import discovery
 from datetime import date, datetime, timedelta as td
 from httplib2 import Http
@@ -20,6 +21,7 @@ from core.tasks import send_sms_task
 from .tasks import (activate_task, end_task, drop_task,
     enrollment_notification_task, cancel_class_task)
 
+logger = logging.getLogger(__name__)
 
 class Site(models.Model):
     
@@ -249,7 +251,7 @@ class Section(models.Model):
                 token = roster.get('nextPageToken')
         else:
             rostered_emails = []
-        print("{1} roster: {0}".format(rostered_emails, self.title))
+        logger.info("{1} roster: {0}".format(rostered_emails, self.title))
 
         Elearn = apps.get_model('coaching', 'ElearnRecord')
 
@@ -261,14 +263,14 @@ class Section(models.Model):
                 student__classes__in=active_students
             )
         ]
-        print("{1} active: {0}".format(active_emails, self.title))
+        logger.info("{1} active: {0}".format(active_emails, self.title))
         inactive_emails = [
             email
             for email
             in rostered_emails
             if email not in active_emails
         ]
-        print("{1} inactive: {0}".format(inactive_emails, self.title))
+        logger.info("{1} inactive: {0}".format(inactive_emails, self.title))
         new_emails = [
             email
             for email
@@ -276,15 +278,15 @@ class Section(models.Model):
             if email not in rostered_emails
             and email != ''
         ]
-        print("{1} new: {0}".format(new_emails, self.title))
+        logger.info("{1} new: {0}".format(new_emails, self.title))
         def drop_callback(request_id, response, exception):
             if exception is not None:
-                print("Error removing {0} from course:{1}".format(
+                logger.error("Error removing {0} from course:{1}".format(
                     request_id,
                     exception
                 ))
             else:
-                print("User {0} removed successfully".format(request_id))
+                logger.info("User {0} removed successfully".format(request_id))
 
         drop_batch = service.new_batch_http_request(callback=drop_callback)
         for email in inactive_emails:
@@ -297,12 +299,12 @@ class Section(models.Model):
 
         def add_callback(request_id, response, exception):
             if exception is not None:
-                print("Error adding {0} to course: {1}".format(
+                logger.error("Error adding {0} to course: {1}".format(
                     request_id,
                     exception
                 ))
             else:
-                print("User {0} added successfully".format(
+                logger.info("User {0} added successfully".format(
                     response.get('profile').get('emailAddress')))
 
         batch_list = [
@@ -335,11 +337,11 @@ class Section(models.Model):
         http_auth = shane.authorize(Http())
         service = discovery.build('classroom', 'v1', http=http_auth)
         raw = {}
-        print("Starting", self.title)
+        logger.info("Starting", self.title)
         for student in self.get_all_students():
             try:
                 if student.student.elearn_record.g_suite_email:
-                    print("Fetching", student.student)
+                    logger.info("Fetching", student.student)
                     raw[student] = service.courses(
                     ).courseWork().studentSubmissions().list(
                         courseId=self.g_suite_id,
@@ -347,17 +349,17 @@ class Section(models.Model):
                         courseWorkId='-',
                         userId=student.student.elearn_record.g_suite_email
                     ).execute()
-                    print(
+                    logger.info(
                         "Fetched",
                         len(raw[student].get('studentSubmissions', [])),
                         "records"
                     )
             except ObjectDoesNotExist:
-                print(student.student, "has no elearn record. Skipping...")
+                logger.warning(student.student, "has no elearn record. Skipping...")
         for key, value in raw.items():
             subs = value.get('studentSubmissions')
             if subs is not None:
-                print('Creating attendance for', key.student)
+                logger.info('Creating attendance for', key.student)
                 for sub in subs:
                     try:
                         a = Attendance.objects.create(
@@ -372,10 +374,10 @@ class Section(models.Model):
                             att_hours=sub.get('assignedGrade', 0),
                             online=True,
                         )
-                        print(a)
+                        logger.info(a)
                     except IntegrityError:
-                        print("Duplicate attendance found. Skipping....")
-        print("Finished with", self.title)
+                        logger.warning("Duplicate attendance found. Skipping....")
+        logger.info("Finished with", self.title)
 
     def get_g_suite_link(self):
         scopes = ['https://www.googleapis.com/auth/classroom.courses']
@@ -396,6 +398,7 @@ class Section(models.Model):
 
     # Drops active students with 2 absences and fills their spots with waitlisted students in enrollment order
     def waitlist_update(self):
+        logger.info(f"Updating waitlist for {self}")
         dropped = []
         added = []
         for student in self.get_active():

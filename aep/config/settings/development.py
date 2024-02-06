@@ -2,6 +2,16 @@ from .base import *
 
 DEBUG = True
 
+# Override the logging configuration for development
+LOGGING['handlers']['console']['level'] = 'DEBUG'
+LOGGING['handlers']['console']['formatter'] = 'verbose'
+LOGGING['formatters']['verbose'] = {
+    'format': '{levelname} {asctime} {module} {message}',
+    'style': '{',
+    'datefmt': '%Y-%m-%d %H:%M:%S',
+}
+LOGGING['loggers']['']['level'] = 'DEBUG'
+
 ALLOWED_HOSTS = [
     '127.0.0.1',
 ]

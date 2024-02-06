@@ -300,7 +300,7 @@ def merge_duplicates(dupe_id):
     try:
         orig = Student.objects.get(WRU_ID=orig_id, duplicate=False)
     except ObjectDoesNotExist:
-        print(f"No student found with WRU_ID {orig_id}")
+        logger.info(f"No student found with WRU_ID {orig_id}")
         orig = None
     if orig:
         dupes = Student.objects.filter(
@@ -310,7 +310,7 @@ def merge_duplicates(dupe_id):
         ).order_by('pk')
         while dupes.count() > 0:
             dupe = dupes[0]
-            print(f"Merging orig {orig}-{orig_id} into dupe {dupe}-{dupe_id}")
+            logger.info(f"Merging orig {orig}-{orig_id} into dupe {dupe}-{dupe_id}")
             full_merge(orig, dupe)
             orig = Student.objects.get(WRU_ID=orig_id, duplicate=False)
             dupes = Student.objects.filter(
