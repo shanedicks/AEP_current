@@ -398,7 +398,7 @@ class Section(models.Model):
 
     # Drops active students with 2 absences and fills their spots with waitlisted students in enrollment order
     def waitlist_update(self):
-        logger.info(f"Updating waitlist for {self}")
+        logger.info(f"Updating waitlist for {self.__str__()}")
         dropped = []
         added = []
         for student in self.get_active():
@@ -697,6 +697,7 @@ class Enrollment(models.Model):
         if absent > 1 and present < 1 and needs_test:
             self.status = "D"
             self.save()
+            logger.info(f"{self.student} dropped from {self.section}")
             if self.student.email:
                 send_mail_task.delay(
                     subject="We're sorry {student}, but you've been dropped from {section}".format(
@@ -716,6 +717,7 @@ class Enrollment(models.Model):
     # Adds students to active roster if class space exists
     def add_from_waitlist(self):
         if not self.section.is_full:
+            logger.info(f"Adding {self.student} to {self.section.__str__()}")
             self.status = 'A'
             self.save()
             if self.student.email:
