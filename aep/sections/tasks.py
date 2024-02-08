@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-from datetime import datetime
+from datetime import datetime, time
 import csv
 import os
 from googleapiclient.errors import HttpError
@@ -123,23 +123,23 @@ def mondo_attendance_report_task(email_address, semesters, from_date, to_date):
     enrollments = apps.get_model('sections', 'Enrollment').objects.all()
     if semesters is not None:
         enrollments = enrollments.filter(section__semester__in=semesters)
-        logger.info("Enrollments in semester: ", enrollments.count())
+        logger.info(f"Enrollments in semester: {enrollments.count()}")
     if from_date is not None:
-        from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S').date()
-        logger.info(from_date)
+        from_datetime = datetime.combine(from_date, time.min)
+        from_datetime = timezone.make_aware(from_datetime)
         enrollments = enrollments.filter(
-            Q(section__starting__gte=from_date) | 
-            Q(section__semester__start_date__gte=from_date)
+            Q(section__starting__gte=from_datetime) | 
+            Q(section__semester__start_date__gte=from_datetime)
         )
-        logger.info("Enrollments after from_date: ", enrollments.count())
+        logger.info(f"Enrollments after from_date: {enrollments.count()}")
     if to_date is not None:
-        to_date = datetime.strptime(to_date, '%Y-%m-%dT%H:%M:%S').date()
-        logger.info(to_date)
+        to_datetime = datetime.combine(to_date, time.max)
+        to_datetime = timezone.make_aware(to_datetime)
         enrollments = enrollments.filter(
-            Q(section__ending__lte=to_date) | 
-            Q(section__semester__end_date__lte=to_date)
+            Q(section__ending__lte=to_datetime) | 
+            Q(section__semester__end_date__lte=to_datetime)
         )
-        logger.info("Enrollments before to_date: ", enrollments.count())
+        logger.info(f"Enrollments before to_date: {enrollments.count()}")
     with open('mondo_attendance_report.csv', 'w', newline='') as out:
         writer = csv.writer(out)
 
@@ -506,3 +506,56 @@ def cancel_class_task(cancellation_id):
         )
         cancellation.notification_sent = True
         cancellation.save()
+
+@shared_task
+def wru_course_registration_export_task(email_address, semesters, from_date, to_date):
+    enrollments = apps.get_model('sections', 'Enrollment').objects.all()
+    if semesters is not None:
+        enrollments = enrollments.filter(section__semester__in=semesters)
+        logger.info(f"Enrollments in semester: {enrollments.count()}")
+    if from_date is not None:
+        from_datetime = datetime.combine(from_date, time.min)
+        from_datetime = timezone.make_aware(from_datetime)
+        enrollments = enrollments.filter(created__gte=from_datetime)
+        logger.info(f"Enrollments after from_date: {enrollments.count()}")
+    if to_date is not None:
+        to_datetime = datetime.combine(to_date, time.max)
+        to_datetime = timezone.make_aware(to_datetime)
+        enrollments = enrollments.filter(created__lte=to_datetime)
+        logger.info(f"Enrollments before to_date: {enrollments.count()}")
+    with open('wru_course_registration.csv', 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            "PROVIDERID",
+            "SID",
+            "LAST_NAME",
+            "FIRST_NAME",
+            "MIDDLE_INITIAL",
+            "COURSE_ID",
+            "REGISTER_DATE"
+        ]
+        writer.writerow(headers)
+
+        for enrollment in enrollments:
+            row = [
+                '9',
+                enrollment.student.WRU_ID,
+                enrollment.student.last_name,
+                enrollment.student.first_name,
+                '',
+                enrollment.section.WRU_ID,
+                enrollment.created.date().strftime("%Y%m%d")
+            ]
+            writer.writerow(row)
+
+
+        email = EmailMessage(
+        'WRU Course Registration Report',
+        'An enrollment report for importing course registrations to workreadyu',
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file('wru_course_registration.csv')
+    email.send()
+    os.remove('wru_course_registration.csv')
+    return True

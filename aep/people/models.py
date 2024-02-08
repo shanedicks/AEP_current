@@ -1293,9 +1293,11 @@ class Student(Profile):
     def all_test_appointments(self, from_date=None, to_date=None):
         queryset = self.test_appointments.all()
         if from_date:
-            queryset = queryset.filter(event__start__gte=from_date)
+            from_datetime = timezone.make_aware(datetime.combine(from_date, time.min))
+            queryset = queryset.filter(event__start__gte=from_datetime)
         if to_date:
-            queryset = queryset.filter(event__end__lte=to_date)
+            to_datetime = timezone.make_aware(datetime.combine(to_date, time.max))
+            queryset = queryset.filter(event__end__lte=to_datetime)
         return queryset
 
     def total_hours(self, from_date=None, to_date=None):

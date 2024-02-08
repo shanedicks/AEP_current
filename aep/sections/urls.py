@@ -119,7 +119,10 @@ reports_patterns = [
         name='participation report'),
     re_path(r'^mondo/$',
         views.MondoAttendanceReport.as_view(),
-        name='mondo attendance report')
+        name='mondo attendance report'),
+    path('wru-course-registration/',
+        views.WruCourseRegistrationReport.as_view(),
+        name='wru course registration csv')
 ]
 
 urlpatterns = [

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | WRU Course Registration Report{% endblock head_title %}
+
+{% block content %}
+    <h1>WRU Course Registration CSV</h1>
+    <div class="well">
+        <form class="form-inline" action="" method="post">
+            {% csrf_token %}
+            {% crispy form %}
+            <button type="submit" class="btn btn-default" value="filter">Generate Report</button>
+        </form>
+        <p>Use this form to get all enrollments created between from-date and to-date for the selected semesters</p>
+    </div>
+{% endblock content %}

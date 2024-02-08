@@ -32,7 +32,7 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     SingleSkillMasteryForm, SkillMasteryFormset,
                     EnrollmentUpdateForm, CancellationForm,
                     SingleHoursAttendanceForm, HoursAttendanceFormset)
-from .tasks import (participation_detail_task, section_skill_mastery_report_task,
+from .tasks import (participation_detail_task, section_skill_mastery_report_task, wru_course_registration_export_task,
                     mondo_attendance_report_task, cancel_class_task, finalize_daily_attendance_task)
 
 
@@ -1373,6 +1373,23 @@ class MondoAttendanceReport(LoginRequiredMixin, FormView):
             to_date=form.cleaned_data['to_date']
         )
         return HttpResponseRedirect(reverse('report success'))
+
+
+class WruCourseRegistrationReport(LoginRequiredMixin, FormView):
+
+    form_class = AttendanceReportForm
+    template_name = 'sections/wru_course_registration_report_csv.html'
+
+    def form_valid(self, form):
+        email_address = self.request.user.email
+        semesters = [s.id for s in form.cleaned_data['semesters']]
+        wru_course_registration_export_task.delay(
+            email_address=email_address,
+            semesters=semesters,
+            from_date=form.cleaned_data['from_date'],
+            to_date=form.cleaned_data['to_date']
+        )
+        return HttpResponseRedirect(reverse('report success'))    
 
 
 class CancellationsListView(ListView):
