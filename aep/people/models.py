@@ -1,10 +1,9 @@
 import logging
 import requests
 import bs4
-import time
 import sys
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from django.apps import apps
 from django.db import models, IntegrityError
 from django.db.models import Sum
