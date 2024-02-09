@@ -179,7 +179,7 @@ class Section(models.Model):
 
     @property
     def is_full(self):
-        if self.seats
+        if self.seats:
             return self.get_active().count() >= self.seats
         else:
             return True
