@@ -179,9 +179,9 @@ class Section(models.Model):
 
     @property
     def is_full(self):
-        try:
-            return self.open_seats() < 1
-        except TypeError:
+        if self.seats
+            return self.get_active().count() >= self.seats
+        else:
             return True
 
 
