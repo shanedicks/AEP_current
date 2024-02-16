@@ -129,6 +129,8 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
         }
         att_dict = {}
         for att in attendance:
+            if not att.hours > 0:
+                continue
             record = [
                 att.hours,
                 att.attendance_date.strftime("%Y%m%d"),
