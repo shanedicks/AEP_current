@@ -120,7 +120,7 @@ class TicketAdmin(ImportExportActionModelAdmin):
 	search_fields = (
 		'student__last_name',
 		'student__first_name',
-		'student__wru_id',
+		'student__WRU_ID',
 		'staff__last_name',
 		'staff__first_name',
 		'item__name',
