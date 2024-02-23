@@ -1075,3 +1075,81 @@ def intercession_report_task(email_address):
     email.send()
     os.remove(filename) 
 
+@shared_task
+def wru_student_intake_csv_task(email_address, id_list):
+    filename = "wru_student_intake.csv"
+    Student = apps.get_model('people', 'Student')
+    students = Student.objects.filter(id__in=id_list)
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        data = []
+        headers = [
+            "FirstName",
+            "MiddleInitial",
+            "LastName",
+            "DOB",
+            "SSN",
+            "Age",
+            "Gender Code",
+            "PhoneNumber",
+            "EmergencyFName",
+            "EmergencyLName",
+            "Emergency Relationship Code",
+            "USCitizen",
+            "StreetAddress",
+            "City",
+            "State",
+            "ZipCode",
+            "Hispanic/Latino",
+            "AmericanIndian",
+            "Asian",
+            "Black",
+            "Hawaiian",
+            "Foreign/Allien",
+            "HighestDegreeOrLevelCompleted Code",
+            "Location(Highest Degree Or Level Completed) Code",
+            "Employment Status Code",
+
+        ]
+        writer.writerow(headers)
+
+        for student in students:
+            data = student.get_intake_import_data()
+            row = [
+                student.first_name,
+                "",
+                student.last_name,
+                student.dob.strftime('%Y-%m-%d'),
+                student.WIOA.SID,
+                student.get_age_at_intake(),
+                student.get_gender_code(),
+                student.phone,
+                data["ec_first_name"],  
+                data["ec_last_name"],
+                data["ec_relationship"],
+                int(student.US_citizen),
+                student.street_address_1,
+                student.city,
+                student.state,
+                student.zip_code,
+                int(student.WIOA.hispanic_latino),  
+                int(student.WIOA.amer_indian),
+                int(student.WIOA.asian),
+                int(student.WIOA.black),
+                int(student.WIOA.pacific_islander),
+                data["highest_degree"],
+                data["school_location"],
+                data["employmen_status"],
+            ]
+            writer.writerow(row)
+
+    email = EmailMessage(
+        'WRU Student Intake Report',
+        "File for student intake import",
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+    os.remove(filename)
+    return True
