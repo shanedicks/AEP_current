@@ -87,10 +87,7 @@ def can_post_test_by_hours(student):
         tests = student.tests
     except ObjectDoesNotExist:
         return False
-    if tests.last_test_type == 'Clas_E':
-        return tests.active_hours >= 50
-    else:
-        return tests.active_hours >= 40
+    return tests.active_hours >= 40
 
 needs_post_test = can_post_test_by_hours
 
