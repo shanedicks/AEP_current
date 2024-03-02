@@ -16,14 +16,6 @@ from core.utils import directory_service
 logger = get_task_logger(__name__)
 
 @shared_task
-def semester_begin_task(semester_id):
-    semester = apps.get_model('semesters', 'Semester').objects.get(id=semester_id)
-    logger.info('Beginning Semester{0}'.format(semester.title))
-    for section in semester.sections.all():
-        section.begin()
-    return True
-
-@shared_task
 def waitlist_update_task(section_id_list):
     for section_id in section_id_list:
         logger.info('Waitlist Update for Section {0}'.format(section_id))
