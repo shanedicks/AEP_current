@@ -526,7 +526,7 @@ def cancel_class_task(cancellation_id):
 
 @shared_task
 def wru_course_registration_export_task(email_address, semesters, from_date, to_date):
-    enrollments = apps.get_model('sections', 'Enrollment').objects.all()
+    enrollments = apps.get_model('sections', 'Enrollment').objects.exclude(reported=True)
     if semesters is not None:
         enrollments = enrollments.filter(section__semester__in=semesters)
         logger.info(f"Enrollments in semester: {enrollments.count()}")
