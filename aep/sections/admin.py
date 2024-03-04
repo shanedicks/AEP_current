@@ -233,17 +233,18 @@ class EnrollmentAdmin(ImportExportActionModelAdmin):
     resource_class = EnrollmentResource
 
     list_display = (
-        '__str__',
-        'section',
         'student',
+        'section',
         'creator',
         'created',
-        'last_modified'
+        'last_modified',
+        'reported'
     )
 
     list_filter = (
         'status',
-        'created'
+        'created',
+        'reported'
     )
 
     search_fields = [

@@ -35,7 +35,7 @@ def end_task(enrollment_id):
         enrollment.status = enrollment.DROPPED
     if enrollment.status == enrollment.ACTIVE:
         enrollment.status = enrollment.COMPLETED
-    return enrollment.save()
+    enrollment.save()
 
 @shared_task
 def drop_task(enrollment_id):
@@ -45,6 +45,13 @@ def drop_task(enrollment_id):
     if dropped:
         logger.info('Dropping enrollment {0}'.format(enrollment_id))
     return True
+
+@shared_task
+def update_enrollment_reported_task(enrollment_id):
+    enrollment = get_enrollment(enrollment_id)
+    enrollment.reported = True
+    enrollment.save()
+    logger.info(f'{enrollment} marked as reported to state')
 
 @shared_task
 def participation_detail_task(email_address):
@@ -307,19 +314,29 @@ def send_link_task(section_id, url_name):
         student.text_form_link(url_name)
 
 @shared_task
-def enrollment_notification_task(enrollment_id, status):
+def enrollment_notification_task(enrollment_id):
+    mod = timezone.now().date()
     enrollment = apps.get_model('sections', 'Enrollment').objects.get(id=enrollment_id)
-    email = EmailMessage(
-        'Roster change for {section}'.format(section=enrollment.section.title),
-        '{student} enrollment status for {section} is {status}'.format(
-            student=enrollment.student,
-            status=enrollment.get_status_display(),
-            section=enrollment.section.title,
-        ),
-        'enrollment_bot@dccaep.org',
-        [enrollment.section.teacher.email]
-    )
-    email.send()
+    if enrollment.section.starting is not None:
+        start = enrollment.section.starting
+    else:
+        start = enrollment.section.semester.start_date
+    if enrollment.section.ending is not None:
+        end = enrollment.section.ending
+    else:
+        end = enrollment.section.semester.end_date
+    if mod > start and mod < end and enrollment.status is not enrollment.COMPLETED:
+        email = EmailMessage(
+            'Roster change for {section}'.format(section=enrollment.section.title),
+            '{student} enrollment status for {section} is {status}'.format(
+                student=enrollment.student,
+                status=enrollment.get_status_display(),
+                section=enrollment.section.title,
+            ),
+            'enrollment_bot@dccaep.org',
+            [enrollment.section.teacher.email]
+        )
+        email.send()
     return True
 
 @shared_task

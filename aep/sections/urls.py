@@ -122,7 +122,10 @@ reports_patterns = [
         name='mondo attendance report'),
     path('wru-course-registration/',
         views.WruCourseRegistrationReport.as_view(),
-        name='wru course registration csv')
+        name='wru course registration csv'),
+    path('import-reported-enrollments',
+        views.ImportReportedEnrollmentsView.as_view(),
+        name='import reported enrollments')
 ]
 
 urlpatterns = [

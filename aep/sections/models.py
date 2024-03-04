@@ -432,8 +432,33 @@ class Section(models.Model):
                 )
 
     def enforce_attendance(self):
+        logger.info(f"Enforcing attendance for {self.__str__()}")
+        dropped = []
         for student in self.get_active():
-            drop_task.delay(enrollment_id=student.id)
+            if student.attendance_drop():
+                dropped.append(str(student.student))
+        if len(dropped) > 0:
+            if self.teacher.email:
+                send_mail_task.delay(
+                    "Delgado Adult Ed Dropped Student Notice | {section} - {day}".format(section=self.title, day=timezone.now().date()),
+                    "Hi {teacher},\n"
+                    "In accordance with our attendance policy, "
+                    "we have dropped the following students from {section}:\n"
+                    "{drop}\n"
+                    "We have also added the following waitlisted "
+                    "students to your active roster:\n"
+                    "{add}\n"
+                    "All these students listed have been notified "
+                    "by email that their status has changed.\n"
+                    "Consider calling these newly added students to be sure "
+                    "they are aware of the change. Thanks".format(
+                        section=self.title,
+                        teacher=self.teacher.first_name,
+                        drop=dropped,
+                        add=added),
+                    "admin@dccaep.org",
+                    [self.teacher.email, "adulted@dcc.edu"],
+                )
 
     def attendance_reminder(self, send_mail=True):
         today = timezone.now()
@@ -619,6 +644,8 @@ class Enrollment(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     schedule_sent = models.BooleanField(default=False)
 
+    reported = models.BooleanField(default=False)
+
     class Meta:
         unique_together = ('student', 'section')
 
@@ -756,8 +783,8 @@ class Enrollment(models.Model):
                     subject="We're sorry {student}, but you've been dropped from {section}".format(
                         student=self.student.first_name,
                         section=self.section.title),
-                    message="According to our program's attendance policy, "
-                    "students who miss a class more than 4 times "
+                    message=f"According to our program's attendance policy, "
+                    "students who miss a class more than {policy} times "
                     "will be dropped from that class. "
                     "You're still part of our program, you're just dropped from this class.\n"
                     "Please stop by our main office or call "
@@ -810,21 +837,6 @@ class Enrollment(models.Model):
                 from_email="enrollment_robot@elearnclass.org",
                 recipient_list=recipients,
             )
-
-    def save(self, *args, **kwargs):
-        mod = timezone.now().date()
-        if self.section.starting is not None:
-            start = self.section.starting
-        else:
-            start = self.section.semester.start_date
-        if self.section.ending is not None:
-            end = self.section.ending
-        else:
-            end = self.section.semester.end_date
-        if mod > start and mod < end and self.status is not self.COMPLETED:
-            status = self.get_status_display()
-            enrollment_notification_task.delay(self.id, status)
-        super(Enrollment, self).save(*args, **kwargs)
 
 
 class Attendance(models.Model):

@@ -1,3 +1,4 @@
+import logging
 import csv
 import os
 from apiclient import discovery
@@ -33,8 +34,10 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     EnrollmentUpdateForm, CancellationForm,
                     SingleHoursAttendanceForm, HoursAttendanceFormset)
 from .tasks import (participation_detail_task, section_skill_mastery_report_task, wru_course_registration_export_task,
-                    mondo_attendance_report_task, cancel_class_task, finalize_daily_attendance_task)
+                    mondo_attendance_report_task, cancel_class_task, finalize_daily_attendance_task,
+                    enrollment_notification_task, update_enrollment_reported_task)
 
+logger = logging.getLogger(__name__)
 
 class AttendanceCSV(LoginRequiredMixin, FormView):
 
@@ -836,6 +839,7 @@ class AddStudentView(LoginRequiredMixin, CreateView):
         enrollment.creator = creator
         try:
             enrollment.save()
+            enrollment_notification_task.delay(enrollment.id)
             return super(AddStudentView, self).form_valid(form)
         except IntegrityError:
             form.add_error(
@@ -912,6 +916,7 @@ class AddClassView(LoginRequiredMixin, CreateView):
         #    return self.form_invalid(form)
         try:
             enrollment.save()
+            enrollment_notification_task.delay(enrollment.id)
             return super(AddClassView, self).form_valid(form)
         except IntegrityError:
             form.add_error(
@@ -1683,3 +1688,66 @@ class ImportDuolingoAttendanceView(LoginRequiredMixin, FormView):
             'sections:attendance overview',
             kwargs={'slug': section.slug}
         ))
+
+
+class ImportReportedEnrollmentsView(LoginRequiredMixin, FormView):
+
+    form_class = CSVImportForm
+    template_name = 'sections/import_reported_enrollments.html'
+
+    def form_valid(self, form):
+        csv_file = self.request.FILES['csv_file']
+        decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+        headers = decoded_file.readline().strip().split(",")
+        errors = False
+        student_not_found = []
+        section_not_found = []
+        enrollment_not_found = []
+        reader = csv.DictReader(decoded_file, fieldnames=headers)
+        headers = reader.fieldnames
+        for row in reader:
+            try:
+                student = Student.objects.get(WRU_ID=row['SID'])
+            except ObjectDoesNotExist:
+                student_not_found.append(list(row.values()))
+                errors = True
+            try:
+                section = Section.objects.get(WRU_ID=row['COURSE_ID'])
+            except ObjectDoesNotExist:
+                section_not_found.append(list(row.values()))
+                errors = True
+            try:
+                enrollment = Enrollment.objects.get(section=section, student=student)
+                update_enrollment_reported_task.delay(enrollment.id)
+            except ObjectDoesNotExist:
+                enrollment_not_found.append(list(row.values()))
+                errors = True
+
+        if errors:
+            with open('errors.csv', 'w', newline='') as error_file:
+                writer = csv.writer(error_file)
+                if student_not_found:
+                    writer.writerow(['These records were not updated because a matching student was not found'])
+                    writer.writerow(headers)
+                    for row in student_not_found:
+                        writer.writerow(row)
+                if section_not_found:
+                    writer.writerow(['These records were not updated because a matching section was not found'])
+                    writer.writerow(headers)
+                    for row in section_not_found:
+                        writer.writerow(row)
+                if enrollment_not_found:
+                    writer.writerow(['These records were not updated because a matching enrollment was not found'])
+                    writer.writerow(headers)
+                    for row in enrollment_not_found:
+                        writer.writerow(row)
+            email = EmailMessage(
+                'Reported Enrollments Import Report',
+                'These records were not updated',
+                'admin@dccaep.org',
+                [self.request.user.email]
+            )
+            email.attach_file('errors.csv')
+            email.send()
+            os.remove('errors.csv')
+        return HttpResponseRedirect(reverse('reports'))

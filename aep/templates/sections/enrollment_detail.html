@@ -2,14 +2,16 @@
 {% block head_title %}DCCAEP | {{enrollment}}{% endblock head_title %}
 {% block content %}
     <h1>Enrollment Details</h1>
-    <h3><a href="{{ enrollment.student.get_absolute_url }}" >{{ enrollment.student }}</a> enrolled in <a href="{{ enrollment.section.get_absolute_url }}">{{ enrollment.section.title }} {{enrollment.section.get_days_str}} {{ enrollment.section.start_time }} - {{enrollment.section.end_time}}</a></h3>
+    <h3><a href="{{ enrollment.student.get_absolute_url }}" >{{ enrollment.student }} | {{ enrollment.student.WRU_ID}}</a> enrolled in <a href="{{ enrollment.section.get_absolute_url }}">{{ enrollment.section.title }} {{enrollment.section.get_days_str}} {{ enrollment.section.start_time }} - {{enrollment.section.end_time}} | {{enrollment.section.WRU_ID}}</a></h3>
     <h4>Room: {{enrollment.section.room}}</h4>
     <h4>Class Begins: {{ enrollment.section.start_date }}</h4>
     <h4>Status: {{ enrollment.get_status_display }}</h4>
     <h4>Enrolled: {{enrollment.created.date }}</h4>
     <h4>Enrolled by: {{enrollment.creator.get_full_name }}</h4>
-    <h4>Click the <strong>"Remove"</strong> button to delete this enrollment (before classes start)</h4>
-    <a class="btn btn-default btn-sm" href="{% url 'sections:delete enrollment' pk=enrollment.pk %}">Remove</a>
+    {% if not enrollment.attendance.exists %}
+        <h4>Click the <strong>"Remove"</strong> button to delete this enrollment (before classes start)</h4>
+        <a class="btn btn-default btn-sm" href="{% url 'sections:delete enrollment' pk=enrollment.pk %}">Remove</a>
+    {% endif %}
     <h4>Click the <strong>"Update"</strong> button to change the enrollment status (to drop a student after classes begin)</h4>
     <a class="btn btn-default btn-sm" href="{% url 'sections:enrollment update' pk=enrollment.pk %}">Update</a>
 {% endblock content %}
