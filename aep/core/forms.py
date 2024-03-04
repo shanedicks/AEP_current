@@ -43,9 +43,6 @@ class CSVImportForm(Form):
         csv_file = self.cleaned_data.get('csv_file')
 
         if csv_file:
-            content_type = csv_file.content_type
-            if 'text/csv' not in content_type:
-                raise ValidationError('Sorry, please provide a CSV file.')
             file_name = csv_file.name
             if not file_name.endswith('.csv'):
                 raise ValidationError('Sorry, please provide a CSV file.')
@@ -54,7 +51,6 @@ class CSVImportForm(Form):
 
     def __init__(self, *args, **kwargs):
         super(CSVImportForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.help_text_inline = False
