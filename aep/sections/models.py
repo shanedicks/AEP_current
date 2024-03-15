@@ -768,6 +768,11 @@ class Enrollment(models.Model):
                     from_email="enrollment_robot@elearnclass.org",
                     recipient_list=[self.student.email],
                 )
+            if self.student.phone:
+                send_sms_task.delay(
+                    self.student.phone,
+                    "You have been added to a Delgado Adult Education class. Please check your email for your schedule"
+                )
             return True
         return False
 
@@ -853,7 +858,7 @@ class Attendance(models.Model):
     )
     enrollment = models.ForeignKey(
         Enrollment,
-        models.CASCADE,
+        models.PROTECT,
         related_name='attendance'
     )
     attendance_type = models.CharField(

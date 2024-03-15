@@ -576,3 +576,72 @@ def wru_course_registration_export_task(email_address, semesters, from_date, to_
     email.send()
     os.remove('wru_course_registration.csv')
     return True
+
+def wru_sections_export_task(email_address, semester_ids):
+    Section = apps.get_model('sections', 'Section')
+    Site = apps.get_model('sections', 'Site')
+    Staff = apps.get_model('people', 'Staff')
+    Semester = apps.get_model('semesters', 'Semester')
+
+    sections = Section.objects.filter(semester__id__in=semester_ids).prefetch_related('site', 'instructors', 'semester')
+    logger.info(f"Sections in given semesters: {sections.count()}")
+
+    with open('sections_export.csv', 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            'Provider', 'FiscalYear', 'CourseName', 'CourseCode', 'Instructor1', 'Instructor2',
+            'Instructor3', 'Instructor4', 'Location', 'SiteName', 'SiteAddress', 'SiteCity',
+            'SiteState', 'SiteZip', 'StartDate', 'EndDate', 'StartTime', 'EndTime',
+            'Accelerating_Opportunity', 'Adult_Basic_Education', 'Adult_Secondary_Education',
+            'Community_Corrections_Program', 'Correctional_Educaiton_Program', 'Distance_Education',
+            'EL_Civics', 'Workplace_Literacy', 'WorkBased_Project_Learner', 'Program_for_The_Homeless',
+            'Other_Institutional_Programs', 'Family_Literacy', 'EL_Program(ESL)', 'TransitionsitionCourse',
+            'TotalSeats', 'EndOfCourseTesting', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+            'Friday', 'Saturday', 'NoOfHolidays', 'CourseType', 'MinHours'
+        ]
+        writer.writerow(headers)
+
+        for section in sections:
+            row = [
+                '9'
+                '12',
+                section.title,
+                '',
+                section.teacher.WRU_ID,
+                section.teacher.first_name,
+                section.teacher.last_name,
+                '',
+                'Location',
+                section.site.name,
+                section.site.street_address,
+                section.site.city,
+                section.site.state,
+                section.site.zip_code,
+                section.start_date,
+                section.end_date,
+                section.start_time,
+                section.end_time,
+                '','','','','','','','','','','','','','',
+                section.seats + 20,
+                '',
+                section.sunday,
+                section.monday,
+                section.tuesday,
+                section.wednesday,
+                section.thursday,
+                section.friday,
+                section.saturday,
+                '','',''
+            ]
+            writer.writerow(row)
+
+    email = EmailMessage(
+        'Sections Import File',
+        'Attached is the CSV file with the sections data for import.',
+        'your_email@example.com',
+        [email_address]
+    )
+    email.attach_file('sections_export.csv')
+    email.send()
+    os.remove('sections_export.csv')
+    return True

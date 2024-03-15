@@ -116,10 +116,10 @@
             {% endfor %}
             {% else %}
                 <p>There are no upcoming testing appointments for {{ student }}. Would you like to create one?</p>
+            {% endif %}
                 <p>
                   <a class="btn btn-default" href="{% url 'assessments:test signup' slug=student.slug %}" role="button">Testing Signup</a>
                 </p>
-            {% endif %}
       </div>
       <div>
         <h3>Student Coaching</h3>
