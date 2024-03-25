@@ -2,7 +2,7 @@ import time
 from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from sections.tasks import create_classroom_sections_task
+from sections.tasks import create_classroom_sections_task, add_TA_task
 from semesters.models import Semester
 from semesters.tasks import create_missing_g_suite
 
@@ -17,7 +17,10 @@ class Command(BaseCommand):
 		)
 		create_classroom_sections_group = Semester.objects.filter(start_date=now + timedelta(days=7))
 		for semester in create_classroom_sections_group:
-			create_classroom_sections_task([s.id for s in semester.get_sections()])
+			section_ids = [s.id for s in semester.get_sections()]
+			create_classroom_section_task(section_ids)
+			time.sleep(10)
+			add_TA_task(section_ids)
 		for semester in active.filter(start_date__gte=now - timedelta(days=14)):
 			create_missing_g_suite.delay(semester.id)
 			time.sleep(10)
