@@ -22,7 +22,7 @@ class Command(BaseCommand):
 			time.sleep(10)
 			add_TA_task(section_ids)
 		for semester in active.filter(start_date__gte=now - timedelta(days=14)):
-			create_missing_g_suite.delay(semester.id)
+			create_missing_g_suite_task.delay(semester.id)
 			time.sleep(10)
 			if now.weekday() == 4:
 				semester.waitlist()
