@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from sections.tasks import create_classroom_section_task, add_TA_task
 from semesters.models import Semester
-from semesters.tasks import create_missing_g_suite
+from semesters.tasks import create_missing_g_suite_task
 
 
 class Command(BaseCommand):
