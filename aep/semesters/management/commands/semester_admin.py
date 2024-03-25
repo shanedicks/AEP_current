@@ -17,7 +17,7 @@ class Command(BaseCommand):
 		)
 		create_classroom_sections_group = Semester.objects.filter(start_date=now + timedelta(days=7))
 		for semester in create_classroom_sections_group:
-			section_ids = [s.id for s in semester.get_sections()]
+			section_ids = [s.id for s in semester.get_sections() if s.g_suite_id == '']
 			create_classroom_section_task(section_ids)
 			time.sleep(10)
 			add_TA_task(section_ids)
