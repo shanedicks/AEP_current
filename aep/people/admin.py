@@ -773,7 +773,7 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
     def get_WRU_ID(self, obj):
         return obj.student.WRU_ID
-    get_WRU_ID.admin_order_field = "WRU_ID"
+    get_WRU_ID.admin_order_field = "student__WRU_ID"
     get_WRU_ID.short_description = "WRU ID"
 
     def check_for_state_id(self, request, queryset):

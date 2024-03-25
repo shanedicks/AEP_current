@@ -26,7 +26,7 @@ class Command(BaseCommand):
 				time.sleep(10)
 			semester.begin()
 			semester.roster_to_classroom()
-			time.sleep(10)\
+			time.sleep(10)
 		for semester in active.filter(start_date__lt=now - timedelta(days=14)):
 			semester.enforce_attendance()
 		end_semester_group = Semester.objects.filter(end_date=now - timedelta(days=14))
