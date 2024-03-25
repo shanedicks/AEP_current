@@ -2,7 +2,7 @@ import time
 from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from sections.tasks import create_classroom_sections_task, add_TA_task
+from sections.tasks import create_classroom_section_task, add_TA_task
 from semesters.models import Semester
 from semesters.tasks import create_missing_g_suite
 
