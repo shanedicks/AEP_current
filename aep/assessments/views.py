@@ -387,6 +387,7 @@ class TestingSignupView(LoginRequiredMixin, CreateView):
         student = Student.objects.get(slug=self.kwargs['slug'])
         appt = form.save(commit=False)
         appt.student = student
+        appt.creator = self.request.user
         try:
             appt.save()
             return super(TestingSignupView, self).form_valid(form)

@@ -225,6 +225,12 @@ class TestAppointment(models.Model):
         null=True,
         blank=True
     )
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        models.PROTECT,
+        related_name='created_appointments',
+        null=True
+    )
 
     class Meta:
         verbose_name = "Testing Appointment"
