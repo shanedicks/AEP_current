@@ -1,4 +1,5 @@
 from django.contrib import admin
+from sections.tasks import wru_sections_export_task
 from .models import Semester, Survey, Message
 from .tasks import (send_g_suite_info_task, semester_begin_task,
     create_missing_g_suite_task, send_message_task, send_schedules_task,
@@ -32,7 +33,8 @@ class SemesterAdmin(admin.ModelAdmin):
         "create_missing_g_suite",
         'send_schedules',
         'send_paperwork_form_link',
-        'send_photo_id_form_link'
+        'send_photo_id_form_link',
+        'wru_section_export'
     ]
 
     def attendance_reminder(self, request, queryset):
@@ -83,6 +85,10 @@ class SemesterAdmin(admin.ModelAdmin):
     def send_photo_id_form_link(self, request, queryset):
         for obj in queryset:
             send_link_task.delay(obj.id, 'upload photo id')
+
+    def wru_section_export(self, request, queryset):
+        semesters = [obj.id for obj in queryset]
+        wru_sections_export_task.delay(request.user.email, semesters)
 
 admin.site.register(Semester, SemesterAdmin)
 

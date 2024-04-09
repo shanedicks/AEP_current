@@ -3,7 +3,7 @@
         <th><h4></h4></th>
         <th>Total Hours</th>
         {% for day in days %}
-        <th><a href="{% url 'sections:daily attendance' slug=section.slug attendance_date=day|date:"Y-m-d" %}">{{day|date:"M - d"}}</a></th>
+        <th><a href="{% url 'sections:daily attendance' slug=section.slug attendance_date=day %}">{{day|date:"M - d"}}</a></th>
         {% endfor %}
     </tr>
     {% if section.get_active %}

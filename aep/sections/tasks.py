@@ -577,13 +577,14 @@ def wru_course_registration_export_task(email_address, semesters, from_date, to_
     os.remove('wru_course_registration.csv')
     return True
 
+@shared_task
 def wru_sections_export_task(email_address, semester_ids):
     Section = apps.get_model('sections', 'Section')
     Site = apps.get_model('sections', 'Site')
     Staff = apps.get_model('people', 'Staff')
     Semester = apps.get_model('semesters', 'Semester')
 
-    sections = Section.objects.filter(semester__id__in=semester_ids).prefetch_related('site', 'instructors', 'semester')
+    sections = Section.objects.filter(semester__id__in=semester_ids).prefetch_related('site', 'teacher', 'semester')
     logger.info(f"Sections in given semesters: {sections.count()}")
 
     with open('sections_export.csv', 'w', newline='') as out:
@@ -607,7 +608,7 @@ def wru_sections_export_task(email_address, semester_ids):
                 '12',
                 section.title,
                 '',
-                section.teacher.WRU_ID,
+                section.teacher.wru,
                 section.teacher.first_name,
                 section.teacher.last_name,
                 '',
@@ -617,8 +618,8 @@ def wru_sections_export_task(email_address, semester_ids):
                 section.site.city,
                 section.site.state,
                 section.site.zip_code,
-                section.start_date,
-                section.end_date,
+                section.start_date.strftime("%Y%m%d"),
+                section.end_date.strftime("%Y%m%d"),
                 section.start_time,
                 section.end_time,
                 '','','','','','','','','','','','','','',
