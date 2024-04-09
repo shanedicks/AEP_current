@@ -606,7 +606,7 @@ def wru_sections_export_task(email_address, semester_ids):
             row = [
                 '9',
                 '12',
-                section.title,
+                f"{section.title}.{section.teacher.first_name}.{section.id}",
                 '',
                 section.teacher.wru,
                 section.teacher.first_name,
