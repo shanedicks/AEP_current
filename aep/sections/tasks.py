@@ -604,7 +604,7 @@ def wru_sections_export_task(email_address, semester_ids):
 
         for section in sections:
             row = [
-                '9'
+                '9',
                 '12',
                 section.title,
                 '',
@@ -620,18 +620,18 @@ def wru_sections_export_task(email_address, semester_ids):
                 section.site.zip_code,
                 section.start_date.strftime("%Y%m%d"),
                 section.end_date.strftime("%Y%m%d"),
-                section.start_time,
-                section.end_time,
+                section.start_time.strftime('%I:%M%p'),
+                section.end_time.strftime('%I:%M%p'),
                 '','','','','','','','','','','','','','',
                 section.seats + 20,
                 '',
-                section.sunday,
-                section.monday,
-                section.tuesday,
-                section.wednesday,
-                section.thursday,
-                section.friday,
-                section.saturday,
+                int(section.sunday),
+                int(section.monday),
+                int(section.tuesday),
+                int(section.wednesday),
+                int(section.thursday),
+                int(section.friday),
+                int(section.saturday),
                 '','',''
             ]
             writer.writerow(row)
@@ -639,7 +639,7 @@ def wru_sections_export_task(email_address, semester_ids):
     email = EmailMessage(
         'Sections Import File',
         'Attached is the CSV file with the sections data for import.',
-        'your_email@example.com',
+        'reporter@dccaep.org',
         [email_address]
     )
     email.attach_file('sections_export.csv')
