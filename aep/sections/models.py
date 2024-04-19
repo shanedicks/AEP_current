@@ -445,17 +445,14 @@ class Section(models.Model):
                     "In accordance with our attendance policy, "
                     "we have dropped the following students from {section}:\n"
                     "{drop}\n"
-                    "We have also added the following waitlisted "
-                    "students to your active roster:\n"
-                    "{add}\n"
                     "All these students listed have been notified "
                     "by email that their status has changed.\n"
                     "Consider calling these newly added students to be sure "
                     "they are aware of the change. Thanks".format(
                         section=self.title,
                         teacher=self.teacher.first_name,
-                        drop=dropped,
-                        add=added),
+                        drop=dropped
+                    ),
                     "admin@dccaep.org",
                     [self.teacher.email, "adulted@dcc.edu"],
                 )
