@@ -82,7 +82,11 @@ class SectionResource(resources.ModelResource):
             'thursday',
             'friday',
             'saturday',
-            'sunday'
+            'sunday',
+            'att_summary',
+            'att_table',
+            'import_essential_ed',
+            'import_duolingo'
         )
 
 

@@ -131,6 +131,10 @@ class Section(models.Model):
     sunday = models.BooleanField(default=False)
     slug = models.CharField(unique=True, max_length=5, default=make_slug)
 
+    att_summary = models.BooleanField(default = False)
+    att_table = models.BooleanField(default = True)
+    import_essential_ed = models.BooleanField(default = False)
+    import_duolingo = models.BooleanField(default = False)
 
     def __str__(self):
         s = str(self.site.code)
