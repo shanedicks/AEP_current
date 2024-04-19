@@ -1053,8 +1053,6 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
                 'student__last_name',
                 'student__first_name'
             )
-        if 'summary' not in context:
-            context['summary'] = ['ADMIN']
         return context
 
 

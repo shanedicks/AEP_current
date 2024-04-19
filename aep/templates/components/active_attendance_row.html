@@ -1,8 +1,9 @@
 <tr>
     <td><a href='{{ student.get_absolute_url }}'>{{ student.student }}</a></td>
     <td>{{ student.total_hours }}</td>
-    {% for att in student.attendance.all %}
+    {% for attendance in student.attendance_table_row %}
         <td>
+        {% for att in attendance %}
             <a href='{{ att.get_absolute_url }}'>
             {% if att.attendance_type == "X" %}
                 -
@@ -12,6 +13,8 @@
                 {{ att.hours }} 
             {% endif %}
             </a>
+            {% if not forloop.last %}<br>{%endif%}
+        {% endfor %}
         </td>
     {% endfor %}
 </tr>

@@ -7,11 +7,45 @@
         <a class="btn btn-default" href="{% url 'sections:g suite attendance' slug=section.slug%}">Google Classroom Assignments</a>
     {% endif %}
     <h3>{{ section.teacher }} | {{section.get_days_str }} | {{ section.start_time }}-{{section.end_time}}</h3>
-    {% if section.program not in summary %}
-        {% include 'sections/attendance_table.html' %}
-    {% else %}
-    <a class="btn btn-default" href="{% url 'sections:import attendance' slug=section.slug %}">Import Attendance</a>
-        {% include 'sections/attendance_summary.html' %}
+    {% if section.att_table and section.att_summary %}
+      <div>
+        {% if section.att_table %}
+          <button id="tableBtn" class="btn btn-default" onclick="showTable()">Show Table</button>
+        {% endif %}
+        {% if section.att_summary %}
+          <button id="summaryBtn" class="btn btn-default" onclick="showSummary()">Show Summary</button>
+        {% endif %}
+      </div>
     {% endif %}
 
+    {% if section.import_essential_ed %}
+      <a class="btn btn-default" href="{% url 'sections:import attendance' slug=section.slug %}">Import Attendance</a>
+    {% endif %}
+
+    {% if section.att_table %}
+      <div id="tableContainer" style="display: block;">
+        {% include 'sections/attendance_table.html' %}
+      </div>
+      <div id="summaryContainer" style="display: none;">
+        {% include 'sections/attendance_summary.html' %}
+      </div>
+    {% else %}
+      <div id="tableContainer" style="display: none;">
+        {% include 'sections/attendance_table.html' %}
+      </div>
+      <div id="summaryContainer" style="display: block;">
+        {% include 'sections/attendance_summary.html' %}
+      </div>
+    {% endif %}
+
+<script>
+  function showTable() {
+    document.getElementById('tableContainer').style.display = 'block';
+    document.getElementById('summaryContainer').style.display = 'none';
+  }
+  function showSummary() {
+    document.getElementById('tableContainer').style.display = 'none';
+    document.getElementById('summaryContainer').style.display = 'block';
+  }
+</script>
 {% endblock content %}
