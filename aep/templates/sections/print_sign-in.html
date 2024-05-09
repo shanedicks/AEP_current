@@ -1,27 +1,76 @@
-{% extends "base.html" %}
-{% block head_title %}DCCAEP | Print Sign-In{% endblock head_title %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DCCAEP | Print Sign-In</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h3, p, button{
+            margin-left: 20px;
+        }
+        table {
+            width: 95%;
+            margin: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .student-col { width: 25%; } /* Adjusted for optimal fit of student data */
+        .signature-col { width: 45%; } /* Ample space for signatures */
+        .time-col { width: 15%; } /* Enough for time entries, can adjust if more space is needed */
+        @media print {
+            button {
+                display: none;
+            }
+            @page {
+                margin: 10mm; /* Adjust as needed for your print settings */
+            }
+        }
+    </style>
+</head>
+<body>
     <h1>{{ section.title }} Sign-in Sheet </h1>
     <h3>{{ section.teacher }} | {{ section.start_time }}-{{section.end_time}}</h3>
-    {% if section.room != ''%}
+    {% if section.room != '' %}
         <h3>{{section.semester }} | {{ section.site.code }} | Rm {{section.room}} | {{ attendance_date }}</h3>
     {% else %}
         <h3>{{section.semester }} | {{ section.site.code }} | {{ attendance_date }}</h3>
     {% endif %}
-    <table class="table table-bordered">
+    <p><span style="color: green;">✔</span> No Test Needed</p>
+    <p><span style="color: red;">!</span> Test Needed</p>
+    <button onclick="window.print();">Print this page</button>
+    <table>
         <tr>
-            <th class="col-md-2">Student</th>
-            <th class="col-md-6">Signature</th>
-            <th class="col-md-1">Time In</th>
-            <th class="col-md-1">Time Out</th>
+            <th class="student-col">Student</th>
+            <th class="signature-col">Signature</th>
+            <th class="time-col">Time In</th>
+            <th class="time-col">Time Out</th>
         </tr>
         {% for student in active %}
         <tr>
-            <td>{{ student.student }} ({{ student.times_absent}})</td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td class="student-col">
+                {{ student.student }} ({{ student.times_absent }})
+                {% if student.student.testing_status == 'No Test Needed' %}
+                <span style="color: green;">✔</span>
+                {% else %}
+                <span style="color: red;">!</span>
+                {% endif %}
+            </td>
+            <td class="signature-col"></td>
+            <td class="time-col"></td>
+            <td class="time-col"></td>
         </tr>
         {% endfor %}
     </table>
-{% endblock content %}
+</body>
+</html>
