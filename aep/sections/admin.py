@@ -12,7 +12,8 @@ from people.models import Staff, Student
 from academics.models import Course
 from .models import Site, Section, Enrollment, Attendance, Message, Cancellation
 from .tasks import (roster_to_classroom_task, send_g_suite_info_task, cancel_class_task, add_TA_task,
-    create_missing_g_suite_task, create_classroom_section_task, send_message_task, send_link_task)
+    create_missing_g_suite_task, create_classroom_section_task, send_message_task, send_link_task,
+    force_activate_task)
 
 class SiteResource(resources.ModelResource):
 
@@ -136,6 +137,7 @@ class SectionAdmin(ImportExportActionModelAdmin):
         'send_g_suite_info',
         'send_course_welcome_email',
         'add_TA',
+        'force_activate',
         'create_missing_g_suite',
         'send_paperwork_form_link',
         'send_photo_id_form_link'
@@ -177,6 +179,10 @@ class SectionAdmin(ImportExportActionModelAdmin):
     def add_TA(self, request, queryset):
         section_ids = [obj.id for obj in queryset]
         add_TA_task.delay(section_ids)
+
+    def force_activate(self, request, queryset):
+        for obj in queryset:
+            force_activate_task.delay(obj.id)
 
     def roster_to_classroom(self, request, queryset):
         for obj in queryset:

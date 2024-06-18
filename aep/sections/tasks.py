@@ -454,6 +454,15 @@ def add_TA_task(section_id_list):
             logger.error(error)
 
 @shared_task
+def force_activate_task(section_id):
+    service = classroom_service()
+    section = apps.get_model('sections', 'Section').objects.get(id=section_id)
+    course = service.courses().get(id=section.g_suite_id)
+    course['courseState'] = 'ACTIVE'
+    logger.info(f'Updating {section} - {section.g_suite_id} to ACTIVE')
+    service.courses().update(id=section.g_suite_id, body=course).execute()
+
+@shared_task
 def send_message_task(message_id):
     message = apps.get_model('sections', 'Message').objects.get(id=message_id)
     logger.info('Sending message {0}'.format(message.title))
