@@ -1326,7 +1326,7 @@ class StudentForm(ModelForm):
         )
         labels = {
             "allow_texts": "Allow Texts",
-            "US_citizen": "<strong>Check this box if you are a US citizen</strong>",
+            "US_citizen": mark_safe("<strong>Check this box if you are a US citizen</strong>"),
             "ccr_app": "In Person study for HiSET",
             "ell_app": "In Person English Language Learners",
             "ell_online_app": "Online English Language Learners",
