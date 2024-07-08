@@ -541,7 +541,7 @@ def wru_course_registration_export_task(email_address, semesters, from_date, to_
         attendance__attendance_date__gte=from_date,
         attendance__attendance_date__lte=to_date
         ).distinct()
-        logger.info(f"Preparing to export {enrollments.count()} enrollments")
+    logger.info(f"Preparing to export {enrollments.count()} enrollments")
     with open('wru_course_registration.csv', 'w', newline='') as out:
         writer = csv.writer(out)
         headers = [
