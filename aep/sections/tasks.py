@@ -536,19 +536,12 @@ def cancel_class_task(cancellation_id):
 @shared_task
 def wru_course_registration_export_task(email_address, semesters, from_date, to_date):
     enrollments = apps.get_model('sections', 'Enrollment').objects.exclude(reported=True)
-    if semesters is not None:
-        enrollments = enrollments.filter(section__semester__in=semesters)
-        logger.info(f"Enrollments in semester: {enrollments.count()}")
-    if from_date is not None:
-        from_datetime = datetime.combine(from_date, time.min)
-        from_datetime = timezone.make_aware(from_datetime)
-        enrollments = enrollments.filter(created__gte=from_datetime)
-        logger.info(f"Enrollments after from_date: {enrollments.count()}")
-    if to_date is not None:
-        to_datetime = datetime.combine(to_date, time.max)
-        to_datetime = timezone.make_aware(to_datetime)
-        enrollments = enrollments.filter(created__lte=to_datetime)
-        logger.info(f"Enrollments before to_date: {enrollments.count()}")
+    enrollments = enrollments.filter(
+        section__semester__in=semesters,
+        attendance__attendance_date__gte=from_date,
+        attendance__attendance_date__lte=to_date
+        ).distinct()
+        logger.info(f"Preparing to export {enrollments.count()} enrollments")
     with open('wru_course_registration.csv', 'w', newline='') as out:
         writer = csv.writer(out)
         headers = [
