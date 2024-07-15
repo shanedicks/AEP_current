@@ -47,13 +47,6 @@ def drop_task(enrollment_id):
     return True
 
 @shared_task
-def update_enrollment_reported_task(enrollment_id):
-    enrollment = get_enrollment(enrollment_id)
-    enrollment.reported = True
-    enrollment.save()
-    logger.info(f'{enrollment} marked as reported to state')
-
-@shared_task
 def participation_detail_task(email_address):
     enrollments = apps.get_model('sections', 'Enrollment').objects.all()
     sites = apps.get_model('sections', 'Site').objects.all()
@@ -647,4 +640,64 @@ def wru_sections_export_task(email_address, semester_ids):
     email.attach_file('sections_export.csv')
     email.send()
     os.remove('sections_export.csv')
+    return True
+
+@shared_task
+def mark_enrollments_reported_task(enrollments_list, user_email):
+
+    errors = False
+    student_not_found = []
+    section_not_found = []
+    enrollment_not_found = []
+    Student = apps.get_model('people', 'Student')
+    Section = apps.get_model('sections', 'Section')
+    Enrollment = apps.get_model('sections', 'Enrollment')
+    for student_id, section_id in enrollments_list:
+        try:
+            student = Student.objects.get(WRU_ID=student_id)
+        except ObjectDoesNotExist:
+            student_not_found.append([student_id, section_id])
+            errors = True
+        try:
+            section = Section.objects.get(WRU_ID=section_id)
+        except ObjectDoesNotExist:
+            section_not_found.append([student_id, section_id])
+            errors = True
+        try:
+            enrollment = Enrollment.objects.get(section=section, student=student)
+            enrollment.reported = True
+            enrollment.save()
+            logger.info(f'{enrollment} marked as reported to state')
+        except ObjectDoesNotExist:
+            enrollment_not_found.append([student_id, section_id])
+            errors = True
+
+    if errors:
+        with open('errors.csv', 'w', newline='') as error_file:
+            writer = csv.writer(error_file)
+            headers = ["SID", "COURSE_ID"]
+            if student_not_found:
+                writer.writerow(['These records were not updated because a matching student was not found'])
+                writer.writerow(headers)
+                for row in student_not_found:
+                    writer.writerow(row)
+            if section_not_found:
+                writer.writerow(['These records were not updated because a matching section was not found'])
+                writer.writerow(headers)
+                for row in section_not_found:
+                    writer.writerow(row)
+            if enrollment_not_found:
+                writer.writerow(['These records were not updated because a matching enrollment was not found'])
+                writer.writerow(headers)
+                for row in enrollment_not_found:
+                    writer.writerow(row)
+        email = EmailMessage(
+            'Reported Enrollments Import Report',
+            'These records were not updated',
+            'admin@dccaep.org',
+            [user_email]
+        )
+        email.attach_file('errors.csv')
+        email.send()
+        os.remove('errors.csv')
     return True

@@ -35,7 +35,7 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     SingleHoursAttendanceForm, HoursAttendanceFormset)
 from .tasks import (participation_detail_task, section_skill_mastery_report_task, wru_course_registration_export_task,
                     mondo_attendance_report_task, cancel_class_task, finalize_daily_attendance_task,
-                    enrollment_notification_task, update_enrollment_reported_task)
+                    enrollment_notification_task, mark_enrollments_reported_task)
 
 logger = logging.getLogger(__name__)
 
@@ -1697,55 +1697,9 @@ class ImportReportedEnrollmentsView(LoginRequiredMixin, FormView):
         csv_file = self.request.FILES['csv_file']
         decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
         headers = decoded_file.readline().strip().split(",")
-        errors = False
-        student_not_found = []
-        section_not_found = []
-        enrollment_not_found = []
+        enrollments_list = []
         reader = csv.DictReader(decoded_file, fieldnames=headers)
-        headers = reader.fieldnames
         for row in reader:
-            try:
-                student = Student.objects.get(WRU_ID=row['SID'])
-            except ObjectDoesNotExist:
-                student_not_found.append(list(row.values()))
-                errors = True
-            try:
-                section = Section.objects.get(WRU_ID=row['COURSE_ID'])
-            except ObjectDoesNotExist:
-                section_not_found.append(list(row.values()))
-                errors = True
-            try:
-                enrollment = Enrollment.objects.get(section=section, student=student)
-                update_enrollment_reported_task.delay(enrollment.id)
-            except ObjectDoesNotExist:
-                enrollment_not_found.append(list(row.values()))
-                errors = True
-
-        if errors:
-            with open('errors.csv', 'w', newline='') as error_file:
-                writer = csv.writer(error_file)
-                if student_not_found:
-                    writer.writerow(['These records were not updated because a matching student was not found'])
-                    writer.writerow(headers)
-                    for row in student_not_found:
-                        writer.writerow(row)
-                if section_not_found:
-                    writer.writerow(['These records were not updated because a matching section was not found'])
-                    writer.writerow(headers)
-                    for row in section_not_found:
-                        writer.writerow(row)
-                if enrollment_not_found:
-                    writer.writerow(['These records were not updated because a matching enrollment was not found'])
-                    writer.writerow(headers)
-                    for row in enrollment_not_found:
-                        writer.writerow(row)
-            email = EmailMessage(
-                'Reported Enrollments Import Report',
-                'These records were not updated',
-                'admin@dccaep.org',
-                [self.request.user.email]
-            )
-            email.attach_file('errors.csv')
-            email.send()
-            os.remove('errors.csv')
+            enrollments_list.append((row["SID"], row['COURSE_ID']))
+        mark_enrollments_reported_task.delay(enrollments_list, self.request.user.email)
         return HttpResponseRedirect(reverse('reports'))
