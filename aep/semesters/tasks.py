@@ -23,13 +23,6 @@ def waitlist_update_task(section_id_list):
         section.waitlist_update()
 
 @shared_task
-def attendance_reminder_task(section_id_list):
-    for section_id in section_id_list:
-        logger.info('Attendance Reminders for Section {0}'.format(section_id))
-        section = apps.get_model('sections', 'Section').objects.get(id=section_id)
-        section.attendance_reminder()
-
-@shared_task
 def semester_end_task(section_id_list):
     for section_id in section_id_list:
         logger.info('Ending Section {0}'.format(section_id))

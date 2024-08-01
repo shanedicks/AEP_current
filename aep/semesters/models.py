@@ -98,10 +98,6 @@ class Semester(models.Model):
         section_ids = [section.id for section in self.get_sections()]
         semester_end_task.delay(section_ids)
 
-    def attendance_reminder(self):
-        section_ids = [section.id for section in self.get_sections()]
-        attendance_reminder_task.delay(section_ids)
-
     def waitlist(self):
         section_ids = [section.id for section in self.get_sections()]
         waitlist_update_task.delay(section_ids)
