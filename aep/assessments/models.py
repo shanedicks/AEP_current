@@ -307,7 +307,8 @@ class TestHistory(models.Model):
         verbose_name_plural = "Testing Histories"
 
     def __str__(self):
-        return " | ".join([self.student.WRU_ID, self.student.__str__()])
+        wru = self.student.WRU_ID if self.student.WRU_ID else "No ID"
+        return " | ".join([wru, self.student.__str__()])
 
     def get_absolute_url(self):
         return reverse(
