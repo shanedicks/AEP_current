@@ -37,6 +37,8 @@ class TestEvent(models.Model):
         (EXIT_EXAM, 'Exit Exam')
     )
 
+    ORIENTATION_EVENTS = [ORIENTATION, ONLINE_ORIENTATION]
+
     proctor = models.ForeignKey(
         Staff,
         models.PROTECT,

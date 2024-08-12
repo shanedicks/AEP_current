@@ -19,7 +19,7 @@ class Command(BaseCommand):
 		for semester in create_classroom_sections_group:
 			section_ids = [s.id for s in semester.get_sections() if s.g_suite_id == '']
 			create_classroom_section_task.delay(section_ids)
-			time.sleep(10)
+			time.sleep(300)
 			add_TA_task.delay(section_ids)
 		for semester in active.filter(start_date__gte=now - timedelta(days=14)):
 			create_missing_g_suite_task.delay(semester.id)
