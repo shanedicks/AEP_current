@@ -23,6 +23,7 @@ class TestEvent(models.Model):
     ORIENTATION = 'Orientation'
     CLOSED_ORIENTATION = 'Closed Orientaion'
     ONLINE_ORIENTATION = 'Online Orientation'
+    EMAIL_UPDATE = "Email Update"
     HISET_PRACTICE = 'HiSET Practice'
     EXIT_EXAM = 'Exit Exam'
     TEST_CHOICES = (
@@ -33,6 +34,7 @@ class TestEvent(models.Model):
         (ORIENTATION, 'In Person Program Orientation'),
         (CLOSED_ORIENTATION, 'eOO and ELLOO Google Classroom Orientation'),
         (ONLINE_ORIENTATION, 'Online Program Orientation'),
+        (EMAIL_UPDATE, "Email Update"),
         (HISET_PRACTICE, 'HiSET Practice'),
         (EXIT_EXAM, 'Exit Exam')
     )
