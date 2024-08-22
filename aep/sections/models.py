@@ -722,10 +722,7 @@ class Enrollment(models.Model):
     def waitlist_drop(self):
         absent = self.times_absent()
         present = self.times_attended()
-        needs_test = False
-        if self.student.testing_status() == "Test Needed":
-            needs_test = True
-        if absent > 1 and present < 1 and needs_test:
+        if absent > 1 and present < 1:
             self.status = "D"
             self.save()
             logger.info(f"{self.student} dropped from {self.section}")
