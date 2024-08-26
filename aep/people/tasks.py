@@ -645,7 +645,7 @@ def prospect_export_task(staff_id, email):
     return True
 
 @shared_task
-def prospect_check_duplicate_task(prospect_id):
+def prospect_check_task(prospect_id):
     Prospect = apps.get_model('people', 'Prospect')
     prospect = Prospect.objects.get(id=prospect_id)
     logger.info("Duplicate check for {0} - id={1}".format(prospect, prospect.id))
@@ -660,13 +660,10 @@ def prospect_check_duplicate_task(prospect_id):
         active=True
     ).exclude(id=prospect.id)
     if duplicates.exists():
-        Prospect.objects.filter(id=prospect.id).update(duplicate=True, active=False)
+        prospect.duplicate = True
+        prospect.active = False
+        prospect.save()
         logger.info("{0} marked as duplicate".format(prospect))
-
-@shared_task
-def prospect_check_returner_task(prospect_id):
-    Prospect = apps.get_model('people', 'Prospect')
-    prospect = Prospect.objects.get(id=prospect_id)
     Student = apps.get_model('people', 'Student')
     logger.info("Returner check for {0} - id={1}".format(prospect, prospect.id))
     matches = Student.objects.filter(
@@ -675,9 +672,9 @@ def prospect_check_returner_task(prospect_id):
         dob=prospect.dob,
     )
     if matches.exists():
-        logger.info("{0} marked as returner".format(prospect))
         prospect.returning_student = True
         prospect.save()
+        logger.info("{0} marked as returner".format(prospect))
 
 @shared_task
 def student_link_prospect_task(student_id):

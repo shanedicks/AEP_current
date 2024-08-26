@@ -32,10 +32,9 @@ from .forms import (
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm, 
     PaperworkForm, PhotoIdForm)
 from .tasks import (intake_retention_report_task, send_orientation_confirmation_task,
-    prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
+    prospect_check_task, prospect_export_task, possible_duplicate_report_task,
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
-    student_check_duplicate_task, intercession_report_task, minor_student_report_task,
-    possible_duplicate_report_task)
+    student_check_duplicate_task, intercession_report_task, minor_student_report_task)
 
 
 # <<<<< Student Views >>>>>
@@ -506,7 +505,7 @@ class ProspectSignupView(CreateView):
         if matches.exists():
             self.object.returning_student = True
             self.object.save()
-        prospect_check_duplicate_task.delay(self.object.id)
+        prospect_check_task.delay(self.object.id)
         return HttpResponseRedirect(self.get_success_url())
 
 
