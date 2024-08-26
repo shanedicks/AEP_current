@@ -660,10 +660,8 @@ def prospect_check_duplicate_task(prospect_id):
         active=True
     ).exclude(id=prospect.id)
     if duplicates.exists():
+        Prospect.objects.filter(id=prospect.id).update(duplicate=True, active=False)
         logger.info("{0} marked as duplicate".format(prospect))
-        prospect.duplicate = True
-        prospect.active = False
-        prospect.save()
 
 @shared_task
 def prospect_check_returner_task(prospect_id):

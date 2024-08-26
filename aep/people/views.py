@@ -497,7 +497,6 @@ class ProspectSignupView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        prospect_check_duplicate_task.delay(self.object.id)
         Student = apps.get_model('people', 'Student')
         matches = Student.objects.filter(
             first_name=self.object.first_name,
@@ -507,7 +506,8 @@ class ProspectSignupView(CreateView):
         if matches.exists():
             self.object.returning_student = True
             self.object.save()
-        return super().form_valid(form)
+        prospect_check_duplicate_task.delay(self.object.id)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ProspectSuccessView(TemplateView):

@@ -3433,10 +3433,9 @@ class Prospect(models.Model):
         return reverse('people:prospect detail', kwargs={'pk': self.pk})
 
     def save(self, *args, **kwargs):
-        super(Prospect, self).save(*args, **kwargs)
         if self.advisor is not None and self.advisor_assigned_date is None:
             self.advisor_assigned_date = timezone.now()
-            self.save()
+        super(Prospect, self).save(*args, **kwargs)
 
     @property
     def status(self):
