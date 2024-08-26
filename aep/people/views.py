@@ -17,7 +17,7 @@ from django.utils import timezone
 from django.views.generic.detail import SingleObjectMixin
 from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
-from core.forms import DateFilterForm
+from core.forms import DateFilterForm, CSVImportForm
 from core.utils import render_to_csv, drive_service, file_to_drive
 from core.tasks import send_mail_task, email_multi_alternatives_task
 from sections.forms import SectionFilterForm
@@ -34,7 +34,8 @@ from .forms import (
 from .tasks import (intake_retention_report_task, send_orientation_confirmation_task,
     prospect_check_duplicate_task, prospect_check_returner_task, prospect_export_task,
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
-    student_check_duplicate_task, intercession_report_task, minor_student_report_task)
+    student_check_duplicate_task, intercession_report_task, minor_student_report_task,
+    possible_duplicate_report_task)
 
 
 # <<<<< Student Views >>>>>
@@ -492,7 +493,7 @@ class ProspectSignupView(CreateView):
     template_name = 'people/create_prospect.html'
 
     def get_success_url(self):
-        return reverse_lazy('people:prospect success', kwargs={'slug': self.object.slug})
+        return "https://wru-intake.lctcs.edu/Home/Index?code=wzawwQLrp+Y="
 
     def form_valid(self, form):
         self.object = form.save()
@@ -1158,3 +1159,61 @@ class OrientationFinishView(View):
         student.orientation = 'C'
         student.save()
         return HttpResponseRedirect(reverse('people:sign paperwork', kwargs={'slug': student.slug}))    
+
+
+class ImportWruStudentsView(LoginRequiredMixin, FormView):
+
+    form_class = CSVImportForm
+    template_name = 'people/import_students.html'
+
+    def form_valid(self, form):
+        csv_file = self.request.FILES['csv_file']
+        decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+        reader = csv.DictReader(decoded_file, fieldnames=headers)
+        headers = reader.fieldnames
+        parish_dict = {k: v for (v, k) in Student.PARISH_CHOICES}
+        errors = []
+        student_ids = []
+        for row in reader:
+            dob = datetime.strptime(row['Date of Birth'], '%m/%d/%Y').date()
+
+            student = Student(
+                WRU_ID=row['Student ID'],
+                first_name=row['First Name'],
+                last_name=row['Last Name'],
+                dob=dob,
+                phone=row['Telephone No.'],
+                street_address_1=row['Address'],
+                city=row['City'],
+                state=row['State'],
+                zip_code=row['Zip'],
+                email=row['Email Address'],
+            )
+            student.parish = parish_dict.get(row['Parish'])
+            try:
+                student.save()
+                student_ids.append()
+                student_link_prospect_task.delay(student.WRU_ID)
+            except Exception as e:
+                row.append(e)
+                errors.append(row)
+
+        if errors:
+            with open('errors.csv', 'w', newline='') as error_file:
+                writer = csv.writer(error_file)
+                writer.writerow(headers)
+                for error in errors:
+                    writer.writerow(error)
+            email = EmailMessage(
+                'Student Import Report',
+                'These records were not imported',
+                'admin@dccaep.org',
+                [self.request.user.email]
+            )
+            email.attach_file('errors.csv')
+            email.send()
+            os.remove('errors.csv')
+
+        possible_duplicate_report_task.delay(self.request.user.email, student_ids)
+
+        return HttpResponseRedirect(reverse('people:student list'))

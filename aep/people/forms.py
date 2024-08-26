@@ -2396,6 +2396,9 @@ class ProspectForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProspectForm, self).__init__(*args, **kwargs)
+        required_fields = ['first_name', 'last_name', 'email', 'phone', 'primary_language', 'dob']
+        for field in required_fields:
+            self.fields[field].required = True
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
@@ -2404,12 +2407,10 @@ class ProspectForm(ModelForm):
                 Field(
                     'first_name',
                     wrapper_class="col-md-6",
-                    required=True
                 ),
                 Field(
                     'last_name',
                     wrapper_class="col-md-6",
-                    required=True
                 ),
             ),
             Row(
@@ -2420,12 +2421,11 @@ class ProspectForm(ModelForm):
                 Field(
                     'phone',
                     wrapper_class="col-md-4",
-                    data_mask="999-999-9999"
+                    data_mask="999-999-9999",
                 ),
                 Field(
                     'primary_language',
                     wrapper_class="col-md-4",
-                    required=True
                 )
             ),
             Row(
@@ -2434,7 +2434,6 @@ class ProspectForm(ModelForm):
                     placeholder="MM/DD/YYYY",
                     data_mask="99/99/9999",
                     wrapper_class="col-md-4",
-                    required=True
                 ),
                 Field(
                     'contact_preference',
