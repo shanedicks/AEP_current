@@ -1019,7 +1019,8 @@ class Student(Profile):
     gender = models.CharField(
         max_length=1,
         choices=GENDER_CHOICES,
-        verbose_name=_('Sex')
+        verbose_name=_('Sex'),
+        blank=True
     )
     marital_status = models.CharField(
         max_length=1,
