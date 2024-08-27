@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 import csv
 import os
+import time
 from datetime import datetime, timedelta
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
@@ -913,7 +914,7 @@ def possible_duplicate_report_task(email_address, id_list=None):
         new_students = Student.objects.filter(id__in=id_list)
     else:
         new_students = Student.objects.filter(WRU_ID=None)
-    students = Student.objects.filter(duplicate=False).exclude(WRU_ID=None)
+    students = Student.objects.filter(duplicate=False).exclude(id__in=id_list)
     with open(filename, 'w', newline='') as out:
         writer = csv.writer(out)
         data = []
@@ -936,21 +937,6 @@ def possible_duplicate_report_task(email_address, id_list=None):
         for student in new_students:
             row = [student.last_name, student.first_name, student.dob, student.intake_date]
             writer.writerow(row)
-            try:
-                ssn = student.WIOA.SID
-                if len(ssn) == 9:
-                    ssn_match = students.filter(WIOA__SID=ssn)
-                    for match in ssn_match:
-                        match_row = [
-                            "",
-                            "SSN Match",
-                            match.dob,
-                            match.last_name,
-                            match.first_name
-                        ]
-                        writer.writerow(match_row)
-            except ObjectDoesNotExist:
-                writer.writerow("Student has no WIOA record")
             l_search = student.last_name[:3]
             f_search = student.first_name[:3]
             dob_start = student.dob - timedelta(days=365*3)
@@ -1148,3 +1134,10 @@ def wru_student_intake_csv_task(email_address, id_list):
     email.send()
     os.remove(filename)
     return True
+
+@shared_task
+def process_student_import_task(email, student_ids):
+    time.sleep(10)
+    for sid in student_ids:
+        student_link_prospect_task.delay(sid)
+    possible_duplicate_report_task.delay(email, student_ids)

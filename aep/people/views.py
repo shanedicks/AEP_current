@@ -1,6 +1,8 @@
+import csv
 from apiclient.http import MediaFileUpload
 from apiclient.errors import HttpError
-from datetime import timedelta
+from datetime import timedelta, datetime
+from io import TextIOWrapper
 from django.views.generic import (View,
     DetailView, ListView, UpdateView,
     CreateView, TemplateView, FormView)
@@ -32,7 +34,7 @@ from .forms import (
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm, 
     PaperworkForm, PhotoIdForm)
 from .tasks import (intake_retention_report_task, send_orientation_confirmation_task,
-    prospect_check_task, prospect_export_task, possible_duplicate_report_task,
+    prospect_check_task, prospect_export_task, process_student_import_task,
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
     student_check_duplicate_task, intercession_report_task, minor_student_report_task)
 
@@ -1168,33 +1170,35 @@ class ImportWruStudentsView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         csv_file = self.request.FILES['csv_file']
         decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+        headers = decoded_file.readline().strip().split(",")
         reader = csv.DictReader(decoded_file, fieldnames=headers)
-        headers = reader.fieldnames
         parish_dict = {k: v for (v, k) in Student.PARISH_CHOICES}
+        state_dict = {k.upper(): v for (v, k) in Student.STATE_CHOICES}
         errors = []
         student_ids = []
         for row in reader:
             dob = datetime.strptime(row['Date of Birth'], '%m/%d/%Y').date()
+            student_parish = parish_dict.get(row['Parish'], '37')
+            student_state = state_dict.get(row['State'])
 
             student = Student(
                 WRU_ID=row['Student ID'],
-                first_name=row['First Name'],
-                last_name=row['Last Name'],
+                first_name=row['First Name'].title(),
+                last_name=row['Last Name'].title(),
                 dob=dob,
                 phone=row['Telephone No.'],
                 street_address_1=row['Address'],
                 city=row['City'],
-                state=row['State'],
+                state=student_state,
+                parish=student_parish,
                 zip_code=row['Zip'],
                 email=row['Email Address'],
             )
-            student.parish = parish_dict.get(row['Parish'])
             try:
                 student.save()
-                student_ids.append()
-                student_link_prospect_task.delay(student.WRU_ID)
+                student_ids.append(student.id)
             except Exception as e:
-                row.append(e)
+                row['errors'] = e
                 errors.append(row)
 
         if errors:
@@ -1213,6 +1217,6 @@ class ImportWruStudentsView(LoginRequiredMixin, FormView):
             email.send()
             os.remove('errors.csv')
 
-        possible_duplicate_report_task.delay(self.request.user.email, student_ids)
+        process_student_import_task.delay(self.request.user.email, student_ids)
 
         return HttpResponseRedirect(reverse('people:student list'))
