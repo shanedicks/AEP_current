@@ -1,5 +1,5 @@
 from django.urls import path, re_path, include
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from assessments.views import StudentEventAttendanceView
 from sections.views import (StudentCurrentClassListView,
     StudentPastClassListView, StudentScheduleView, AddClassView,
@@ -337,12 +337,15 @@ urlpatterns = [
     re_path(r'^students/', include(student_patterns)),
     re_path(r'^staff/', include(staff_patterns)),
     re_path(r'^prospects/', include(prospect_patterns)),
-    re_path(r'^student-intake-form/$',
+    re_path(r'^old-student-intake-form/$',
         views.StudentSignupWizard.as_view(),
         name='student signup'),
     re_path(r'^sign-up/$',
         views.ProspectSignupView.as_view(),
         name='prospect signup'),
+    path('student-intake-form/',
+        RedirectView.as_view(pattern_name='people:prospect signup', permanent=False),
+        name='student wizard redirect'),
     re_path(r'^partners/$',
         views.PartnerStudentCreateView.as_view(),
         name='partner student create'),

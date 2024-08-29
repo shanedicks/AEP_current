@@ -1140,4 +1140,5 @@ def process_student_import_task(email, student_ids):
     time.sleep(10)
     for sid in student_ids:
         student_link_prospect_task.delay(sid)
+        Student.objects.get(id=sid).testify()
     possible_duplicate_report_task.delay(email, student_ids)
