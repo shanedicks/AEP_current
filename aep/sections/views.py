@@ -31,11 +31,11 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     AttendanceFormset, SectionSearchForm, AdminAttendanceForm,
                     AttendanceReportForm, EnrollmentReportForm,
                     SingleSkillMasteryForm, SkillMasteryFormset,
-                    EnrollmentUpdateForm, CancellationForm,
+                    EnrollmentUpdateForm, CancellationForm, SelectSemesterForm,
                     SingleHoursAttendanceForm, HoursAttendanceFormset)
 from .tasks import (participation_detail_task, section_skill_mastery_report_task, wru_course_registration_export_task,
                     mondo_attendance_report_task, cancel_class_task, finalize_daily_attendance_task,
-                    enrollment_notification_task, mark_enrollments_reported_task)
+                    enrollment_notification_task, mark_enrollments_reported_task, wru_sections_export_task)
 
 logger = logging.getLogger(__name__)
 
@@ -1394,7 +1394,22 @@ class WruCourseRegistrationReport(LoginRequiredMixin, FormView):
             from_date=form.cleaned_data['from_date'],
             to_date=form.cleaned_data['to_date']
         )
-        return HttpResponseRedirect(reverse('report success'))    
+        return HttpResponseRedirect(reverse('report success'))
+
+
+class WruSectionExport(LoginRequiredMixin, FormView):
+
+    form_class = SelectSemesterForm
+    template_name = 'sections/wru_section_export_csv.html'
+
+    def form_valid(self, form):
+        email_address = self.request.user.email
+        semesters = [s.id for s in form.cleaned_data['semesters']]
+        wru_sections_export_task.delay(
+            email_address=email_address,
+            semester_ids=semesters,
+        )
+        return HttpResponseRedirect(reverse('report success')) 
 
 
 class CancellationsListView(ListView):

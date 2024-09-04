@@ -123,6 +123,9 @@ reports_patterns = [
     path('wru-course-registration/',
         views.WruCourseRegistrationReport.as_view(),
         name='wru course registration csv'),
+    path('wru-section-export/',
+        views.WruSectionExport.as_view(),
+        name='wru section export'),
     path('import-reported-enrollments',
         views.ImportReportedEnrollmentsView.as_view(),
         name='import reported enrollments')

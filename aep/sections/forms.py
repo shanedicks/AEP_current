@@ -174,6 +174,23 @@ class AttendanceReportForm(Form):
         )
 
 
+class SelectSemesterForm(Form):
+
+    semesters = ModelMultipleChoiceField(queryset=Semester.objects.all())
+
+    def __init__(self, *args, **kwargs):
+        super(SelectSemesterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Field(
+                'semesters'
+            )
+        )    
+
+
 class SectionSearchForm(Form):
 
     c_name = CharField(label=_('Class Name'), required=False)
