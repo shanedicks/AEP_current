@@ -1141,5 +1141,6 @@ def process_student_import_task(email, student_ids):
     Student = apps.get_model('people', 'Student')
     for sid in student_ids:
         student_link_prospect_task.delay(sid)
+        student_check_duplicate_task.delay(sid)
         Student.objects.get(id=sid).testify()
     possible_duplicate_report_task.delay(email, student_ids)
