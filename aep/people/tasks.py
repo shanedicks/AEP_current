@@ -1138,6 +1138,7 @@ def wru_student_intake_csv_task(email_address, id_list):
 @shared_task
 def process_student_import_task(email, student_ids):
     time.sleep(10)
+    Student = apps.get_model('people', 'Student')
     for sid in student_ids:
         student_link_prospect_task.delay(sid)
         Student.objects.get(id=sid).testify()
