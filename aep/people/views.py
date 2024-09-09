@@ -17,6 +17,7 @@ from django.template.loader import get_template
 from django.template import Context
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.views.generic.detail import SingleObjectMixin
 from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
@@ -494,22 +495,25 @@ class ProspectSignupView(CreateView):
     form_class = ProspectForm
     template_name = 'people/create_prospect.html'
 
-    def get_success_url(self):
-        return "https://wru-intake.lctcs.edu/Home/Index?code=wzawwQLrp+Y="
-
     def form_valid(self, form):
         self.object = form.save()
-        Student = apps.get_model('people', 'Student')
-        matches = Student.objects.filter(
-            first_name=self.object.first_name,
-            last_name=self.object.last_name,
-            dob=self.object.dob,
-        )
-        if matches.exists():
-            self.object.returning_student = True
-            self.object.save()
         prospect_check_task.delay(self.object.id)
-        return HttpResponseRedirect(self.get_success_url())
+        age_threshold = timezone.now().date() - timedelta(days=18*365.25)
+        print(age_threshold)
+        print(self.object.dob)
+        if self.object.dob > age_threshold:
+            html_message = get_template('emails/minor_signup.html').render()
+            message = strip_tags(html_message)
+            send_mail_task.delay(
+                subject="Thank you for your interest in Delgado AEP!",
+                message=message,
+                html_message=html_message,
+                from_email="welcome@elearnclass.org",
+                recipient_list=[self.object.email],
+            )
+            return HttpResponseRedirect(reverse('people:minor prospect success'))
+        else:
+            return HttpResponseRedirect("https://wru-intake.lctcs.edu/Home/Index?code=wzawwQLrp+Y=")
 
 
 class ProspectSuccessView(TemplateView):
