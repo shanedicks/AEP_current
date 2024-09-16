@@ -191,7 +191,9 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
             "Paperwork",
             "Folder",
             "Orientation",
-            "Notes"
+            "Notes",
+            "Program",
+            "Site"
         ]
         data.append(headers)
 
@@ -231,7 +233,9 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
                 student.student.get_paperwork_display(),
                 student.student.get_folder_display(),
                 student.student.get_orientation_display(),
-                student.student.notes
+                student.student.notes,
+                student.section.program,
+                student.section.site
             ]
             data.append(s)
         return data

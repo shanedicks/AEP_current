@@ -505,7 +505,7 @@ class ProspectSignupView(CreateView):
             html_message = get_template('emails/minor_signup.html').render()
             message = strip_tags(html_message)
             send_mail_task.delay(
-                subject="Thank you for your interest in Delgado AEP!",
+                subject="Urgent Next Steps for Delgado Community College Adult Education Registration!",
                 message=message,
                 html_message=html_message,
                 from_email="welcome@elearnclass.org",
