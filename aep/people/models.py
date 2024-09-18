@@ -264,7 +264,8 @@ def full_merge(orig, duplicate):
     nid = None
     if rules.needs_pretest(duplicate):
         nid = duplicate.WRU_ID
-        duplicate.WRU_ID = orig.WRU_ID
+        if orig.WRU_ID is not None:
+            duplicate.WRU_ID = orig.WRU_ID
     if nid is None:
         try:
             orig.WRU_ID = 'd' + orig.WRU_ID
