@@ -568,7 +568,7 @@ class Hiset_Practice_Admin(ImportExportActionModelAdmin):
     search_fields = [
         'student__student__first_name',
         'student__student__last_name',
-        'student_wru',
+        'student__student_wru',
         'test_date'
     ]
 
