@@ -270,81 +270,48 @@ def accelerated_coaching_report_task(from_date, to_date, email_address):
 @shared_task
 def testing_eligibility_report(email_address):
     filename = 'testing_eligibility_report.csv'
-    records = apps.get_model('assessments', 'TestHistory').objects.all()
-    Attendance = apps.get_model('sections', "Attendance")
+    TestHistory = apps.get_model('assessments', 'TestHistory')
     today = timezone.now().date()
     target = today - timedelta(days=180)
 
-    with open(filename, 'w', newline='') as out:
-        writer = csv.writer(out)
-        headers = [
-            "WRU_ID",
-            "Last Name",
-            "First Name",
-            "DOB",
-            "G Suite Email",
-            "Email",
-            "Phone",
-            "Native Language",
-            "Program Area",
-            "Test Status",
-            "Last Test Type",
-            "Last Test Date",
-            "Orienation Status",
-            "Test Assignment",
-            "Hours since last test",
-            "Hours last 180 days",
-            "Coach(es)",
-            "Current Enrollments",
-            "Current Teachers"
+    def generate_rows():
+        yield [
+            "WRU_ID", "Last Name", "First Name", "DOB", "G Suite Email", "Email",
+            "Phone", "Native Language", "Program Area", "Test Status",
+            "Last Test Type", "Last Test Date", "Orienation Status",
+            "Test Assignment", "Hours since last test", "Hours last 180 days",
+            "Coach(es)", "Current Enrollments", "Current Teachers"
         ]
-        writer.writerow(headers)
 
-        for record in records:
+        for record in TestHistory.objects.all().iterator():
             student = record.student
-            attendance = Attendance.objects.filter(
-                enrollment__student=student,
-                attendance_date__gte=target
-            )
-            hours = sum([a.hours for a in attendance])
             coaches = [c.coach for c in student.coaches.filter(active=True)]
             sections = [s.section for s in student.current_classes()]
             teachers = [s.teacher for s in sections]
-            try:
-                g_suite_email = record.student.elearn_record.g_suite_email
-            except ObjectDoesNotExist:
-                g_suite_email = ''
-            try:
-                native_language = student.WIOA.native_language
-            except ObjectDoesNotExist:
-                native_language = ''
+            
+            g_suite_email = getattr(getattr(student, 'elearn_record', None), 'g_suite_email', '')
+            native_language = getattr(getattr(student, 'WIOA', None), 'native_language', '')
+            
             try:
                 active_hours = record.active_hours
             except TypeError:
-                active_hours ="active_hours failed"
-            s = [
-                student.WRU_ID,
-                student.last_name,
-                student.first_name,
-                student.dob,
-                g_suite_email,
-                student.email,
-                student.phone,
-                native_language,
-                student.program,
-                student.testing_status(),
-                record.last_test_type,
-                record.last_test_date,
-                student.orientation,
-                record.test_assignment,
-                active_hours,
-                hours,
-                coaches,
-                sections,
-                teachers
+                active_hours = "active_hours failed"
+
+            yield [
+                student.WRU_ID, student.last_name, student.first_name, student.dob,
+                g_suite_email, student.email, student.phone, native_language,
+                student.program, student.testing_status(), record.last_test_type,
+                record.last_test_date, student.orientation, record.test_assignment,
+                active_hours, student.total_hours(from_date=target), coaches,
+                sections, teachers
             ]
-            writer.writerow(s)
-    logger.info("Report Complete, composing email to {0}".format(email_address))
+
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        for row in generate_rows():
+            writer.writerow(row)
+
+    logger.info(f"Report Complete, composing email to {email_address}")
     email = EmailMessage(
         'Testing Eligibility Report',
         'The attached report includes a list of all student Testing Histories with contact information',
