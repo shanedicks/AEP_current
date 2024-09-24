@@ -3338,6 +3338,11 @@ class Prospect(models.Model):
         ("E", "4pm - 8pm")
     )
 
+    PROGRAM_CHOICES = (
+        ("ccr", "HiSET/GED"),
+        ("ell", "English Language Learning")
+    )
+
     student = models.ForeignKey(
         Student,
         models.PROTECT,
@@ -3394,6 +3399,13 @@ class Prospect(models.Model):
         choices=LANGUAGE_CHOICES,
         blank=True,
         verbose_name=_("Primary Language")
+    )
+
+    program = models.CharField(
+        max_length = 5,
+        choices=PROGRAM_CHOICES,
+        blank=True,
+        verbose_name=_("What classes are you interested in?")
     )
 
     active = models.BooleanField(

@@ -2396,7 +2396,7 @@ class ProspectForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProspectForm, self).__init__(*args, **kwargs)
-        required_fields = ['first_name', 'last_name', 'email', 'phone', 'primary_language', 'dob']
+        required_fields = ['first_name', 'last_name', 'email', 'phone', 'primary_language', 'dob', 'program']
         for field in required_fields:
             self.fields[field].required = True
         self.helper = FormHelper()
@@ -2424,24 +2424,30 @@ class ProspectForm(ModelForm):
                     data_mask="999-999-9999",
                 ),
                 Field(
-                    'primary_language',
+                    'dob',
+                    placeholder="MM/DD/YYYY",
+                    data_mask="99/99/9999",
                     wrapper_class="col-md-4",
                 )
             ),
             Row(
                 Field(
-                    'dob',
-                    placeholder="MM/DD/YYYY",
-                    data_mask="99/99/9999",
-                    wrapper_class="col-md-4",
-                ),
-                Field(
                     'contact_preference',
-                    wrapper_class="col-md-4"
+                    wrapper_class="col-md-6"
                 ),
                 Field(
                     'contact_time',
-                    wrapper_class="col-md-4"
+                    wrapper_class="col-md-6"
+                )
+            ),
+            Row(
+                Field(
+                    'program',
+                    wrapper_class="col-md-6"
+                ),
+                Field(
+                    'primary_language',
+                    wrapper_class="col-md-6",
                 )
             )
         )
@@ -2457,6 +2463,7 @@ class ProspectForm(ModelForm):
             'contact_preference',
             'contact_time',
             'primary_language',
+            'program'
         )
 
 
