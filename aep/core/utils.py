@@ -1,5 +1,6 @@
 import csv
 import datetime
+import logging
 import os
 import requests
 from apiclient import discovery
@@ -9,11 +10,13 @@ from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
 from django.apps import apps
 from django.core.mail.message import EmailMessage
+from django.core.exceptions import ValidationError
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.http import HttpResponse
 from django.conf import settings
 
+logger = logging.getLogger(__name__)
 
 CHAR_MAP = {
     '\xc0': 'A',
@@ -353,6 +356,9 @@ def time_string_to_hours(time_str, source):
     return round(hours_float,2)
 
 
+class DriveUploadError(ValidationError):
+    pass
+
 def file_to_drive(name, file, folder_id):
     try: 
         service = drive_service()
@@ -369,6 +375,7 @@ def file_to_drive(name, file, folder_id):
             media_body=media,
             fields='id'
         ).execute()
-    except HttpError:
-        file = None
+    except HttpError as e:
+        logger.info(f"DriveUploadError: {str(e)}")
+        raise DriveUploadError(f"Failed to upload file: {str(e)}")
     return file.get('id')

@@ -1148,14 +1148,18 @@ class PhotoIdUploadView(UpdateView):
         paperwork = self.object
         photo_id = self.request.FILES['photo_id']
         name = paperwork.student.__str__() + " picture id"
-        paperwork.pic_id_file = file_to_drive(
-            name=name, 
-            file=photo_id,
-            folder_id='1DpE8QKUvuEKMCOaWHiuX4K7f7BGdzHS1'
-        )
-        paperwork.pic_id = True
-        paperwork.save()
-        return super().form_valid(form)
+        try:
+            paperwork.pic_id_file = file_to_drive(
+                name=name, 
+                file=photo_id,
+                folder_id='1DpE8QKUvuEKMCOaWHiuX4K7f7BGdzHS1'
+            )
+            paperwork.pic_id = True
+            paperwork.save()
+            return super().form_valid(form)
+        except DriveUploadError as e:
+            form.add_error(None, str(e))
+            return self.form_invalid(form)
 
 class OrientationFinishView(View):
 
