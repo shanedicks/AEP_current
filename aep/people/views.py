@@ -1213,7 +1213,8 @@ class ImportWruStudentsView(LoginRequiredMixin, FormView):
 
         if errors:
             with open('errors.csv', 'w', newline='') as error_file:
-                writer = csv.writer(error_file)
+                headers.append("errors")
+                writer = csv.DictWriter(error_file, fieldnames=headers)
                 writer.writerow(headers)
                 for error in errors:
                     writer.writerow(error)
