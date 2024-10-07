@@ -11,6 +11,7 @@ from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail.message import EmailMessage
 from django.db.models import Count, Max, Q
 from django.http import HttpResponseRedirect, Http404
 from django.template.loader import get_template
