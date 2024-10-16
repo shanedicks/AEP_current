@@ -14,6 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail.message import EmailMessage
 from django.db.models import Count, Max, Q
 from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import redirect
 from django.template.loader import get_template
 from django.template import Context
 from django.urls import reverse_lazy, reverse
@@ -1067,38 +1068,61 @@ class StudentWritingSampleView(StudentPaperworkDetail):
     template_name = "people/student_writing_sample.html"
 
 
-class SignPaperworkView(UpdateView):
-
+class BasePaperworkView(UpdateView):
     model = Paperwork
-    form_class = PaperworkForm
-    template_name = 'people/sign_paperwork.html'
     success_url = reverse_lazy('people:paperwork success')
 
-    def get_student(self, **kwargs):
-        return Student.objects.get(slug=self.kwargs['slug'])
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if self.object.sig_date is None:
-            return super().get(request, *args, **kwargs)
-        else:
-            return HttpResponseRedirect(reverse_lazy('people:paperwork success'))
+    def get_student_or_redirect(self):
+        try:
+            student = Student.objects.get(slug=self.kwargs['slug'])
+            
+            # Check if the student is a duplicate
+            while student.duplicate:
+                student = student.duplicate_of
+            
+            if student.slug != self.kwargs['slug']:
+                # Redirect to the correct URL if the student has changed
+                view_name = f"people:{self.request.resolver_match.url_name}"
+                return redirect(reverse(view_name, kwargs={'slug': student.slug}))
+            
+            return student
+        except Student.DoesNotExist:
+            return redirect('people:student not found')
 
     def get_object(self):
-        student = self.get_student()
         try:
-            obj = student.student_paperwork
+            obj = self.student.student_paperwork
         except ObjectDoesNotExist:
             student.track()
             obj = student.student_paperwork
         return obj
 
+    def get(self, request, *args, **kwargs):
+        self.student = self.get_student_or_redirect()
+        if isinstance(self.student, HttpResponseRedirect):
+            return self.student
+        self.object = self.get_object()
+        if self.is_paperwork_complete():
+            return HttpResponseRedirect(self.success_url)
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
-        context = super(SignPaperworkView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         if 'student' not in context:
-            context['student'] = self.get_student(**kwargs)
-            context.update(kwargs)
+            context['student'] = self.object.student
         return context
+
+    def is_paperwork_complete(self):
+        return False
+
+
+class SignPaperworkView(BasePaperworkView):
+
+    form_class = PaperworkForm
+    template_name = 'people/sign_paperwork.html'
+
+    def is_paperwork_complete(self):
+        return self.object.sig_date is not None
 
     def form_valid(self, form):
         today = timezone.localdate()
@@ -1112,38 +1136,13 @@ class SignPaperworkView(UpdateView):
         return super().form_valid(form)
 
 
-class PhotoIdUploadView(UpdateView):
+class PhotoIdUploadView(BasePaperworkView):
 
-    model = Paperwork
     form_class = PhotoIdForm
     template_name = 'people/upload_photo_id.html'
-    success_url = reverse_lazy('people:paperwork success')
 
-    def get_student(self, **kwargs):
-        return Student.objects.get(slug=self.kwargs['slug'])
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if self.object.pic_id_file == '':
-            return super().get(request, *args, **kwargs)
-        else:
-            return HttpResponseRedirect(reverse_lazy('people:paperwork success'))
-
-    def get_object(self):
-        student = self.get_student()
-        try:
-            obj = student.student_paperwork
-        except ObjectDoesNotExist:
-            student.track()
-            obj = student.student_paperwork
-        return obj
-
-    def get_context_data(self, **kwargs):
-        context = super(PhotoIdUploadView, self).get_context_data(**kwargs)
-        if 'student' not in context:
-            context['student'] = self.get_student(**kwargs)
-            context.update(kwargs)
-        return context
+    def is_paperwork_complete(self):
+        return self.object.pic_id_file != ''
 
     def form_valid(self, form):
         paperwork = self.object

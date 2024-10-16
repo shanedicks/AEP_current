@@ -6,7 +6,8 @@ import csv
 from datetime import datetime, timedelta, time
 from django.apps import apps
 from django.db import models, IntegrityError
-from django.db.models import Sum
+from django.db.models import Sum, Q, F
+from django.db.models.functions import Now
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
@@ -816,6 +817,45 @@ class Profile(models.Model):
         return '{0} {1}'.format(self.first_name, self.last_name)
 
 
+class StudentQuerySet(models.QuerySet):
+
+    def active_in_date_range(self, start_date, end_date):
+        return self.filter(
+            Q(classes__attendance__attendance_date__range=(start_date, end_date),
+              classes__attendance__attendance_type='P') |
+            Q(tests__tabe_tests__test_date__range=(start_date, end_date)) |
+            Q(tests__clas_e_tests__test_date__range=(start_date, end_date)) |
+            Q(tests__hiset_practice_tests__test_date__range=(start_date, end_date))
+        ).distinct()
+
+    def minor_students(self):
+        days_16_years = 16 * 365 + 4 # leap years in range
+        days_19_years = 19 * 365 + 4
+
+        return self.filter(
+            dob__gt=Now() - timedelta(days=days_19_years),
+            dob__lte=Now() - timedelta(days=days_16_years)
+        )
+
+    def in_poverty(self):
+        # Federal Poverty Level 2024
+        poverty_thresholds = {
+            1: 15060, 2: 20440, 3: 25820, 4: 31200, 5: 36580,
+            6: 41960, 7: 47340, 8: 52720
+        }
+
+        # Create a list of Q objects for each family size
+        poverty_conditions = Q()
+        for size, income in poverty_thresholds.items():
+            poverty_conditions |= Q(WIOA__household_size=size, WIOA__household_income__lte=income)
+
+        # Add condition for family sizes larger than 8
+        poverty_conditions |= Q(WIOA__household_size__gt=8) & Q(WIOA__household_income__lte=F('WIOA__household_size') * 5380 + 52720)
+
+        # Combine the poverty conditions with the requirement for a WIOA record
+        return self.filter(WIOA__isnull=False).filter(poverty_conditions).distinct()
+
+
 class Student(Profile):
 
     PARISH_CHOICES = (
@@ -925,6 +965,9 @@ class Student(Profile):
         ("8", "I want to start college classes while earning my high school equivalency diploma"),
         ("9", "I want to explore career options")
     )
+
+    objects = StudentQuerySet.as_manager()
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         models.PROTECT,

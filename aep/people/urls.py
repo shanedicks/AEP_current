@@ -126,7 +126,10 @@ student_patterns = [
     re_path(r'^(?P<slug>[a-zA-Z0-9]{5})/', include(single_student_patterns)),
     path('import/',
         views.ImportWruStudentsView.as_view(),
-        name='student import')
+        name='student import'),
+    path('not-found',
+        TemplateView.as_view(template_name='people/student_not_found.html'),
+        name='student not found')
 ]
 
 
