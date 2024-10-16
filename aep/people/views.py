@@ -1075,16 +1075,16 @@ class BasePaperworkView(UpdateView):
     def get_student_or_redirect(self):
         try:
             student = Student.objects.get(slug=self.kwargs['slug'])
-            
+
             # Check if the student is a duplicate
             while student.duplicate:
                 student = student.duplicate_of
-            
+
             if student.slug != self.kwargs['slug']:
                 # Redirect to the correct URL if the student has changed
                 view_name = f"people:{self.request.resolver_match.url_name}"
                 return redirect(reverse(view_name, kwargs={'slug': student.slug}))
-            
+
             return student
         except Student.DoesNotExist:
             return redirect('people:student not found')
@@ -1093,8 +1093,8 @@ class BasePaperworkView(UpdateView):
         try:
             obj = self.student.student_paperwork
         except ObjectDoesNotExist:
-            student.track()
-            obj = student.student_paperwork
+            self.student.track()
+            obj = self.student.student_paperwork
         return obj
 
     def get(self, request, *args, **kwargs):
