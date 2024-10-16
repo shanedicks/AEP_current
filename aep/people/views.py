@@ -1096,7 +1096,7 @@ class BasePaperworkView(UpdateView):
         try:
             obj = student.student_paperwork
         except ObjectDoesNotExist:
-            self.student.track()
+            student.track()
             obj = student.student_paperwork
         return obj
 
