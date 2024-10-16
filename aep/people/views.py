@@ -1090,18 +1090,20 @@ class BasePaperworkView(UpdateView):
             return redirect('people:student not found')
 
     def get_object(self):
+        student = self.get_student_or_redirect()
+        if isinstance(student, HttpResponseRedirect):
+            return student
         try:
-            obj = self.student.student_paperwork
+            obj = student.student_paperwork
         except ObjectDoesNotExist:
             self.student.track()
-            obj = self.student.student_paperwork
+            obj = student.student_paperwork
         return obj
 
     def get(self, request, *args, **kwargs):
-        self.student = self.get_student_or_redirect()
-        if isinstance(self.student, HttpResponseRedirect):
-            return self.student
         self.object = self.get_object()
+        if isinstance(self.object, HttpResponseRedirect):
+            return self.object
         if self.is_paperwork_complete():
             return HttpResponseRedirect(self.success_url)
         return super().get(request, *args, **kwargs)
