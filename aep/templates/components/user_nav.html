@@ -17,7 +17,8 @@
         <li><a href="{% url 'sections:class list'%}">Classes</a></li>
     </ul>
 {% endif %}
-    <div class="navbar-right">
-        <a class="btn btn-success navbar-btn btn-sm" href="/accounts/logout" role="button">Logout {{ request.user }}</a>
-    </div>
+    <form method="post" action="/accounts/logout/" class="navbar-right">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success navbar-btn btn-sm">Logout {{ request.user }}</button>
+    </form>
  
