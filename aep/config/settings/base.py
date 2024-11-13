@@ -160,7 +160,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.10/topics/i18n/
+
 
 SITE_ID = 1
 
@@ -168,19 +168,34 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
+DATE_INPUT_FORMATS = [
+    '%Y-%m-%d',
+    '%m/%d/%Y',
+    '%m/%d/%y',
+]
+
 TIME_INPUT_FORMATS = [
     '%I:%M %p',
+    '%I:%M%p',
+    '%H:%M'
+]
+
+DATETIME_INPUT_FORMATS = [
+    '%Y-%m-%d %I:%M %p',
+    '%Y-%m-%d %I:%M%p',
+    '%Y-%m-%d %H:%M',
+    '%m/%d/%Y %I:%M %p'
+    '%m/%d/%Y %I:%M%p'
+    '%m/%d/%Y %H:%M'
 ]
 
 USE_I18N = True
-
-USE_L10N = False
 
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.10/howto/static-files/
+
 
 STATICFILES_DIRS = [PROJECT_ROOT.child("static"), ]
 
