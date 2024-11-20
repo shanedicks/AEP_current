@@ -21,31 +21,37 @@
         <link rel="stylesheet" href="{% static 'css/main.css' %}">
         <link rel="stylesheet" href="{% static 'css/sticky-footer-navbar.css' %}">
         <style>
-            /* Fix for Google Translate dropdown */
-            .goog-te-dropdown-frame {
-                max-height: 98vh !important;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
-            }
-            
-            /* Container for translate widget */
+            /* Container for translate widget needs specific positioning */
             .translate-container {
-                position: relative;
-                z-index: 1000;
-                padding: 10px;
-                margin-top: 10px;
-                text-align: right;
+                position: fixed;
+                top: 70px;  /* Adjust based on your navbar height */
+                right: 20px;
+                z-index: 9999;
             }
 
-            /* Ensure dropdown appears above other content */
-            #google_translate_element {
-                display: inline-block;
-                position: relative;
-                z-index: 1000;
+            /* Override Google Translate widget styles */
+            .goog-te-menu-frame {
+                position: fixed !important;
+                top: 100px !important;  /* Adjust based on your layout */
+                right: 20px !important;
+                left: auto !important;
+                box-shadow: 0 0 4px rgba(0,0,0,0.2) !important;
+                max-height: 80vh !important;
+                overflow-y: auto !important;
             }
 
-            /* Fix for dropdown positioning */
-            .skiptranslate iframe {
-                margin-top: 0 !important;
+            .goog-te-menu-frame html {
+                overflow-x: hidden !important;
+            }
+
+            /* Ensure the base container doesn't clip */
+            body {
+                overflow-x: visible !important;
+            }
+
+            /* Fix for any container overflow issues */
+            .container {
+                overflow: visible !important;
             }
         </style>
 
