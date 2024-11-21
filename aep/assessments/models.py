@@ -1183,3 +1183,54 @@ class Message(models.Model):
             )
         self.sent = timezone.now()
         self.save()
+
+
+class TestingAccommodations(models.Model):
+    DCCCAEP_STATUS_CHOICES = [
+        ('yes', 'Yes'),
+        ('no', 'No'),
+        ('review', 'Needs Further Review')
+    ]
+    
+    TESTING_TIME_CHOICES = [
+        ('1.25', '1.25x Time'),
+        ('1.5', '1.5x Time'),
+        ('2', '2x Time'),
+        ('untimed', 'Untimed')
+    ]
+    
+    dcccaep_approved = models.CharField(
+        max_length=10,
+        choices=DCCCAEP_STATUS_CHOICES,
+        verbose_name="Is the student approved by DCCCAEP for Accommodations"
+    )
+    
+    private_room = models.BooleanField(
+        verbose_name="Private Room"
+    )
+    
+    text_to_speech = models.BooleanField(
+        verbose_name="Text to Speech"
+    )
+    
+    testing_time = models.CharField(
+        max_length=10,
+        choices=TESTING_TIME_CHOICES,
+        verbose_name="Testing Time"
+    )
+    
+    preferred_accommodation = models.TextField(
+        verbose_name="Preferred Accommodation"
+    )
+    
+    environmental_facilitator = models.TextField(
+        verbose_name="Environmental Facilitator"
+    )
+    
+    start_date = models.DateField(
+        verbose_name="Start Date"
+    )
+    
+    review_date = models.DateField(
+        verbose_name="Review Date"
+    )

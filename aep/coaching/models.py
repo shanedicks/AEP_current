@@ -939,3 +939,131 @@ class ElearnRecord(models.Model):
             except ObjectDoesNotExist:
                 pass
         super(ElearnRecord, self).save()
+
+
+class PerformanceDomainScreening(models.Model):
+    DIFFICULTY_CHOICES = [
+        ("0", 'No difficulty'),
+        ("1", 'Mild difficulty'),
+        ("2", 'Moderate difficulty'),
+        ("3", 'Severe difficulty'),
+        ("4", 'Cannot do')
+    ]
+
+    ENVIRONMENT_CHOICES = [
+        ('quiet', 'Quiet space (ear mufflers, white noise, etc.)'),
+        ('noise', 'Noise (e.g., listening to music while learning)'),
+        ('extra_time', 'Extra time on task'),
+        ('other', 'Other')
+    ]
+
+    # Learning and Applying Knowledge
+    seeing_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it to see text/white board?"
+    )
+    hearing_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it to see your teacher/classmates?"
+    )
+    reading_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it for you to read?"
+    )
+    writing_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it for you to write?"
+    )
+    math_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is math?"
+    )
+    problem_solving_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it to figure out steps to solve a problem?"
+    )
+    speaking_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it to speak to your teacher/classmates/neighbors/others?"
+    )
+    
+    # Major Life Areas
+    lifting_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it to lift things? Are you in pain when lifting?"
+    )
+    walking_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it for you to walk? Are you in pain when walking?"
+    )
+    stress_management = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it for you to manage stress?"
+    )
+    sleep_difficulty = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is it to get enough sleep?"
+    )
+    community_access = models.CharField(
+        choices=DIFFICULTY_CHOICES,
+        verbose_name="How difficult is to for you to get around and be social?"
+    )
+    
+    # Environment preferences for learning
+    learning_environment = models.CharField(
+        max_length=20,
+        choices=ENVIRONMENT_CHOICES,
+        verbose_name="What surroundings help you learn?"
+    )
+
+class Accommodations(models.Model):
+    ACCOMMODATION_CHOICES = [
+        ('used', 'Used Successfully in the Past'),
+        ('willing', 'Willing to try'),
+        ('not_interested', 'Not Interested')
+    ]
+    
+    # Reading Accommodations
+    reads_aloud = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Reading out loud on own")
+    reads_with_someone = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Reading together with someone")
+    needs_reader = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Being read to by someone")
+    uses_text_to_speech = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Text-to-speech software")
+    uses_colored_overlays = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of colored overlays")
+    needs_colored_paper = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of colored paper for handouts/printer materials")
+    uses_visual_guides = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Visual guides (graphic organizers, story maps)")
+    takes_reading_notes = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Note taking while reading")
+    uses_text_marking = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Highlighting, underlining, text marking")
+    reading_other = models.CharField(max_length=255, blank=True, verbose_name="Other reading accommodations")
+    
+    # Writing Accommodations
+    oral_before_writing = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Telling the story out loud before writing it")
+    uses_word_prediction = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of word prediction")
+    uses_dictation = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of text to speech and dictation software/features")
+    uses_spell_check = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of spell checkers")
+    needs_multiple_revisions = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Revising and editing multiple times")
+    writing_other = models.CharField(max_length=255, blank=True, verbose_name="Other writing accommodations")
+    
+    # Comprehension Accommodations
+    needs_demonstration = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Instructor shows me how something is done")
+    needs_explanation = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Instructor tells me how I could understand")
+    records_lectures = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Recording lectures to listen multiple times")
+    uses_teacher_videos = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Viewing recorded videos by the teacher")
+    needs_glossaries = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of short glossaries for common terms")
+    needs_captions = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of closed captioning in videos")
+    uses_visual_aids = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of visual guides: graphic organizers and story maps")
+    uses_pictures = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Seeing or drawing pictures of what I am learning")
+    needs_clear_expectations = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Knowing what I am expected to learn")
+    works_in_pairs = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Working in pairs")
+    needs_cultural_context = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Knowing the cultural context")
+    asks_questions = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Asking questions")
+    uses_sentence_pausing = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Pausing/rephrasing each sentence")
+    uses_paragraph_pausing = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Pausing and retelling/rewriting each paragraph")
+    makes_lists = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Making lists on my own")
+    makes_glossaries = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Making my own glossaries")
+    comprehension_other = models.CharField(max_length=255, blank=True, verbose_name="Other comprehension accommodations")
+    
+    # Math Accommodations
+    uses_math_visuals = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of visual organizers")
+    uses_manipulatives = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of manipulatives")
+    uses_math_software = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of math/logic/simulation software")
+    math_other = models.CharField(max_length=255, blank=True, verbose_name="Other math accommodations")

@@ -9,7 +9,19 @@
     border: 1px solid #000 !important;
   }
 
+.translate-container {
+	position: fixed;
+	top: 60px;
+	right: 20px;
+	z-index: 1000;
+}
 
+.site-wrapper {
+    position: relative;
+    min-height: 100%;
+    padding-top: 80px;  /* Account for fixed navbar */
+    padding-bottom: 80px;  /* Changed from margin to padding for footer space */
+}
 
 
 

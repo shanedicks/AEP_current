@@ -59,19 +59,20 @@
       </div> 
     </nav>
     {% endblock navbar %}
-
-    <div class="container">
-        <div class="translate-container">
-            <div id="google_translate_element"></div>
+    <div class="site-wrapper">
+        <div class="container">
+            <div class="translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+            {% block content %}
+            {% endblock content %}
         </div>
-        {% block content %}
-        {% endblock content %}
+        {% if request.user.is_authenticated %}
+            {% include 'components/staff_footer.html' %}
+        {% else %}
+            {% include 'components/footer.html' %}
+        {% endif %}
     </div>
-    {% if request.user.is_authenticated %}
-        {% include 'components/staff_footer.html' %}
-    {% else %}
-        {% include 'components/footer.html' %}
-    {% endif %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{% static "js/vendor/jquery-1.11.2.min.js" %}"><\/script>')</script>
 
