@@ -5,7 +5,7 @@
       {% if student.partner != '' %}
         <h3>Partner Student - {{student.partner}}</h3> 
       {% endif %}
-    <div class='col-md-7'>
+    <div class='col-md-8'>
       {% include 'components/student_nav.html' %}
       <br>
       <div class="btn-group" role="group" aria-label="student links">
@@ -95,7 +95,7 @@
         </tr>
    	  </table>
    	</div>
-    <div class='col-md-5'>
+    <div class='col-md-4'>
       <h3>Coaches</h3>
           {% if student.coaches.count > 0 %}
             <ul>
