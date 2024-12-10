@@ -49,6 +49,7 @@ def move_test_history(orig, duplicate):
             querysets.append(d.clas_e_loc_tests.all())
             querysets.append(d.gain_tests.all())
             querysets.append(d.hiset_practice_tests.all())
+            querysets.append(d.accommodations.all())
             for queryset in querysets:
                 try:
                     queryset.update(student=t)
@@ -225,41 +226,39 @@ def move_or_merge_pops(orig, duplicate):
         i += 1
         j += 1
 
-def move_skill_masteries(orig, duplicate):
-    sm = orig.skillmasterys.all()
-    for record in sm:
-        try:
-            record.student = duplicate
-            record.save()
-        except IntegrityError:
-            pass
-
-def move_certificates(orig, duplicate):
-    c = orig.certificates.all()
-    for record in c:
-        try:
-            record.student = duplicate
-            record.save()
-        except IntegrityError:
-            pass
-
-def move_course_completions(orig, duplicate):
-    cc = orig.coursecompletions.all()
-    for record in cc:
-        try:
-            record.student = duplicate
-            record.save()
-        except IntegrityError:
-            pass
+def move_certifications(orig, duplicate):
+    orig.skillmastery_set.update(student=duplicate)
+    orig.certificate_set.update(student=duplicate)
+    orig.coursecompletion_set.update(student=duplicate)
+    orig.achievment_set.update(student=duplicate)
 
 def move_prospects(orig, duplicate):
-    p = orig.prospects.all()
-    for record in p:
+    orig.prospects.update(student=duplicate)
+
+def move_inventory_tickets(orig, duplicate):
+    orig.tickets.update(student=duplicate)
+
+def move_performance_screenings(orig, duplicate):
+    try:
+        screening = orig.performancedomainscreening
         try:
-            record.student = duplicate
-            record.save()
+            screening.student = duplicate
+            screening.save()
         except IntegrityError:
             pass
+    except ObjectDoesNotExist:
+        pass
+
+def move_accommodations(orig, duplicate):
+    try:
+        accommodations = orig.accommodations
+        try:
+            accommodations.student = duplicate
+            accommodations.save()
+        except IntegrityError:
+            pass
+    except ObjectDoesNotExist:
+        pass
 
 def full_merge(orig, duplicate):
     nid = None
@@ -284,12 +283,13 @@ def full_merge(orig, duplicate):
     copy_office_tracking(orig, duplicate)
     move_or_copy_paperwork(orig, duplicate)
     move_or_merge_pops(orig, duplicate)
-    move_skill_masteries(orig, duplicate)
-    move_certificates(orig, duplicate)
-    move_course_completions(orig, duplicate)
+    move_certifications(orig, duplicate)
+    move_inventory_tickets(orig, duplicate)
+    move_performance_screenings(orig, duplicate)
+    move_accommodations(orig, duplicate)
     move_prospects(orig, duplicate)
     duplicate.intake_date = orig.intake_date
-    duplicate.notes = orig.notes
+    duplicate.notes += orig.notes
     duplicate.save()
     orig.duplicate_of = duplicate
     orig.duplicate = True

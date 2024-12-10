@@ -1202,7 +1202,7 @@ class TestingAccommodations(models.Model):
     student = models.ForeignKey(
         TestHistory,
         models.PROTECT,
-        related_name="accomodations"
+        related_name="accommodations"
     )
     
     dcccaep_approved = models.CharField(
