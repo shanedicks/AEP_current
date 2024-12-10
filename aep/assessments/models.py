@@ -1198,6 +1198,12 @@ class TestingAccommodations(models.Model):
         ('2', '2x Time'),
         ('untimed', 'Untimed')
     ]
+
+    student = models.ForeignKey(
+        TestHistory,
+        models.PROTECT,
+        related_name="accomodations"
+    )
     
     dcccaep_approved = models.CharField(
         max_length=10,

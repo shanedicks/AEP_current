@@ -957,6 +957,12 @@ class PerformanceDomainScreening(models.Model):
         ('other', 'Other')
     ]
 
+    student = models.OneToOneField(
+        Student,
+        models.CASCADE,
+        related_name='pd_screening'
+    )
+
     # Learning and Applying Knowledge
     seeing_difficulty = models.CharField(
         choices=DIFFICULTY_CHOICES,
@@ -1016,12 +1022,19 @@ class PerformanceDomainScreening(models.Model):
         verbose_name="What surroundings help you learn?"
     )
 
+
 class Accommodations(models.Model):
     ACCOMMODATION_CHOICES = [
         ('used', 'Used Successfully in the Past'),
         ('willing', 'Willing to try'),
         ('not_interested', 'Not Interested')
     ]
+
+    student = models.OneToOneField(
+        Student,
+        models.CASCADE,
+        related_name='accommodations'
+    )
     
     # Reading Accommodations
     reads_aloud = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Reading out loud on own")
@@ -1067,3 +1080,74 @@ class Accommodations(models.Model):
     uses_manipulatives = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of manipulatives")
     uses_math_software = models.CharField(max_length=15, choices=ACCOMMODATION_CHOICES, verbose_name="Use of math/logic/simulation software")
     math_other = models.CharField(max_length=255, blank=True, verbose_name="Other math accommodations")
+
+
+class ServiceProvider(models.Model):
+    CATEGORY_CHOICES = [
+        ('CAREER', 'Career Counseling and Job Placement'),
+        ('EDUCATION', 'GED/HiSET Prep Classes and Testing'),
+        ('WORKFORCE', 'Workforce Development Programs'),
+        ('ACADEMIC', 'Tutoring and Academic Support'),
+        ('MENTAL_HEALTH', 'Mental Health Services'),
+        ('FINANCIAL', 'Financial Assistance'),
+        ('COLLEGE', 'College and Technical School Programs'),
+        ('FAMILY', 'Family and Childcare Support Services'),
+        ('FOOD', 'Food and Nutrition Assistance'),
+        ('HOUSING', 'Housing Assistance'),
+        ('HEALTHCARE', 'Healthcare Services'),
+        ('DIGITAL', 'Digital Literacy Training'),
+        ('LEGAL', 'Legal Aid and Advocacy'),
+        ('MENTORSHIP', 'Youth Mentorship'),
+        ('TRANSPORT', 'Transportation Assistance'),
+        ('LGBTQ', 'LGBTQ+ Support'),
+        ('RECOVERY', 'Substance Abuse Recovery'),
+        ('VOLUNTEER', 'Volunteer Opportunities'),
+        ('VETERANS', 'Veterans Services'),
+    ]
+
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    phone = models.CharField(max_length=20)
+    address = models.CharField(max_length=200, blank=True)
+    description = models.TextField()
+    eligibility = models.TextField()
+
+    def __str__(self):
+        return f"{self.get_category_display()} - {self.name}"
+
+    class Meta:
+        ordering = ['category', 'name']
+
+
+class Referral(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('CONTACTED', 'Provider Contacted'),
+        ('IN_PROGRESS', 'In Progress'),
+        ('COMPLETED', 'Completed'),
+        ('UNSUCCESSFUL', 'Unsuccessful'),
+    ]
+
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name='service_referrals'
+    )
+    service_provider = models.ForeignKey(
+        ServiceProvider,
+        on_delete=models.PROTECT,
+        related_name='client_referrals'
+    )
+    staff_member = models.ForeignKey(
+        Staff,
+        on_delete=models.PROTECT,
+        related_name='referrals_made'
+    )
+    date_referred = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    notes = models.TextField(blank=True)
+    followup_date = models.DateField(null=True, blank=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-date_referred']

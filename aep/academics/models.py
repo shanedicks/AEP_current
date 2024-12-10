@@ -131,12 +131,21 @@ class Credential(models.Model):
     description = models.TextField()
 
 
+class Milestone(models.Model):
+
+    title = models.CharField(
+        max_length = 100
+    )
+
+    description = models.TextField()
+
+
 class Certification(models.Model):
 
     student = models.ForeignKey(
         Student,
         models.PROTECT,
-        related_name = "%(class)ss"
+        related_name = "%(class)s_set"
     )
 
     cert_date = models.DateField()
@@ -144,7 +153,7 @@ class Certification(models.Model):
     certifier = models.ForeignKey(
         Staff,
         models.PROTECT,
-        related_name = "%(class)ss"
+        related_name = "certified_%(class)ss"
     )
 
     class Meta:
@@ -156,7 +165,7 @@ class CourseCompletion(Certification):
     course = models.ForeignKey(
         Course,
         models.PROTECT,
-        related_name = "students"
+        related_name = "completions"
     )
 
     class Meta:
@@ -174,7 +183,7 @@ class Certificate(Certification):
     credential = models.ForeignKey(
         Credential,
         models.PROTECT,
-        related_name = "students"
+        related_name = "certificates"
     )
 
     class Meta:
@@ -190,7 +199,7 @@ class SkillMastery(Certification):
     skill = models.ForeignKey(
         Skill,
         models.PROTECT,
-        related_name = "students"
+        related_name = "masteries"
     )
 
     mastered = models.BooleanField(
@@ -206,3 +215,17 @@ class SkillMastery(Certification):
         skill = self.skill.title
         student = self.student.__str__()
         return "{0} mastered {1}".format(student, skill)
+
+class Achievement(Certification):
+    milestone = models.ForeignKey(
+        Milestone,
+        models.PROTECT,
+        related_name = "achievements"
+    )
+    class Meta:
+        unique_together = ('student', 'milestone')
+        ordering = ['milestone']
+    def __str__(self):
+        milestone = self.milestone.title
+        student = self.student.__str__()
+        return "{0} achieved {1}".format(student, milestone)
