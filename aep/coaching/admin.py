@@ -10,7 +10,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 from core.tasks import send_mail_task
 from people.models import Student, Staff
-from .models import AceRecord, Coaching, Profile, MeetingNote, ElearnRecord
+from .models import (AceRecord, Coaching, Profile, MeetingNote, ElearnRecord,
+                    PerformanceDomainScreening, Accommodations, ServiceProvider, Referral)
 from .tasks import elearn_status_task, create_g_suite_accounts_task
 
 
@@ -168,6 +169,119 @@ class MeetingNoteResource(resources.ModelResource):
             'progress',
             'next_steps',
             'notes'
+        )
+
+
+class PerformanceDomainScreeningResource(resources.ModelResource):
+    class Meta:
+        model = PerformanceDomainScreening
+        fields = (
+            'id',
+            'student__WRU_ID',
+            'student__last_name',
+            'student__first_name',
+            'seeing_difficulty',
+            'hearing_difficulty',
+            'reading_difficulty',
+            'writing_difficulty',
+            'math_difficulty',
+            'problem_solving_difficulty',
+            'speaking_difficulty',
+            'lifting_difficulty',
+            'walking_difficulty',
+            'stress_management',
+            'sleep_difficulty',
+            'community_access',
+            'learning_environment'
+        )
+
+class AccommodationsResource(resources.ModelResource):
+    class Meta:
+        model = Accommodations
+        fields = (
+            'id',
+            'student__WRU_ID',
+            'student__last_name',
+            'student__first_name',
+            'reads_aloud',
+            'reads_with_someone',
+            'needs_reader',
+            'uses_text_to_speech',
+            'uses_colored_overlays',
+            'needs_colored_paper',
+            'uses_visual_guides',
+            'takes_reading_notes',
+            'uses_text_marking',
+            'reading_other',
+            'oral_before_writing',
+            'uses_word_prediction',
+            'uses_dictation',
+            'uses_spell_check',
+            'needs_multiple_revisions',
+            'writing_other',
+            'needs_demonstration',
+            'needs_explanation',
+            'records_lectures',
+            'uses_teacher_videos',
+            'needs_glossaries',
+            'needs_captions',
+            'uses_visual_aids',
+            'uses_pictures',
+            'needs_clear_expectations',
+            'works_in_pairs',
+            'needs_cultural_context',
+            'asks_questions',
+            'uses_sentence_pausing',
+            'uses_paragraph_pausing',
+            'makes_lists',
+            'makes_glossaries',
+            'comprehension_other',
+            'uses_math_visuals',
+            'uses_manipulatives',
+            'uses_math_software',
+            'math_other'
+        )
+
+class ServiceProviderResource(resources.ModelResource):
+    class Meta:
+        model = ServiceProvider
+        fields = (
+            'id',
+            'name',
+            'category',
+            'phone',
+            'address',
+            'description',
+            'eligibility'
+        )
+
+class ReferralResource(resources.ModelResource):
+    student = fields.Field(
+        column_name='student',
+        attribute='student',
+        widget=widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    staff_member = fields.Field(
+        column_name='staff_member',
+        attribute='staff_member',
+        widget=widgets.ForeignKeyWidget(Staff, 'wru')
+    )
+
+    class Meta:
+        model = Referral
+        fields = (
+            'id',
+            'student',
+            'student__last_name',
+            'student__first_name',
+            'service_provider',
+            'staff_member',
+            'date_referred',
+            'status',
+            'notes',
+            'followup_date',
+            'last_updated'
         )
 
 
@@ -485,5 +599,209 @@ class MeetingNoteAdmin(ImportExportActionModelAdmin):
         'notes'
     ]
 
-
 admin.site.register(MeetingNote, MeetingNoteAdmin)
+
+
+class PerformanceDomainScreeningAdmin(ImportExportActionModelAdmin):
+    resource_class = PerformanceDomainScreeningResource
+
+    list_display = (
+        'student',
+        'learning_environment'
+    )
+
+    search_fields = [
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID'
+    ]
+
+    autocomplete_fields = ['student']
+
+    fieldsets = (
+        ('Student Information', {
+            'fields': ('student',)
+        }),
+        ('Learning and Applying Knowledge', {
+            'fields': (
+                'seeing_difficulty',
+                'hearing_difficulty',
+                'reading_difficulty',
+                'writing_difficulty',
+                'math_difficulty',
+                'problem_solving_difficulty',
+                'speaking_difficulty',
+            )
+        }),
+        ('Major Life Areas', {
+            'fields': (
+                'lifting_difficulty',
+                'walking_difficulty',
+                'stress_management',
+                'sleep_difficulty',
+                'community_access',
+            )
+        }),
+        ('Learning Environment', {
+            'fields': ('learning_environment',)
+        })
+    )
+
+admin.site.register(PerformanceDomainScreening, PerformanceDomainScreeningAdmin)
+
+
+class AccommodationsAdmin(ImportExportActionModelAdmin):
+    resource_class = AccommodationsResource
+
+    list_display = (
+        'student',
+    )
+
+    search_fields = [
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID'
+    ]
+
+    autocomplete_fields = ['student']
+
+    fieldsets = (
+        ('Student Information', {
+            'fields': ('student',)
+        }),
+        ('Reading Accommodations', {
+            'fields': (
+                'reads_aloud',
+                'reads_with_someone',
+                'needs_reader',
+                'uses_text_to_speech',
+                'uses_colored_overlays',
+                'needs_colored_paper',
+                'uses_visual_guides',
+                'takes_reading_notes',
+                'uses_text_marking',
+                'reading_other',
+            )
+        }),
+        ('Writing Accommodations', {
+            'fields': (
+                'oral_before_writing',
+                'uses_word_prediction',
+                'uses_dictation',
+                'uses_spell_check',
+                'needs_multiple_revisions',
+                'writing_other',
+            )
+        }),
+        ('Comprehension Accommodations', {
+            'fields': (
+                'needs_demonstration',
+                'needs_explanation',
+                'records_lectures',
+                'uses_teacher_videos',
+                'needs_glossaries',
+                'needs_captions',
+                'uses_visual_aids',
+                'uses_pictures',
+                'needs_clear_expectations',
+                'works_in_pairs',
+                'needs_cultural_context',
+                'asks_questions',
+                'uses_sentence_pausing',
+                'uses_paragraph_pausing',
+                'makes_lists',
+                'makes_glossaries',
+                'comprehension_other',
+            )
+        }),
+        ('Math Accommodations', {
+            'fields': (
+                'uses_math_visuals',
+                'uses_manipulatives',
+                'uses_math_software',
+                'math_other',
+            )
+        }),
+    )
+
+admin.site.register(Accommodations, AccommodationsAdmin)
+
+
+class ServiceProviderAdmin(ImportExportActionModelAdmin):
+    resource_class = ServiceProviderResource
+
+    list_display = (
+        'name',
+        'category',
+        'phone'
+    )
+
+    list_filter = ('category',)
+    search_fields = ['name', 'description']
+
+    fields = [
+        'name',
+        'category',
+        'phone',
+        'address',
+        'description',
+        'eligibility'
+    ]
+
+admin.site.register(ServiceProvider, ServiceProviderAdmin)
+
+
+class ReferralAdmin(ImportExportActionModelAdmin):
+    resource_class = ReferralResource
+
+    list_display = (
+        'student',
+        'service_provider',
+        'staff_member',
+        'date_referred',
+        'status',
+        'followup_date'
+    )
+
+    list_filter = (
+        'status',
+        'service_provider__category'
+    )
+
+    search_fields = [
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID',
+        'staff_member__last_name',
+        'service_provider__name'
+    ]
+
+    autocomplete_fields = ['student', 'staff_member']
+
+    fieldsets = (
+        ('Basic Information', {
+            'fields': (
+                'student',
+                'service_provider',
+                'staff_member',
+            )
+        }),
+        ('Status Information', {
+            'fields': (
+                'status',
+                'followup_date',
+                'notes',
+            )
+        }),
+        ('Timestamps', {
+            'fields': (
+                'date_referred',
+                'last_updated',
+            ),
+            'classes': ('collapse',)
+        })
+    )
+
+    readonly_fields = ['date_referred', 'last_updated']
+
+admin.site.register(Referral, ReferralAdmin)

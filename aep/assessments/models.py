@@ -1240,3 +1240,7 @@ class TestingAccommodations(models.Model):
     review_date = models.DateField(
         verbose_name="Review Date"
     )
+
+    class Meta:
+        verbose_name = "Testing Accommodation"
+        verbose_name_plural = "Testing Accommodations"

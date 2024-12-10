@@ -4,7 +4,7 @@ from django.utils import timezone
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from people.models import Student
-from .models import TestEvent, TestHistory, TestAppointment, Tabe, Tabe_Loc, Clas_E, Clas_E_Loc, Gain, HiSET, HiSet_Practice, Message
+from .models import TestEvent, TestHistory, TestAppointment, Tabe, Tabe_Loc, Clas_E, Clas_E_Loc, Gain, HiSET, HiSet_Practice, Message, TestingAccommodations
 from .tasks import (event_attendance_report_task, test_process_task, 
     orientation_reminder_task, test_reminder_task, send_message_task,
     send_score_report_link_task, send_link_task)
@@ -664,3 +664,55 @@ class MessageAdmin(admin.ModelAdmin):
         return super(MessageAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 admin.site.register(Message, MessageAdmin)
+
+class TestingAccommodationsAdmin(admin.ModelAdmin):
+    list_display = (
+        'student',
+        'dcccaep_approved',
+        'testing_time',
+        'private_room',
+        'text_to_speech',
+        'start_date',
+        'review_date',
+    )
+    
+    list_filter = (
+        'dcccaep_approved',
+        'testing_time',
+        'private_room',
+        'text_to_speech',
+        'start_date',
+        'review_date',
+    )
+    
+    search_fields = (
+        'student__student__first_name',
+        'student__student__last_name',
+        'student__student_wru',
+        'preferred_accommodation',
+        'environmental_facilitator',
+    )
+    
+    autocomplete_fields = ['student']
+
+    fieldsets = (
+        ('Student Information', {
+            'fields': ('student', 'dcccaep_approved')
+        }),
+        ('Accommodation Details', {
+            'fields': (
+                'testing_time',
+                'private_room',
+                'text_to_speech',
+                'preferred_accommodation',
+                'environmental_facilitator',
+            )
+        }),
+        ('Dates', {
+            'fields': ('start_date', 'review_date')
+        }),
+    )
+    
+    date_hierarchy = 'start_date'
+
+admin.site.register(TestingAccommodations ,TestingAccommodationsAdmin)

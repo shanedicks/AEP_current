@@ -225,6 +225,7 @@ class Achievement(Certification):
     class Meta:
         unique_together = ('student', 'milestone')
         ordering = ['milestone']
+
     def __str__(self):
         milestone = self.milestone.title
         student = self.student.__str__()

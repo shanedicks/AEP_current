@@ -3,7 +3,7 @@ from django.contrib import admin
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin
 from people.models import Student, Staff
-from .models import (Course, Resource, Skill, 
+from .models import (Course, Resource, Skill, Milestone, Achievement,
     Credential, CourseCompletion, Certificate, SkillMastery)
 
 
@@ -122,6 +122,35 @@ class SkillMasteryResource(resources.ModelResource):
             'mastered'
         )
 
+
+class MilestoneResource(resources.ModelResource):
+    class Meta:
+        model = Milestone
+        fields = (
+            'id',
+            'title',
+            'description'
+        )
+
+
+class AchievementResource(resources.ModelResource):
+    student = fields.Field(
+        column_name = 'student',
+        attribute = 'student',
+        widget = widgets.ForeignKeyWidget(Student, 'WRU_ID')
+    )
+
+    class Meta:
+        model = Achievement
+        fields = (
+            'id',
+            'student',
+            'cert_date',
+            'certifier',
+            'milestone'
+        )
+
+
 class ResourceAdmin(ImportExportActionModelAdmin):
 
     resource_class = ResourceResource
@@ -134,7 +163,6 @@ class ResourceAdmin(ImportExportActionModelAdmin):
     ]
 
 admin.site.register(Resource, ResourceAdmin)
-
 
 class SkillAdmin(ImportExportActionModelAdmin):
 
@@ -225,6 +253,8 @@ class CourseCompletionAdmin(ImportExportActionModelAdmin):
         'certifier'
     )
 
+    autocomplete_fields = ['student', 'certifier', 'course']
+
     fields = (
         'cert_date',
     )
@@ -249,6 +279,8 @@ class CertificateAdmin(ImportExportActionModelAdmin):
         'cert_date',
         'certifier'
     )
+
+    autocomplete_fields = ['student', 'certifier', 'credential']
 
     fields = (
         'cert_date',
@@ -276,13 +308,59 @@ class SkillMasteryAdmin(ImportExportActionModelAdmin):
         'skill',
         'cert_date',
         'certifier',
-        'mastered'
     )
+
+    autocomplete_fields = ['student', 'certifier', 'skill']
 
     fields = (
         'cert_date',
-        'certifier',
         'mastered'
     )
 
 admin.site.register(SkillMastery, SkillMasteryAdmin)    
+
+
+class MilestoneAdmin(ImportExportActionModelAdmin):
+    resource_class = MilestoneResource
+
+    search_fields = [
+        'title'
+    ]
+
+    list_display = (
+        'id',
+        'title',
+    )
+
+    fields = (
+        'title',
+        'description',
+    )
+
+admin.site.register(Milestone, MilestoneAdmin)
+
+
+class AchievementAdmin(ImportExportActionModelAdmin):
+    resource_class = AchievementResource
+
+    search_fields = [
+        'milestone__title',
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID'
+    ]
+
+    list_display = (
+        'student',
+        'milestone',
+        'cert_date',
+        'certifier'
+    )
+
+    autocomplete_fields = ['student', 'certifier', 'milestone']
+
+    fields = (
+        'cert_date',
+    )
+
+admin.site.register(Achievement, AchievementAdmin)
