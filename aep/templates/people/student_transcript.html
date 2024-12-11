@@ -33,5 +33,18 @@
           </tr>
         {% endfor %}
         </table>
+      <h2>Milestones</h3>
+        <table class="table">
+          <tr>
+            <th>Milestone</th>
+            <th>Date Earned</th>
+          </tr>
+        {% for item in achievements %}
+          <tr>
+            <td>{{item.credential.title}}</td>
+            <td>{{item.cert_date}}</td>
+          </tr>
+        {% endfor %}
+        </table>
     </div>
 {%endblock content %}

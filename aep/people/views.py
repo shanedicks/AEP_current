@@ -68,10 +68,13 @@ class StudentTranscriptView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(StudentTranscriptView, self).get_context_data(**kwargs)
         if 'course_completions' not in context:
-            context['course_completions'] = self.object.coursecompletions.all()
+            context['course_completions'] = self.object.coursecompletion_set.all()
             context.update(kwargs)
         if 'certificates' not in context:
-            context['certificates'] = self.object.certificates.all()
+            context['certificates'] = self.object.certificate_set.all()
+            context.update(kwargs)
+        if 'achievements' not in context:
+            context['achievements'] = self.object.achievement_set.all()
             context.update(kwargs)
         return context
 
