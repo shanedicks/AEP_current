@@ -230,7 +230,7 @@ def move_certifications(orig, duplicate):
     orig.skillmastery_set.update(student=duplicate)
     orig.certificate_set.update(student=duplicate)
     orig.coursecompletion_set.update(student=duplicate)
-    orig.achievment_set.update(student=duplicate)
+    orig.achievement_set.update(student=duplicate)
 
 def move_prospects(orig, duplicate):
     orig.prospects.update(student=duplicate)
