@@ -240,7 +240,7 @@ def move_inventory_tickets(orig, duplicate):
 
 def move_performance_screenings(orig, duplicate):
     try:
-        screening = orig.performancedomainscreening
+        screening = orig.pd_screening
         try:
             screening.student = duplicate
             screening.save()
