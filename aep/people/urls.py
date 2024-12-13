@@ -119,6 +119,10 @@ student_patterns = [
     re_path(r'^new/$',
         RedirectView.as_view(pattern_name='people:prospect signup', permanent=False),
         name='create student redirect'),
+    path('new-student/',
+        views.StudentCreateView.as_view(),
+        name='create student'
+        ),
     re_path(r'^success/$',
         views.StudentCreateSuccessView.as_view(),
         name='student created'
