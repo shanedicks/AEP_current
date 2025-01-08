@@ -24,7 +24,7 @@ from django.views.generic.detail import SingleObjectMixin
 from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
 from core.forms import DateFilterForm, CSVImportForm
-from core.utils import render_to_csv, drive_service, file_to_drive
+from core.utils import render_to_csv, drive_service, file_to_drive, DriveUploadError
 from core.tasks import send_mail_task, email_multi_alternatives_task
 from sections.forms import SectionFilterForm
 from .models import (Staff, Student, CollegeInterest, WIOA, Prospect,
