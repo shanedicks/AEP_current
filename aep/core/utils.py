@@ -3,6 +3,7 @@ import datetime
 import logging
 import os
 import requests
+from time import sleep
 from apiclient import discovery
 from apiclient.errors import HttpError
 from apiclient.http import MediaFileUpload
@@ -382,3 +383,160 @@ def file_to_drive(name, file, folder_id):
         logger.info(f"DriveUploadError: {str(e)}")
         raise DriveUploadError(f"Failed to upload file: {str(e)}")
     return file.get('id')
+
+def get_inactive_users(
+    service,
+    inactive_threshold_days: int = 365,
+    created_threshold_days: int = 90
+):
+
+    inactive_users = []
+    now = timezone.now()
+    inactive_threshold = now - datetime.timedelta(days=inactive_threshold_days)
+    creation_threshold = now - datetime.timedelta(days=created_threshold_days)
+
+    try:
+        request = service.users().list(
+            domain='elearnclass.org',
+            orderBy='email',
+            projection='basic',
+            fields='nextPageToken,users(primaryEmail,creationTime,lastLoginTime)',
+            maxResults=500
+        )
+
+        page_count = 0
+        total_users = 0
+        while request is not None:
+            response = request.execute()
+            users = response.get('users', [])
+            page_count += 1
+            total_users += len(users)
+            logger.info(f"Processing page {page_count}, found {len(users)} users on this page, total so far: {total_users}")
+
+            for user in users:
+                creation_time = timezone.datetime.fromisoformat(
+                    user['creationTime'].replace('Z', '+00:00')
+                )
+
+                last_login_time = timezone.datetime.fromisoformat(
+                    user['lastLoginTime'].replace('Z', '+00:00')
+                )
+
+                if last_login_time < inactive_threshold and creation_time < creation_threshold:
+                    inactive_users.append(user)
+
+            request = service.users().list_next(request, response)
+
+    except Exception as e:
+        logger.error(f"Error fetching users: {str(e)}")
+        raise
+
+    return inactive_users
+
+def delete_inactive_users(
+    service,
+    email_address: str,
+    inactive_threshold_days: int = 365,
+    created_threshold_days: int = 90
+):
+    results = {
+        'total_inactive': 0,
+        'deleted': 0,
+        'errors': 0,
+        'error_details': []
+    }
+    
+    deletion_records = [['Email', 'Creation Time', 'Last Login', 'Status']]
+    successfully_deleted = []
+
+    try:
+        inactive_users = get_inactive_users(service, inactive_threshold_days, created_threshold_days)
+        results['total_inactive'] = len(inactive_users)
+
+        for i, user in enumerate(inactive_users):
+            try:
+                service.users().delete(userKey=user['primaryEmail']).execute()
+                results['deleted'] += 1
+                logger.info(f"Deleted user: {user['primaryEmail']}")
+
+                successfully_deleted.append(user['primaryEmail'])
+                deletion_records.append([
+                    user['primaryEmail'],
+                    user['creationTime'],
+                    user.get('lastLoginTime', 'Never'),
+                    'Deleted Successfully'
+                ])
+
+                sleep(0.06)
+
+                if i > 0 and i % 1000 == 0:
+                    logger.info(f"Processed {i} deletions, pausing before next batch...")
+                    sleep(60)
+
+            except Exception as e:
+                results['errors'] += 1
+                error_detail = {
+                    'email': user['primaryEmail'],
+                    'error': str(e)
+                }
+                results['error_details'].append(error_detail)
+                logger.error(f"Error deleting user {user['primaryEmail']}: {str(e)}")
+
+                deletion_records.append([
+                    user['primaryEmail'],
+                    user['creationTime'],
+                    user.get('lastLoginTime', 'Never'),
+                    f'Error: {str(e)}'
+                ])
+
+        if successfully_deleted:
+            updated = ElearnRecord.objects.filter(
+                g_suite_email__in=successfully_deleted
+            ).update(g_suite_email='')
+            results['records_cleared'] = updated
+            logger.info(f"Cleared {updated} ElearnRecord g_suite_email fields")
+
+        filename = f'user_deletion_report_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        custom_report(deletion_records, filename, email_address)
+
+    except Exception as e:
+        logger.error(f"Error in delete_inactive_users: {str(e)}")
+        raise
+
+    return results
+
+def get_courses_and_teachers():
+    service = classroom_service()
+    courses_result = service.courses().list().execute()
+    courses = courses_result.get('courses', [])
+
+    course_details = []
+    for course in courses:
+        course_id = course['id']
+        course_name = course['name']
+        owner_id = course.get('ownerId', 'N/A')
+
+        teachers_result = service.courses().teachers().list(courseId=course_id).execute()
+        teachers = teachers_result.get('teachers', [])
+
+        teacher_details = []
+        for teacher in teachers:
+            email = teacher.get('userId', 'N/A')
+            profile = teacher.get('profile', {})
+            name = profile.get('name', {}).get('fullName', email)
+
+            teacher_details.append({
+                'email': email,
+                'name': name,
+                'role': 'Owner' if email == owner_id else 'Teacher'
+            })
+
+        course_details.append({
+            'course_id': course_id,
+            'name': course_name,
+            'section': course.get('section', 'N/A'),
+            'owner_id': owner_id,
+            'teachers': teacher_details
+        })
+
+    return course_details
