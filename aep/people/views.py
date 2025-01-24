@@ -1195,25 +1195,26 @@ class ImportWruStudentsView(LoginRequiredMixin, FormView):
             student_parish = parish_dict.get(row['Parish'], '37')
             student_state = state_dict.get(row['State'])
 
-            student = Student(
-                WRU_ID=row['Student ID'],
-                first_name=row['First Name'].title(),
-                last_name=row['Last Name'].title(),
-                dob=dob,
-                phone=row['Telephone No.'],
-                street_address_1=row['Address'],
-                city=row['City'],
-                state=student_state,
-                parish=student_parish,
-                zip_code=row['Zip'],
-                email=row['Email Address'],
-            )
-            try:
-                student.save()
-                student_ids.append(student.id)
-            except Exception as e:
-                row['errors'] = e
-                errors.append(row)
+            if not Student.objects.filter(WRU_ID=row['Student ID']).exists():
+                student = Student(
+                    WRU_ID=row['Student ID'],
+                    first_name=row['First Name'].title(),
+                    last_name=row['Last Name'].title(),
+                    dob=dob,
+                    phone=row['Telephone No.'],
+                    street_address_1=row['Address'],
+                    city=row['City'],
+                    state=student_state,
+                    parish=student_parish,
+                    zip_code=row['Zip'],
+                    email=row['Email Address'],
+                )
+                try:
+                    student.save()
+                    student_ids.append(student.id)
+                except Exception as e:
+                    row['errors'] = e
+                    errors.append(row)
 
         if errors:
             with open('errors.csv', 'w', newline='') as error_file:
