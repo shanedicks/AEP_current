@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from core.tasks import send_mail_task
+from core.tasks import send_mail_task, send_sms_task
 from core.utils import clean_special_characters
 from people.models import Staff, Student
 
@@ -688,31 +688,38 @@ class AceRecord(models.Model):
     )
 
     media_release = models.BooleanField(
-        default=False
+        default=False,
+        verbose_name='Media Release Signed'
+    )
+    media_release_accept = models.BooleanField(
+        default=False,
+        verbose_name='Media Release Decision'
+    )
+    media_release_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Media Release Sign Date'
+    )
+
+    # 5 for 6 agreement fields
+    five_for_six_agreement = models.BooleanField(
+        default=False,
+        verbose_name='5 for 6 Agreement Signed'
+    )
+    five_for_six_agreement_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='5 for 6 Agreement Sign Date'
+    )
+
+    signature = models.CharField(
+        max_length=140,
+        blank=True,
+        verbose_name='Digital Signature'
     )
 
     third_party_release = models.BooleanField(
         default=False
-    )
-
-    read_072 = models.BooleanField(
-        default=False,
-        verbose_name='Passed Townsend'
-    )
-
-    eng_062 = models.BooleanField(
-        default=False,
-        verbose_name='Passed ENG 062'
-    )
-
-    math_092 = models.BooleanField(
-        default=False,
-        verbose_name='Passed MATH 092'
-    )
-
-    math_098 = models.BooleanField(
-        default=False,
-        verbose_name='Passed MATH 098'
     )
 
     five_for_six = models.BooleanField(
@@ -728,48 +735,49 @@ class AceRecord(models.Model):
     five_for_six_semester = models.CharField(
         choices=SEMESTER_CHOICES,
         max_length=6,
-        blank=True   
+        blank=True
     )
 
-    reading_exit = models.BooleanField(
-        default=False,
-        verbose_name='Passed Reading Exit Exam'
-    )
-
-    writing_exit = models.BooleanField(
-        default=False,
-        verbose_name='Passed Writing Exit Exam'
-    )
-
-    math_exit = models.BooleanField(
-        default=False,
-        verbose_name='Passed Math Exit Exam'
-    )
-
-    nccer_cert = models.BooleanField(
-        default = False,
-        verbose_name = 'NCCER Cert'
-    )
-
-    bls_cert = models.BooleanField(
-        default = False,
-        verbose_name = 'Basic Life Support Cert'
-    )
-
-    servsafe_cert = models.BooleanField(
-        default = False,
-        verbose_name = 'ServSafe Cert'
-    )
-
-    microsoft_cert = models.BooleanField(
-        default = False,
-        verbose_name = 'Microsoft Cert'
-    )
     def get_absolute_url(self):
         return reverse(
             'coaching:ace record detail',
             kwargs={'slug': self.student.slug}
         )
+
+    def sign_paperwork_form_link(self):
+        return "https://www.dccaep.org{0}".format(
+            reverse('coaching:sign ace paperwork', kwargs={'slug': self.student.slug})
+        )
+
+    def email_form_link(self):
+        send = True if self.signature == '' else False
+        url = self.sign_paperwork_form_link()
+        html_message = ''
+        message = 'Hello from Delgado Adult Education. Click the link to submit your paperwork: {0}'.format(url)
+        recipient_list = []
+        if self.student.email != '':
+            recipient_list.append(self.student.email)
+        try:
+            elearn = self.student.elearn_record
+            if elearn.g_suite_email != '':
+                recipient_list.append(elearn.g_suite_email)
+        except ObjectDoesNotExist:
+            pass
+        if len(recipient_list) > 0 and send:
+            send_mail_task.delay(
+                subject = 'Delgado Adult Education Registration Paperwork',
+                message = message,
+                html_message = html_message,
+                from_email = 'no_reply@elearnclass.org',
+                recipient_list = recipient_list,
+            )
+
+    def text_form_link(self):
+        send = True if self.signature == '' else False
+        url = self.sign_paperwork_form_link()
+        message = 'Hello from Delgado Adult Education. Click the link to submit the rest of your registration paperwork: {0}'.format(url)
+        if self.student.phone != '' and send:
+            send_sms_task.delay(self.student.phone, message)
 
     def __str__(self):
         return "%s for %s-%s" % (

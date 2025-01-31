@@ -43,10 +43,6 @@ class AceRecordResource(resources.ModelResource):
             'hsd_date',
             'media_release',
             'third_party_release',
-            'read_072',
-            'eng_062',
-            'math_092',
-            'math_098'
         )
 
 
@@ -322,10 +318,6 @@ class AceRecordAdmin(ImportExportActionModelAdmin):
         'hsd_date',
         'media_release',
         'third_party_release',
-        'read_072',
-        'eng_062',
-        'math_092',
-        'math_098'
     ]
 
     readonly_fields = ['student']

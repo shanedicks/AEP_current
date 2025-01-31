@@ -1459,7 +1459,7 @@ class Student(Profile):
                 recipient_list.append(elearn.g_suite_email)
         except ObjectDoesNotExist:
             pass
-        if len(recipient_list) > 0:
+        if len(recipient_list) > 0 and send:
             send_mail_task.delay(
                 subject = 'Delgado Adult Education Registration Paperwork',
                 message = message,

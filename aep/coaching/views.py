@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.views.generic import (
     View, DetailView, ListView, UpdateView,
     CreateView, TemplateView, FormView)
@@ -14,10 +15,10 @@ from people.tasks import coachee_export_task
 from .models import Profile, Coaching, MeetingNote, AceRecord, ElearnRecord
 from .forms import (
     ProfileForm, NewMeetingNoteForm,
-    AssignCoach, AceRecordForm, ElearnRecordForm,
+    AssignCoach, AceRecordForm, AcePaperworkForm, ElearnRecordForm,
     AcademicQuestionaireForm, PersonalQuestionaireForm,
     GeneralInfoForm, UpdateCoachingStatusForm, UpdateCoachingStatusFormSet)
-from .tasks import coaching_export_task
+from .tasks import coaching_export_task, send_paperwork_link_task
 import rules
 
 class StudentCoachingView(LoginRequiredMixin, DetailView):
@@ -428,13 +429,11 @@ class AceRecordDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'record'
     template_name = 'coaching/ace_record_detail.html'
 
-    def get(self, request, *args, **kwargs):
+    def get_object(self):
         try:
-            self.object = AceRecord.objects.get(student__slug=kwargs['slug'])
+            return AceRecord.objects.get(student__slug=self.kwargs['slug'])
         except AceRecord.DoesNotExist:
-            raise Http404('Student has no Ace Record, please create one.')
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
+            raise Http404('Student has no ACE Record. Please create one')
 
     def get_context_data(self, **kwargs):
         context = super(AceRecordDetailView, self).get_context_data(**kwargs)
@@ -681,3 +680,81 @@ class EnrollmentCSV(LoginRequiredMixin, FormView):
         filename = "enrollments.csv"
         data = self.get_student_data(students)
         return render_to_csv(data=data, filename=filename)
+
+
+class SignAcePaperworkView(LoginRequiredMixin, UpdateView):
+    model = AceRecord
+    form_class = AcePaperworkForm
+    template_name = 'coaching/sign_ace_paperwork.html'
+    success_url = reverse_lazy('people:paperwork success')
+
+    def get_success_url(self):
+        return reverse('coaching:ace paperwork detail', kwargs={'slug': self.object.student.slug})
+
+    def get_object(self):
+        try:
+            return AceRecord.objects.get(student__slug=self.kwargs['slug'])
+        except AceRecord.DoesNotExist:
+            raise Http404('Student has no ACE Record')
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if isinstance(self.object, HttpResponseRedirect):
+            return self.object
+        if self.object.signature != '':
+            return HttpResponseRedirect(self.success_url)
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+    def form_valid(self, form):
+        record = form.save(commit=False)
+        record.five_for_six_agreement = True
+        record.five_for_six_agreement_date = timezone.now().date()
+        record.media_release = True
+        record.media_release_date = timezone.now().date()
+        record.media_release_accept = form.cleaned_data['media_choice']
+        record.save()
+        return super().form_valid(form)
+
+
+class AcePaperworkDetailView(LoginRequiredMixin, DetailView):
+    model = AceRecord
+    template_name = 'coaching/ace_paperwork_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = AceRecord.objects.get(student__slug=kwargs['slug'])
+        except AceRecord.DoesNotExist:
+            raise Http404('Student has no ACE Record')
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'student' not in context:
+            context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+            context.update(kwargs)
+        return context
+
+
+class FiveforSixAgreementView(AcePaperworkDetailView):
+    template_name = 'coaching/5for6_agreement.html'
+
+
+class MediaReleaseAgreementView(AcePaperworkDetailView):
+    template_name = 'coaching/pace_media_release.html'
+
+
+class SendPaperworkLinkView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        student = Student.objects.get(slug = kwargs['slug'])
+        send_paperwork_link_task.delay(student.ace_record.id)
+        return HttpResponseRedirect(reverse('people:link sent', kwargs={'slug': student.slug}))
+

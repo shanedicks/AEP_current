@@ -1,4 +1,5 @@
-from django.urls import re_path, include
+from django.urls import re_path, path, include
+from django.views.generic import TemplateView
 from . import views
 from .models import AceRecord, ElearnRecord
 
@@ -84,6 +85,24 @@ meetings_patterns = [
         name='meeting note update'),
 ]
 
+ace_paperwork_patterns = [
+    re_path(r'^$',
+        views.AcePaperworkDetailView.as_view(),
+        name='ace paperwork detail'),
+    re_path(r'^5for6/$',
+        views.FiveforSixAgreementView.as_view(),
+        name='5 for 6 agreement'),
+    re_path(r'^media-release/$',
+        views.MediaReleaseAgreementView.as_view(),
+        name='media release agreement'),
+    re_path(r'^update/$',
+        views.SignAcePaperworkView.as_view(),
+        name='sign ace paperwork'),
+    re_path(r'^send-link/$',
+        views.SendPaperworkLinkView.as_view(),
+        name='send paperwork link')
+]
+
 ace_patterns = [
     re_path(r'^$',
         views.AceRecordListView.as_view(),
@@ -97,6 +116,12 @@ ace_patterns = [
     re_path(r'enrollments/$',
         views.EnrollmentCSV.as_view(model=AceRecord),
         name='ace enrollment csv'),
+    path('5-for-6-agreement/',
+        TemplateView.as_view(template_name='coaching/5for6_agreement.html'),
+        name='five for six agreement'),
+    path('media-release/',
+        TemplateView.as_view(template_name='coaching/pace_media_release.html'),
+        name='media release'),
     re_path(r'^(?P<slug>[a-zA-Z0-9]{5})/$',
         views.AceRecordDetailView.as_view(),
         name='ace record detail'),
@@ -105,7 +130,9 @@ ace_patterns = [
         name='ace record create'),
     re_path(r'^(?P<slug>[a-zA-Z0-9]{5})/edit/$',
         views.AceRecordUpdateView.as_view(),
-        name='ace record update')
+        name='ace record update'),
+    re_path(r'^(?P<slug>[a-zA-Z0-9]{5})/paperwork/',
+        include(ace_paperwork_patterns)),
 ]
 
 e_learn_patterns = [

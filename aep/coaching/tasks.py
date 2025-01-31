@@ -76,3 +76,9 @@ def create_g_suite_accounts_task(elearn_record_id_list):
             record.create_g_suite_account(service)
         except HttpError as e:
             logger.info("{0}".format(e))
+
+@shared_task
+def send_paperwork_link_task(ace_record_id):
+    student = apps.get_model('coaching', "AceRecord").objects.get(id=ace_record_id)
+    student.email_form_link()
+    student.text_form_link()

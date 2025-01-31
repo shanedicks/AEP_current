@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{student}} Media Release{% endblock head_title %}
+{% block content %}
+<div class="container">
+  <h1 class="text-center mb-4">MEDIA RELEASE FORM</h1>
+  <h2 class="text-center mb-4">Delgado Adult Education Program</h2>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <p class="mb-3">I hereby grant the Delgado Community College Adult Education Program (DCCAEP) permission to use my likeness and name in photographs, videos, or other digital media and audio recordings in any and all of its publications, including web-based publications, without payment or other consideration.</p>
+
+      <p class="mb-3">I understand and agree that all images and recordings will become the property of DCCAEP and will not be returned.</p>
+
+      <p class="mb-3">I hereby irrevocably authorize the DCCAEP to edit, alter, copy, exhibit, publish, or distribute these images and recordings for any lawful purpose. In addition, I waive any right to inspect or approve the finished product wherein my likeness appears. Additionally, I waive any right to royalties or other compensation arising or related to the use of the photo.</p>
+
+      <p class="mb-3">I hereby hold harmless, release, and forever discharge the DCCAEP from all claims, demands, and causes of action which I, my heirs, representatives, executors, administrators, or any other persons acting on my behalf or on behalf of my estate have or may have by reason of this authorization.</p>
+    </div>
+  </div>
+
+{% if object %}
+<div class="card mb-4">
+   <div class="card-header">
+       <h4>Media Release Decision</h4>
+   </div>
+   <div class="card-body">
+       {% if object.media_release_accept %}
+           <p>I have read and understand the above media release. I affirm that I am at least 18 years of age, or, if I am under 18 years of age, I have obtained the required consent of my legal guardian as evidenced by their signatures below.</p>
+       {% else %}
+           <p>I have read and understand the above media release. I decline to participate in any and all media opportunities (photographs, videos, or other digital media and any audio recordings in any and all publications, including web-based publications) with the DCCAEP.</p>
+       {% endif %}
+       <p><strong>Signed by:</strong> {{ object.signature }}</p>
+       <p><strong>Date:</strong> {{ object.media_release_date }}</p>
+   </div>
+</div>
+{% endif %}
+{% endblock content %}

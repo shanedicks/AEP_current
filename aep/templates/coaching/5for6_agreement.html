@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | 5 for 6 Agreement{% endblock head_title %}
+{% block content %}
+<div class="container">
+  <h1>5 for 6 Scholarship Participant Enrollment Agreement</h1>
+  <h3>Delgado Adult Education Program</h3>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4>I UNDERSTAND:</h4>
+    </div>
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">The 5 for 6 Scholarship allows students who demonstrate the need for skills remediation to take college credit classes and earn a high school equivalency if they do not already possess one.</li>
+        <li class="list-group-item">Students attend Adult Education classes to increase Math, English and Reading skills. Registration, orientation, placement test, and scheduling must be completed before the scholarship is awarded.</li>
+        <li class="list-group-item">I am attempting to earn college credits, which will appear on my permanent and official transcripts.</li>
+        <li class="list-group-item">I must maintain a "C" average or higher in all of my courses.</li>
+        <li class="list-group-item">The attendance policy for 5 for 6 Scholarship participation requires me to maintain an attendance rate of 75% in courses (college, certification and Adult Education). If I do not meet the attendance requirements for a course, I am subject to dismissal from the program.</li>
+        <li class="list-group-item">Students participate in intensive student support services and meet with an academic coach and academic advisor when requested (weekly or biweekly schedule).</li>
+        <li class="list-group-item">Upon successful completion of the first semester with a passing grade, the student will become eligible for Financial Aid via Ability to Benefit program. In the following semesters students will attend college classes and continue to earn credits in the approved Career Pathway.</li>
+        <li class="list-group-item">After completing the program, students can continue their education toward a Certificate or an Associate Degree in their field of study.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4>I AGREE TO:</h4>
+    </div>
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Pay/secure funding for the fees required for program participation.</li>
+        <li class="list-group-item">Attend my scheduled classes on time and maintain an attendance rate of 75% in courses (college, certification and Adult Education)</li>
+        <li class="list-group-item">Declare a major in an approved Career Pathway (Healthcare, Information Technology, Technical Trades or Skilled Crafts, Culinary, Hospitality) on my college application.</li>
+        <li class="list-group-item">Attend regularly scheduled meetings with my coach and advisor and participate in proactive conversations about my challenges and progress throughout the program.</li>
+        <li class="list-group-item">Remain in the Adult Education Program until I attain my Louisiana approved high school equivalency.</li>
+      </ul>
+
+      <div class="alert alert-warning mt-4">
+        <strong>I understand that I must qualify and agree to all of these conditions to receive 5 for 6 Scholarship funding.</strong>
+      </div>
+    </div>
+  </div>
+
+  {% if object %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <p><strong>Signed by:</strong> {{ object.signature }}</p>
+      <p><strong>Date:</strong> {{ object.five_for_six_agreement_date }}</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}

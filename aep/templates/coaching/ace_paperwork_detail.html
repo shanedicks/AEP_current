@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{object.student}} ACE Paperwork{% endblock head_title %}
+{% block content %}
+    <div>
+      <h1 style="display: inline-block">{{ object.student }} ACE/PACE Paperwork</h1>
+    </div>
+    {%include 'components/student_nav.html' %}
+    <p>WRU ID: {{object.student.WRU_ID}}</p>
+
+    {% if object.five_for_six_agreement %}
+      <table class='table borderless col-md-8'>
+        <tr>
+          <td>5 for 6 Agreement</td>
+          <td><a href="{% url 'coaching:5 for 6 agreement' slug=object.student.slug %}">{{ object.five_for_six_agreement_date }}</a></td>
+        </tr>
+        <tr>
+          <td>Media Release Form</td>
+          <td>
+            <a href="{% url 'coaching:media release agreement' slug=object.student.slug %}">
+              {{ object.media_release_date }} - 
+              {% if object.media_release_accept %}
+                Accepted
+              {% else %}
+                Declined
+              {% endif %}
+            </a>
+          </td>
+        </tr>
+      </table>
+    {% else %}
+      <p>{{object.student.first_name}} has not yet completed the required paperwork</p>
+      <table class="table borderless">
+        <tr>
+          <td>Click here to sign required paperwork</td>
+          <td><a type="button" class="btn btn-default" href="{% url 'coaching:sign ace paperwork' slug=object.student.slug %}" role="button">Sign Paperwork</a></td>
+        </tr>
+        <tr>
+          <td>Click the link to send {{ object.student.first_name }} the sign paperwork form</td>
+          <td><a type="button" class="btn btn-default" href="{% url 'coaching:send paperwork link' slug=object.student.slug %}" role="button">Send Paperwork Link</a></td>
+        </tr>
+      </table>
+    {% endif %}
+{% endblock content %}

@@ -1,5 +1,6 @@
 from django.contrib.admin import widgets
-from django.forms import ModelForm, widgets, MultipleChoiceField, modelformset_factory
+from django.forms import ModelForm, widgets, MultipleChoiceField, modelformset_factory, BooleanField, ChoiceField
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Row, Column, HTML
@@ -572,18 +573,10 @@ class AceRecordForm(ModelForm):
             'program',
             'hsd',
             'hsd_date',
-            'media_release',
             'third_party_release',
             'five_for_six',
             'five_for_six_year',
             'five_for_six_semester',
-            'reading_exit',
-            'writing_exit',
-            'math_exit',
-            'nccer_cert',
-            'bls_cert',
-            'servsafe_cert',
-            'microsoft_cert'
         )
 
 
@@ -601,3 +594,81 @@ class ElearnRecordForm(ModelForm):
             'status_updated',
             'intake_date'
         )
+
+
+class AcePaperworkForm(ModelForm):
+    ACCEPT_MEDIA = True
+    DECLINE_MEDIA = False
+    MEDIA_CHOICES = (
+        (ACCEPT_MEDIA, 'I accept the media release terms'),
+        (DECLINE_MEDIA, 'I decline the media release terms')
+    )
+
+    five_for_six_agree = BooleanField(
+        required=True,
+        label=mark_safe("""I have read and accept the <a href="/coaching/ace/5-for-6-agreement/" target="_blank">5 for 6 Scholarship Agreement</a>""")
+    )
+
+    media_choice = ChoiceField(
+        choices=MEDIA_CHOICES,
+        widget=widgets.RadioSelect,
+        required=True,
+        label=mark_safe("""I have read and understand the <a href="/coaching/ace/media-release/" target="_blank">Media Release Form</a>""")
+    )
+
+    def clean_signature(self):
+        data = self.cleaned_data['signature']
+        if data == '':
+            raise ValidationError(
+                _("You must type your name to sign this form electronically."),
+                code="signature"
+            )
+        return data
+
+    def clean_five_for_six_agree(self):
+        data = self.cleaned_data['five_for_six_agree']
+        if not data:
+            raise ValidationError(
+                _("You must confirm you accept the 5 for 6 Scholarship Agreement"),
+                code='five_for_six'
+            )
+        return data
+
+    def clean_media_choice(self):
+       data = self.cleaned_data.get('media_choice')
+       if data is None:
+           raise ValidationError(
+               _("You must indicate whether you accept or decline the media release"),
+               code="media_choice"
+           )
+       return data
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.layout = Layout(
+            Fieldset(
+                '5 for 6 Scholarship Agreement',
+                'five_for_six_agree',
+            ),
+            Fieldset(
+                'Media Release Form',
+                'media_choice',
+            ),
+            Row(
+                Field(
+                    'signature',
+                    wrapper_class="col-md-12",
+                    required=True
+                ),
+            ),
+        )
+
+    class Meta:
+        model = AceRecord
+        fields = ('signature',)
+        labels = {
+            'signature': 'Signature*',
+        }
