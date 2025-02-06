@@ -887,6 +887,7 @@ class ProspectAdmin(ImportExportActionModelAdmin):
 
     list_filter = [
         'active',
+        'registration_date',
         'advisor_assigned_date',
         ('advisor', admin.RelatedOnlyFieldListFilter)
 
