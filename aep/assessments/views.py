@@ -196,7 +196,7 @@ class TestEventCSV(LoginRequiredMixin, View):
             pk=self.kwargs['pk'])
         filename = "student_list.csv"
         students = event.students.prefetch_related(
-            'student', 'student__user'
+            'student',
         )
         data = self.get_student_data(students)
         return render_to_csv(data=data, filename=filename)

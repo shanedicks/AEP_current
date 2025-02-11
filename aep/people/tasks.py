@@ -1144,3 +1144,137 @@ def process_student_import_task(email, student_ids):
         student_check_duplicate_task.delay(sid)
         Student.objects.get(id=sid).testify()
     possible_duplicate_report_task.delay(email, student_ids)
+
+
+@shared_task
+def advanced_student_report_task(email_address):
+    filename = 'advanced_student_report.csv'
+
+    Enrollment = apps.get_model('sections', 'Enrollment')
+    Student = apps.get_model('people', 'Student')
+
+    target = timezone.now() - timedelta(days=90)
+    today = timezone.now().date()
+
+    last_session_enrollments = Enrollment.objects.filter(
+        section__semester__start_date__gte=target,
+        section__semester__start_date__lte=today
+    )
+    upcoming_enrollments = Enrollment.objects.filter(
+        section__semester__start_date__gt=today
+    )
+
+    recent_students = Student.objects.filter(
+        Q(classes__in=last_session_enrollments) |
+        Q(classes__in=upcoming_enrollments)
+    ).distinct()
+
+    advanced_students = Student.objects.filter(
+        tests__tabe_tests__read_level__in=['A', 'D'],
+        tests__tabe_tests__read_nrs__gte='4'
+    ).distinct() | Student.objects.filter(
+        tests__tabe_tests__math_level__in=['A', 'D'],
+        tests__tabe_tests__math_nrs__gte='4'
+    ).distinct() | Student.objects.filter(
+        tests__tabe_tests__lang_level__in=['A', 'D'],
+        tests__tabe_tests__lang_nrs__gte='4'
+    ).distinct()
+
+    qualified_students = recent_students.filter(
+        id__in=advanced_students.values_list('id', flat=True)
+    )
+
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            "Partner",
+            "Student ID",
+            "Student Last Name", 
+            "Student First Name",
+            "Last Test Date",
+            "Test Assignment",
+            "Testing Status",
+            "Intake Date",
+            "Language",
+            "CCR On Campus",
+            "CCR Online",
+            "ELL On Campus",
+            "ELL Online", 
+            "Success",
+            "Accuplacer",
+            "Certifications",
+            "Gender",
+            "Date of Birth",
+            "Marital Status",
+            "Address",
+            "City",
+            "State",
+            "Zip",
+            "Parish",
+            "Email",
+            "G-Suite Email",
+            "Phone",
+            "Alt Phone",
+            "Emergency Contact",
+            "Emergency Contact Phone"
+        ]
+        writer.writerow(headers)
+
+        for student in qualified_students:
+            try:
+                g_suite_email = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite_email = ""
+
+            test_assignment = student.tests.test_assignment
+            last_test_date = student.tests.last_test_date
+
+            row = [
+                student.partner,
+                student.WRU_ID,
+                student.last_name,
+                student.first_name,
+                last_test_date,
+                test_assignment,
+                student.testing_status(),
+                student.intake_date,
+                "|".join(sorted(set(student.prospects.values_list('primary_language', flat=True)))),
+                student.ccr_app,
+                student.e_learn_app,
+                student.ell_app,
+                student.ell_online_app,
+                student.success_app,
+                student.accuplacer_app,
+                student.certifications_app,
+                student.gender,
+                str(student.dob),
+                student.get_marital_status_display(),
+                " ".join([
+                    student.street_address_1,
+                    student.street_address_2
+                ]),
+                student.city,
+                student.state,
+                student.zip_code,
+                student.get_parish_display(),
+                student.email,
+                g_suite_email,
+                student.phone,
+                student.alt_phone,
+                student.emergency_contact,
+                student.ec_phone
+            ]
+            writer.writerow(row)
+
+    email = EmailMessage(
+        'Advanced Student Report',
+        'Attached is a report of students who:\n'
+        '1. Were enrolled in classes starting in the last 90 days or have upcoming enrollments\n'
+        '2. Have achieved NRS level 4 or higher on A or D level TABE tests',
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+
+    os.remove(filename)
