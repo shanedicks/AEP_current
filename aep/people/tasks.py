@@ -1194,6 +1194,7 @@ def advanced_student_report_task(email_address):
             "Last Test Date",
             "Test Assignment",
             "Testing Status",
+            "NRS Max",
             "Intake Date",
             "Language",
             "CCR On Campus",
@@ -1228,6 +1229,7 @@ def advanced_student_report_task(email_address):
 
             test_assignment = student.tests.test_assignment
             last_test_date = student.tests.last_test_date
+            nrs_max = student.tests.nrs_max()
 
             row = [
                 student.partner,
@@ -1237,6 +1239,7 @@ def advanced_student_report_task(email_address):
                 last_test_date,
                 test_assignment,
                 student.testing_status(),
+                nrs_max,
                 student.intake_date,
                 "|".join(sorted(set(student.prospects.values_list('primary_language', flat=True)))),
                 student.ccr_app,
