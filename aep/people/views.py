@@ -749,7 +749,6 @@ class UnassignedProspectListView(ProspectListView):
         active=True,
         advisor=None,
         duplicate=False,
-        returning_student=False,
     ).order_by('registration_date')
     status = 'Unassigned'
 
