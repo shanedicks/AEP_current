@@ -406,10 +406,6 @@ class StudentPersonalInfoForm(ModelForm):
                     'nickname',
                     wrapper_class="col-md-6"
                     ),
-                    Field(
-                    'pronoun',
-                    wrapper_class="col-md-3",
-                    ),
                 ),
                 'email',
                 Row(
@@ -443,7 +439,6 @@ class StudentPersonalInfoForm(ModelForm):
         fields = (
             "first_name",
             "last_name",
-            "pronoun",
             "nickname",
             "title",
             "email",
@@ -459,7 +454,6 @@ class StudentPersonalInfoForm(ModelForm):
             'last_name': "Last Name (primer y segundo apellido)*",
             'title': "Title (titulo)*",
             'nickname': "Preferred Name or Nickname (nombre o apodo preferido)",
-            'pronoun': "Pronouns (pronombres)",
             "US_citizen": mark_safe("<strong>Check this box if you are a US Citizen*</strong>")
         }
 
@@ -785,10 +779,6 @@ class StudentUpdateForm(ModelForm):
                         'nickname',
                         wrapper_class="col-md-6"
                     ),
-                    Field(
-                        'pronoun',
-                        wrapper_class="col-md-3"
-                    ),
                 ),
             ),   
             Fieldset(
@@ -940,7 +930,6 @@ class StudentUpdateForm(ModelForm):
             "last_name",
             'title',
             'nickname',
-            'pronoun',
             "email",
             "alt_email",
             "dob",
@@ -1054,10 +1043,6 @@ class StudentForm(ModelForm):
                     Field(
                         'nickname',
                         wrapper_class="col-md-6"
-                    ),
-                    Field(
-                        'pronoun',
-                        wrapper_class="col-md-3"
                     ),
                 ),
                 Row(
@@ -1268,7 +1253,6 @@ class StudentForm(ModelForm):
             "last_name",
             'title',
             'nickname',
-            'pronoun',
             "email",
             "alt_email",
             "dob",

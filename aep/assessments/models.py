@@ -640,8 +640,12 @@ class Tabe(NRSTest):
     def assign(self):
         if self.form == "11":
             form = "12"
-        else:
+        elif self.form == "12":
             form = "11"
+        elif self.form == "13":
+            form = "14"
+        else:
+            form = "13"
         r_level = self.get_level(self.read_ss, self.read_level, 'read')
         m_level = self.get_level(self.total_math_ss, self.math_level, 'math')
         l_level = self.get_level(self.lang_ss, self.lang_level, 'lang')

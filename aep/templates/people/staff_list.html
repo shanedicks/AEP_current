@@ -6,7 +6,6 @@
     <table class="table">
     	<tr>
     		<th>Name</th>
-            <th>Pronouns</th>
     		<th>Phone</th>
             <th>For Students</th>
     		<th>Email</th>
@@ -15,7 +14,6 @@
         {% for staff in full_time %}
         	<tr>
 	            <td><a href="{% url 'people:staff home' slug=staff.slug %}">{{ staff }}</a></td>
-                <td>{{ staff.pronoun}} </td>
 	            <td>{{ staff.phone }}</td>
                 <td>{{ staff.alt_phone }}</td>
 	            <td>{{ staff.email }}</td>
@@ -27,7 +25,6 @@
     <table class="table">
         <tr>
             <th>Name</th>
-            <th>Pronouns</th>
             <th>Phone</th>
             <th>For Students</th>
             <th>Email</th>
@@ -36,7 +33,6 @@
         {% for staff in part_time %}
             <tr>
                 <td><a href="{% url 'people:staff home' slug=staff.slug %}">{{ staff }}</a></td>
-                <td>{{ staff.pronoun}} </td>
                 <td>{{ staff.phone }}</td>
                 <td>{{ staff.alt_phone }}</td>
                 <td>{{ staff.email }}</td>
@@ -48,14 +44,12 @@
     <table class="table">
         <tr>
             <th>Name</th>
-            <th>Pronouns</th>
             <th>Phone</th>
             <th>For Students</th>
             <th>Email</th>
         {% for staff in partners %}
             <tr>
                 <td><a href="{% url 'people:staff home' slug=staff.slug %}">{{ staff }}</a></td>
-                <td>{{ staff.pronoun}} </td>
                 <td>{{ staff.phone }}</td>
                 <td>{{ staff.alt_phone }}</td>
                 <td>{{ staff.email }}</td>
