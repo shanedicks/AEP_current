@@ -1187,33 +1187,41 @@ class ImportWruStudentsView(LoginRequiredMixin, FormView):
         reader = csv.DictReader(decoded_file, fieldnames=headers)
         parish_dict = {k: v for (v, k) in Student.PARISH_CHOICES}
         state_dict = {k.upper(): v for (v, k) in Student.STATE_CHOICES}
+        gender_dict = {k.upper(): v for (v, k) in Student.GENDER_CHOICES}
         errors = []
         student_ids = []
         for row in reader:
-            dob = datetime.strptime(row['Date of Birth'], '%m/%d/%Y').date()
-            student_parish = parish_dict.get(row['Parish'], '37')
-            student_state = state_dict.get(row['State'])
+            try:
+                dob = datetime.strptime(row['Date of Birth'], '%m/%d/%Y').date()
+                student_parish = parish_dict.get(row['Residency Parish'], '37')
+                student_state = state_dict.get(row['State'], 'LA')
+                student_gender = gender_dict.get(row['Gender'])
 
-            if not Student.objects.filter(WRU_ID=row['Student ID']).exists():
-                student = Student(
+                student_data = {
+                    'first_name': row['First Name'].title(),
+                    'last_name': row['Last Name'].title(),
+                    'dob': dob,
+                    'phone': row['Telephone No.'],
+                    'street_address_1': f"{row['Street 1']} {row['Street 2']}",
+                    'city': row['City'],
+                    'state': student_state,
+                    'parish': student_parish,
+                    'gender': student_gender,
+                    'zip_code': row['Zip'],
+                    'email': row['Email Address'],
+                }
+
+                student, created = Student.objects.update_or_create(
                     WRU_ID=row['Student ID'],
-                    first_name=row['First Name'].title(),
-                    last_name=row['Last Name'].title(),
-                    dob=dob,
-                    phone=row['Telephone No.'],
-                    street_address_1=row['Address'],
-                    city=row['City'],
-                    state=student_state,
-                    parish=student_parish,
-                    zip_code=row['Zip'],
-                    email=row['Email Address'],
+                    defaults=student_data
                 )
-                try:
-                    student.save()
+
+                if created:
                     student_ids.append(student.id)
-                except Exception as e:
-                    row['errors'] = e
-                    errors.append(row)
+
+            except Exception as e:
+                row['errors'] = e
+                errors.append(row)
 
         if errors:
             with open('errors.csv', 'w', newline='') as error_file:
