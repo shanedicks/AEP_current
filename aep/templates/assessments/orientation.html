@@ -4,6 +4,6 @@
 <h1>Orientation Students</h1>
 <h3>Please click on your name to access your online paperwork form</h3>
 {% for object in object_list %}
-	<h4><a href="{% url 'people:sign paperwork' slug=object.student.slug %}">{{object.student}}</a></h4>
+	<h4><a href="{% url 'people:sign paperwork' slug=object.student.slug %}?from=orientation">{{object.student}}</a></h4>
 {% endfor %}
 {% endblock %}

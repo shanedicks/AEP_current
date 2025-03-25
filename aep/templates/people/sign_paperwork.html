@@ -12,6 +12,9 @@
 <a href="https://drive.google.com/file/d/1HmGPNdY7CSPkarsO-Lw29OwHW4wD5SuH/view?usp=share_link" target="blank">Kreyòl Ayisyen</a>
 <a href="https://drive.google.com/file/d/1DL8vGP4Q99OMV03qZIS0n9TCNWdfeHfE/view?usp=share_link" target="blank">на русском</a>
 <form class="form_group" method="post">
+	{% if source %}
+	<input type="hidden" name="from" value="{{ source }}">
+	{% endif %}
     {% crispy form %}
     <button type="submit" class="btn btn-success">Submit</button>
 </form>

@@ -1137,7 +1137,25 @@ class SignPaperworkView(BasePaperworkView):
         paperwork.writing = True
         paperwork.disclosure = True
         paperwork.save()
+
+        if 'from' in self.request.POST:
+            self.request.GET = self.request.GET.copy()
+            self.request.GET['from'] = self.request.POST['from']
+
         return super().form_valid(form)
+
+    def get_success_url(self):
+        source = self.request.POST.get('from')
+        
+        if source == 'orientation':
+            return 'https://docs.google.com/document/d/e/2PACX-1vTr5plBjIrPOHHa2XILcFPznOHM00LRYo_qEOR5QjdwX07Xvl_h61Tmm1Jco_mMoYFjFzIVuz-k0dP9/pub'
+        else:
+            return self.success_url
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['source'] = self.request.GET.get('from')
+        return context
 
 
 class PhotoIdUploadView(BasePaperworkView):
