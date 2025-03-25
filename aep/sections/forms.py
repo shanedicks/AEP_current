@@ -49,6 +49,7 @@ class ClassAddEnrollmentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         site = kwargs.pop('site', None)
         program = kwargs.pop('program', None)
+        days = kwargs.pop('days', None)
         limit = timezone.now() - datetime.timedelta(days=14)
         ell_limit = timezone.now() - datetime.timedelta(days=42)
         qst = Section.objects.filter(
@@ -66,6 +67,8 @@ class ClassAddEnrollmentForm(ModelForm):
             qst = qst.filter(site=site[0])
         if program and program[0] != '':
             qst = qst.filter(program=program[0])
+        if days and days[0] != '':
+            qst = qst.filter(**{days[0]: True})
         qst = qst.exclude(closed=True)
         qst = qst.order_by('site', 'title', 'start_time')
         self.base_fields['section'].queryset = qst
@@ -129,6 +132,22 @@ class SectionFilterForm(Form):
         self.helper.help_text_inline = False
         self.helper.form_show_labels = False
         self.helper.disable_csrf = True 
+
+
+class SectionFilterFormWithDays(SectionFilterForm):
+    days = ChoiceField(
+        choices=(
+            ('', 'Day'),
+            ('monday', 'Monday'),
+            ('tuesday', 'Tuesday'),
+            ('wednesday', 'Wednesday'),
+            ('thursday', 'Thursday'),
+            ('friday', 'Friday'),
+            ('saturday', 'Saturday'),
+            ('sunday', 'Sunday'),
+        ),
+        required=False
+    )
 
 
 class EnrollmentReportForm(SectionFilterForm):

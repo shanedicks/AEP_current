@@ -28,7 +28,7 @@ from people.forms import StudentSearchForm
 from .models import Section, Enrollment, Attendance, Cancellation
 from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     StudentAddEnrollmentForm, SingleAttendanceForm,
-                    AttendanceFormset, SectionSearchForm, AdminAttendanceForm,
+                    AttendanceFormset, SectionSearchForm, SectionFilterFormWithDays, AdminAttendanceForm,
                     AttendanceReportForm, EnrollmentReportForm,
                     SingleSkillMasteryForm, SkillMasteryFormset,
                     EnrollmentUpdateForm, CancellationForm, SelectSemesterForm,
@@ -881,7 +881,7 @@ class AddClassView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(AddClassView, self).get_context_data(**kwargs)
         if 'filter_form' not in context:
-            context['filter_form'] = SectionFilterForm()
+            context['filter_form'] = SectionFilterFormWithDays()
             context.update(kwargs)
         if 'student' not in context:
             context['student'] = Student.objects.get(slug=self.kwargs['slug'])
@@ -898,7 +898,7 @@ class AddClassView(LoginRequiredMixin, CreateView):
         self.object = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        filter_form = SectionFilterForm(request.GET, None)
+        filter_form = SectionFilterFormWithDays(request.GET, None)
         return self.render_to_response(
             self.get_context_data(
                 filter_form=filter_form,
