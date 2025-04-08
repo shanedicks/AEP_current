@@ -310,7 +310,7 @@ def participation_summary_task():
                     record['total_hours'],
                 ]
             )
-    email = EmailMessage('Participation Report', "This is a detailed participation report for all students", 'reporter@dccaep.org', ['jalehrman@gmail.com', 'shane.dicks1@gmail.com'])
+    email = EmailMessage('Participation Report', "This is a detailed participation report for all students", 'reporter@dccaep.org', ['shane.dicks1@gmail.com'])
     email.attach_file('participation_report.csv')
     email.send()
     os.remove('participation_report.csv')

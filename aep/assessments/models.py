@@ -736,9 +736,13 @@ class Clas_E(NRSTest):
 
     A = "A"
     B = "B"
+    C = "C"
+    D = "D"
     FORM_CHOICES = (
         (A, "A"),
-        (B, "B")
+        (B, "B"),
+        (C, "C"),
+        (D, "D")
     )
 
     ONE = "1"
@@ -825,8 +829,12 @@ class Clas_E(NRSTest):
         a = assignment_dict[self.read_level]
         if self.form.upper() == 'A':
             form = 'B'
-        else:
+        elif self.form.upper() == 'B':
             form = 'A'
+        elif self.form.upper() == 'C':
+            form = 'D'
+        else:
+            form = 'C'
         if self.read_ss <= a[0]:
             level = "1"
         elif self.read_ss <= a[1]:
