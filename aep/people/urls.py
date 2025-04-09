@@ -116,9 +116,6 @@ student_patterns = [
     re_path(r'^reports/intake-retention$',
         views.IntakeRetentionCSV.as_view(),
         name='intake retention csv'),
-    re_path(r'^new/$',
-        RedirectView.as_view(pattern_name='people:prospect signup', permanent=False),
-        name='create student redirect'),
     path('new-student/',
         views.StudentCreateView.as_view(),
         name='create student'
