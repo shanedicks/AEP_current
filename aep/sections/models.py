@@ -706,6 +706,8 @@ class Enrollment(models.Model):
                 time_out=self.section.end_time,
                 online=online
             )
+            if day < timezone.now().date():
+                a.attendance_type = Attendance.CANCELLED
             a.save()
         if self.section.course is not None:
             sm = apps.get_model('academics', 'SkillMastery')
