@@ -561,7 +561,7 @@ def prospect_export_task(email, staff_id=None, from_date=None):
         advisor = apps.get_model('people', 'Staff').objects.get(id=staff_id)
         prospects = advisor.prospects.all()
     else:
-        prospects = Prospect.objects.all()
+        prospects = apps.get_model('people', 'Prospect').objects.all()
     if from_date:
         prospects = prospects.filter(registration_date__gte=from_date)
     with open('prospect_export.csv', 'w', newline='') as out:
