@@ -3,8 +3,9 @@
 {% block content %}
     <h1>ACE Record for <a href="{% url 'people:student detail' slug=student.slug %}">{{student}}</a></h1>
     <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:ace record update' slug=student.slug %}">Update</a>
+    <a type="button" class="btn btn-default" role="button" href="{% url 'coaching:ace paperwork detail' slug=student.slug %}">Paperwork</a>
     <table class='table'>
-        <tr><td><h4>General Info</h4></td><td></td></tr>
+        <tr><td><h4>General Info</h4></td></tr>
         <tr>
             <td>LOLA Number</td>
             {% if record.lola != "" %}
