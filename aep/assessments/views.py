@@ -594,6 +594,13 @@ class TabeCSV(LoginRequiredMixin, FormView):
     form_class = DateFilterForm
     template_name = "assessments/tabe_csv.html"
 
+    versions = {
+        "11": "TABE 11 & 12",
+        "12": "TABE 11 & 12",
+        "13": "TABE 13 & 14",
+        "14": "TABE 13 & 14"
+    }
+
     def get_data(self, tests):
         nrs = {
             '1': 'BEGINNING ABE LITERACY',
@@ -631,7 +638,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
             date = test.test_date
             pre = test.test_date - timedelta(days=180)
             test_type = 'Pretest'
-            version = 'TABE 11 & 12'
+            version = versions[test.form]
             if test.read_ss:
                 if test.student.tabe_tests.filter(
                     test_date__lt=date,
