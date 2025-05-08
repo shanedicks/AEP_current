@@ -682,7 +682,7 @@ class EnrollmentCSV(LoginRequiredMixin, FormView):
         return render_to_csv(data=data, filename=filename)
 
 
-class SignAcePaperworkView(LoginRequiredMixin, UpdateView):
+class SignAcePaperworkView(UpdateView):
     model = AceRecord
     form_class = AcePaperworkForm
     template_name = 'coaching/sign_ace_paperwork.html'
