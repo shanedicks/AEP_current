@@ -8,6 +8,7 @@ from django.views.generic import (
     CreateView)
 from .models import Category, Item, Ticket
 from .forms import TicketForm, SelectTicketItemForm, TicketUpdateForm
+from .tasks import combined_checkout_report_task, staff_checkout_report_task, student_checkout_report_task
 
 
 
@@ -137,3 +138,27 @@ class SelectTicketItemView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         person = self.get_person_dict().popitem()[1] 
         return person.get_absolute_url()
+
+
+class CombinedCheckoutReport(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        email = request.user.email
+        combined_checkout_report_task.delay(email)
+        return HttpResponseRedirect(reverse_lazy('report success'))
+
+
+class StaffCheckoutReport(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        email = request.user.email
+        staff_checkout_report_task.delay(email)
+        return HttpResponseRedirect(reverse_lazy('report success'))
+
+
+class StudentCheckoutReport(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        email = request.user.email
+        student_checkout_report_task.delay(email)
+        return HttpResponseRedirect(reverse_lazy('report success'))

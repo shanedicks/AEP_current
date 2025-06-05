@@ -1,4 +1,3 @@
-from __future__ import absolute_import, unicode_literals
 import csv
 import os
 import time
@@ -777,6 +776,8 @@ def minor_student_report_task(email_address):
             "Last Name",
             "First Name",
             "DOB",
+            "Phone",
+            "Email",
             "Intake Date",
             "Last Tested",
             "Last Test NRS",
@@ -801,6 +802,8 @@ def minor_student_report_task(email_address):
                 student.last_name,
                 student.first_name,
                 student.dob,
+                student.phone,
+                student.email,
                 student.intake_date,
                 TH.last_test_date if TH else "No Test History",
                 TH.last_test_nrs if TH else "No Test History",
