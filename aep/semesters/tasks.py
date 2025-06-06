@@ -1,7 +1,9 @@
+from datetime import timedelta
 import csv
 import os
 from apiclient.errors import HttpError
 from django.apps import apps
+from django.conf import settings
 from django.core.mail.message import EmailMessage
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
@@ -176,3 +178,160 @@ def send_link_task(semester_id, url_name):
     for student in students:
         student.email_form_link(url_name)
         student.text_form_link(url_name)
+
+@shared_task
+def first_class_warning_report_task(semester_id):
+    """
+    Generate report of students at risk of first-class drop and teachers with incomplete attendance.
+    Runs Tuesday-Friday to check attendance from the previous day.
+    """
+    semester = apps.get_model('semesters', 'Semester').objects.get(id=semester_id)
+    now = timezone.now()
+
+    # Get yesterday's date and day name
+    check_date = now.date() - timedelta(days=1)
+    day_names = {
+        0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 
+        3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'
+    }
+    report_day = day_names[check_date.weekday()]
+
+    # Determine email recipient
+    email_address = semester.first_class_report_to or settings.ADMINS[0][1]
+
+    logger.info(f"Running first class warning report for {semester.title} checking {report_day} ({check_date})")
+
+    # Get all enrollments for this semester
+    enrollments = apps.get_model('sections', 'Enrollment').objects.filter(
+        section__semester=semester,
+        status='A'  # Only active enrollments
+    )
+
+    # Find students at risk (1 absent, 0 present)
+    at_risk_students = []
+    for enrollment in enrollments:
+        absent_count = enrollment.attendance.filter(attendance_type='A').count()
+        present_count = enrollment.attendance.filter(attendance_type='P').count()
+
+        if absent_count == 1 and present_count == 0:
+            try:
+                elearn_email = enrollment.student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                elearn_email = ''
+
+            at_risk_students.append({
+                'wru_id': enrollment.student.WRU_ID,
+                'first_name': enrollment.student.first_name,
+                'last_name': enrollment.student.last_name,
+                'email': enrollment.student.email,
+                'elearn_email': elearn_email,
+                'phone': enrollment.student.phone,
+                'section': enrollment.section.title,
+                'teacher': str(enrollment.section.teacher) if enrollment.section.teacher else 'No Teacher',
+                'site': str(enrollment.section.site) if enrollment.section.site else 'No Site'
+            })
+
+    # Find sections with incomplete attendance for the check_date
+    sections_with_incomplete_attendance = []
+    for section in semester.get_sections():
+        # Check if this section had class on the check_date
+        section_days = section.get_days()
+        check_weekday = check_date.weekday()  # 0=Monday, 1=Tuesday, etc.
+
+        # Map weekday numbers to section day attributes
+        day_mapping = {
+            0: 'monday', 1: 'tuesday', 2: 'wednesday', 
+            3: 'thursday', 4: 'friday', 5: 'saturday', 6: 'sunday'
+        }
+        
+        if check_weekday in day_mapping:
+            day_attr = day_mapping[check_weekday]
+            if hasattr(section, day_attr) and getattr(section, day_attr):
+                # This section meets on the check_date day
+                # Check if attendance has been completed
+                attendance_count = apps.get_model('sections', 'Attendance').objects.filter(
+                    attendance_date=check_date,
+                    attendance_type='X',  # Pending attendance
+                    enrollment__section=section,
+                    enrollment__status='A'
+                ).count()
+
+                if attendance_count > 0:
+                    sections_with_incomplete_attendance.append({
+                        'section': section.title,
+                        'teacher': str(section.teacher) if section.teacher else 'No Teacher',
+                        'teacher_email': section.teacher.email if section.teacher and section.teacher.email else 'No Email',
+                        'site': str(section.site) if section.site else 'No Site',
+                        'pending_count': attendance_count
+                    })
+    
+    # Generate CSV report
+    filename = f'first_class_warning_report_{semester.title.replace(" ", "_")}_{check_date.strftime("%Y%m%d")}.csv'
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+
+        # Students at Risk section
+        writer.writerow([f'STUDENTS AT RISK OF BEING DROPPED - {report_day} {check_date}'])
+        writer.writerow([])
+
+        if at_risk_students:
+            headers = [
+                'WRU_ID', 'Last_Name', 'First_Name', 'Email', 'G_Suite_Email', 
+                'Phone', 'Section', 'Teacher', 'Site'
+            ]
+            writer.writerow(headers)
+
+            for student in at_risk_students:
+                row = [
+                    student['wru_id'], student['last_name'], student['first_name'],
+                    student['email'], student['elearn_email'], student['phone'],
+                    student['section'], student['teacher'], student['site']
+                ]
+                writer.writerow(row)
+        else:
+            writer.writerow(['No students at risk found'])
+
+        writer.writerow([])
+        writer.writerow([])
+
+        # Incomplete Attendance section
+        writer.writerow([f'TEACHERS WITH INCOMPLETE ATTENDANCE - {report_day} {check_date}'])
+        writer.writerow([])
+
+        if sections_with_incomplete_attendance:
+            headers = [
+                'Section', 'Teacher', 'Teacher_Email', 'Site', 'Pending_Records'
+            ]
+            writer.writerow(headers)
+
+            for section_info in sections_with_incomplete_attendance:
+                row = [
+                    section_info['section'], section_info['teacher'], 
+                    section_info['teacher_email'], section_info['site'],
+                    section_info['pending_count']
+                ]
+                writer.writerow(row)
+        else:
+            writer.writerow(['All attendance completed for this day'])
+
+    # Email the report
+    email = EmailMessage(
+        subject=f'First Class Drop Warning Report - {semester.title} - {report_day} {check_date}',
+        body=f'Attached is the first class drop warning report for {semester.title}.\n\n'
+             f'This report shows:\n'
+             f'1. Students with 1 absence and 0 present attendance (at risk of being dropped)\n'
+             f'2. Teachers who have not completed attendance for {report_day} {check_date}\n\n'
+             f'Students with 2 absences and 0 present attendance will be automatically dropped during the next waitlist update (Fridays).',
+        from_email='reporter@dccaep.org',
+        to=[email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+
+    # Clean up the file
+    os.remove(filename)
+
+    logger.info(f'First class warning report sent to {email_address} for {semester.title}')
+    logger.info(f'Found {len(at_risk_students)} students at risk and {len(sections_with_incomplete_attendance)} sections with incomplete attendance')
+
+    return True

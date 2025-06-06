@@ -18,7 +18,13 @@ class Semester(models.Model):
     end_date = models.DateField()
 
     report_to = models.EmailField(
-        blank=True
+        blank=True,
+        help_text="Email address to recieve attendance reminder reports"
+    )
+
+    first_class_report_to = models.EmailField(
+        blank=True,
+        help_text="Email address to receive first class drop warning reports"
     )
 
     allowed_absences = models.SmallIntegerField(default=4)

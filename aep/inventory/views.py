@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import (
     DetailView, ListView, UpdateView,
-    CreateView)
+    CreateView, View)
 from .models import Category, Item, Ticket
 from .forms import TicketForm, SelectTicketItemForm, TicketUpdateForm
 from .tasks import combined_checkout_report_task, staff_checkout_report_task, student_checkout_report_task

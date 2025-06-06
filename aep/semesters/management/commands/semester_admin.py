@@ -24,6 +24,9 @@ class Command(BaseCommand):
 		for semester in active.filter(start_date__gte=now - timedelta(days=14)):
 			create_missing_g_suite_task.delay(semester.id)
 			time.sleep(10)
+			if now.weekday() in [1, 2, 3, 4]:
+				first_class_warning_report_task.delay(semester.id)
+				time.sleep(5)
 			if now.weekday() == 4:
 				semester.waitlist()
 				time.sleep(10)
