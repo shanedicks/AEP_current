@@ -638,7 +638,7 @@ class TabeCSV(LoginRequiredMixin, FormView):
             date = test.test_date
             pre = test.test_date - timedelta(days=180)
             test_type = 'Pretest'
-            version = versions[test.form]
+            version = self.versions[test.form]
             if test.read_ss:
                 if test.student.tabe_tests.filter(
                     test_date__lt=date,
