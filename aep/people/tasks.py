@@ -789,6 +789,7 @@ def minor_student_report_task(email_address):
             "Enrolled w/good attendance",
             "Current Classes",
             "Orientation Appointments in FY",
+            'Upcoming Test Appointments',
             "Parish"
         ]
         writer.writerow(headers)
@@ -797,6 +798,7 @@ def minor_student_report_task(email_address):
             TH = getattr(student, 'tests', None)
             current_classes = student.current_classes().annotate(absences=Count('attendance', filter=Q(attendance__attendance_type='A')))
             orientation_appts = student.test_appointments.filter(event__in=orientation_events)
+            upcoming_test_appts = student.test_appointments.filter(event__start__gte=timezone.now())
             row = [
                 student.WRU_ID,
                 student.last_name,
@@ -813,8 +815,9 @@ def minor_student_report_task(email_address):
                 student.last_attendance(),
                 current_classes.count(),
                 current_classes.filter(absences__lte=5).count(),
-                [e.section for e in current_classes],
-                [a.event for a in orientation_appts],
+                [e.section.__str__() for e in current_classes],
+                [a.event.title for a in orientation_appts],
+                [a.event.title for a in upcoming_test_appts],
                 student.get_parish_display()
             ]
             writer.writerow(row)
