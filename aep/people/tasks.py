@@ -1159,13 +1159,13 @@ def process_student_import_task(email, student_ids):
 
 @shared_task
 def advanced_student_report_task(email_address):
-    filename = 'advanced_student_report.csv'
-
     Enrollment = apps.get_model('sections', 'Enrollment')
     Student = apps.get_model('people', 'Student')
 
     target = timezone.now() - timedelta(days=90)
     today = timezone.now().date()
+
+    filename = f'advanced_student_report_{today.strftime("%Y%m%d")}.csv'
 
     last_session_enrollments = Enrollment.objects.filter(
         section__semester__start_date__gte=target,
