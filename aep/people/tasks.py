@@ -1170,7 +1170,8 @@ def advanced_student_report_task(email_address):
 
     two_years_ago = today - timedelta(days=730)
     qualifying_tabe_tests = Tabe.objects.filter(
-        test_date__gte=two_years_ago,
+        test_date__gte=two_years_ago
+    ).filter(
         Q(read_level__in=['A', 'D'], read_nrs__gte='4') |
         Q(math_level__in=['A', 'D'], math_nrs__gte='4') |
         Q(lang_level__in=['A', 'D'], lang_nrs__gte='4')
@@ -1253,7 +1254,7 @@ def advanced_student_report_task(email_address):
                 last_test_date,
                 test_assignment,
                 student.testing_status(),
-                nrs_max,
+                test_details,
                 student.intake_date,
                 "|".join(sorted(set(student.prospects.values_list('primary_language', flat=True)))),
                 student.ccr_app,
