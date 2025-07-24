@@ -676,10 +676,22 @@ class Tabe(NRSTest):
             return False
 
     def nrs(self):
-        r = max(self.read_nrs, '-') if self.read_nrs is not None else '-'
-        m = max(self.math_nrs, '-') if self.math_nrs is not None else '-'
-        l = max(self.lang_nrs, '-') if self.lang_nrs is not None else '-'
+        r = self.read_nrs or '-'
+        m = self.math_nrs or '-'
+        l = self.lang_nrs or '-'
         return f"{r} {m} {l}"
+
+    def nrs_level_format(self):
+        r_nrs = self.read_nrs if self.read_nrs else '-'
+        r_level = self.read_level if self.read_level else '-'
+
+        m_nrs = self.math_nrs if self.math_nrs else '-'
+        m_level = self.math_level if self.math_level else '-'
+
+        l_nrs = self.lang_nrs if self.lang_nrs else '-'
+        l_level = self.lang_level if self.lang_level else '-'
+
+        return f"{r_nrs}/{r_level} {m_nrs}/{m_level} {l_nrs}/{l_level} {self.test_date.strftime('%m/%d/%Y')}"
 
 
 class Tabe_Loc(NRSTest):

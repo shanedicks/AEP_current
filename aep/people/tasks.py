@@ -1161,11 +1161,20 @@ def process_student_import_task(email, student_ids):
 def advanced_student_report_task(email_address):
     Enrollment = apps.get_model('sections', 'Enrollment')
     Student = apps.get_model('people', 'Student')
+    Tabe = apps.get_model('assessments', 'Tabe')
 
     target = timezone.now() - timedelta(days=90)
     today = timezone.now().date()
 
     filename = f'advanced_student_report_{today.strftime("%Y%m%d")}.csv'
+
+    two_years_ago = today - timedelta(days=730)
+    qualifying_tabe_tests = Tabe.objects.filter(
+        test_date__gte=two_years_ago,
+        Q(read_level__in=['A', 'D'], read_nrs__gte='4') |
+        Q(math_level__in=['A', 'D'], math_nrs__gte='4') |
+        Q(lang_level__in=['A', 'D'], lang_nrs__gte='4')
+    )
 
     last_session_enrollments = Enrollment.objects.filter(
         section__semester__start_date__gte=target,
@@ -1181,14 +1190,7 @@ def advanced_student_report_task(email_address):
     ).distinct()
 
     advanced_students = Student.objects.filter(
-        tests__tabe_tests__read_level__in=['A', 'D'],
-        tests__tabe_tests__read_nrs__gte='4'
-    ).distinct() | Student.objects.filter(
-        tests__tabe_tests__math_level__in=['A', 'D'],
-        tests__tabe_tests__math_nrs__gte='4'
-    ).distinct() | Student.objects.filter(
-        tests__tabe_tests__lang_level__in=['A', 'D'],
-        tests__tabe_tests__lang_nrs__gte='4'
+        tests__tabe_tests__in=qualifying_tabe_tests
     ).distinct()
 
     qualified_students = recent_students.filter(
@@ -1205,7 +1207,7 @@ def advanced_student_report_task(email_address):
             "Last Test Date",
             "Test Assignment",
             "Testing Status",
-            "NRS Max",
+            "Qualifying Tests",
             "Intake Date",
             "Language",
             "CCR On Campus",
@@ -1240,7 +1242,8 @@ def advanced_student_report_task(email_address):
 
             test_assignment = student.tests.test_assignment
             last_test_date = student.tests.last_test_date
-            nrs_max = student.tests.nrs_max()
+            qualifying_tests_for_student = qualifying_tabe_tests.filter(student__student=student)
+            test_details = "\n".join([test.nrs_level_format() for test in qualifying_tests_for_student])
 
             row = [
                 student.partner,
