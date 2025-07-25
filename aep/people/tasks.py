@@ -1175,6 +1175,9 @@ def advanced_student_report_task(email_address):
         Q(read_level__in=['A', 'D'], read_nrs__gte='4') |
         Q(math_level__in=['A', 'D'], math_nrs__gte='4') |
         Q(lang_level__in=['A', 'D'], lang_nrs__gte='4')
+    ).exclude(
+        Q(read_level='E') | Q(math_level='E') | Q(lang_level='E') |
+        Q(read_nrs__lt='3') | Q(math_nrs__lt='3') | Q(lang_nrs__lt='3')
     )
 
     last_session_enrollments = Enrollment.objects.filter(
@@ -1288,7 +1291,7 @@ def advanced_student_report_task(email_address):
         'Advanced Student Report',
         'Attached is a report of students who:\n'
         '1. Were enrolled in classes starting in the last 90 days or have upcoming enrollments\n'
-        '2. Have achieved NRS level 4 or higher on A or D level TABE tests',
+        '2. Have achieved NRS level 4 or higher on A or D level TABE tests within the past 2 years',
         'reporter@dccaep.org',
         [email_address]
     )
