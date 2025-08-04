@@ -35,7 +35,7 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     SingleHoursAttendanceForm, HoursAttendanceFormset)
 from .tasks import (participation_detail_task, section_skill_mastery_report_task, wru_course_registration_export_task,
                     mondo_attendance_report_task, cancel_class_task, finalize_daily_attendance_task,
-                    enrollment_notification_task, mark_enrollments_reported_task, wru_sections_export_task)
+                    enrollment_notification_task, mark_enrollments_reported_task, mark_attendance_reported_task, wru_sections_export_task)
 
 logger = logging.getLogger(__name__)
 
@@ -1712,7 +1712,7 @@ class ImportDuolingoAttendanceView(LoginRequiredMixin, FormView):
 class ImportReportedEnrollmentsView(LoginRequiredMixin, FormView):
 
     form_class = CSVImportForm
-    template_name = 'sections/import_reported_enrollments.html'
+    template_name = 'sections/import_reported_records.html'
 
     def form_valid(self, form):
         csv_file = self.request.FILES['csv_file']
@@ -1723,4 +1723,24 @@ class ImportReportedEnrollmentsView(LoginRequiredMixin, FormView):
         for row in reader:
             enrollments_list.append((row["SID"], row['COURSE_ID']))
         mark_enrollments_reported_task.delay(enrollments_list, self.request.user.email)
+        return HttpResponseRedirect(reverse('reports'))
+
+class ImportReportedAttendanceView(LoginRequiredMixin, FormView):
+
+    form_class = CSVImportForm
+    template_name = 'sections/import_reported_records.html'
+
+    def form_valid(self, form):
+        csv_file = self.request.FILES['csv_file']
+        decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+        headers = decoded_file.readline().strip().split(",")
+        attendance_list = []
+        reader = csv.DictReader(decoded_file, fieldnames=headers)
+        for row in reader:
+            date_strings = []
+            for value in row.values():
+                if value and value.isdigit() and len(value) == 8:
+                    date_strings.append(value)
+            attendance_list.append((row["SID"], row['COURSE_ID'], date_strings))
+        mark_attendance_reported_task.delay(attendance_list, self.request.user.email)
         return HttpResponseRedirect(reverse('reports'))

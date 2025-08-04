@@ -128,7 +128,10 @@ reports_patterns = [
         name='wru section export'),
     path('import-reported-enrollments',
         views.ImportReportedEnrollmentsView.as_view(),
-        name='import reported enrollments')
+        name='import reported enrollments'),
+    path('import-reported-attendance',
+        views.ImportReportedAttendanceView.as_view(),
+        name='import reported attendance')
 ]
 
 urlpatterns = [

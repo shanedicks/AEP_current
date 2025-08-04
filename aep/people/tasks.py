@@ -6,7 +6,7 @@ from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
-from django.db.models import Sum, Min, Max, Count, Q
+from django.db.models import Sum, Min, Max, Count, Q, Case, When
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils import timezone
@@ -1168,17 +1168,7 @@ def advanced_student_report_task(email_address):
 
     filename = f'advanced_student_report_{today.strftime("%Y%m%d")}.csv'
 
-    two_years_ago = today - timedelta(days=730)
-    qualifying_tabe_tests = Tabe.objects.filter(
-        test_date__gte=two_years_ago
-    ).filter(
-        Q(read_level__in=['A', 'D'], read_nrs__gte='4') |
-        Q(math_level__in=['A', 'D'], math_nrs__gte='4') |
-        Q(lang_level__in=['A', 'D'], lang_nrs__gte='4')
-    ).exclude(
-        Q(read_level='E') | Q(math_level='E') | Q(lang_level='E') |
-        Q(read_nrs__lt='3') | Q(math_nrs__lt='3') | Q(lang_nrs__lt='3')
-    )
+    two_years_ago = (today - timedelta(days=730)).strftime('%Y-%m-%d')
 
     last_session_enrollments = Enrollment.objects.filter(
         section__semester__start_date__gte=target,
@@ -1188,17 +1178,58 @@ def advanced_student_report_task(email_address):
         section__semester__start_date__gt=today
     )
 
-    recent_students = Student.objects.filter(
+    recent_student_ids = list(Student.objects.filter(
         Q(classes__in=last_session_enrollments) |
         Q(classes__in=upcoming_enrollments)
+    ).distinct().values_list('id', flat=True))
+
+    qualified_students = Student.objects.filter(
+            id__in=recent_student_ids
+        ).annotate(
+        read_3plus_count=Count('tests__tabe_tests', filter=Q(
+            tests__tabe_tests__test_date__gte=two_years_ago,
+            tests__tabe_tests__read_nrs__gte='3'
+        ) & ~Q(tests__tabe_tests__read_level='E')),
+        math_3plus_count=Count('tests__tabe_tests', filter=Q(
+            tests__tabe_tests__test_date__gte=two_years_ago,
+            tests__tabe_tests__math_nrs__gte='3'
+        ) & ~Q(tests__tabe_tests__math_level='E')),
+        lang_3plus_count=Count('tests__tabe_tests', filter=Q(
+            tests__tabe_tests__test_date__gte=two_years_ago,
+            tests__tabe_tests__lang_nrs__gte='3'
+        ) & ~Q(tests__tabe_tests__lang_level='E')),
+        read_4plus_count=Count('tests__tabe_tests', filter=Q(
+            tests__tabe_tests__test_date__gte=two_years_ago,
+            tests__tabe_tests__read_nrs__gte='4',
+            tests__tabe_tests__read_level__in=['A', 'D']
+        )),
+        math_4plus_count=Count('tests__tabe_tests', filter=Q(
+            tests__tabe_tests__test_date__gte=two_years_ago,
+            tests__tabe_tests__math_nrs__gte='4',
+            tests__tabe_tests__math_level__in=['A', 'D']
+        )),
+        lang_4plus_count=Count('tests__tabe_tests', filter=Q(
+            tests__tabe_tests__test_date__gte=two_years_ago,
+            tests__tabe_tests__lang_nrs__gte='4',
+            tests__tabe_tests__lang_level__in=['A', 'D']
+        )),
+        total_subtests_with_3plus=Case(
+            When(read_3plus_count__gt=0, then=1), default=0
+        ) + Case(
+            When(math_3plus_count__gt=0, then=1), default=0  
+        ) + Case(
+            When(lang_3plus_count__gt=0, then=1), default=0
+        )
+    ).filter(
+        total_subtests_with_3plus__gte=2
+    ).filter(
+        Q(read_4plus_count__gt=0) | Q(math_4plus_count__gt=0) | Q(lang_4plus_count__gt=0)
     ).distinct()
 
-    advanced_students = Student.objects.filter(
-        tests__tabe_tests__in=qualifying_tabe_tests
-    ).distinct()
-
-    qualified_students = recent_students.filter(
-        id__in=advanced_students.values_list('id', flat=True)
+    reporting_tabe_tests = Tabe.objects.filter(
+        test_date__gte=two_years_ago
+    ).filter(
+        Q(read_nrs__gte='3') | Q(math_nrs__gte='3') | Q(lang_nrs__gte='3')
     )
 
     with open(filename, 'w', newline='') as out:
@@ -1212,6 +1243,12 @@ def advanced_student_report_task(email_address):
             "Test Assignment",
             "Testing Status",
             "Qualifying Tests",
+            "Read NRS 3+ Count",
+            "Read NRS 4+ Count",
+            "Math NRS 3+ Count",
+            "Math NRS 4+ Count",
+            "Lang NRS 3+ Count",
+            "Lang NRS 4+ Count",
             "Intake Date",
             "Language",
             "CCR On Campus",
@@ -1246,8 +1283,8 @@ def advanced_student_report_task(email_address):
 
             test_assignment = student.tests.test_assignment
             last_test_date = student.tests.last_test_date
-            qualifying_tests_for_student = qualifying_tabe_tests.filter(student__student=student)
-            test_details = "\n".join([test.nrs_level_format() for test in qualifying_tests_for_student])
+            reporting_tests_for_student = reporting_tabe_tests.filter(student__student=student)
+            test_details = "\n".join([test.nrs_level_format() for test in reporting_tests_for_student])
 
             row = [
                 student.partner,
@@ -1258,6 +1295,12 @@ def advanced_student_report_task(email_address):
                 test_assignment,
                 student.testing_status(),
                 test_details,
+                student.read_3plus_count,
+                student.read_4plus_count,
+                student.math_3plus_count,
+                student.math_4plus_count,
+                student.lang_3plus_count,
+                student.lang_4plus_count,
                 student.intake_date,
                 "|".join(sorted(set(student.prospects.values_list('primary_language', flat=True)))),
                 student.ccr_app,
@@ -1291,7 +1334,9 @@ def advanced_student_report_task(email_address):
         'Advanced Student Report',
         'Attached is a report of students who:\n'
         '1. Were enrolled in classes starting in the last 90 days or have upcoming enrollments\n'
-        '2. Have achieved NRS level 4 or higher on A or D level TABE tests within the past 2 years',
+        '2. Have achieved NRS level 3 or higher in at least 2 different TABE subtests (Reading, Math, Language)\n'
+        '3. Have achieved NRS level 4 or higher on A or D level tests in at least 1 of those subtests\n'
+        '4. Based on TABE tests from the past 2 years only (excludes any Level E scores)',
         'reporter@dccaep.org',
         [email_address]
     )

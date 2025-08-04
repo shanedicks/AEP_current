@@ -700,3 +700,90 @@ def mark_enrollments_reported_task(enrollments_list, user_email):
         email.send()
         os.remove('errors.csv')
     return True
+
+@shared_task
+def mark_attendance_reported_task(attendance_list, user_email):
+    errors = False
+    student_not_found = []
+    section_not_found = []
+    attendance_not_found = []
+    
+    Student = apps.get_model('people', 'Student')
+    Section = apps.get_model('sections', 'Section')
+    Attendance = apps.get_model('sections', 'Attendance')
+    
+    for student_id, section_id, date_strings in attendance_list:
+        # Find student and section once per enrollment
+        try:
+            student = Student.objects.get(WRU_ID=student_id)
+        except ObjectDoesNotExist:
+            # Add all dates for this enrollment to error
+            error_row = [student_id, section_id] + date_strings
+            student_not_found.append(error_row)
+            errors = True
+            continue
+            
+        try:
+            section = Section.objects.get(WRU_ID=section_id)
+        except ObjectDoesNotExist:
+            # Add all dates for this enrollment to error
+            error_row = [student_id, section_id] + date_strings
+            section_not_found.append(error_row)
+            errors = True
+            continue
+        
+        # Track failed dates for this enrollment
+        failed_dates = []
+        
+        # Process each attendance date for this enrollment
+        for date_str in date_strings:
+            try:
+                attendance_date = datetime.strptime(date_str, '%Y%m%d').date()
+                attendance = Attendance.objects.filter(
+                    enrollment__student=student,
+                    enrollment__section=section,
+                    attendance_date=attendance_date
+                )
+                attendance.update(reported=True)
+            except (ObjectDoesNotExist, ValueError):
+                failed_dates.append(date_str)
+                errors = True
+        
+        # If any dates failed for this enrollment, add to errors
+        if failed_dates:
+            error_row = [student_id, section_id] + failed_dates
+            attendance_not_found.append(error_row)
+
+    if errors:
+        with open('errors.csv', 'w', newline='') as error_file:
+            writer = csv.writer(error_file)
+            
+            if student_not_found:
+                writer.writerow(['These records were not updated because a matching student was not found'])
+                writer.writerow(['SID', 'COURSE_ID', 'Failed Dates...'])
+                for row in student_not_found:
+                    writer.writerow(row)
+                    
+            if section_not_found:
+                writer.writerow(['These records were not updated because a matching section was not found'])
+                writer.writerow(['SID', 'COURSE_ID', 'Failed Dates...'])
+                for row in section_not_found:
+                    writer.writerow(row)
+                    
+            if attendance_not_found:
+                writer.writerow(['These records were not updated because matching attendance records were not found'])
+                writer.writerow(['SID', 'COURSE_ID', 'Failed Dates...'])
+                for row in attendance_not_found:
+                    writer.writerow(row)
+                    
+        email = EmailMessage(
+            'Reported Attendance Import Report',
+            'These records were not updated',
+            'admin@dccaep.org',
+            [user_email]
+        )
+        email.attach_file('errors.csv')
+        email.send()
+        os.remove('errors.csv')
+    return True
+

@@ -310,7 +310,8 @@ class AttendanceAdmin(ImportExportActionModelAdmin):
         '__str__',
         'attendance_date',
         'attendance_type',
-        'att_hours'
+        'att_hours',
+        'reported'
     )
 
     list_filter = (

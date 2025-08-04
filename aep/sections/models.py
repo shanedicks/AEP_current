@@ -889,6 +889,8 @@ class Attendance(models.Model):
         blank=True,       
     )
 
+    reported = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['attendance_date', ]
         unique_together = ('enrollment', 'attendance_date', 'att_hours')
