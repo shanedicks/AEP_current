@@ -23,6 +23,14 @@
     padding-bottom: 80px;  /* Changed from margin to padding for footer space */
 }
 
+@media (max-width: 1199px) {
+    .navbar-collapse.collapse {
+        display: none !important;
+    }
+    .navbar-toggle {
+        display: block !important;
+    }
+}
 
 
 
