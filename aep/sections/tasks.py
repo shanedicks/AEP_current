@@ -714,43 +714,37 @@ def mark_attendance_reported_task(attendance_list, user_email):
     Attendance = apps.get_model('sections', 'Attendance')
     
     for student_id, section_id, date_strings in attendance_list:
-        # Find student and section once per enrollment
-        try:
-            student = Student.objects.get(WRU_ID=student_id)
-        except MultipleObjectsReturned:
-            # Log the duplicate for cleanup, but try to proceed
-            error_row = [student_id, section_id] + date_strings
-            duplicate_students.append(error_row)
-            errors = True
-
-            try:
-                section = Section.objects.get(WRU_ID=section_id)
-                enrolled_students = Student.objects.filter(
-                    WRU_ID=student_id,
-                    classes__section=section
-                )
-                if enrolled_students.count() == 1:
-                    # Use the one that's enrolled and continue processing
-                    student = enrolled_students.get()
-                else:
-                    # Can't determine which student to use, skip this enrollment
-                    continue
-        except ObjectDoesNotExist:
-            # Add all dates for this enrollment to error
-            error_row = [student_id, section_id] + date_strings
-            student_not_found.append(error_row)
-            errors = True
-            continue
-            
         try:
             section = Section.objects.get(WRU_ID=section_id)
         except ObjectDoesNotExist:
-            # Add all dates for this enrollment to error
             error_row = [student_id, section_id] + date_strings
             section_not_found.append(error_row)
             errors = True
             continue
-        
+
+        try:
+            student = Student.objects.get(WRU_ID=student_id)
+        except ObjectDoesNotExist:
+            error_row = [student_id, section_id] + date_strings
+            student_not_found.append(error_row)
+            errors = True
+            continue
+        except MultipleObjectsReturned:
+            # Log the duplicate for cleanup
+            error_row = [student_id, section_id] + date_strings
+            duplicate_students.append(error_row)
+            errors = True
+
+            # Try to find the enrolled one
+            enrolled_students = Student.objects.filter(
+                WRU_ID=student_id,
+                classes__section=section
+            )
+            if enrolled_students.count() == 1:
+                student = enrolled_students.get()
+            else:
+                continue  # Skip this enrollment
+
         # Track failed dates for this enrollment
         failed_dates = []
         
@@ -767,7 +761,7 @@ def mark_attendance_reported_task(attendance_list, user_email):
             except (ObjectDoesNotExist, ValueError):
                 failed_dates.append(date_str)
                 errors = True
-        
+
         # If any dates failed for this enrollment, add to errors
         if failed_dates:
             error_row = [student_id, section_id] + failed_dates
@@ -776,19 +770,19 @@ def mark_attendance_reported_task(attendance_list, user_email):
     if errors:
         with open('errors.csv', 'w', newline='') as error_file:
             writer = csv.writer(error_file)
-            
+
             if student_not_found:
                 writer.writerow(['These records were not updated because a matching student was not found'])
                 writer.writerow(['SID', 'COURSE_ID', 'Failed Dates...'])
                 for row in student_not_found:
                     writer.writerow(row)
-                    
+
             if section_not_found:
                 writer.writerow(['These records were not updated because a matching section was not found'])
                 writer.writerow(['SID', 'COURSE_ID', 'Failed Dates...'])
                 for row in section_not_found:
                     writer.writerow(row)
-                    
+
             if attendance_not_found:
                 writer.writerow(['These records were not updated because matching attendance records were not found'])
                 writer.writerow(['SID', 'COURSE_ID', 'Failed Dates...'])
@@ -800,7 +794,7 @@ def mark_attendance_reported_task(attendance_list, user_email):
                 writer.writerow(['SID', 'COURSE_ID', 'Failed Dates...'])
                 for row in duplicate_students:
                     writer.writerow(row)
-                    
+
         email = EmailMessage(
             'Reported Attendance Import Report',
             'These records were not updated',
