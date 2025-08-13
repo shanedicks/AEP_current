@@ -707,6 +707,7 @@ def mark_attendance_reported_task(attendance_list, user_email):
     student_not_found = []
     section_not_found = []
     attendance_not_found = []
+    duplicate_students = []
     
     Student = apps.get_model('people', 'Student')
     Section = apps.get_model('sections', 'Section')
@@ -716,6 +717,24 @@ def mark_attendance_reported_task(attendance_list, user_email):
         # Find student and section once per enrollment
         try:
             student = Student.objects.get(WRU_ID=student_id)
+        except MultipleObjectsReturned:
+            # Log the duplicate for cleanup, but try to proceed
+            error_row = [student_id, section_id] + date_strings
+            duplicate_students.append(error_row)
+            errors = True
+
+            try:
+                section = Section.objects.get(WRU_ID=section_id)
+                enrolled_students = Student.objects.filter(
+                    WRU_ID=student_id,
+                    classes__section=section
+                )
+                if enrolled_students.count() == 1:
+                    # Use the one that's enrolled and continue processing
+                    student = enrolled_students.get()
+                else:
+                    # Can't determine which student to use, skip this enrollment
+                    continue
         except ObjectDoesNotExist:
             # Add all dates for this enrollment to error
             error_row = [student_id, section_id] + date_strings
@@ -774,6 +793,12 @@ def mark_attendance_reported_task(attendance_list, user_email):
                 writer.writerow(['These records were not updated because matching attendance records were not found'])
                 writer.writerow(['SID', 'COURSE_ID', 'Failed Dates...'])
                 for row in attendance_not_found:
+                    writer.writerow(row)
+
+            if duplicate_students:
+                writer.writerow(['These records had duplicate students with the same WRU_ID'])
+                writer.writerow(['SID', 'COURSE_ID', 'Failed Dates...'])
+                for row in duplicate_students:
                     writer.writerow(row)
                     
         email = EmailMessage(

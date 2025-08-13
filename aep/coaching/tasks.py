@@ -16,7 +16,7 @@ def get_elearn_record(elearn_record_id):
 
 @shared_task
 def elearn_status_task(elearn_record_id):
-    loggerl.info("Updating status of ElearnRecord {0}".format(elearn_record_id))
+    logger.info("Updating status of ElearnRecord {0}".format(elearn_record_id))
     elearn_record = get_elearn_record(elearn_record_id)
     elearn_record.elearn_status = 'Pending'
     elearn_record.status_updated = timezone.now()
