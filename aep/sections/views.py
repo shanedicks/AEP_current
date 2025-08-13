@@ -125,6 +125,7 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
         if form.cleaned_data['to_date'] != "":
             to_date = form.cleaned_data['to_date']
             attendance = attendance.filter(attendance_date__lte=to_date)
+        attendance = attendance.filter(reported=False)
         attendance = attendance.select_related('enrollment__student', 'enrollment__section')
         el = {
             False: 'N',
