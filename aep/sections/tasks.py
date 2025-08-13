@@ -3,7 +3,7 @@ import csv
 import os
 from googleapiclient.errors import HttpError
 from django.apps import apps
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.db.models import Q
