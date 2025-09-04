@@ -6,7 +6,7 @@ from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
-from django.db.models import Sum, Min, Max, Count, Q, Case, When
+from django.db.models import Sum, Min, Max, Count, Q, Case, When, Exists, OuterRef
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils import timezone
@@ -1219,7 +1219,14 @@ def advanced_student_report_task(email_address):
             When(math_3plus_count__gt=0, then=1), default=0  
         ) + Case(
             When(lang_3plus_count__gt=0, then=1), default=0
-        )
+        ),
+       accuplacer_prep_completed=Exists(
+           Enrollment.objects.filter(
+               student=OuterRef('pk'),
+               status='C',
+               section__title__icontains='accuplacer'
+           )
+       )
     ).filter(
         total_subtests_with_3plus__gte=2
     ).filter(
@@ -1249,6 +1256,7 @@ def advanced_student_report_task(email_address):
             "Math NRS 4+ Count",
             "Lang NRS 3+ Count",
             "Lang NRS 4+ Count",
+            "Accuplacer Prep Completed",
             "Intake Date",
             "Language",
             "CCR On Campus",
@@ -1301,6 +1309,7 @@ def advanced_student_report_task(email_address):
                 student.math_4plus_count,
                 student.lang_3plus_count,
                 student.lang_4plus_count,
+                student.accuplacer_prep_completed,
                 student.intake_date,
                 "|".join(sorted(set(student.prospects.values_list('primary_language', flat=True)))),
                 student.ccr_app,
