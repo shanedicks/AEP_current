@@ -1320,7 +1320,7 @@ def advanced_student_report_task(email_address):
                 student.accuplacer_app,
                 student.certifications_app,
                 student.gender,
-                str(student.dob),
+                student.dob.strftime('%Y-%m-%d'),
                 student.get_marital_status_display(),
                 " ".join([
                     student.street_address_1,
