@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | Eligibility Information{% endblock head_title %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">Select an option</h2>
+            <p class="text-center lead">State law now requires proof of immigration or citizenship status for Adult Education students</p>
+        </div>
+    </div>
+    
+    <div class="row" style="margin-top: 30px; display: flex; align-items: stretch;">
+        <!-- Eligible - US Citizens -->
+        <div class="col-md-4" style="display: flex;">
+            <div class="panel panel-success" style="width: 100%; display: flex; flex-direction: column;">
+                <div class="panel-heading text-center">
+                    <span class="glyphicon glyphicon-ok-circle" style="color: #5cb85c; font-size: 48px;"></span>
+                    <h3>Eligible</h3>
+                    <p><em>*Documentation Required</em></p>
+                </div>
+                <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <ul class="list-unstyled" style="min-height: 200px;">
+                            <li>U.S. Citizen</li>
+                            <li>Can provide Social Security Number</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="text-center" style="margin-bottom: 20px;">
+                            <span class="glyphicon glyphicon-chevron-right" style="font-size: 48px; color: #666;"></span>
+                        </div>
+                        <div class="text-center" style="margin-bottom: 15px;">
+                            <a href="{% url 'people:prospect signup' %}" class="btn btn-success btn-lg">Continue to Registration</a>
+                        </div>
+                        <p class="text-center"><small>Lands on Prospect Page</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Eligible - Documentation Required -->
+        <div class="col-md-4" style="display: flex;">
+            <div class="panel panel-warning" style="width: 100%; display: flex; flex-direction: column;">
+                <div class="panel-heading text-center">
+                    <span class="glyphicon glyphicon-ok-circle" style="color: #5cb85c; font-size: 48px;"></span>
+                    <h3>Eligible</h3>
+                    <p><em>*Documentation Required</em></p>
+                </div>
+                <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <ul class="list-unstyled" style="font-size: 12px; min-height: 200px;">
+                            <li>Lawful Permanent Residents (Green Card Holders)</li>
+                            <li>Asylees</li>
+                            <li>Refugees</li>
+                            <li>Paroled into the U.S. for at Least One Year</li>
+                            <li>Withholding of Deportation or Removal</li>
+                            <li>Conditional Entrants (Before April 1, 1980)</li>
+                            <li>Cuban or Haitian Entrants</li>
+                            <li>Citizens of the Freely Associated States</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="text-center" style="margin-bottom: 20px;">
+                            <span class="glyphicon glyphicon-chevron-right" style="font-size: 48px; color: #666;"></span>
+                        </div>
+                        <div class="text-center" style="margin-bottom: 15px;">
+                            <a href="{% url 'people:citizenship verification' %}" class="btn btn-warning btn-lg">Documentation Required</a>
+                        </div>
+                        <p class="text-center"><small>Goes to Citizenship Verification Landing Page</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Not Eligible -->
+        <div class="col-md-4" style="display: flex;">
+            <div class="panel panel-danger" style="width: 100%; display: flex; flex-direction: column;">
+                <div class="panel-heading text-center">
+                    <span class="glyphicon glyphicon-remove-circle" style="color: #d9534f; font-size: 48px;"></span>
+                    <h3>Not Eligible</h3>
+                    <p style="visibility: hidden;"><em>*Documentation Required</em></p>
+                </div>
+                <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <ul class="list-unstyled" style="min-height: 200px;">
+                            <li>Work Visa</li>
+                            <li>Tourist Visa</li>
+                            <li>No Legal Immigration Documentation</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="text-center" style="margin-bottom: 20px;">
+                            <span class="glyphicon glyphicon-chevron-right" style="font-size: 48px; color: #666;"></span>
+                        </div>
+                        <div class="text-center" style="margin-bottom: 15px;">
+                            <a href="{% url 'people:citizenship verification' %}" class="btn btn-danger btn-lg">More Information</a>
+                        </div>
+                        <p class="text-center"><small>Goes to Citizenship Verification Landing Page</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
