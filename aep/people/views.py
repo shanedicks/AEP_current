@@ -40,7 +40,7 @@ from .forms import (
 from .tasks import (intake_retention_report_task, send_orientation_confirmation_task,
     prospect_check_task, prospect_export_task, process_student_import_task,
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
-    student_check_duplicate_task, intercession_report_task, minor_student_report_task)
+    student_check_duplicate_task, intercession_report_task, minor_student_report_task, update_eligibility_task)
 
 
 # <<<<< Student Views >>>>>
