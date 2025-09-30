@@ -59,7 +59,10 @@ single_student_paperwork_patterns = [
         name='send upload id link'),
     re_path(r'^link-sent/$',
         views.LinkSentView.as_view(),
-        name='link sent')
+        name='link sent'),
+    path('upload-eligibility-doc/',
+        views.EligibilityDocUploadView.as_view(),
+        name='upload eligibility doc'),
 ]
 
 single_student_patterns = [
@@ -128,6 +131,9 @@ student_patterns = [
     path('import/',
         views.ImportWruStudentsView.as_view(),
         name='student import'),
+    path('update-eligibility/',
+        views.UpdateEligibilityView.as_view(),
+        name='update eligibility'),
     path('not-found',
         TemplateView.as_view(template_name='people/student_not_found.html'),
         name='student not found')

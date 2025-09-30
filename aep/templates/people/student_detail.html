@@ -23,6 +23,22 @@
       </div>
       <table class='table'>
         <tr>
+          <td><strong>Services Eligibility:</strong></td>
+          <td>
+            {% if student.eligibility_verified %}
+              <span class="text-success">Verified</span>
+              {% if paperwork.eligibility_doc %}
+                | <a href="{{ paperwork.eligibility_doc_url }}" target="_blank">View Documentation</a>
+              {% endif %}
+            {% else %}
+              <span class="text-warning">Not Verified</span>
+            {% endif %}
+            | <a href="{% url 'people:upload eligibility doc' slug=student.slug %}" class="btn btn-xs btn-default">Upload/Update Doc</a>
+          </td>
+        </tr>
+      </table>
+      <table class='table'>
+        <tr>
           <td>WRU ID</td>
           <td>{{ student.WRU_ID }}</td>
         </tr>

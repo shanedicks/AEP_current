@@ -8,6 +8,7 @@
             <th>ID</th>
             <th>Student</th>
             <th>Status</th>
+            <th>Eligible</th>
             <th>Assignment</th>
             <th>NRS</th>
             <th>Last Test</th>
@@ -20,6 +21,7 @@
             <td>{{ student.student.WRU_ID}}</td>
             <td>{{ student.student }}</td>
             <td>{{ student.student.testing_status }}</td>
+            <td>{{ student.student.eligibility_verified }}
             <td>{{ student.student.tests.test_assignment }}</td>
             <td>{{ student.student.tests.last_test_nrs }}
             <td>{{ student.student.tests.last_test_date|date:"M. j, Y" }}</td>

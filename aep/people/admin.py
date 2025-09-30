@@ -388,12 +388,14 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'folder',
         'orientation',
         'partner',
+        'eligibility_verified'
     )
 
     list_editable = (
         'paperwork',
         'folder',
         'orientation',
+        'eligibility_verified'
     )
 
     list_filter = (
@@ -429,6 +431,7 @@ class StudentAdmin(ImportExportActionModelAdmin):
         'partner',
         ("WRU_ID",
          "slug"),
+        'eligibility_verified',
         "intake_date",
         ("first_name",
          "last_name",
@@ -631,6 +634,7 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
         "writing",
         "pic_id",
         "pic_id_file",
+        "eligibility_doc",
         "sd_reading",
         "sd_math",
         "sd_language",

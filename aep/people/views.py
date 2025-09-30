@@ -36,7 +36,7 @@ from .forms import (
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm, 
-    PaperworkForm, PhotoIdForm)
+    PaperworkForm, PhotoIdForm, EligibilityDocForm)
 from .tasks import (intake_retention_report_task, send_orientation_confirmation_task,
     prospect_check_task, prospect_export_task, process_student_import_task,
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
@@ -1183,6 +1183,36 @@ class PhotoIdUploadView(BasePaperworkView):
             form.add_error(None, str(e))
             return self.form_invalid(form)
 
+class EligibilityDocUploadView(LoginRequiredMixin, BasePaperworkView):
+
+    form_class = EligibilityDocForm
+    template_name = 'people/upload_eligibility_doc.html'
+
+    def is_paperwork_complete(self):
+        return False
+
+    def form_valid(self, form):
+        paperwork = self.object
+        eligibility_doc = self.request.FILES['eligibility_doc']
+        name = paperwork.student.__str__() + " eligibility documentation"
+        try:
+            paperwork.eligibility_doc = file_to_drive(
+                name=name, 
+                file=eligibility_doc,
+                folder_id='1LjU_OhXIGeiOhSFULAoUin-agjZwprDH'
+            )
+            paperwork.save()
+            student = paperwork.student
+            student.eligibility_verified = True
+            student.save()
+            return super().form_valid(form)
+        except DriveUploadError as e:
+            form.add_error(None, str(e))
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+            return reverse('people:student detail', kwargs={'slug': self.object.student.slug})
+
 class OrientationFinishView(View):
 
     def get(self, request, *args, **kwargs):
@@ -1227,6 +1257,7 @@ class ImportWruStudentsView(LoginRequiredMixin, FormView):
                     'gender': student_gender,
                     'zip_code': row['Zip'],
                     'email': row['Email Address'],
+                    'eligibility_verified': bool(row['SSN'].strip()),
                 }
 
                 student, created = Student.objects.update_or_create(
@@ -1260,4 +1291,63 @@ class ImportWruStudentsView(LoginRequiredMixin, FormView):
 
         process_student_import_task.delay(self.request.user.email, student_ids)
 
+        return HttpResponseRedirect(reverse('people:student list'))
+
+
+class UpdateEligibilityView(LoginRequiredMixin, FormView):
+    
+    form_class = CSVImportForm
+    template_name = 'people/update_eligibility.html'
+    
+    def form_valid(self, form):
+        csv_file = self.request.FILES['csv_file']
+        decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+        headers = decoded_file.readline().strip().split(",")
+        reader = csv.DictReader(decoded_file, fieldnames=headers)
+        
+        not_found = []
+        
+        for row in reader:
+            wru_id = row['Student ID']
+            has_ssn = bool(row['SSN'].strip())
+            
+            student = None
+            
+            # Try original ID
+            try:
+                student = Student.objects.get(WRU_ID=wru_id, duplicate=False)
+            except Student.DoesNotExist:
+                # Try with 'd' prefix to find merged duplicate
+                try:
+                    dup = Student.objects.get(WRU_ID='d' + wru_id)
+                    # Follow the duplicate_of chain to the end
+                    while dup.duplicate and dup.duplicate_of is not None:
+                        dup = dup.duplicate_of
+                    student = dup
+                except Student.DoesNotExist:
+                    not_found.append(wru_id)
+                    continue
+            
+            if student:
+                student.eligibility_verified = has_ssn
+                student.save()
+        
+        # Email not found records if any
+        if not_found:
+            with open('not_found.csv', 'w', newline='') as error_file:
+                writer = csv.writer(error_file)
+                writer.writerow(['WRU_ID'])
+                for wru_id in not_found:
+                    writer.writerow([wru_id])
+            
+            email = EmailMessage(
+                'Eligibility Update Report',
+                f'{len(not_found)} WRU_IDs not found (see attachment).',
+                'admin@dccaep.org',
+                [self.request.user.email]
+            )
+            email.attach_file('not_found.csv')
+            email.send()
+            os.remove('not_found.csv')
+        
         return HttpResponseRedirect(reverse('people:student list'))

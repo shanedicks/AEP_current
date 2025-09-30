@@ -2735,5 +2735,27 @@ class PhotoIdForm(ModelForm):
     class Meta:
         model = Paperwork
 
-        fields = (
-        )
+        fields = ()
+
+
+class EligibilityDocForm(ModelForm):
+
+    def clean_eligibility_doc(self):
+        file = self.cleaned_data['eligibility_doc']
+        if file.content_type not in ['image/png', 'image/jpeg', 'application/pdf']:
+            raise ValidationError(
+                _("Sorry that file type is not supported. Please upload a .jpg, .png, or .pdf file")
+            )
+        return file
+
+    eligibility_doc = FileField()
+
+    def __init__(self, *args, **kwargs):
+        super(EligibilityDocForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+
+    class Meta:
+        model = Paperwork
+        fields = ()

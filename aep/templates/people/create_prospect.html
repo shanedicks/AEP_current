@@ -2,6 +2,10 @@
 {% load crispy_forms_tags %}
 {% block head_title %}DCCAEP | Signup{% endblock head_title %}
 {% block content %}
+<div class="alert alert-danger text-center">
+    <h4><strong>State law requires proof of legal immigration to qualify for program services.</strong></h4>
+  	<h4>US Citizens must provide Social Security Number (SSN) to register</h4>
+</div>
 <div class="well">
     <form method="post">
         {% csrf_token %}
@@ -9,5 +13,7 @@
         <button class="btn btn-success btn-lg center-block" type="submit" value="Submit">Register</button>
     </form>
 </div>
-<h3>Submitting this form will redirect you to the LCTCS website. You must complete LCTCS registration to enter the program.</h3>
+<div class="alert alert-info text-center">
+<h3>Submitting this form will redirect you to the LCTCS website.</h3><h3>You must complete LCTCS registration to enter the program.</h3>
+</div>
 {% endblock content %}

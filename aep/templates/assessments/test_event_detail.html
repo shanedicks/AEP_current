@@ -19,6 +19,7 @@
 		<th>Phone</th>
 		<th>Email</th>
 		<th>Notes</th>
+		<th>Eligible</th>
 		<th>Assignment</th>
 		{% if event.test == event.ORIENTATION %}
 		<th>Program</th>
@@ -34,6 +35,7 @@
 		<td>{{ student.student.phone }}</td>
 		<td>{{ student.student.email }}</td>
 		<td><a href="{% url 'assessments:test appointment notes' pk=student.pk %}">-{{ student.notes }}-</a></td>
+		<td>{{ student.student.eligibility_verified }}
 		<td>{{ student.student.tests.test_assignment }}</td>
 		{% if event.test == event.ORIENTATION %}
 		<td>{{ student.student.program_from_interest }}</td>

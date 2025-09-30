@@ -62,4 +62,20 @@
           </tr>
         </table>
       {% endif %}
+      {% if paperwork.eligibility_doc %}
+      <table class="table borderless">
+        <tr>
+          <td>Eligibility Documentation</td>
+          <td><a href="{{ paperwork.eligibility_doc_url }}" target="blank">{{ paperwork.eligibility_doc_url }}</a></td>
+        </tr>
+      </table>
+      {% else %}
+        <p>{{student.first_name}} has not uploaded eligibility documentation</p>
+        <table class="table borderless">
+          <tr>
+            <td>Click the link to upload eligibility documentation for {{student.first_name}}</td>
+            <td><a type="button" class="btn btn-default" href="{% url 'people:upload eligibility doc' slug=student.slug %}" role="button">Upload Eligibility Doc</a></td>
+          </tr>
+        </table>
+      {% endif %}
 {%endblock content %}

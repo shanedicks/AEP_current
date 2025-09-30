@@ -187,6 +187,8 @@ def move_or_copy_paperwork(orig, duplicate):
                     setattr(np, field_name,  getattr(p, field_name))
             if np.pic_id_file == '' and p.pic_id_file != '':
                 np.pic_id_file = p.pic_id_file
+            if np.eligibility_doc == '' and p.eligibility_doc != '':
+                np.eligibility_doc = p.eligibility_doc
             np.save()
     except ObjectDoesNotExist:
         pass
@@ -1005,6 +1007,10 @@ class Student(Profile):
         default=False,
         verbose_name=_("US Citizen")
     )
+    eligibility_verified = models.BooleanField(
+        default=False,
+        verbose_name=_("Verified Eligible")
+    )
     prior_registration = models.BooleanField(
         default=False,
         verbose_name=_("Returning Student"),
@@ -1755,6 +1761,10 @@ class Paperwork(models.Model):
         max_length=50,
         blank=True
     )
+    eligibility_doc = models.CharField(
+        max_length=50,
+        blank=True
+    )
 
 
     class Meta:
@@ -1769,6 +1779,12 @@ class Paperwork(models.Model):
             return ""
         else:
             return "https://drive.google.com/file/d/{0}/view".format(self.pic_id_file)
+
+    def eligibility_doc_url(self):
+        if self.eligibility_doc == '':
+            return ""
+        else:
+            return "https://drive.google.com/file/d/{0}/view".format(self.eligibility_doc)
 
     def save(self, *args, **kwargs):
         super(Paperwork, self).save(*args, **kwargs)

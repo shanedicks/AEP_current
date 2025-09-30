@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-{% block head_title %}DCCAEP | Import Students{% endblock head_title %}
+{% block head_title %}DCCAEP | Update Eligibility{% endblock head_title %}
 
 {% block content %}
-    <h1> Import WRU Students</h1>
-    <p>This tool imports students from the WRU student profile details export</p>
+    <h1>Update WRU Students</h1>
+    <p>This tool updates student's eligibility from the WRU student profile details export</p>
     <p>Any errors will be sent to your user email. Please check your email for an error report</p>
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
