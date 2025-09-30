@@ -1353,3 +1353,71 @@ def advanced_student_report_task(email_address):
     email.send()
 
     os.remove(filename)
+
+
+@shared_task
+def update_eligibility_task(wru_id_list, user_email):
+    Student = apps.get_model('people', 'Student')
+    not_found = []
+    multiple_found = []
+    
+    for wru_id in wru_id_list:
+        # Try original ID
+        students = Student.objects.filter(WRU_ID=wru_id, duplicate=False)
+        
+        if students.count() == 0:
+            # Try with 'd' prefix to find merged duplicate
+            try:
+                dup = Student.objects.get(WRU_ID='d' + wru_id)
+                # Follow the duplicate_of chain to the end
+                while dup.duplicate and dup.duplicate_of is not None:
+                    dup = dup.duplicate_of
+                dup.eligibility_verified = True
+                dup.save()
+            except Student.DoesNotExist:
+                not_found.append(wru_id)
+            except Student.MultipleObjectsReturned:
+                not_found.append(wru_id)
+        elif students.count() > 1:
+            # Multiple non-duplicate students with same WRU_ID - update all
+            students.update(eligibility_verified=True)
+            multiple_found.append(wru_id)
+        else:
+            students.update(eligibility_verified=True)
+    
+    # Email results
+    message = 'Eligibility update complete.\n'
+    if multiple_found:
+        message += f'\n{len(multiple_found)} WRU_IDs had multiple non-duplicate records (all updated).\n'
+    if not_found:
+        message += f'\n{len(not_found)} WRU_IDs not found.\n'
+    
+    attachments = []
+    if not_found:
+        with open('not_found.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['WRU_ID'])
+            for wru_id in not_found:
+                writer.writerow([wru_id])
+        attachments.append('not_found.csv')
+    
+    if multiple_found:
+        with open('multiple_found.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['WRU_ID'])
+            for wru_id in multiple_found:
+                writer.writerow([wru_id])
+        attachments.append('multiple_found.csv')
+    
+    email = EmailMessage(
+        'Eligibility Update Report',
+        message,
+        'admin@dccaep.org',
+        [user_email]
+    )
+    for attachment in attachments:
+        email.attach_file(attachment)
+    email.send()
+    
+    for attachment in attachments:
+        os.remove(attachment)

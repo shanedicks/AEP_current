@@ -1305,49 +1305,9 @@ class UpdateEligibilityView(LoginRequiredMixin, FormView):
         headers = decoded_file.readline().strip().split(",")
         reader = csv.DictReader(decoded_file, fieldnames=headers)
         
-        not_found = []
+        wru_id_list = [row['Student ID'] for row in reader]
         
-        for row in reader:
-            wru_id = row['Student ID']
-            has_ssn = bool(row['SSN'].strip())
-            
-            student = None
-            
-            # Try original ID
-            try:
-                student = Student.objects.get(WRU_ID=wru_id, duplicate=False)
-            except Student.DoesNotExist:
-                # Try with 'd' prefix to find merged duplicate
-                try:
-                    dup = Student.objects.get(WRU_ID='d' + wru_id)
-                    # Follow the duplicate_of chain to the end
-                    while dup.duplicate and dup.duplicate_of is not None:
-                        dup = dup.duplicate_of
-                    student = dup
-                except Student.DoesNotExist:
-                    not_found.append(wru_id)
-                    continue
-            
-            if student:
-                student.eligibility_verified = has_ssn
-                student.save()
+        # Trigger async task
+        update_eligibility_task.delay(wru_id_list, self.request.user.email)
         
-        # Email not found records if any
-        if not_found:
-            with open('not_found.csv', 'w', newline='') as error_file:
-                writer = csv.writer(error_file)
-                writer.writerow(['WRU_ID'])
-                for wru_id in not_found:
-                    writer.writerow([wru_id])
-            
-            email = EmailMessage(
-                'Eligibility Update Report',
-                f'{len(not_found)} WRU_IDs not found (see attachment).',
-                'admin@dccaep.org',
-                [self.request.user.email]
-            )
-            email.attach_file('not_found.csv')
-            email.send()
-            os.remove('not_found.csv')
-        
-        return HttpResponseRedirect(reverse('people:student list'))
+        return HttpResponseRedirect(reverse('report success'))
