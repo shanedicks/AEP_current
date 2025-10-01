@@ -1257,7 +1257,6 @@ class ImportWruStudentsView(LoginRequiredMixin, FormView):
                     'gender': student_gender,
                     'zip_code': row['Zip'],
                     'email': row['Email Address'],
-                    'eligibility_verified': bool(row['SSN'].strip()),
                 }
 
                 student, created = Student.objects.update_or_create(
