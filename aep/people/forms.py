@@ -2758,4 +2758,4 @@ class EligibilityDocForm(ModelForm):
 
     class Meta:
         model = Paperwork
-        fields = ()
+        fields = ('eligibility_status', 'eligibility_doc_type')
