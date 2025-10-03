@@ -1651,6 +1651,34 @@ class Staff(Profile):
 
 class Paperwork(models.Model):
 
+
+    ELIGIBILITY_STATUS_CHOICES = [
+        ('USC', 'U.S. Citizen'),
+        ('LPR', 'Lawful Permanent Residents (Green Card Holders)'),
+        ('ASY', 'Asylees'),
+        ('REF', 'Refugees'),
+        ('PAR', 'Paroled into the U.S. for at Least One Year'),
+        ('WDR', 'Withholding of Deportation or Removal'),
+        ('CEN', 'Conditional Entrants (Before April 1, 1980)'),
+        ('CHE', 'Cuban or Haitian Entrants'),
+        ('COFA', 'Citizens of the Freely Associated States'),
+    ]
+
+    ELIGIBILITY_DOC_CHOICES = [
+        ('SSN', 'Social Security Number (SSN)'),
+        ('N550', 'Form N-550'),
+        ('N560', 'Form N-560'),
+        ('N561', 'Form N-561'),
+        ('N570', 'Form N-570'),
+        ('I551', 'Form I-551'),
+        ('I571', 'Form I-571'),
+        ('I94', 'Form I-94'),
+        ('ASYL', 'Asylum Approval Letter'),
+        ('IJOR', "Immigration Judge's Order"),
+        ('DHSL', 'DHS Letter'),
+        ('COFA_DOC', 'Passport + I-94 (COFA Entry)'),
+    ]
+
     student = models.OneToOneField(
         Student,
         models.CASCADE,
@@ -1766,6 +1794,27 @@ class Paperwork(models.Model):
         blank=True
     )
 
+    eligibility_status = models.CharField(
+        max_length=10,
+        choices=ELIGIBILITY_STATUS_CHOICES,
+        blank=True
+    )
+    eligibility_doc_type = models.CharField(
+        max_length=10,
+        choices=ELIGIBILITY_DOC_CHOICES,
+        blank=True
+    )
+    eligibility_doc_uploaded_by = models.ForeignKey(
+        'auth.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='eligibility_uploads'
+    )
+    eligibility_doc_uploaded_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name_plural = 'paperwork'

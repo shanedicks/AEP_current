@@ -1201,6 +1201,8 @@ class EligibilityDocUploadView(LoginRequiredMixin, BasePaperworkView):
                 file=eligibility_doc,
                 folder_id='1LjU_OhXIGeiOhSFULAoUin-agjZwprDH'
             )
+            paperwork.eligibility_doc_uploaded_by = self.request.user
+            paperwork.eligibility_doc_uploaded_at = timezone.now()
             paperwork.save()
             student = paperwork.student
             student.eligibility_verified = True
