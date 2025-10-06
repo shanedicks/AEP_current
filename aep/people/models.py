@@ -1666,6 +1666,7 @@ class Paperwork(models.Model):
 
     ELIGIBILITY_DOC_CHOICES = [
         ('SSN', 'Social Security Number (SSN)'),
+        ('GC', 'Permanent Resident (Green Card)'),
         ('N550', 'Form N-550'),
         ('N560', 'Form N-560'),
         ('N561', 'Form N-561'),
