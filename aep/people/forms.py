@@ -2742,13 +2742,13 @@ class EligibilityDocForm(ModelForm):
 
     def clean_eligibility_doc(self):
         file = self.cleaned_data['eligibility_doc']
-        if file.content_type not in ['image/png', 'image/jpeg', 'application/pdf']:
+        if file and file.content_type not in ['image/png', 'image/jpeg', 'application/pdf']:
             raise ValidationError(
                 _("Sorry that file type is not supported. Please upload a .jpg, .png, or .pdf file")
             )
         return file
 
-    eligibility_doc = FileField()
+    eligibility_doc = FileField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(EligibilityDocForm, self).__init__(*args, **kwargs)

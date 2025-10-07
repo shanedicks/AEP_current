@@ -1193,24 +1193,26 @@ class EligibilityDocUploadView(LoginRequiredMixin, BasePaperworkView):
 
     def form_valid(self, form):
         paperwork = self.object
-        eligibility_doc = self.request.FILES['eligibility_doc']
-        name = paperwork.student.__str__() + " eligibility documentation"
-        try:
-            paperwork.eligibility_doc = file_to_drive(
-                name=name, 
-                file=eligibility_doc,
-                folder_id='1LjU_OhXIGeiOhSFULAoUin-agjZwprDH'
-            )
-            paperwork.eligibility_doc_uploaded_by = self.request.user
-            paperwork.eligibility_doc_uploaded_at = timezone.now()
-            paperwork.save()
-            student = paperwork.student
-            student.eligibility_verified = True
-            student.save()
-            return super().form_valid(form)
-        except DriveUploadError as e:
-            form.add_error(None, str(e))
-            return self.form_invalid(form)
+        if 'eligibility_doc' in self.request.FILES:
+            eligibility_doc = self.request.FILES['eligibility_doc']
+            name = paperwork.student.__str__() + " eligibility documentation"
+            try:
+                paperwork.eligibility_doc = file_to_drive(
+                    name=name, 
+                    file=eligibility_doc,
+                    folder_id='1LjU_OhXIGeiOhSFULAoUin-agjZwprDH'
+                )
+            except DriveUploadError as e:
+                form.add_error(None, str(e))
+                return self.form_invalid(form)
+
+        paperwork.eligibility_verified_by = self.request.user
+        paperwork.eligibility_verified_at = timezone.now()
+        paperwork.save()
+        student = paperwork.student
+        student.eligibility_verified = True
+        student.save()
+        return super().form_valid(form)
 
     def get_success_url(self):
             return reverse('people:student detail', kwargs={'slug': self.object.student.slug})

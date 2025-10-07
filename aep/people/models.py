@@ -1805,14 +1805,14 @@ class Paperwork(models.Model):
         choices=ELIGIBILITY_DOC_CHOICES,
         blank=True
     )
-    eligibility_doc_uploaded_by = models.ForeignKey(
+    eligibility_verified_by = models.ForeignKey(
         'auth.User',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='eligibility_uploads'
     )
-    eligibility_doc_uploaded_at = models.DateTimeField(
+    eligibility_verified_at = models.DateTimeField(
         null=True,
         blank=True
     )

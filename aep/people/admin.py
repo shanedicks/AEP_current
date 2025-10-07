@@ -637,8 +637,8 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
         "eligibility_status",
         "eligibility_doc_type",
         "eligibility_doc",
-        "eligibility_doc_uploaded_by",
-        "eligibility_doc_uploaded_at",
+        "eligibility_verified_by",
+        "eligibility_verified_at",
         "sd_reading",
         "sd_math",
         "sd_language",
@@ -663,8 +663,8 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
         "guardian_signature",
         "sig_date",
         "g_sig_date",
-        "eligibility_doc_uploaded_by",
-        "eligibility_doc_uploaded_at",
+        "eligibility_verified_by",
+        "eligibility_verified_at",
     )
 
 admin.site.register(Paperwork, PaperworkAdmin)
