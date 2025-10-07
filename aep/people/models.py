@@ -292,6 +292,7 @@ def full_merge(orig, duplicate):
     move_prospects(orig, duplicate)
     duplicate.intake_date = orig.intake_date
     duplicate.notes += orig.notes
+    duplicate.eligibility_verified = max(orig.eligibility_verified, duplicate.eligibility_verified)
     duplicate.save()
     orig.duplicate_of = duplicate
     orig.duplicate = True
