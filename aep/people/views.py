@@ -1239,7 +1239,12 @@ class ImportWruStudentsView(LoginRequiredMixin, FormView):
         reader = csv.DictReader(decoded_file, fieldnames=headers)
         parish_dict = {k: v for (v, k) in Student.PARISH_CHOICES}
         state_dict = {k.upper(): v for (v, k) in Student.STATE_CHOICES}
-        gender_dict = {k.upper(): v for (v, k) in Student.GENDER_CHOICES}
+        gender_dict = {
+            "MALE": 'M',
+            "FEMALE": 'F',
+            "NON-BINARY": 'B',
+            "NO ANSWER": 'N'
+        }
         errors = []
         student_ids = []
         for row in reader:

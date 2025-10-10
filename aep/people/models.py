@@ -930,9 +930,13 @@ class Student(Profile):
     )
     MALE = 'M'
     FEMALE = 'F'
+    NON_BINARY = 'B'
+    NO_ANSWER = 'N'
     GENDER_CHOICES = (
         (MALE, 'Male'),
         (FEMALE, 'Female'),
+        (NON_BINARY, 'Non-Binary'),
+        (NO_ANSWER, 'No Answer')
     )
     SINGLE = 'S'
     MARRIED = 'M'
