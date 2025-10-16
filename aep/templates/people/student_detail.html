@@ -29,6 +29,9 @@
               <span class="text-success">Verified</span>
               {% if paperwork.eligibility_doc %}
                 | <a href="{{ paperwork.eligibility_doc_url }}" target="_blank">View Documentation</a>
+                {% if paperwork.eligibility_doc_expiration %}
+                  | Expires: {{ paperwork.eligibility_doc_expiration|date:"n/j/Y" }}
+                {% endif %}
               {% endif %}
             {% else %}
               <span class="text-warning">Not Verified</span>

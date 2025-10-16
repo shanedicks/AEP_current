@@ -261,7 +261,11 @@ class PaperworkResource(resources.ModelResource):
             "sig_date",
             "g_sig_date",
             "pic_id",
-            "pic_id_file"
+            "pic_id_file",
+            "eligibility_status",
+            "eligibility_doc_type",
+            "eligibility_doc",
+            "eligibility_doc_expiration"
         )
 
 
@@ -639,6 +643,7 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
         "eligibility_doc",
         "eligibility_verified_by",
         "eligibility_verified_at",
+        "eligibility_doc_expiration",
         "sd_reading",
         "sd_math",
         "sd_language",

@@ -189,6 +189,7 @@ def move_or_copy_paperwork(orig, duplicate):
                 np.pic_id_file = p.pic_id_file
             if np.eligibility_doc == '' and p.eligibility_doc != '':
                 np.eligibility_doc = p.eligibility_doc
+                np.eligibility_doc_expiration = p.eligibility_doc_expiration
             np.save()
     except ObjectDoesNotExist:
         pass
@@ -1820,6 +1821,11 @@ class Paperwork(models.Model):
     eligibility_verified_at = models.DateTimeField(
         null=True,
         blank=True
+    )
+    eligibility_doc_expiration = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Eligibility Document Expiration Date'
     )
 
     class Meta:

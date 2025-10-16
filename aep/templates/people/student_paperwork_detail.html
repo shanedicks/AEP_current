@@ -68,6 +68,12 @@
           <td>Eligibility Documentation</td>
           <td><a href="{{ paperwork.eligibility_doc_url }}" target="blank">{{ paperwork.eligibility_doc_url }}</a></td>
         </tr>
+        {% if paperwork.eligibility_doc_expiration %}
+        <tr>
+          <td>Expiration Date</td>
+          <td>{{ paperwork.eligibility_doc_expiration|date:"n/j/Y" }}</td>
+        </tr>
+        {% endif %}
       </table>
       {% else %}
         <p>{{student.first_name}} has not uploaded eligibility documentation</p>
