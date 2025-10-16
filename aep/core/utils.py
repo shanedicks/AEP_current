@@ -512,6 +512,7 @@ def clear_deleted_g_suite_emails():
     current_users = service.users().list(domain='elearnclass.org').execute()
     current_emails = {user['primaryEmail'] for user in current_users.get('users', [])}
 
+    ElearnRecord = apps.get_model('coaching', 'ElearnRecord')
     records_to_clear = ElearnRecord.objects.exclude(
         g_suite_email__in=current_emails
     ).exclude(g_suite_email='')
