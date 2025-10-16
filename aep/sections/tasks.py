@@ -419,10 +419,13 @@ def create_classroom_section_task(section_id_list):
                 "ownerId": obj.teacher.g_suite_email
             }
             logger.info(f"Creating classroom section for {obj}")
-            post = service.courses().create(body=record).execute()
-            obj.g_suite_id = post.get('id')
-            obj.g_suite_link = post.get('alternateLink')
-            obj.save()
+            try:
+                post = service.courses().create(body=record).execute()
+                obj.g_suite_id = post.get('id')
+                obj.g_suite_link = post.get('alternateLink')
+                obj.save()
+            except HttpError as e:
+                logger.error(f"Failed to create classroom section for {obj}: {e}")
 
 @shared_task
 def add_TA_task(section_id_list):

@@ -435,7 +435,6 @@ def get_inactive_users(
 
 def delete_inactive_users(
     service,
-    email_address: str,
     inactive_threshold_days: int = 365,
     created_threshold_days: int = 90
 ):
@@ -490,6 +489,7 @@ def delete_inactive_users(
                 ])
 
         if successfully_deleted:
+            ElearnRecord = apps.get_model('coaching', 'ElearnRecord')
             updated = ElearnRecord.objects.filter(
                 g_suite_email__in=successfully_deleted
             ).update(g_suite_email='')
@@ -504,6 +504,20 @@ def delete_inactive_users(
         raise
 
     return results
+
+def clear_deleted_g_suite_emails():
+    service = directory_service()
+
+    current_users = service.users().list(domain='elearnclass.org').execute()
+    current_emails = {user['primaryEmail'] for user in current_users.get('users', [])}
+
+    records_to_clear = ElearnRecord.objects.exclude(
+        g_suite_email__in=current_emails
+    ).exclude(g_suite_email='')
+
+    updated_count = records_to_clear.update(g_suite_email='')
+
+    logger.info(f"Cleared g_suite_email for {updated_count} records")
 
 def get_courses_and_teachers():
     service = classroom_service()
