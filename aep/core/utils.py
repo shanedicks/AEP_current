@@ -435,6 +435,7 @@ def get_inactive_users(
 
 def delete_inactive_users(
     service,
+    email_address: str,
     inactive_threshold_days: int = 365,
     created_threshold_days: int = 90
 ):
