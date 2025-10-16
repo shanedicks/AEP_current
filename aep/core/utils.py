@@ -506,21 +506,6 @@ def delete_inactive_users(
 
     return results
 
-def clear_deleted_g_suite_emails():
-    service = directory_service()
-
-    current_users = service.users().list(domain='elearnclass.org').execute()
-    current_emails = {user['primaryEmail'] for user in current_users.get('users', [])}
-
-    ElearnRecord = apps.get_model('coaching', 'ElearnRecord')
-    records_to_clear = ElearnRecord.objects.exclude(
-        g_suite_email__in=current_emails
-    ).exclude(g_suite_email='')
-
-    updated_count = records_to_clear.update(g_suite_email='')
-
-    logger.info(f"Cleared g_suite_email for {updated_count} records")
-
 def get_courses_and_teachers():
     service = classroom_service()
     courses_result = service.courses().list().execute()
