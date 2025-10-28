@@ -883,7 +883,7 @@ class ProspectExportCSV(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         staff = apps.get_model('people', 'Staff').objects.get(slug = kwargs['slug'])
         user_email = request.user.email
-        prospect_export_task.delay(staff.id, user_email)
+        prospect_export_task.delay(email=user_email, staff_id=staff.id)
         return HttpResponseRedirect(reverse('report success'))
 
 
