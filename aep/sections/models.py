@@ -62,7 +62,7 @@ class Section(models.Model):
         (TRANS, 'Transitions')
     )
 
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     
     semester = models.ForeignKey(
         Semester,
