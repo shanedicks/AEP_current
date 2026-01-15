@@ -77,6 +77,9 @@
             </tr>
         {% endfor %}
         </table>
+        {% if is_paginated %}
+            {% include 'components/pagination2.html' with form_target='student-filter' %}
+        {% endif %}
     {% else %}
         <p>Sorry, We can't find any students matching your search...</p>
     {% endif %}
