@@ -518,7 +518,7 @@ class ProspectSignupView(CreateView):
             )
             return HttpResponseRedirect(reverse('people:minor prospect success'))
         else:
-            return HttpResponseRedirect("https://wru-intake.lctcs.edu/Home/Index?code=wzawwQLrp+Y=")
+            return HttpResponseRedirect("https://wru-intake.lctcs.edu/?code=G08")
 
 
 class ProspectSuccessView(TemplateView):
