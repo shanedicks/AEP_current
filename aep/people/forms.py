@@ -99,11 +99,11 @@ class StudentSearchForm(Form):
         qst = queryset
         if self.cleaned_data['f_name']:
             qst = qst.filter(
-                first_name__icontains=self.cleaned_data['f_name']
+                first_name__istartswith=self.cleaned_data['f_name']
             )
         if self.cleaned_data['l_name']:
             qst = qst.filter(
-                last_name__icontains=self.cleaned_data['l_name']
+                last_name__istartswith=self.cleaned_data['l_name']
             )
         if self.cleaned_data['stu_id']:
             qst = qst.filter(

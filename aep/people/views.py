@@ -82,7 +82,7 @@ class StudentTranscriptView(LoginRequiredMixin, DetailView):
 class StudentListView(LoginRequiredMixin, ListView, FormView):
 
     form_class = StudentSearchForm
-    queryset = Student.objects.filter(duplicate=False).order_by('last_name', 'first_name')
+    queryset = Student.objects.none()
     context_object_name = 'students'
     paginate_by = 25
 
@@ -95,7 +95,18 @@ class StudentListView(LoginRequiredMixin, ListView, FormView):
 
     def get(self, request, *args, **kwargs):
         partners = ['', 'Job1', 'JeffPar']
-        self.object_list = self.get_queryset().filter(partner__in=partners)
+        has_search = any(request.GET.get(p) for p in ['f_name', 'l_name', 'stu_id', 'dob'])
+        if has_search:
+            self.object_list = Student.objects.filter(
+                duplicate=False, partner__in=partners
+            )
+        else:
+            cutoff = timezone.now().date() - timedelta(days=30)
+            self.object_list = Student.objects.filter(
+                duplicate=False,
+                partner__in=partners,
+                intake_date__gte=cutoff
+            )
         form = self.get_form(self.get_form_class())
         if form.is_valid():
             self.object_list = form.filter_queryset(request, self.object_list)

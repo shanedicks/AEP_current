@@ -1250,6 +1250,10 @@ class Student(Profile):
 
     class Meta:
         ordering = ["last_name", "first_name"]
+        indexes = [
+            models.Index(fields=['last_name', 'first_name']),
+            models.Index(fields=['intake_date'])
+        ]
 
     def __str__(self):
         string = super().__str__()

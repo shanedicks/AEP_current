@@ -24,6 +24,7 @@
         </div>
     <button type="submit" class="btn btn-default btn-sm">Filter Students</button>
     {% else %}
+        <p class="text-muted"><small>Showing students enrolled in the last 30 days. Use the search form to find older records.</small></p>
         <form id='student-filter' class='form-inline' method='get' action="{% url 'people:student list' %}">
         <div class="form-group">
             <label class="sr-only" for="id_f_name">First Name</label>
