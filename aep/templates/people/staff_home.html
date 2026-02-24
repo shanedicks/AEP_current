@@ -5,7 +5,7 @@
     <h1>{{ staff }} Home</h1>
     {% if staff.prospects.all.count > 0 %}
         <h3>My Prospects</h3>
-         <a type="button" class="btn btn-default" href="{% url 'people:prospect export' slug=staff.slug %}">Prospect Export</a>
+         <a type="button" class="btn btn-default" href="{% url 'people:staff prospect export' slug=staff.slug %}">Prospect Export</a>
             <h4><a href="{% url 'people:staff prospects' slug=staff.slug %}">All: {{ staff.prospects.all.count }}</a></h4>
             <h4><a href="{% url 'people:staff active prospects' slug=staff.slug %}">Active: {{ staff.active_prospects.count }}</a></h4>
             <h4><a href="{% url 'people:staff inactive prospects' slug=staff.slug %}">Inactive: {{ staff.inactive_prospects.count }}</a></h4>

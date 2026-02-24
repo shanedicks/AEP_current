@@ -555,7 +555,7 @@ def coachee_export_task(staff_id, email):
     return True
 
 @shared_task
-def prospect_export_task(email, staff_id=None, from_date=None):
+def prospect_export_task(email, staff_id=None, from_date=None, to_date=None):
     if staff_id:
         advisor = apps.get_model('people', 'Staff').objects.get(id=staff_id)
         prospects = advisor.prospects.all()
@@ -563,6 +563,8 @@ def prospect_export_task(email, staff_id=None, from_date=None):
         prospects = apps.get_model('people', 'Prospect').objects.all()
     if from_date:
         prospects = prospects.filter(registration_date__gte=from_date)
+    if to_date:
+        prospects = prospects.filter(registration_date__lte=to_date)
     with open('prospect_export.csv', 'w', newline='') as out:
         writer = csv.writer(out)
         headers = [

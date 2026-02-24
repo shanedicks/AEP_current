@@ -154,8 +154,8 @@ staff_prospect_patterns = [
         views.StaffClosedProspectList.as_view(),
         name='staff closed prospects'),
     re_path(r'export/$',
-        views.ProspectExportCSV.as_view(),
-        name='prospect export')
+        views.StaffProspectExportCSV.as_view(),
+        name='staff prospect export')
 ]
 
 
@@ -246,7 +246,10 @@ prospect_patterns = [
         views.ProspectMeetingAttendanceCSV.as_view(),
         name='prospect meeting attendance csv'),
     re_path(r'^(?P<pk>[0-9]+)/', include(single_prospect_patterns)),
-    re_path(r'^notes/(?P<pk>[0-9]+)/', include(single_note_patterns))
+    re_path(r'^notes/(?P<pk>[0-9]+)/', include(single_note_patterns)),
+    path('reports/export/',
+        views.ProspectExportCSV.as_view(),
+        name='prospect export csv'),
 ]
 
 prospect_intake_patterns = [

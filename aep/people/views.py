@@ -878,12 +878,27 @@ class ProspectComplianceFormView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('people:prospect detail', kwargs={'pk': self.kwargs['pk']})
 
 
-class ProspectExportCSV(LoginRequiredMixin, View):
+class StaffProspectExportCSV(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         staff = apps.get_model('people', 'Staff').objects.get(slug = kwargs['slug'])
         user_email = request.user.email
         prospect_export_task.delay(email=user_email, staff_id=staff.id)
+        return HttpResponseRedirect(reverse('report success'))
+
+class ProspectExportCSV(LoginRequiredMixin, FormView):
+
+    form_class = DateFilterForm
+    template_name = 'people/prospect_export_csv.html'
+
+    def form_valid(self, form):
+        from_date = form.cleaned_data['from_date'] or None
+        to_date = form.cleaned_data['to_date'] or None
+        prospect_export_task.delay(
+            email=self.request.user.email,
+            from_date=from_date,
+            to_date=to_date
+        )
         return HttpResponseRedirect(reverse('report success'))
 
 
