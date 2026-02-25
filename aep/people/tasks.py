@@ -1029,6 +1029,7 @@ def intercession_report_task(email_address):
                 tests = student.tests
                 last_test_date = tests.last_test_date
                 last_test_nrs = f"{tests.last_test_type}: {tests.last_test_nrs}"
+                testing_status = tests.testing_status
                 assignment = tests.test_assignment
                 active_hours = tests.active_hours
             except ObjectDoesNotExist:
@@ -1036,6 +1037,7 @@ def intercession_report_task(email_address):
                 last_test_nrs = "No Test History"
                 assignment = "No Test History"
                 active_hours = "No Test History"
+                testing_status = "No Test History"
             appointments = student.test_appointments.filter(
                 event__start__gte=timezone.now(),
                 event__test__in=['TABE', 'CLAS-E']
@@ -1048,7 +1050,7 @@ def intercession_report_task(email_address):
                 student.email,
                 ", ".join(list(site)),
                 "{:.2f}".format(attendance_rate),
-                student.testing_status(),
+                testing_status,
                 last_test_date,
                 last_test_nrs,
                 assignment,
@@ -1293,6 +1295,7 @@ def advanced_student_report_task(email_address):
                 g_suite_email = ""
 
             test_assignment = student.tests.test_assignment
+            testing_status = student.tests.testing_status
             last_test_date = student.tests.last_test_date
             reporting_tests_for_student = reporting_tabe_tests.filter(student__student=student)
             test_details = "\n".join([test.nrs_level_format() for test in reporting_tests_for_student])
@@ -1305,7 +1308,7 @@ def advanced_student_report_task(email_address):
                 student.eligibility_verified,
                 last_test_date,
                 test_assignment,
-                student.testing_status(),
+                testing_status,
                 test_details,
                 student.read_3plus_count,
                 student.read_4plus_count,

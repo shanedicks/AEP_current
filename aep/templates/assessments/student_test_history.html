@@ -5,7 +5,7 @@
     {% with student=history.student %}
     {%include 'components/student_nav.html' %}
     {% endwith %}
-    <h2>Appointments - {{ history.student.testing_status }}</h2>
+    <h2>Appointments - {{ history.testing_status }}</h2>
     <div class='well'>
         <h4>Upcoming</h4>
         {% if appts %}

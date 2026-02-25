@@ -60,7 +60,7 @@
         <tr>
             <td class="student-col">
                 {{ student.student }} ({{ student.times_absent }})
-                {% if student.student.testing_status == 'No Test Needed' %}
+                {% if student.student.tests.testing_status == 'No Test Needed' %}
                 <span style="color: green;">✔</span>
                 {% else %}
                 <span style="color: red;">!</span>

@@ -202,8 +202,10 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
         for student in students:
             try:
                 test_assignment = student.student.tests.test_assignment
+                testing_status = student.student.tests.testing_status
             except ObjectDoesNotExist:
                 test_assignment = ''
+                testing_status = 'No Test History'
             try:
                 g_suite = student.student.elearn_record.g_suite_email
             except ObjectDoesNotExist:
@@ -231,7 +233,7 @@ class ActiveStudentCSV(LoginRequiredMixin, FormView):
                 student.student.emergency_contact,
                 student.student.ec_phone,
                 test_assignment,
-                student.student.testing_status(),
+                testing_status,
                 student.student.eligibility_verified,
                 student.student.get_paperwork_display(),
                 student.student.get_folder_display(),
@@ -1003,11 +1005,9 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(AttendanceOverview, self).get_context_data()
-        needs_testing = [
-            s.id for s
-            in self.object.get_students()
-            if s.student.testing_status() == 'Test Needed'
-        ]
+        needs_testing = self.object.get_students().filter(
+            student__tests__testing_status='Test Needed'
+        ).values_list('id', flat=True)
         if 'days' not in context:
             context['days'] = self.object.get_class_dates()
         if 'count' not in context:

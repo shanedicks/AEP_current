@@ -149,9 +149,11 @@ class TestEventCSV(LoginRequiredMixin, View):
                 g_suite_email = ""
             try:
                 test_assignment = student.student.tests.test_assignment
+                testing_status = student.student.tests.testing_status
                 last_test_date = student.student.tests.last_test_date
             except ObjectDoesNotExist:
                 test_assignment = "No Test History"
+                testing_status = "No Test History"
                 last_test_date = "None"
             s = [
                 student.student.partner,
@@ -160,7 +162,7 @@ class TestEventCSV(LoginRequiredMixin, View):
                 student.student.first_name,
                 last_test_date,
                 test_assignment,
-                student.student.testing_status(),
+                testing_status,
                 student.student.intake_date,
                 "|".join(sorted(set(student.student.prospects.values_list('primary_language', flat=True)))),
                 student.student.ccr_app,
