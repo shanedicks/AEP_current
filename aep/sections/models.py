@@ -1,5 +1,6 @@
 import logging
 from apiclient import discovery
+from collections import defaultdict
 from datetime import date, datetime, timedelta as td
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
@@ -683,7 +684,10 @@ class Enrollment(models.Model):
         return round(hours, 2)
 
     def attendance_table_row(self):
-        return [self.attendance.filter(attendance_date=date) for date in self.section.get_class_dates()]
+        attendance_by_date = defaultdict(list)
+        for att in self.attendance.all():
+            attendance_by_date[att.attendance_date].append(att)
+        return [attendance_by_date.get(date, []) for date in self.section.get_class_dates()]
 
     def get_skill_masteries(self):
         masteries = apps.get_model('academics', 'SkillMastery').objects.filter(

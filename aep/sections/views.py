@@ -984,21 +984,21 @@ class AttendanceOverview(LoginRequiredMixin, DetailView):
 
     def get_daily_totals(self, **kwargs):
         Attendance = apps.get_model('sections', 'Attendance')
-        section = self.object
-        att = Attendance.objects.filter(
-            enrollment__section=section,
-        )
         dates = self.object.get_class_dates()
-        present = [
-            att.filter(attendance_date=date, attendance_type='P').count()
-            for date
-            in dates 
-        ]
-        absent = [
-            att.filter(attendance_date=date, attendance_type='A').count()
-            for date
-            in dates 
-        ]
+        counts = (
+            Attendance.objects.filter(
+                enrollment__section=self.object,
+                attendance_type__in=['P', 'A']
+            )
+            .values('attendance_date', 'attendance_type')
+            .annotate(count=Count('id'))
+        )
+        count_map = {
+            (row['attendance_date'], row['attendance_type']): row['count']
+            for row in counts
+        }
+        present = [count_map.get((date, 'P'), 0) for date in dates]
+        absent = [count_map.get((date, 'A'), 0) for date in dates]
         return [present, absent]
 
     def get_context_data(self, **kwargs):
