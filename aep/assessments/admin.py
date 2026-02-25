@@ -7,7 +7,7 @@ from people.models import Student
 from .models import TestEvent, TestHistory, TestAppointment, Tabe, Tabe_Loc, Clas_E, Clas_E_Loc, Gain, HiSET, HiSet_Practice, Message, TestingAccommodations
 from .tasks import (event_attendance_report_task, test_process_task, 
     orientation_reminder_task, test_reminder_task, send_message_task,
-    send_score_report_link_task, send_link_task)
+    send_score_report_link_task, send_link_task, update_test_history_task)
 
 
 class TestEventAdmin(admin.ModelAdmin):
@@ -161,6 +161,8 @@ class TestHistoryAdmin(admin.ModelAdmin):
         'student_wru',
         'last_test_type',
         'last_test_date',
+        'testing_status',
+        'active_hours'
     )
 
     list_filter = (
@@ -182,7 +184,19 @@ class TestHistoryAdmin(admin.ModelAdmin):
         'test_assignment'
     )
 
-    readonly_fields = ['student']
+    readonly_fields = [
+        'student',
+        'testing_status',
+        'active_hours'
+    ]
+
+    actions = ['update_test_histories']
+
+    def update_test_histories(self, request, queryset):
+        for obj in queryset:
+            update_test_history_task.delay(obj.id)
+
+    update_test_histories.short_description = "Update testing status and active hours"
 
 
 admin.site.register(TestHistory, TestHistoryAdmin)

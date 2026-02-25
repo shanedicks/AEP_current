@@ -274,6 +274,15 @@ class TestAppointment(models.Model):
 
 class TestHistory(models.Model):
 
+    NO_TEST_NEEDED = 'No Test Needed'
+    TEST_NEEDED = 'Test Needed'
+    SOMETHING_WRONG = 'Something is wrong'
+    TESTING_STATUS_CHOICES = (
+        (NO_TEST_NEEDED, 'No Test Needed'),
+        (TEST_NEEDED, 'Test Needed'),
+        (SOMETHING_WRONG, 'Something is wrong'),
+    )
+
     student = models.OneToOneField(
         Student,
         models.CASCADE,
@@ -303,6 +312,20 @@ class TestHistory(models.Model):
 
     hiset_authorization_form = models.CharField(
         max_length=50,
+        blank=True
+    )
+
+    testing_status = models.CharField(
+        max_length=20,
+        choices=TESTING_STATUS_CHOICES,
+        blank=True,
+        default=''
+    )
+
+    active_hours = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        null=True,
         blank=True
     )
 
@@ -337,13 +360,6 @@ class TestHistory(models.Model):
                 self.last_test_type = test.get_test_type()
                 self.test_assignment = test.assign()
         self.save()
-
-    @property
-    def active_hours(self):
-        if self.last_test_date is None:
-            return 0
-        else:
-            return self.student.total_hours(from_date=self.last_test_date)
 
     @property
     def latest_tabe(self):

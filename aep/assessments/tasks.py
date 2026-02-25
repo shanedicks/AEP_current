@@ -30,6 +30,34 @@ def test_reminder_task(event_id):
     event.test_reminder()
 
 @shared_task
+def update_test_history_task(test_history_id):
+    TestHistory = apps.get_model('assessments', 'TestHistory')
+    try:
+        test_history = TestHistory.objects.get(id=test_history_id)
+    except ObjectDoesNotExist:
+        logger.info("TestHistory {0} not found".format(test_history_id))
+        return False
+    student = test_history.student
+    logger.info("Updating TestHistory for {0}".format(student))
+
+    # active_hours
+    if test_history.last_test_date is None:
+        test_history.active_hours = 0
+    else:
+        test_history.active_hours = student.total_hours(from_date=test_history.last_test_date)
+
+    # testing_status
+    if rules.has_valid_test_record(student):
+        test_history.testing_status = TestHistory.NO_TEST_NEEDED
+    elif rules.needs_pretest(student) or rules.needs_post_test(student):
+        test_history.testing_status = TestHistory.TEST_NEEDED
+    else:
+        test_history.testing_status = TestHistory.SOMETHING_WRONG
+
+    test_history.save()
+    return True
+
+@shared_task
 def event_attendance_report_task(event_id, email_address):
     filename = '{0}_attendance_report.csv'.format(event_id)
     with open(filename, 'w', newline='') as out:
