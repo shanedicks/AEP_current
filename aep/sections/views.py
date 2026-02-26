@@ -1136,6 +1136,8 @@ class DailyAttendanceView(LoginRequiredMixin, UpdateView):
             enrollment__section=self.section,
             enrollment__status="A",
             attendance_date=attendance_date
+        ).select_related(
+            'enrollment__student'
         ).order_by(
             "enrollment__student__last_name",
             "enrollment__student__first_name"
