@@ -556,7 +556,9 @@ class ClassListView(LoginRequiredMixin, ListView, FormView):
         ) | Section.objects.filter(
             ending__gte=timezone.now().date()
         )
+        queryset = queryset.select_related('teacher', 'site', 'semester')
         queryset = queryset.annotate(
+            active_students=Count('students', filter=Q(students__status__in=['A', 'W'])),
             open_seats=F('seats') - Count('students', filter=Q(students__status__in=['A', 'W']))
         )
         queryset = queryset.order_by('site', 'program', 'title')
