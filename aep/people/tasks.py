@@ -763,9 +763,9 @@ def student_check_duplicate_task(student_id):
 def minor_student_report_task(email_address):
     today = datetime.today().date()
     try:
-        from_date = today.replace(year=today.year - 18)
+        from_date = today.replace(year=today.year - 19)
     except ValueError:
-        from_date = today.replace(year=today.year - 18, day=28)
+        from_date = today.replace(year=today.year - 19, day=28)
     to_date = today.replace(year=today.year - 16)
     fy_start = get_fiscal_year_start_date()
     students = apps.get_model('people', 'Student').objects.filter(duplicate=False, dob__gte=from_date, dob__lte=to_date)
@@ -780,6 +780,8 @@ def minor_student_report_task(email_address):
             "DOB",
             "Phone",
             "Email",
+            "Emergency Contact",
+            "EC Phone",
             "Intake Date",
             "Last Tested",
             "Last Test NRS",
@@ -808,6 +810,8 @@ def minor_student_report_task(email_address):
                 student.dob,
                 student.phone,
                 student.email,
+                student.emergency_contact,
+                student.ec_phone,
                 student.intake_date,
                 TH.last_test_date if TH else "No Test History",
                 TH.last_test_nrs if TH else "No Test History",
