@@ -1259,10 +1259,19 @@ class Student(Profile):
         string = super().__str__()
         if self.partner not in ['', "Job1", 'JeffPar']:
             string = f"{self.partner}- " + string
+        if self.is_minor():
+            string = f"{string} [MINOR]"
         return string
 
     def get_absolute_url(self):
         return reverse('people:student detail', kwargs={'slug': self.slug})
+
+    def is_minor(self):
+        today = timezone.now().date()
+        age = today.year - self.dob.year - (
+            (today.month, today.day) < (self.dob.month, self.dob.day)
+        )
+        return age < 18
 
     def testing_status(self):
         if rules.has_valid_test_record(self):
@@ -3506,6 +3515,11 @@ class Prospect(models.Model):
     )
     dob = models.DateField(
         verbose_name=_("Date of Birth")
+    )
+    zip_code = models.CharField(
+        max_length=10,
+        blank=True,
+        verbose_name=_("Zip Code")
     )
     contact_preference = models.CharField(
         max_length=5,

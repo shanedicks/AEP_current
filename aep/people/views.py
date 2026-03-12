@@ -213,10 +213,10 @@ class NewStudentCSV(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         students = Student.objects.filter(duplicate=False)
         filename = "student_list.csv"
-        if form.cleaned_data['from_date'] != "":
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
             students = students.filter(intake_date__gte=from_date)
-        if form.cleaned_data['to_date'] != "":
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
             students = students.filter(intake_date__lte=to_date)
 
@@ -990,10 +990,10 @@ class ProspectMeetingAttendanceCSV(LoginRequiredMixin, FormView):
         notes = ProspectNote.objects.filter(successful=True)
         notes = notes.exclude(prospect__student=None)
         filename = 'prospect_note_attendance.csv'
-        if form.cleaned_data['from_date'] != "":
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
             notes = notes.filter(contact_date__gte=from_date)
-        if form.cleaned_data['to_date'] != "":
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
             notes = notes.filter(contact_date__lte=to_date)
         prospects = apps.get_model('people', 'Prospect').objects.filter(notes__in=notes).distinct()

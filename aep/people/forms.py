@@ -2380,9 +2380,11 @@ class ProspectForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProspectForm, self).__init__(*args, **kwargs)
-        required_fields = ['first_name', 'last_name', 'email', 'phone', 'primary_language', 'dob', 'program']
+        required_fields = ['first_name', 'last_name', 'email', 'phone', 'primary_language', 'dob', 'program', 'zip_code']
         for field in required_fields:
             self.fields[field].required = True
+        self.fields['phone'].validators.append(phone_validator)
+        self.fields['zip_code'].validators.append(zip_code_validator)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.template_pack = 'bootstrap3'
@@ -2390,22 +2392,11 @@ class ProspectForm(ModelForm):
             Row(
                 Field(
                     'first_name',
-                    wrapper_class="col-md-6",
+                    wrapper_class="col-md-4",
                 ),
                 Field(
                     'last_name',
-                    wrapper_class="col-md-6",
-                ),
-            ),
-            Row(
-                Field(
-                    'email',
                     wrapper_class="col-md-4",
-                ),
-                Field(
-                    'phone',
-                    wrapper_class="col-md-4",
-                    data_mask="999-999-9999",
                 ),
                 Field(
                     'dob',
@@ -2422,6 +2413,21 @@ class ProspectForm(ModelForm):
                 Field(
                     'contact_time',
                     wrapper_class="col-md-6"
+                )
+            ),
+            Row(
+                Field(
+                    'email',
+                    wrapper_class="col-md-4",
+                ),
+                Field(
+                    'phone',
+                    wrapper_class="col-md-4",
+                    data_mask="999-999-9999",
+                ),
+                Field(
+                    'zip_code',
+                    wrapper_class="col-md-4",
                 )
             ),
             Row(
@@ -2444,6 +2450,7 @@ class ProspectForm(ModelForm):
             'email',
             'phone',
             'dob',
+            'zip_code',
             'contact_preference',
             'contact_time',
             'primary_language',

@@ -562,10 +562,10 @@ class ElearnRecordCSV(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         students = ElearnRecord.objects.all()
         filename = "student_list.csv"
-        if form.cleaned_data['from_date'] != None:
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
             students = students.filter(intake_date__gte=from_date)
-        if form.cleaned_data['to_date'] != None:
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
             students = students.filter(intake_date__lte=to_date)
         students = students.distinct()

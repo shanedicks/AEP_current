@@ -745,10 +745,10 @@ class TabeCSV(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         tests = Tabe.objects.select_related().all()
         filename = "tabe_report.csv"
-        if form.cleaned_data['from_date'] != "":
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
             tests = tests.filter(test_date__gte=from_date)
-        if form.cleaned_data['to_date'] != "":
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
             tests = tests.filter(test_date__lte=to_date)
 
@@ -903,10 +903,10 @@ class ClasECSV(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         tests = Clas_E.objects.select_related().all()
         filename = "clas_e_report.csv"
-        if form.cleaned_data['from_date'] != "":
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
             tests = tests.filter(test_date__gte=from_date)
-        if form.cleaned_data['to_date'] != "":
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
             tests = tests.filter(test_date__lte=to_date)
 
@@ -976,11 +976,11 @@ class TestScoreStorageCSV(LoginRequiredMixin, FormView):
         clas_es = Clas_E.objects.select_related().all()
         tabes = Tabe.objects.select_related().all()
         filename = "test_storage_report.csv"
-        if form.cleaned_data['from_date'] != "":
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
             clas_es = clas_es.filter(test_date__gte=from_date)
             tabes = tabes.filter(test_date__gte=from_date)
-        if form.cleaned_data['to_date'] != "":
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
             clas_es = clas_es.filter(test_date__lte=to_date)
             tabes = tabes.filter(test_date__lte=to_date)
@@ -1106,10 +1106,10 @@ class GainCSV(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         tests = Gain.objects.select_related().all()
         filename = "Gain_report.csv"
-        if form.cleaned_data['from_date'] != "":
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
             tests = tests.filter(test_date__gte=from_date)
-        if form.cleaned_data['to_date'] != "":
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
             tests = tests.filter(test_date__lte=to_date)
 
@@ -1192,10 +1192,10 @@ class EventAttendanceCSV(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         appts = TestAppointment.objects.filter(attendance_type='P')
         filename = 'event_attendance.csv'
-        if form.cleaned_data['from_date'] != "":
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
             appts = appts.filter(event__start__gte=from_date)
-        if form.cleaned_data['to_date'] != "":
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
             appts = appts.filter(event__start__lte=to_date)
         student_dict = {}

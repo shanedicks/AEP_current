@@ -116,13 +116,13 @@ class AttendanceCSV(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         attendance = Attendance.objects.all()
         filename = "attendance_report.csv"
-        if form.cleaned_data['semesters'] != "":
+        if form.cleaned_data['semesters']:
             semesters = form.cleaned_data['semesters']
             attendance = attendance.filter(enrollment__section__semester__in=semesters)
-        if form.cleaned_data['from_date'] != "":
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
             attendance = attendance.filter(attendance_date__gte=from_date)
-        if form.cleaned_data['to_date'] != "":
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
             attendance = attendance.filter(attendance_date__lte=to_date)
         attendance = attendance.filter(reported=False)
@@ -502,11 +502,11 @@ class ElearnAttendanceCSV(LoginRequiredMixin, FormView):
         return data
 
     def form_valid(self, form):
-        if form.cleaned_data['semesters'] != "":
+        if form.cleaned_data['semesters']:
             semesters = form.cleaned_data['semesters']
-        if form.cleaned_data['from_date'] != "":
+        if form.cleaned_data['from_date']:
             from_date = form.cleaned_data['from_date']
-        if form.cleaned_data['to_date'] != "":
+        if form.cleaned_data['to_date']:
             to_date = form.cleaned_data['to_date']
         elearn = ElearnRecord.objects.select_related().all()
         students = []
