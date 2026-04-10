@@ -396,6 +396,17 @@ def get_inactive_users(
     inactive_threshold = now - datetime.timedelta(days=inactive_threshold_days)
     creation_threshold = now - datetime.timedelta(days=created_threshold_days)
 
+
+    whitelist_emails = set(whitelist) if whitelist else set()
+    try:
+        group_members = service.members().list(groupKey='whitelist@elearnclass.org').execute()
+        whitelist_emails.update(
+            member['email'] for member in group_members.get('members', [])
+        )
+        logger.info(f"Whitelist contains {len(whitelist_emails)} emails")
+    except Exception as e:
+        logger.warning(f"Could not fetch whitelist group: {str(e)}")
+
     try:
         request = service.users().list(
             domain='elearnclass.org',
