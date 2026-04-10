@@ -387,7 +387,8 @@ def file_to_drive(name, file, folder_id):
 def get_inactive_users(
     service,
     inactive_threshold_days: int = 365,
-    created_threshold_days: int = 90
+    created_threshold_days: int = 90,
+    whitelist: list = None,
 ):
 
     inactive_users = []
@@ -423,6 +424,9 @@ def get_inactive_users(
                 )
 
                 if last_login_time < inactive_threshold and creation_time < creation_threshold:
+                    if whitelist and user['primaryEmail'] in whitelist:
+                        logger.info(f"Skipping whitelisted user: {user['primaryEmail']}")
+                        continue
                     inactive_users.append(user)
 
             request = service.users().list_next(request, response)
@@ -437,7 +441,8 @@ def delete_inactive_users(
     service,
     email_address: str,
     inactive_threshold_days: int = 365,
-    created_threshold_days: int = 90
+    created_threshold_days: int = 90,
+    whitelist: list = None,
 ):
     results = {
         'total_inactive': 0,
@@ -450,7 +455,7 @@ def delete_inactive_users(
     successfully_deleted = []
 
     try:
-        inactive_users = get_inactive_users(service, inactive_threshold_days, created_threshold_days)
+        inactive_users = get_inactive_users(service, inactive_threshold_days, created_threshold_days, whitelist=whitelist)
         results['total_inactive'] = len(inactive_users)
 
         for i, user in enumerate(inactive_users):
