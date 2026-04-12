@@ -447,3 +447,245 @@ def send_link_task(event_id, url_name):
     for student in students:
         student.student.email_form_link(url_name)
         student.student.text_form_link(url_name)
+
+@shared_task
+def import_tabe_task(content, user_email):
+    import csv
+    import io
+    import datetime
+    Student = apps.get_model('people', 'Student')
+    Tabe = apps.get_model('assessments', 'Tabe')
+
+    reader = csv.reader(io.StringIO(content))
+    student_dict = {}
+    errors = []
+
+    for row in reader:
+        if len(row) == 0 or all(cell == '' for cell in row):
+            break
+        if row[0] == 'STUDENT_LOGIN_ID':
+            continue
+        if row[9] in ['Locator-Auto CLASE', 'Locator CLASE', 'Online Locator 11 & 12', 'Locator-Auto 13&14']:
+            continue
+        if row[8] != 'TABE':
+            continue
+        if row[6] == '':
+            continue
+
+        row[12] = row[12].replace('+', '').replace('-', '').replace('N/A', '0')
+        row[20] = row[20].replace('O/R', '0').replace('+', '').replace('*', '')
+
+        wru_id = row[6]
+        if wru_id not in student_dict:
+            student_dict[wru_id] = {
+                'name': ', '.join([row[1], row[3]]),
+                'tests': {'TABE': {}}
+            }
+
+        try:
+            date = datetime.datetime.strptime(row[7], '%Y-%m-%d').date().isoformat()
+        except ValueError:
+            d = list(row[7])
+            l = len(d)
+            year = int(''.join(d[l-4:l]))
+            day = int(''.join(d[l-6:l-4]))
+            month = int(''.join(d[:l-6]))
+            date = datetime.date(year, month, day).isoformat()
+
+        dates = student_dict[wru_id]['tests']['TABE']
+        if date not in dates:
+            dates[date] = {
+                'form': int(row[10][:2]),
+                'reading': {},
+                'math': {},
+                'lang': {},
+            }
+
+        subject = row[11].upper()
+        level = row[10][2]
+
+        if subject == 'READING':
+            dates[date]['reading'] = {
+                'read_level': level,
+                'read_ss': row[12],
+                'read_nrs': row[20],
+            }
+        elif subject == 'LANGUAGE':
+            dates[date]['lang'] = {
+                'lang_level': level,
+                'lang_ss': row[12],
+                'lang_nrs': row[20],
+            }
+        elif subject in ['MATHEMATICS', 'MATH']:
+            dates[date]['math'] = {
+                'math_level': level,
+                'total_math_ss': row[12],
+                'math_nrs': row[20],
+            }
+
+    for wru_id, info in student_dict.items():
+        for date, data in info['tests']['TABE'].items():
+            try:
+                student = Student.objects.get(WRU_ID=wru_id)
+                test_history = student.tests
+            except ObjectDoesNotExist:
+                errors.append([wru_id, info['name'], date, 'Student not found'])
+                continue
+            try:
+                Tabe.objects.get_or_create(
+                    student=test_history,
+                    test_date=date,
+                    form=str(data['form']),
+                    defaults={
+                        'read_level': data['reading'].get('read_level', ''),
+                        'read_ss': data['reading'].get('read_ss') or None,
+                        'read_nrs': data['reading'].get('read_nrs', ''),
+                        'math_level': data['math'].get('math_level', ''),
+                        'total_math_ss': data['math'].get('total_math_ss') or None,
+                        'math_nrs': data['math'].get('math_nrs', ''),
+                        'lang_level': data['lang'].get('lang_level', ''),
+                        'lang_ss': data['lang'].get('lang_ss') or None,
+                        'lang_nrs': data['lang'].get('lang_nrs', ''),
+                    }
+                )
+            except Exception as e:
+                errors.append([wru_id, info['name'], date, str(e)])
+
+    if errors:
+        with open('tabe_import_errors.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['WRU_ID', 'Name', 'Test Date', 'Error'])
+            for row in errors:
+                writer.writerow(row)
+        email = EmailMessage(
+            'TABE Import Error Report',
+            'The following records were not imported.',
+            'admin@dccaep.org',
+            [user_email]
+        )
+        email.attach_file('tabe_import_errors.csv')
+        email.send()
+        os.remove('tabe_import_errors.csv')
+
+@shared_task
+def import_clase_task(content, user_email):
+    import csv
+    import io
+    import datetime
+    Student = apps.get_model('people', 'Student')
+    Clas_E = apps.get_model('assessments', 'Clas_E')
+
+    reader = csv.reader(io.StringIO(content))
+    locator_subjects = {'READINGLOCEC', 'LISTENINGLOCEC'}
+    student_dict = {}
+    errors = []
+
+    for row in reader:
+        if len(row) == 0 or all(cell == '' for cell in row):
+            break
+        if row[0] == 'STUDENT_LOGIN_ID':
+            continue
+        if row[11].upper() in locator_subjects:
+            continue
+        if row[9] in ['Locator-Auto CLASE', 'Locator CLASE']:
+            continue
+        if row[8] != 'CLASE':
+            continue
+        if row[6] == '':
+            continue
+
+        row[12] = row[12].replace('+', '').replace('-', '').replace('N/A', '0')
+        row[20] = row[20].replace('O/R', '0').replace('+', '').replace('*', '')
+
+        wru_id = row[6]
+        if wru_id not in student_dict:
+            student_dict[wru_id] = {
+                'name': ', '.join([row[1], row[3]]),
+                'tests': {'CLASE': {}}
+            }
+
+        try:
+            date = datetime.datetime.strptime(row[7], '%Y-%m-%d').date().isoformat()
+        except ValueError:
+            d = list(row[7])
+            l = len(d)
+            year = int(''.join(d[l-4:l]))
+            day = int(''.join(d[l-6:l-4]))
+            month = int(''.join(d[:l-6]))
+            date = datetime.date(year, month, day).isoformat()
+
+        dates = student_dict[wru_id]['tests']['CLASE']
+        if date not in dates:
+            form_letter = [s for s in row[10] if not s.isdigit()][0]
+            dates[date] = {
+                'form': form_letter,
+                'reading': {},
+                'writing': {},
+                'listening': {},
+            }
+
+        subject = row[11].upper()
+        level = [s for s in row[10] if s.isdigit()][0]
+
+        if subject == 'READINGCLASE':
+            dates[date]['reading'] = {
+                'read_level': level,
+                'read_ss': row[12],
+                'read_nrs': row[20],
+            }
+        elif subject == 'WRITINGCLASE':
+            dates[date]['writing'] = {
+                'write_level': level,
+                'write_ss': row[12],
+                'write_nrs': row[20],
+            }
+        elif subject == 'LISTENINGCLASE':
+            dates[date]['listening'] = {
+                'listen_level': level,
+                'listen_ss': row[12],
+                'listen_nrs': row[20],
+            }
+
+    for wru_id, info in student_dict.items():
+        for date, data in info['tests']['CLASE'].items():
+            try:
+                student = Student.objects.get(WRU_ID=wru_id)
+                test_history = student.tests
+            except ObjectDoesNotExist:
+                errors.append([wru_id, info['name'], date, 'Student not found'])
+                continue
+            try:
+                Clas_E.objects.get_or_create(
+                    student=test_history,
+                    test_date=date,
+                    form=data['form'],
+                    defaults={
+                        'read_level': data['reading'].get('read_level', ''),
+                        'read_ss': data['reading'].get('read_ss') or None,
+                        'read_nrs': data['reading'].get('read_nrs', ''),
+                        'write_level': data['writing'].get('write_level', ''),
+                        'write_ss': data['writing'].get('write_ss') or None,
+                        'write_nrs': data['writing'].get('write_nrs', ''),
+                        'listen_level': data['listening'].get('listen_level', ''),
+                        'listen_ss': data['listening'].get('listen_ss') or None,
+                        'listen_nrs': data['listening'].get('listen_nrs', ''),
+                    }
+                )
+            except Exception as e:
+                errors.append([wru_id, info['name'], date, str(e)])
+
+    if errors:
+        with open('clase_import_errors.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['WRU_ID', 'Name', 'Test Date', 'Error'])
+            for row in errors:
+                writer.writerow(row)
+        email = EmailMessage(
+            'CLAS-E Import Error Report',
+            'The following records were not imported.',
+            'admin@dccaep.org',
+            [user_email]
+        )
+        email.attach_file('clase_import_errors.csv')
+        email.send()
+        os.remove('clase_import_errors.csv')

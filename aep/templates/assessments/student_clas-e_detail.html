@@ -1,3 +1,25 @@
 {% extends "base.html" %}
+{% block head_title %}DCCAEP | {{ test.student.student }} CLAS-E Detail{% endblock head_title %}
 {% block content %}
+<h1>CLAS-E Detail for {{ test.student.student }}</h1>
+{% include 'components/student_nav.html' %}
+<p><a class="btn btn-default" href="{% url 'assessments:student clas-e list' slug=test.student.student.slug %}">Back to CLAS-E List</a></p>
+<div class="col-md-6">
+    <table class="table">
+        <tr><th>Date</th><td>{{ test.test_date|date:"m/d/y" }}</td></tr>
+        <tr><th>Form</th><td>{{ test.read_level }}{{ test.form }}</td></tr>
+        <tr><th>Read Level</th><td>{{ test.read_level }}</td></tr>
+        <tr><th>Read SS</th><td>{{ test.read_ss }}</td></tr>
+        <tr><th>Read NRS</th><td>{{ test.read_nrs }}</td></tr>
+        <tr><th>Write Level</th><td>{{ test.write_level }}</td></tr>
+        <tr><th>Write SS</th><td>{{ test.write_ss }}</td></tr>
+        <tr><th>Write NRS</th><td>{{ test.write_nrs }}</td></tr>
+        <tr><th>Listen Level</th><td>{{ test.listen_level }}</td></tr>
+        <tr><th>Listen SS</th><td>{{ test.listen_ss }}</td></tr>
+        <tr><th>Listen NRS</th><td>{{ test.listen_nrs }}</td></tr>
+        <tr><th>Score Report Sent</th><td>{{ test.score_report_sent }}</td></tr>
+    </table>
+    <a class="btn btn-default" href="{% url 'assessments:clas-e score report link' slug=test.student.student.slug pk=test.pk %}">Update Score Report Link</a>
+    <a class="btn btn-default" href="{% url 'assessments:send clas-e score report' slug=test.student.student.slug pk=test.pk %}">Send Score Report</a>
+</div>
 {% endblock %}

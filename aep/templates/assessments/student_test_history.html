@@ -97,22 +97,30 @@
             {% endif %}
             {% if history.clas_e_tests.count > 0 %}
                 <h4><a href="{% url 'assessments:student clas-e list' slug=history.student.slug %}">CLAS-E</a></h4>
-                    {% with test=history.latest_clas_e %}
-                        <table class="table">
-                            <tr>
-                                <th>Date</th>
-                                <th>Test</th>
-                                <th>Scale Score</th>
-                                <th>NRS Level</th>
-                            </tr>
-                            <tr>
-                                <p><td>{{ test.test_date|date:"m/d/y" }}</td></p>
-                                <p><td>{{ test.read_level }}{{test.form}}</td></p>
-                                <p><td>{{ test.read_ss }}</td></p>
-                                <p><td>{{ test.read_nrs }}</td></p>
-                            </tr>
-                        </table>
-                    {% endwith %}
+                {% with test=history.latest_clas_e %}
+                    <table class="table">
+                        <tr>
+                            <th>Date</th>
+                            <th>Form</th>
+                            <th>Read SS</th>
+                            <th>Read NRS</th>
+                            <th>Write SS</th>
+                            <th>Write NRS</th>
+                            <th>Listen SS</th>
+                            <th>Listen NRS</th>
+                        </tr>
+                        <tr>
+                            <td>{{ test.test_date|date:"m/d/y" }}</td>
+                            <td>{{ test.read_level }}{{ test.form }}</td>
+                            <td>{{ test.read_ss }}</td>
+                            <td>{{ test.read_nrs }}</td>
+                            <td>{{ test.write_ss }}</td>
+                            <td>{{ test.write_nrs }}</td>
+                            <td>{{ test.listen_ss }}</td>
+                            <td>{{ test.listen_nrs }}</td>
+                        </tr>
+                    </table>
+                {% endwith %}
             {% else %}
                 <h4><a href="{% url 'assessments:student clas-e add' slug=history.student.slug %}">CLAS-E</a></h4>
                 <p>{{history.student.first_name}} has no CLAS-E tests on record. Click the link above to add one</p>

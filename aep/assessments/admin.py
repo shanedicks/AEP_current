@@ -334,7 +334,10 @@ class Clas_E_Resource(TestResource):
             'read_nrs',
             'write_level',
             'write_ss',
-            'write_nrs'
+            'write_nrs',
+            'listen_level',
+            'listen_ss',
+            'listen_nrs',
         )
 
 
@@ -347,6 +350,7 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
         'test_date',
         'read_nrs',
         'write_nrs',
+        'listen_nrs',
         'score_report_link'
     )
 
@@ -372,6 +376,9 @@ class Clas_E_Admin(ImportExportActionModelAdmin):
         'write_level',
         'write_ss',
         'write_nrs',
+        'listen_level',
+        'listen_ss',
+        'listen_nrs',
         'score_report_link'
     )
 

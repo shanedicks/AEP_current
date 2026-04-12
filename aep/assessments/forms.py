@@ -244,7 +244,13 @@ class Clas_E_Form(ModelForm):
             'form',
             'read_level',
             'read_ss',
-            'read_nrs'
+            'read_nrs',
+            'write_level',
+            'write_ss',
+            'write_nrs',
+            'listen_level',
+            'listen_ss',
+            'listen_nrs',
         )
 
     def __init__(self, *args, **kwargs):
@@ -258,12 +264,33 @@ class Clas_E_Form(ModelForm):
                 placeholder="MM/DD/YYYY",
                 data_mask="99/99/9999"
             ),
-            Field(
-                'form',
-                'read_level',
-                'read_ss',
-                'read_nrs',
-                wrapper_class='col-md-3'
+            Fieldset(
+                'Form and Level Info',
+                Field(
+                    'form',
+                    'read_level',
+                    'write_level',
+                    'listen_level',
+                    wrapper_class='col-md-3'
+                ),
+            ),
+            Fieldset(
+                'Scale Score',
+                Field(
+                    'read_ss',
+                    'write_ss',
+                    'listen_ss',
+                    wrapper_class='col-md-2'
+                ),
+            ),
+            Fieldset(
+                'NRS Levels',
+                Field(
+                    'read_nrs',
+                    'write_nrs',
+                    'listen_nrs',
+                    wrapper_class='col-md-4'
+                )
             )
         )
 

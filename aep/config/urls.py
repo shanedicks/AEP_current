@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
@@ -24,10 +25,16 @@ urlpatterns = [
         name='resources'
     ),
     re_path(r'^reports/$',
-        TemplateView.as_view(
+        login_required(TemplateView.as_view(
             template_name='pages/reports.html'
-        ),
+        )),
         name='reports'
+    ),
+    re_path(r'^imports/$',
+        login_required(TemplateView.as_view(
+            template_name='pages/imports.html'
+        )),
+        name='imports'
     ),
     re_path(r'^report-success/$',
         TemplateView.as_view(

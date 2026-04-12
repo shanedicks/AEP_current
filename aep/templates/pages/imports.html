@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | Imports{% endblock head_title %}
+{% block content %}
+<h1>Imports</h1>
+    <p><a href="{% url 'assessments:tabe_import' %}">Import TABE Scores</a></p>
+    <p><a href="{% url 'assessments:clas-e import' %}">Import CLAS-E Scores</a></p>
+    <p><a href="{% url 'sections:import reported enrollments' %}">Import Reported Enrollments</a></p>
+    <p><a href="{% url 'sections:import reported attendance' %}">Import Reported Attendance</a></p>
+{% endblock %}

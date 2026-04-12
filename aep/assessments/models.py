@@ -822,6 +822,23 @@ class Clas_E(NRSTest):
         null=True
     )
 
+    listen_level = models.CharField(
+        max_length=1,
+        choices=LEVEL_CHOICES,
+        blank=True
+    )
+
+    listen_ss = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True
+    )
+
+    listen_nrs = models.CharField(
+        max_length=1,
+        blank=True,
+        null=True
+    )
+
     class Meta:
         verbose_name = "CLAS-E"
         verbose_name_plural = "CLAS-E scores"
@@ -886,7 +903,8 @@ class Clas_E(NRSTest):
     def nrs(self):
         r = max(self.read_nrs, '-') if self.read_nrs is not None else '-'
         w = max(self.write_nrs, '-') if self.write_nrs is not None else '-'
-        return f"{r} {w}"
+        l = max(self.listen_nrs, '-') if self.listen_nrs is not None else '-'
+        return f"{r} {w} {l}"
 
 
 class Clas_E_Loc(NRSTest):

@@ -1,5 +1,6 @@
 import pytz
 from datetime import timedelta, datetime
+from io import TextIOWrapper
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
@@ -25,7 +26,7 @@ from .forms import (
     )
 from .tasks import (event_attendance_report_task,
         accelerated_coaching_report_task, testing_eligibility_report,
-        send_score_report_link_task
+        send_score_report_link_task, import_tabe_task, import_clase_task
     )
 
 
@@ -757,12 +758,14 @@ class TabeCSV(LoginRequiredMixin, FormView):
 
 class TabeImportCSV(LoginRequiredMixin, FormView):
 
-    model = Tabe
     form_class = CSVImportForm
     template_name = 'assessments/tabe_import.html'
 
     def form_valid(self, form):
-        file = request.Files
+        csv_file = self.request.FILES['csv_file']
+        content = TextIOWrapper(csv_file.file, encoding='utf-8').read()
+        import_tabe_task.delay(content, self.request.user.email)
+        return HttpResponseRedirect(reverse('report success'))
 
 class StudentClasEListView(StudentTestListView):
 
@@ -990,12 +993,14 @@ class TestScoreStorageCSV(LoginRequiredMixin, FormView):
 
 class ClasEImportCSV(LoginRequiredMixin, FormView):
 
-    model = Clas_E
     form_class = CSVImportForm
     template_name = 'assessments/clas-e_import.html'
 
     def form_valid(self, form):
-        file = request.Files
+        csv_file = self.request.FILES['csv_file']
+        content = TextIOWrapper(csv_file.file, encoding='utf-8').read()
+        import_clase_task.delay(content, self.request.user.email)
+        return HttpResponseRedirect(reverse('report success'))
 
 
 class StudentHisetPracticeListView(StudentTestListView):
