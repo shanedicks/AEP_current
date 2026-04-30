@@ -1,5 +1,3 @@
-from apiclient import discovery
-from httplib2 import Http
 from datetime import timedelta
 from django.contrib import admin
 from django.contrib.auth.models import User
@@ -7,7 +5,6 @@ from django.conf import settings
 from django.utils import timezone
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
-from oauth2client.service_account import ServiceAccountCredentials
 from people.models import Staff, Student
 from academics.models import Course
 from .models import Site, Section, Enrollment, Attendance, Message, Cancellation

@@ -1,12 +1,9 @@
 import logging
 import csv
 import os
-from apiclient import discovery
 from googleapiclient.errors import HttpError
 from datetime import datetime, date
-from httplib2 import Http
 from io import TextIOWrapper
-from oauth2client.service_account import ServiceAccountCredentials
 from urllib.parse import urlencode
 from django.apps import apps
 from django.views.generic import (DetailView, ListView, CreateView,
@@ -14,14 +11,13 @@ from django.views.generic import (DetailView, ListView, CreateView,
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail.message import EmailMessage
-from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.db import IntegrityError
 from django.db.models import Count, F, Q
 from core.forms import DateFilterForm, CSVImportForm
-from core.utils import render_to_csv, time_string_to_hours
+from core.utils import render_to_csv, time_string_to_hours, classroom_service
 from coaching.models import ElearnRecord
 from people.models import Student, Staff
 from people.forms import StudentSearchForm
@@ -1198,16 +1194,7 @@ class GSuiteAttendanceView(LoginRequiredMixin, DetailView):
     template_name = 'sections/g_suite_attendance.html'
 
     def get_context_data(self, **kwargs):
-        scopes = ['https://www.googleapis.com/auth/classroom.coursework.students']
-
-        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-            keyfile_dict=settings.KEYFILE_DICT,
-            scopes=scopes
-        )
-
-        shane = credentials.create_delegated('shane.dicks@elearnclass.org')
-        http_auth = shane.authorize(Http())
-        service = discovery.build('classroom', 'v1', http=http_auth)
+        service = classroom_service()
         raw = {}
         for student in self.object.get_all_students():
             try:

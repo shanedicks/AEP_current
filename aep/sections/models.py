@@ -1,9 +1,6 @@
 import logging
-from apiclient import discovery
 from collections import defaultdict
 from datetime import date, datetime, timedelta as td
-from httplib2 import Http
-from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.errors import HttpError
 from django.apps import apps
 from django.db import models, IntegrityError
@@ -12,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils import timezone
-from core.utils import make_slug
+from core.utils import make_slug, classroom_service
 from core.tasks import send_mail_task
 from academics.models import Course
 from people.models import Staff, Student
@@ -217,18 +214,7 @@ class Section(models.Model):
             end_task.delay(enrollment_id=student.id)
 
     def roster_to_classroom(self):
-
-        scopes = [
-            'https://www.googleapis.com/auth/classroom.rosters',
-            'https://www.googleapis.com/auth/classroom.profile.emails'
-        ]
-        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-            keyfile_dict=settings.KEYFILE_DICT,
-            scopes=scopes
-        )
-        shane = credentials.create_delegated('greenbean@elearnclass.org')
-        http_auth = shane.authorize(Http())
-        service = discovery.build('classroom', 'v1', http=http_auth)
+        service = classroom_service()
 
         roster = service.courses().students().list(
             courseId=self.g_suite_id,
@@ -331,16 +317,7 @@ class Section(models.Model):
             batch.execute()
 
     def g_suite_attendance(self):
-        scopes = ['https://www.googleapis.com/auth/classroom.coursework.students']
-
-        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-            keyfile_dict=settings.KEYFILE_DICT,
-            scopes=scopes
-        )
-
-        shane = credentials.create_delegated('greenbean@elearnclass.org')
-        http_auth = shane.authorize(Http())
-        service = discovery.build('classroom', 'v1', http=http_auth)
+        service = classroom_service()
         raw = {}
         logger.info("Starting", self.title)
         for student in self.get_all_students():
@@ -385,17 +362,7 @@ class Section(models.Model):
         logger.info("Finished with", self.title)
 
     def get_g_suite_link(self):
-        scopes = ['https://www.googleapis.com/auth/classroom.courses']
-
-        credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-            keyfile_dict=settings.KEYFILE_DICT,
-            scopes=scopes
-        )
-
-        shane = credentials.create_delegated('greenbean@elearnclass.org')
-        http_auth = shane.authorize(Http())
-        service = discovery.build('classroom', 'v1', http=http_auth)
-
+        service = classroom_service()
 
         course = service.courses().get(id=self.g_suite_id).execute()
         self.g_suite_link = course.get('alternateLink')
