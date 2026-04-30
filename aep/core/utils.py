@@ -3,12 +3,12 @@ import datetime
 import logging
 import os
 import requests
+import google_auth_httplib2
 from time import sleep
 from apiclient import discovery
 from apiclient.errors import HttpError
 from apiclient.http import MediaFileUpload
-from httplib2 import Http
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 from django.apps import apps
 from django.core.mail.message import EmailMessage
 from django.core.exceptions import ValidationError
@@ -305,28 +305,26 @@ def directory_service():
         'https://www.googleapis.com/auth/admin.directory.user',
     ]
 
-    credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-        keyfile_dict=settings.KEYFILE_DICT,
-        scopes=scopes
+    credentials = service_account.Credentials.from_service_account_info(
+        settings.KEYFILE_DICT,
+        scopes=scopes,
+        subject='greenbean@elearnclass.org'
     )
-
-    gb = credentials.create_delegated('greenbean@elearnclass.org')
-    http_auth = gb.authorize(Http())
-    return discovery.build('admin', 'directory_v1', http=http_auth)
+    http = google_auth_httplib2.AuthorizedHttp(credentials)
+    return discovery.build('admin', 'directory_v1', http=http, cache_discovery=False)
 
 def drive_service():
     scopes = [
         'https://www.googleapis.com/auth/drive.file',
     ]
 
-    credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-        keyfile_dict=settings.KEYFILE_DICT,
-        scopes=scopes
+    credentials = service_account.Credentials.from_service_account_info(
+        settings.KEYFILE_DICT,
+        scopes=scopes,
+        subject='greenbean@elearnclass.org'
     )
-
-    gb = credentials.create_delegated('greenbean@elearnclass.org')
-    http_auth = gb.authorize(Http())
-    return discovery.build('drive', 'v3', http=http_auth)
+    http = google_auth_httplib2.AuthorizedHttp(credentials)
+    return discovery.build('drive', 'v3', http=http, cache_discovery=False)
 
 def classroom_service():
 
@@ -337,14 +335,13 @@ def classroom_service():
         'https://www.googleapis.com/auth/classroom.profile.emails',
     ]
 
-    credentials = ServiceAccountCredentials._from_parsed_json_keyfile(
-        keyfile_dict=settings.KEYFILE_DICT,
-        scopes=scopes
+    credentials = service_account.Credentials.from_service_account_info(
+        settings.KEYFILE_DICT,
+        scopes=scopes,
+        subject='greenbean@elearnclass.org'
     )
-
-    shane = credentials.create_delegated('greenbean@elearnclass.org')
-    http_auth = shane.authorize(Http())
-    return discovery.build('classroom', 'v1', http=http_auth)
+    http = google_auth_httplib2.AuthorizedHttp(credentials)
+    return discovery.build('classroom', 'v1', http=http, cache_discovery=False)
 
 def clean_special_characters(input_string):
     cleaned_chars = [CHAR_MAP[c] if c in CHAR_MAP else c for c in input_string]

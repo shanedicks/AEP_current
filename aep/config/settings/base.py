@@ -1,19 +1,19 @@
 from __future__ import absolute_import, unicode_literals
 import os
+import sys
 from django.core.exceptions import ImproperlyConfigured
-from unipath import Path
-from sys import path
+from pathlib import Path
 
 ########## PATH CONFIGURATION
 
 # Absolute filesystem path to config directory
-CONFIG_ROOT = Path(__file__).ancestor(2)
+CONFIG_ROOT = Path(__file__).parents[1]
 
 # Absolute filesystem path to project directory
 PROJECT_ROOT = CONFIG_ROOT.parent
 
 # Project added to python path
-path.append(PROJECT_ROOT)
+sys.path.append(str(PROJECT_ROOT))
 
 
 def get_env_variable(var_name):
@@ -125,7 +125,7 @@ AUTHENTICATION_BACKENDS = (
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [(PROJECT_ROOT.child("templates")), ],
+        'DIRS': [PROJECT_ROOT / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -197,15 +197,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 
 
-STATICFILES_DIRS = [PROJECT_ROOT.child("static"), ]
+STATICFILES_DIRS = [PROJECT_ROOT / "static"]
 
-STATIC_ROOT = PROJECT_ROOT.child("staticfiles")
+STATIC_ROOT = PROJECT_ROOT / "staticfiles"
 
 STATIC_URL = '/static/'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-MEDIA_ROOT = PROJECT_ROOT.child("media")
+MEDIA_ROOT = PROJECT_ROOT / "media"
 
 MEDIA_URL = '/media/'
 
