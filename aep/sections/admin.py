@@ -225,6 +225,7 @@ class EnrollmentResource(resources.ModelResource):
         model = Enrollment
         fields = (
             "id",
+            "student",
             "section",
             "creator",
             "status",

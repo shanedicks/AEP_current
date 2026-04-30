@@ -43,6 +43,7 @@ class StudentResource(resources.ModelResource):
         model = Student
         fields = (
             "id",
+            "user",
             "first_name",
             "last_name",
             "title",
@@ -236,6 +237,7 @@ class PaperworkResource(resources.ModelResource):
     class Meta:
         model = Paperwork
         fields = (
+            "student",
             "ferpa",
             "testing",
             "technology",

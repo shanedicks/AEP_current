@@ -29,6 +29,7 @@ class ItemResource(resources.ModelResource):
 		model = Item
 		fields = (
 			"name",
+			"category",
 			"state_tag",
 			'item_id',
 		)
@@ -47,6 +48,7 @@ class TicketResource(resources.ModelResource):
 		fields = (
 			'item',
 			'staff',
+			'student',
 			'issued_date',
 			'returned_date'
 		)
