@@ -689,3 +689,207 @@ def import_clase_task(content, user_email):
         email.attach_file('clase_import_errors.csv')
         email.send()
         os.remove('clase_import_errors.csv')
+
+@shared_task
+def wru_assessment_export_task(from_date_str, to_date_str, wru_csv_content, email_address):
+    from core.utils import get_fiscal_year_start_date
+    Tabe = apps.get_model('assessments', 'Tabe')
+    Clas_E = apps.get_model('assessments', 'Clas_E')
+
+    fy_start = get_fiscal_year_start_date()
+    fiscal_year = f"{fy_start.year}-{fy_start.year + 1}"
+
+    nrs_tabe = {
+        '1': 'BEGINNING ABE LITERACY', '2': 'BEGINNING BASIC ABE',
+        '3': 'LOW INTERMEDIATE ABE', '4': 'HIGH INTERMEDIATE ABE',
+        '5': 'LOW ASE', '6': 'HIGH ASE',
+    }
+    nrs_clase = {
+        '1': 'BEGINNING ESL LITERACY', '2': 'LOW BEGINNING ESL',
+        '3': 'HIGH BEGINNING ESL', '4': 'LOW INTERMEDIATE ESL',
+        '5': 'HIGH INTERMEDIATE ESL', '6': 'ADVANCED ESL',
+    }
+    versions = {
+        '11': 'TABE 11 & 12', '12': 'TABE 11 & 12',
+        '13': 'TABE 13 & 14', '14': 'TABE 13 & 14',
+    }
+
+    wru_reader = csv.DictReader(wru_csv_content.splitlines())
+    wru_students = {}
+    for row in wru_reader:
+        sid = row['Student ID']
+        if sid not in wru_students:
+            wru_students[sid] = {}
+        if row['Assessment Name'] == 'TABE - CLAS E':
+            wru_students[sid] = 'TABE CLAS-E'
+        elif row['Assessment Name'] == 'TABE 11 & 12':
+            wru_students[sid] = 'TABE 11 & 12'
+        elif row['Assessment Name'] == 'TABE 13 & 14':
+            wru_students[sid] = 'TABE 13 & 14'
+
+    tabes = Tabe.objects.select_related().all()
+    clas_es = Clas_E.objects.select_related().all()
+    if from_date_str:
+        from_date = datetime.strptime(from_date_str, '%Y-%m-%d').date()
+        tabes = tabes.filter(test_date__gte=from_date)
+        clas_es = clas_es.filter(test_date__gte=from_date)
+    if to_date_str:
+        to_date = datetime.strptime(to_date_str, '%Y-%m-%d').date()
+        tabes = tabes.filter(test_date__lte=to_date)
+        clas_es = clas_es.filter(test_date__lte=to_date)
+
+    rows_by_student = {}
+
+    for test in tabes:
+        sid = test.student.student.WRU_ID
+        date = test.test_date
+        pre = date - timedelta(days=180)
+        version = versions[test.form]
+        r, m, l = test.read_ss, test.total_math_ss, test.lang_ss
+
+        if sid in wru_students:
+            test_type = 'Posttest'
+        else:
+            test_type = 'Pretest'
+            if test.student.tabe_tests.filter(
+                    test_date__lt=date, test_date__gte=pre,
+                    read_ss__isnull=False).count() > 0:
+                test_type = 'Posttest'
+
+        if r:
+            lowest = 1
+            if m is not None and m < r: lowest = 0
+            if l is not None and l < r: lowest = 0
+            rows_by_student.setdefault(sid, []).append({
+                'SID': sid, 'LastName': test.student.student.last_name,
+                'FirstName': test.student.student.first_name,
+                'AssessmentType': test_type, 'FiscalYear': fiscal_year,
+                'AssessmentName': version, 'AssessmentForm': test.form,
+                'AssessmentLevel': test.read_level, 'AssessmentSubject': 'READING',
+                'AssessmentDate': datetime.strftime(date, '%m/%d/%Y'),
+                'AssessmentScaleScore': r, 'AssessmentGradeEquivalent': test.read_ge,
+                'FunctioningLevel': nrs_tabe.get(test.read_nrs, ''),
+                'LowestFunctioningLevelFlag': lowest, 'SurveyIndicator': '0', 'CompleteBatteryIndicator': '1',
+            })
+
+        if m:
+            lowest = 1
+            if r is not None and r < m: lowest = 0
+            if l is not None and l < m: lowest = 0
+            rows_by_student.setdefault(sid, []).append({
+                'SID': sid, 'LastName': test.student.student.last_name,
+                'FirstName': test.student.student.first_name,
+                'AssessmentType': test_type, 'FiscalYear': fiscal_year,
+                'AssessmentName': version, 'AssessmentForm': test.form,
+                'AssessmentLevel': test.math_level, 'AssessmentSubject': 'TOTAL MATH',
+                'AssessmentDate': datetime.strftime(date, '%m/%d/%Y'),
+                'AssessmentScaleScore': m, 'AssessmentGradeEquivalent': test.total_math_ge,
+                'FunctioningLevel': nrs_tabe.get(test.math_nrs, ''),
+                'LowestFunctioningLevelFlag': lowest, 'SurveyIndicator': '0', 'CompleteBatteryIndicator': '1',
+            })
+
+        if l:
+            lowest = 1
+            if r is not None and r < l: lowest = 0
+            if m is not None and m < l: lowest = 0
+            rows_by_student.setdefault(sid, []).append({
+                'SID': sid, 'LastName': test.student.student.last_name,
+                'FirstName': test.student.student.first_name,
+                'AssessmentType': test_type, 'FiscalYear': fiscal_year,
+                'AssessmentName': version, 'AssessmentForm': test.form,
+                'AssessmentLevel': test.lang_level, 'AssessmentSubject': 'LANGUAGE',
+                'AssessmentDate': datetime.strftime(date, '%m/%d/%Y'),
+                'AssessmentScaleScore': l, 'AssessmentGradeEquivalent': test.lang_ge,
+                'FunctioningLevel': nrs_tabe.get(test.lang_nrs, ''),
+                'LowestFunctioningLevelFlag': lowest, 'SurveyIndicator': '0', 'CompleteBatteryIndicator': '1',
+            })
+
+    for test in clas_es:
+        sid = test.student.student.WRU_ID
+        date = test.test_date
+        pre = date - timedelta(days=180)
+        r, w, l = test.read_ss, test.write_ss, test.listen_ss
+
+        if sid in wru_students:
+            test_type = 'Posttest'
+        else:
+            test_type = 'Pretest'
+            if test.student.clas_e_tests.filter(
+                    test_date__lt=date, test_date__gte=pre,
+                    read_ss__isnull=False).count() > 0:
+                test_type = 'Posttest'
+
+        if r:
+            lowest = 1
+            if w is not None and w < r: lowest = 0
+            if l is not None and l < r: lowest = 0
+            rows_by_student.setdefault(sid, []).append({
+                'SID': sid, 'LastName': test.student.student.last_name,
+                'FirstName': test.student.student.first_name,
+                'AssessmentType': test_type, 'FiscalYear': fiscal_year,
+                'AssessmentName': 'TABE CLAS-E', 'AssessmentForm': test.form,
+                'AssessmentLevel': test.read_level, 'AssessmentSubject': 'READING',
+                'AssessmentDate': datetime.strftime(date, '%m/%d/%Y'),
+                'AssessmentScaleScore': r, 'AssessmentGradeEquivalent': '',
+                'FunctioningLevel': nrs_clase.get(test.read_nrs, ''),
+                'LowestFunctioningLevelFlag': lowest, 'SurveyIndicator': '0', 'CompleteBatteryIndicator': '1',
+            })
+
+        if w:
+            lowest = 1
+            if r is not None and r < w: lowest = 0
+            if l is not None and l < w: lowest = 0
+            rows_by_student.setdefault(sid, []).append({
+                'SID': sid, 'LastName': test.student.student.last_name,
+                'FirstName': test.student.student.first_name,
+                'AssessmentType': test_type, 'FiscalYear': fiscal_year,
+                'AssessmentName': 'TABE CLAS-E', 'AssessmentForm': test.form,
+                'AssessmentLevel': test.write_level, 'AssessmentSubject': 'WRITING',
+                'AssessmentDate': datetime.strftime(date, '%m/%d/%Y'),
+                'AssessmentScaleScore': w, 'AssessmentGradeEquivalent': '',
+                'FunctioningLevel': nrs_clase.get(test.write_nrs, ''),
+                'LowestFunctioningLevelFlag': lowest, 'SurveyIndicator': '0', 'CompleteBatteryIndicator': '1',
+            })
+
+        if l:
+            lowest = 1
+            if r is not None and r < l: lowest = 0
+            if w is not None and w < l: lowest = 0
+            rows_by_student.setdefault(sid, []).append({
+                'SID': sid, 'LastName': test.student.student.last_name,
+                'FirstName': test.student.student.first_name,
+                'AssessmentType': test_type, 'FiscalYear': fiscal_year,
+                'AssessmentName': 'TABE CLAS-E', 'AssessmentForm': test.form,
+                'AssessmentLevel': test.listen_level, 'AssessmentSubject': 'LISTENING',
+                'AssessmentDate': datetime.strftime(date, '%m/%d/%Y'),
+                'AssessmentScaleScore': l, 'AssessmentGradeEquivalent': '',
+                'FunctioningLevel': nrs_clase.get(test.listen_nrs, ''),
+                'LowestFunctioningLevelFlag': lowest, 'SurveyIndicator': '0', 'CompleteBatteryIndicator': '1',
+            })
+
+    fieldnames = [
+        'SID', 'LastName', 'FirstName', 'AssessmentType', 'FiscalYear',
+        'AssessmentName', 'AssessmentForm', 'AssessmentLevel', 'AssessmentSubject',
+        'AssessmentDate', 'AssessmentScaleScore', 'AssessmentGradeEquivalent',
+        'FunctioningLevel', 'LowestFunctioningLevelFlag', 'SurveyIndicator',
+        'CompleteBatteryIndicator',
+    ]
+
+    filename = 'wru_assessment_export.csv'
+    with open(filename, 'w', newline='') as out:
+        writer = csv.DictWriter(out, fieldnames=fieldnames)
+        writer.writeheader()
+        for rows in rows_by_student.values():
+            for row in rows:
+                writer.writerow(row)
+
+    email = EmailMessage(
+        'WRU Assessment Export',
+        'WRU-formatted assessment import file for the requested date range.',
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+    os.remove(filename)
+    return True

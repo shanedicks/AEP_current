@@ -22,11 +22,13 @@ from .forms import (
         TestAppointmentAttendanceForm, TestAttendanceFormSet,
         TestAppointmentNotesForm, HiSetForm, AccuplacerForm,
         Clas_E_ScoreReportLinkForm, TabeScoreReportLinkForm,
-        OrientationSignupForm, StudentAddAppointmentForm, HisetAuthForm
+        OrientationSignupForm, StudentAddAppointmentForm, HisetAuthForm,
+        WRUAssessmentExportForm
     )
 from .tasks import (event_attendance_report_task,
         accelerated_coaching_report_task, testing_eligibility_report,
-        send_score_report_link_task, import_tabe_task, import_clase_task
+        send_score_report_link_task, import_tabe_task, import_clase_task,
+        wru_assessment_export_task
     )
 
 
@@ -915,6 +917,25 @@ class ClasECSV(LoginRequiredMixin, FormView):
 
         data = self.get_data(tests)
         return render_to_csv(data=data, filename=filename)
+
+
+class WRUAssessmentExportCSV(LoginRequiredMixin, FormView):
+
+    form_class = WRUAssessmentExportForm
+    template_name = 'assessments/wru_assessment_export.html'
+
+    def form_valid(self, form):
+        csv_file = self.request.FILES['csv_file']
+        content = TextIOWrapper(csv_file.file, encoding='utf-8').read()
+        from_date = form.cleaned_data['from_date']
+        to_date = form.cleaned_data['to_date']
+        wru_assessment_export_task.delay(
+            from_date_str=from_date.isoformat() if from_date else '',
+            to_date_str=to_date.isoformat() if to_date else '',
+            wru_csv_content=content,
+            email_address=self.request.user.email,
+        )
+        return HttpResponseRedirect(reverse('report success'))
 
 
 class TestScoreStorageCSV(LoginRequiredMixin, FormView):

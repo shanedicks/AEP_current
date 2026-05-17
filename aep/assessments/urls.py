@@ -141,7 +141,10 @@ report_patterns = [
         name='eligibility report'),
     re_path(r'^test-score-storage/$',
         views.TestScoreStorageCSV.as_view(),
-        name='test score storage report')
+        name='test score storage report'),
+    path('wru-assessment-export/',
+        views.WRUAssessmentExportCSV.as_view(),
+        name='wru assessment export'),
 ]
 
 single_event_patterns = [

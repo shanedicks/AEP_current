@@ -1,7 +1,7 @@
 import datetime
 from django.apps import apps
 from django.db.models import Q
-from django.forms import ModelForm, Form, FileField, modelformset_factory, ValidationError
+from django.forms import ModelForm, Form, FileField, DateField, modelformset_factory, ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from crispy_forms.helper import FormHelper
@@ -500,3 +500,28 @@ class HisetAuthForm(ModelForm):
 
         fields = (
         )
+
+
+class WRUAssessmentExportForm(Form):
+
+    csv_file = FileField(label='WRU Assessment Report')
+    from_date = DateField(
+        input_formats=['%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y'],
+        required=False
+    )
+    to_date = DateField(
+        input_formats=['%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y'],
+        required=False
+    )
+
+    def clean_csv_file(self):
+        csv_file = self.cleaned_data.get('csv_file')
+        if csv_file:
+            if not csv_file.name.endswith('.csv'):
+                raise ValidationError('Sorry, please provide a CSV file.')
+        return csv_file
+
+    def __init__(self, *args, **kwargs):
+        super(WRUAssessmentExportForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
