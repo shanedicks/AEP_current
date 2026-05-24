@@ -131,7 +131,13 @@ reports_patterns = [
         name='import reported enrollments'),
     path('import-reported-attendance',
         views.ImportReportedAttendanceView.as_view(),
-        name='import reported attendance')
+        name='import reported attendance'),
+    path('program-admin-export/',
+        views.ProgramAdminExport.as_view(),
+        name='program admin export'),
+    path('import-reported-program-admin/',
+        views.ImportReportedProgramAdminView.as_view(),
+        name='import reported program admin'),
 ]
 
 urlpatterns = [

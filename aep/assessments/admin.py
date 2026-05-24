@@ -126,11 +126,13 @@ class TestAppointmentAdmin(ImportExportActionModelAdmin):
         'att_hours',
         'time_in',
         'time_out',
-        'creator'
+        'creator',
+        'reported',
     )
 
     list_filter = (
         'attendance_type',
+        'reported',
     )
 
     search_fields = [

@@ -31,7 +31,8 @@ from .forms import (SectionFilterForm, ClassAddEnrollmentForm,
                     SingleHoursAttendanceForm, HoursAttendanceFormset)
 from .tasks import (participation_detail_task, section_skill_mastery_report_task, wru_course_registration_export_task,
                     mondo_attendance_report_task, cancel_class_task, finalize_daily_attendance_task,
-                    enrollment_notification_task, mark_enrollments_reported_task, mark_attendance_reported_task, wru_sections_export_task)
+                    enrollment_notification_task, mark_enrollments_reported_task, mark_attendance_reported_task, 
+                    wru_sections_export_task, program_admin_export_task, mark_program_admin_reported_task)
 
 logger = logging.getLogger(__name__)
 
@@ -1737,4 +1738,43 @@ class ImportReportedAttendanceView(LoginRequiredMixin, FormView):
                     date_strings.append(value)
             attendance_list.append((row["SID"], row['COURSE_ID'], date_strings))
         mark_attendance_reported_task.delay(attendance_list, self.request.user.email)
+        return HttpResponseRedirect(reverse('reports'))
+
+class ProgramAdminExport(LoginRequiredMixin, FormView):
+
+    form_class = DateFilterForm
+    template_name = 'sections/program_admin_export.html'
+
+    def form_valid(self, form):
+        email_address = self.request.user.email
+        program_admin_export_task.delay(
+            email_address=email_address,
+            from_date=form.cleaned_data['from_date'].strftime('%Y-%m-%d'),
+            to_date=form.cleaned_data['to_date'].strftime('%Y-%m-%d'),
+        )
+        return HttpResponseRedirect(reverse('report success'))
+
+
+class ImportReportedProgramAdminView(LoginRequiredMixin, FormView):
+
+    form_class = CSVImportForm
+    template_name = 'sections/import_reported_records.html'
+
+    def form_valid(self, form):
+        csv_file = self.request.FILES['csv_file']
+        decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+        headers = decoded_file.readline().strip().split(",")
+        records_list = []
+        reader = csv.DictReader(decoded_file, fieldnames=headers)
+        for row in reader:
+            wru_id = (row.get("SID") or "").strip()
+            if not wru_id:
+                continue
+            # Walk HOURS_N / HOURS_DATE_N pairs
+            for i in range(1, 49):
+                hours_str = (row.get(f"HOURS_{i}") or "").strip()
+                date_str = (row.get(f"HOURS_DATE_{i}") or "").strip()
+                if hours_str and date_str:
+                    records_list.append((wru_id, date_str, hours_str))
+        mark_program_admin_reported_task.delay(records_list, self.request.user.email)
         return HttpResponseRedirect(reverse('reports'))

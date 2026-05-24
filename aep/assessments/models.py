@@ -236,6 +236,10 @@ class TestAppointment(models.Model):
         null=True
     )
 
+    reported = models.BooleanField(
+        default=False
+    )
+
     class Meta:
         verbose_name = "Testing Appointment"
         verbose_name_plural = "Testing Appointments"

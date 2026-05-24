@@ -565,6 +565,10 @@ class MeetingNote(models.Model):
         blank=True,
     )
 
+    reported = models.BooleanField(
+        default=False
+    )
+
     class Meta:
         ordering = ['-meeting_date']
 

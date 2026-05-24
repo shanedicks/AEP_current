@@ -575,6 +575,250 @@ def wru_course_registration_export_task(email_address, semesters, from_date, to_
     return True
 
 @shared_task
+def program_admin_export_task(email_address, from_date, to_date):
+    from core.utils import get_fiscal_year_start_date
+    from datetime import datetime
+
+    TestAppointment = apps.get_model('assessments', 'TestAppointment')
+    MeetingNote = apps.get_model('coaching', 'MeetingNote')
+
+    if isinstance(from_date, str):
+        from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+    if isinstance(to_date, str):
+        to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
+
+    fy_start = get_fiscal_year_start_date()
+
+    appts = TestAppointment.objects.filter(
+        reported=False,
+        attendance_type='P',
+        attendance_date__gte=from_date,
+        attendance_date__lte=to_date,
+    ).select_related('student')
+
+    notes = MeetingNote.objects.filter(
+        reported=False,
+        student_no_show=False,
+        student_reschedule=False,
+        student_cancel=False,
+        coach_cancel=False,
+        meeting_date__gte=from_date,
+        meeting_date__lte=to_date,
+    ).exclude(duration='').exclude(duration__isnull=True).select_related('coaching__coachee')
+
+    # Build per-student record list, keyed by student pk
+    student_records = {}  # pk -> {'student': obj, 'rows': [(date, hours), ...]}
+
+    for appt in appts:
+        student = appt.student
+        date = appt.attendance_date or appt.event.start.date()
+        student_records.setdefault(student.pk, {'student': student, 'rows': []})
+        student_records[student.pk]['rows'].append((date, appt.hours))
+
+    for note in notes:
+        student = note.coaching.coachee
+        hours = float(int(note.duration)) / 60
+        student_records.setdefault(student.pk, {'student': student, 'rows': []})
+        student_records[student.pk]['rows'].append((note.meeting_date, hours))
+
+    # Determine which students need an enrollment row: no reported reportable
+    # records since fiscal year start
+    student_pks = list(student_records.keys())
+    students_with_reported_appts = set(
+        TestAppointment.objects.filter(
+            reported=True,
+            attendance_type='P',
+            attendance_date__gte=fy_start,
+            student__pk__in=student_pks,
+        ).values_list('student__pk', flat=True)
+    )
+    students_with_reported_notes = set(
+        MeetingNote.objects.filter(
+            reported=True,
+            meeting_date__gte=fy_start,
+            coaching__coachee__pk__in=student_pks,
+        ).values_list('coaching__coachee__pk', flat=True)
+    )
+    already_enrolled = students_with_reported_appts | students_with_reported_notes
+
+    # Write enrollment file
+    with open('program_admin_enrollment.csv', 'w', newline='') as out:
+        writer = csv.writer(out)
+        writer.writerow([
+            "PROVIDERID", "SID", "LAST_NAME", "FIRST_NAME",
+            "MIDDLE_INITIAL", "COURSE_ID", "REGISTER_DATE",
+        ])
+        for pk, data in student_records.items():
+            if pk in already_enrolled:
+                continue
+            student = data['student']
+            earliest = min(row[0] for row in data['rows'])
+            writer.writerow([
+                '9',
+                student.WRU_ID,
+                student.last_name,
+                student.first_name,
+                '',
+                '',
+                earliest.strftime("%Y%m%d"),
+            ])
+
+    # Write attendance file
+    with open('program_admin_attendance.csv', 'w', newline='') as out:
+        writer = csv.writer(out)
+        headers = [
+            "PROVIDERID", "SID", "OTHER_ID", "LAST_NAME", "FIRST_NAME",
+            "MIDDLE_INITIAL", "COURSE_ID", "COURSE_NAME", "Partner",
+        ]
+        for i in range(1, 49):
+            headers.extend([f"HOURS_{i}", f"HOURS_DATE_{i}", f"HOURS_DL_{i}"])
+        writer.writerow(headers)
+
+        for pk, data in student_records.items():
+            student = data['student']
+            row = [
+                '9', student.WRU_ID, '', student.last_name, student.first_name,
+                '', '', '', student.partner,
+            ]
+            for date, hours in data['rows']:
+                row.extend([hours, date.strftime("%Y%m%d"), 'N'])
+            writer.writerow(row)
+
+    email = EmailMessage(
+        'Program Admin Enrollment and Attendance Export',
+        'Two files for the WRU Program Admin reporting workflow: an '
+        'enrollment file (COURSE_ID blank for staff to fill in) and an '
+        'attendance file. Import enrollment first.',
+        'reporter@dccaep.org',
+        [email_address],
+    )
+    email.attach_file('program_admin_enrollment.csv')
+    email.attach_file('program_admin_attendance.csv')
+    email.send()
+    os.remove('program_admin_enrollment.csv')
+    os.remove('program_admin_attendance.csv')
+    return True
+
+@shared_task
+def mark_program_admin_reported_task(records_list, user_email):
+    from collections import Counter
+    from decimal import Decimal
+
+    TestAppointment = apps.get_model('assessments', 'TestAppointment')
+    MeetingNote = apps.get_model('coaching', 'MeetingNote')
+    Student = apps.get_model('people', 'Student')
+
+    student_not_found = []
+    no_match = []
+    ambiguous = []
+    errors = False
+
+    # Group confirmation tuples by (WRU_ID, date_str, hours_str)
+    confirmation_counts = Counter(tuple(r) for r in records_list)
+
+    # Cache: which WRU_IDs are unknown to GB
+    known_students = set(
+        Student.objects.filter(
+            WRU_ID__in=[wru_id for wru_id, _, _ in confirmation_counts.keys()]
+        ).values_list('WRU_ID', flat=True)
+    )
+
+    DURATION_TO_HOURS = {'15': 0.25, '30': 0.5, '45': 0.75, '60': 1.0}
+
+    for (wru_id, date_str, hours_str), conf_count in confirmation_counts.items():
+        if wru_id not in known_students:
+            student_not_found.append([wru_id, date_str, hours_str])
+            errors = True
+            continue
+
+        try:
+            attendance_date = datetime.strptime(date_str, '%Y%m%d').date()
+            hours_val = float(hours_str)
+        except (ValueError, TypeError):
+            no_match.append([wru_id, date_str, hours_str])
+            errors = True
+            continue
+
+        # Find unreported TestAppointment matches
+        appt_matches = list(TestAppointment.objects.filter(
+            reported=False,
+            attendance_type='P',
+            attendance_date=attendance_date,
+            student__WRU_ID=wru_id,
+        ))
+        appt_matches = [
+            a for a in appt_matches
+            if abs(float(a.hours) - hours_val) < 0.01
+        ]
+
+        # Find unreported MeetingNote matches
+        note_qs = MeetingNote.objects.filter(
+            reported=False,
+            student_no_show=False,
+            student_reschedule=False,
+            student_cancel=False,
+            coach_cancel=False,
+            meeting_date=attendance_date,
+            coaching__coachee__WRU_ID=wru_id,
+        ).exclude(duration='').exclude(duration__isnull=True)
+        note_matches = [
+            n for n in note_qs
+            if abs(DURATION_TO_HOURS.get(n.duration, 0) - hours_val) < 0.01
+        ]
+
+        total_matches = len(appt_matches) + len(note_matches)
+
+        if total_matches == 0:
+            no_match.append([wru_id, date_str, hours_str])
+            errors = True
+        elif total_matches == conf_count:
+            TestAppointment.objects.filter(
+                pk__in=[a.pk for a in appt_matches]
+            ).update(reported=True)
+            MeetingNote.objects.filter(
+                pk__in=[n.pk for n in note_matches]
+            ).update(reported=True)
+        else:
+            ambiguous.append([
+                wru_id, date_str, hours_str,
+                f"{conf_count} confirmation row(s), {total_matches} GB record(s)"
+            ])
+            errors = True
+
+    if errors:
+        with open('errors.csv', 'w', newline='') as error_file:
+            writer = csv.writer(error_file)
+
+            if student_not_found:
+                writer.writerow(['These records were not updated because no student with the given WRU_ID was found'])
+                writer.writerow(['SID', 'Date', 'Hours'])
+                for row in student_not_found:
+                    writer.writerow(row)
+
+            if no_match:
+                writer.writerow(['These records were not updated because no matching unreported record was found'])
+                writer.writerow(['SID', 'Date', 'Hours'])
+                for row in no_match:
+                    writer.writerow(row)
+
+            if ambiguous:
+                writer.writerow(['These records were not updated because the number of confirmation rows did not match the number of unreported GB records for the same student/date/hours'])
+                writer.writerow(['SID', 'Date', 'Hours', 'Discrepancy'])
+                for row in ambiguous:
+                    writer.writerow(row)
+
+        email = EmailMessage(
+            'Program Admin Reported Import Report',
+            'These records were not updated',
+            'admin@dccaep.org',
+            [user_email]
+        )
+        email.attach_file('errors.csv')
+        email.send()
+        os.remove('errors.csv')
+    return True
+
+@shared_task
 def wru_sections_export_task(email_address, semester_ids):
     Section = apps.get_model('sections', 'Section')
     Site = apps.get_model('sections', 'Site')

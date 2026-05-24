@@ -563,12 +563,14 @@ class MeetingNoteAdmin(ImportExportActionModelAdmin):
     list_display = (
         'coaching',
         'meeting_date',
-        'start_time'
+        'start_time',
+        'reported',
     )
 
     list_filter = (
         'meeting_date',
-        'meeting_type'
+        'meeting_type',
+        'reported',
     )
 
     search_fields = [
