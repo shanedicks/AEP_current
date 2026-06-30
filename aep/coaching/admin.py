@@ -1,12 +1,9 @@
-from apiclient import discovery
-from httplib2 import Http
 from datetime import datetime
 from django.contrib import admin
 from django.conf import settings
 
 from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin
-from oauth2client.service_account import ServiceAccountCredentials
 
 from core.tasks import send_mail_task
 from people.models import Student, Staff
