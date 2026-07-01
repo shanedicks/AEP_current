@@ -1586,7 +1586,7 @@ class SSNForm(ModelForm):
         )
 
         help_texts = {
-            "SID": "This is used by the State of Louisiana as a means of matching student records, however it is not required for admission."
+            "SID": ""
         }
 
 
@@ -2257,7 +2257,7 @@ class WioaForm(ModelForm):
             "referred_by": "<strong>How did you hear about us?</strong>"
         }
         help_texts = {
-            "SID": "This is used by the State of Louisiana as a means of matching student records, however it is not required for admission."
+            "SID": ""
         }
 
 

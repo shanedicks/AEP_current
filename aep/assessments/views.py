@@ -523,6 +523,8 @@ class StudentTestDetailView(LoginRequiredMixin, DetailView):
     class Meta:
         abstract = True
 
+    context_object_name = 'test'
+
     def get_context_data(self, **kwargs):
         context = super(
             StudentTestDetailView,
