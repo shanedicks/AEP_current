@@ -2,34 +2,136 @@
 {% block head_title %}DCCAEP | Reports{% endblock head_title %}
 {% block content %}
 <h1>Reports</h1>
-    <p><a href="{% url 'sections:active student csv' %}">Active Student Report</a></p>
-    <p><a href="{% url 'sections:student enrollment csv' %}">Student Enrollment Report</a></p>
-    <p><a href="{% url 'sections:wru course registration csv' %}">WRU Course Registration Report</a></p>
-    <p><a href="{% url 'sections:atrium csv' %}">Atrium Export</a></p>
-    <p><a href="{% url 'people:new student csv' %}">New Student Report</a></p>
-    <p><a href="{% url 'people:intake retention csv' %}">Intake Retention Report</a></p>
-    <p><a href="{% url 'sections:attendance csv' %}">Attendance Report</a></p>
-    <p><a href="{% url 'sections:program admin export' %}">Program Admin Export</a></p>
-    <p><a href="{% url 'sections:participation report' %}">Participation Report</a></p>
-    <p><a href="{% url 'assessments:wru assessment export' %}">WRU Assessment Export</a></p>
-    <p><a href="{% url 'assessments:tabe_import' %}">Import TABE Scores</a></p>
-    <p><a href="{% url 'assessments:clas-e import' %}">Import CLAS-E Scores</a></p>
-    <p><a href="{% url 'coaching:ace enrollment csv' %}">ACE Enrollment Report</a></p>
-    <p><a href="{% url 'coaching:exit exam csv' %}">Exit Exam Eligibility Report</a></p>
-    <p><a href="{% url 'assessments:accelerated coaching' %}">Accelerated Coaching Report</a></p>
-    <p><a href="{% url 'assessments:eligibility report' %}">Testing Eligibility Report</a></p>
-    <p><a href="{% url 'coaching:coaching export' %}">Active Coaching Report</a></p>
-    <p><a href="{% url 'people:prospect meeting attendance csv' %}">Prospect Meeting Attendance CSV</a></p>
-    <p><a href="{% url 'assessments:test score storage report' %}">Test Score Storage Report</a></p>
-    <p><a href="{% url 'sections:mondo attendance report' %}">Mondo Attendance Report</a></p>
-    <p><a href="{% url 'semesters:teacher attendance report' %}">Teacher Attendance Report</a></p>
-    <p><a href="{% url 'people:intercession report' %}">Intercession Report</a></p>
-    <p><a href="{% url 'people:minor student report' %}">Minor Student Report</a></p>
-    <p><a href="{% url 'sections:import reported enrollments' %}">Import Reported Enrollments</a></p>
-    <p><a href="{% url 'sections:import reported attendance' %}">Import Reported Attendance</a></p>
-    <p><a href="{% url 'sections:wru section export' %}">WRU Section Export</a></p>
-    <p><a href="{% url 'inventory:staff checkout report' %}">Staff Item Checkout Report</a></p>
-    <p><a href="{% url 'inventory:student checkout report' %}">Student Item Checkout Report</a></p>
-    <p><a href="{% url 'inventory:combined checkout report' %}">Combined Item Checkout Report</a></p>
-    <p><a href="{% url 'people:prospect export csv' %}">Prospect Report</a></p>
+
+<h2>Enrollment &amp; Attendance</h2>
+    <p>
+        <a href="{% url 'sections:active student csv' %}">Active Student Report</a><br>
+        <span class="text-muted">Every actively-enrolled student, with contact, demographic, testing, and paperwork fields.</span>
+    </p>
+    <p>
+        <a href="{% url 'sections:student enrollment csv' %}">Student Enrollment Report</a><br>
+        <span class="text-muted">Every enrollment, with testing, session, and status fields plus contact info.</span>
+    </p>
+    <p>
+        <a href="{% url 'sections:attendance csv' %}">Attendance Report</a><br>
+        <span class="text-muted">Attendance not yet reported to the state, in the WRU hours-by-session format.</span>
+    </p>
+    <p>
+        <a href="{% url 'sections:mondo attendance report' %}">Mondo Attendance Report</a><br>
+        <span class="text-muted">Combined roster and attendance for a semester and date range, with course, teacher, coach, and program columns.</span>
+    </p>
+    <p>
+        <a href="{% url 'semesters:teacher attendance report' %}">Teacher Attendance Report</a><br>
+        <span class="text-muted">Missing-attendance counts per section for a semester.</span>
+    </p>
+    <p>
+        <a href="{% url 'sections:participation report' %}">Participation Report</a><br>
+        <span class="text-muted">Every student's enrollment history, broken out by day of week, time of day, and site.</span>
+    </p>
+    <p>
+        <a href="{% url 'sections:atrium csv' %}">Atrium Export</a><br>
+        <span class="text-muted">Demographic and site-attendance export built for the college's Atrium system. Status uncertain &mdash; confirm it's still needed before relying on it.</span>
+    </p>
+
+<h2>State Reporting (WRU)</h2>
+    <p>
+        <a href="{% url 'sections:wru section export' %}">WRU Section Export</a><br>
+        <span class="text-muted">Semester setup step, done once per semester. Edited manually before import to WRU.</span>
+    </p>
+    <p>
+        <a href="{% url 'sections:wru course registration csv' %}">WRU Course Registration Report</a><br>
+        <span class="text-muted">Monthly enrollment report to WRU. Only includes records not yet marked as reported.</span>
+    </p>
+    <p>
+        <a href="{% url 'assessments:wru assessment export' %}">WRU Assessment Export</a><br>
+        <span class="text-muted">Upload the current WRU assessment file and pick a date range; GB compares against it to determine pre/post-test status and emails a WRU-formatted import file.</span>
+    </p>
+    <p>
+        <a href="{% url 'sections:program admin export' %}">Program Admin Export</a><br>
+        <span class="text-muted">Enrollment and attendance files for non-section events &mdash; testing, orientation, and coaching meetings &mdash; for WRU's Program Admin course. Import the enrollment file first.</span>
+    </p>
+    <p>
+        <a href="{% url 'sections:import reported enrollments' %}">Import Reported Enrollments</a><br>
+        <span class="text-muted">Marks enrollments as reported so they're excluded from next month's report.</span>
+    </p>
+    <p>
+        <a href="{% url 'sections:import reported attendance' %}">Import Reported Attendance</a><br>
+        <span class="text-muted">Marks attendance as reported so it's excluded from next month's report. Importing the same file twice silently doubles hours &mdash; be careful.</span>
+    </p>
+
+<h2>Assessments</h2>
+    <p>
+        <a href="{% url 'assessments:tabe_import' %}">Import TABE Scores</a><br>
+        <span class="text-muted">Upload a score file downloaded from the DRC FTP site.</span>
+    </p>
+    <p>
+        <a href="{% url 'assessments:clas-e import' %}">Import CLAS-E Scores</a><br>
+        <span class="text-muted">Same workflow as TABE, for CLAS-E scores.</span>
+    </p>
+    <p>
+        <a href="{% url 'assessments:eligibility report' %}">Testing Eligibility Report</a><br>
+        <span class="text-muted">Every student's current testing status, last test, active hours, and enrollment &mdash; not pre-filtered, sort by Test Status to find who's due.</span>
+    </p>
+    <p>
+        <a href="{% url 'assessments:accelerated coaching' %}">Accelerated Coaching Report</a><br>
+        <span class="text-muted">Students scoring NRS level 4+ on any TABE subtest in a date range, with coach and testing history.</span>
+    </p>
+    <p>
+        <a href="{% url 'assessments:test score storage report' %}">Test Score Storage Report</a><br>
+        <span class="text-muted">Combined TABE and CLAS-E scores for a date range, with contact info and NRS levels.</span>
+    </p>
+
+<h2>Student Intake &amp; Prospects</h2>
+    <p>
+        <a href="{% url 'people:new student csv' %}">New Student Report</a><br>
+        <span class="text-muted">New students by intake date range, with contact and intake fields.</span>
+    </p>
+    <p>
+        <a href="{% url 'people:intake retention csv' %}">Intake Retention Report</a><br>
+        <span class="text-muted">Students who entered in a date range, with orientation, testing, and attendance summary &mdash; how many of a cohort actually stuck around.</span>
+    </p>
+    <p>
+        <a href="{% url 'people:prospect export csv' %}">Prospect Report</a><br>
+        <span class="text-muted">Prospects by registration date range, with contact, orientation, paperwork, and testing fields.</span>
+    </p>
+    <p>
+        <a href="{% url 'people:prospect meeting attendance csv' %}">Prospect Meeting Attendance CSV</a><br>
+        <span class="text-muted">Completed prospect meetings in a date range, in attendance-hours format.</span>
+    </p>
+    <p>
+        <a href="{% url 'people:intercession report' %}">Intercession Report</a><br>
+        <span class="text-muted">Students between semesters &mdash; attendance rate, testing status, and upcoming enrollments.</span>
+    </p>
+    <p>
+        <a href="{% url 'people:minor student report' %}">Minor Student Report</a><br>
+        <span class="text-muted">Students aged 16&ndash;19, cross-referenced against this fiscal year's orientation events.</span>
+    </p>
+
+<h2>Coaching (ACE Program)</h2>
+    <p>
+        <a href="{% url 'coaching:ace enrollment csv' %}">ACE Enrollment Report</a><br>
+        <span class="text-muted">Every ACE coaching record, with each student's current and completed class sections.</span>
+    </p>
+    <p>
+        <a href="{% url 'coaching:exit exam csv' %}">Exit Exam Eligibility Report</a><br>
+        <span class="text-muted">Every ACE coaching record against exit-exam eligibility rules, with pass flags and course history.</span>
+    </p>
+    <p>
+        <a href="{% url 'coaching:coaching export' %}">Active Coaching Report</a><br>
+        <span class="text-muted">Active coaching relationships, with coachee/coach names, WRU ID, and coaching type.</span>
+    </p>
+
+<h2>Inventory</h2>
+    <p>
+        <a href="{% url 'inventory:staff checkout report' %}">Staff Item Checkout Report</a><br>
+        <span class="text-muted">Items currently checked out to staff, with their current/upcoming/past sections for context.</span>
+    </p>
+    <p>
+        <a href="{% url 'inventory:student checkout report' %}">Student Item Checkout Report</a><br>
+        <span class="text-muted">Items currently checked out to students, with their last-30-day attendance for context.</span>
+    </p>
+    <p>
+        <a href="{% url 'inventory:combined checkout report' %}">Combined Item Checkout Report</a><br>
+        <span class="text-muted">All outstanding checkouts, staff and student together, in one file.</span>
+    </p>
 {% endblock %}
