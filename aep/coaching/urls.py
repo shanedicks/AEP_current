@@ -107,9 +107,6 @@ ace_patterns = [
     re_path(r'^$',
         views.AceRecordListView.as_view(),
         name='ace record list'),
-    re_path(r'^csv/$',
-        views.AceRecordCSV.as_view(),
-        name='ace record csv'),
     re_path(r'exit-exam/$',
         views.ExitExamCSV.as_view(),
         name='exit exam csv'),
@@ -136,9 +133,6 @@ ace_patterns = [
 ]
 
 e_learn_patterns = [
-    re_path(r'^$',
-        views.ElearnRecordListView.as_view(),
-        name='elearn record list'),
     re_path(r'^csv/$',
         views.ElearnRecordCSV.as_view(),
         name='elearn record csv'),

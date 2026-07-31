@@ -467,11 +467,6 @@ class AceRecordListView(LoginRequiredMixin, ListView):
     context_object_name = 'records'
 
 
-class AceRecordCSV(LoginRequiredMixin, FormView):
-
-    model = AceRecord
-
-
 class ElearnRecordCreateView(LoginRequiredMixin, CreateView):
 
     model = ElearnRecord
@@ -511,11 +506,6 @@ class ElearnRecordDetailView(LoginRequiredMixin, DetailView):
             context['student'] = Student.objects.get(slug=self.kwargs['slug'])
             context.update(kwargs)
         return context
-
-
-class ElearnRecordListView(LoginRequiredMixin, ListView):
-
-    model = ElearnRecord
 
 
 class ElearnRecordCSV(LoginRequiredMixin, FormView):
