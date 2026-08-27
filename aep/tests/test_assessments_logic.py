@@ -149,6 +149,74 @@ class TestTabeCheckGain:
         ) is False
 
 
+class TestClasEAssign:
+    """Cut scores are keyed on the current read_level, unlike TABE.
+
+        read_level "1" -> (441, 560, 0, 0)
+        read_level "2" -> (400, 450, 500, 620)
+        read_level "3" -> (400, 450, 504, 650)
+        read_level "4" -> (360, 473, 510, 554)
+
+    Level is the first band the score is <= to; above the last band the method
+    returns the sentinel "11 M" instead of a level/form pair.
+    """
+
+    @pytest.mark.parametrize('current,expected', [
+        ('A', 'B'), ('B', 'A'), ('C', 'D'),
+        ('D', 'C'),   # falls through the else
+        ('', 'C'),
+    ])
+    def test_form_rotation(self, current, expected):
+        test = Clas_E(read_level='2', read_ss=300, form=current)
+        assert test.assign().split()[1] == expected
+
+    @pytest.mark.parametrize('form', ['a', 'b', 'c'])
+    def test_form_rotation_is_case_insensitive(self, form):
+        test = Clas_E(read_level='2', read_ss=300, form=form)
+        upper = Clas_E(read_level='2', read_ss=300, form=form.upper())
+        assert test.assign() == upper.assign()
+
+    @pytest.mark.parametrize('read_ss,expected', [
+        (399, '1'), (400, '1'),
+        (401, '2'), (450, '2'),
+        (451, '3'), (500, '3'),
+        (501, '4'), (620, '4'),
+    ])
+    def test_level_bands_for_read_level_2(self, read_ss, expected):
+        test = Clas_E(read_level='2', read_ss=read_ss, form='A')
+        assert test.assign().split()[0] == expected
+
+    def test_above_top_band_returns_sentinel(self):
+        test = Clas_E(read_level='2', read_ss=621, form='A')
+        assert test.assign() == '11 M'
+
+    def test_read_level_1_has_two_zero_bands(self):
+        """The (441, 560, 0, 0) row means levels 3 and 4 are unreachable.
+
+        Any score above 560 hits the sentinel, because the third and fourth
+        cut-offs are 0 and the comparisons are <=.
+        """
+        assert Clas_E(read_level='1', read_ss=441, form='A').assign() == '1 B'
+        assert Clas_E(read_level='1', read_ss=560, form='A').assign() == '2 B'
+        assert Clas_E(read_level='1', read_ss=561, form='A').assign() == '11 M'
+
+    def test_unknown_read_level_raises(self):
+        with pytest.raises(KeyError):
+            Clas_E(read_level='9', read_ss=400, form='A').assign()
+
+
+class TestClasECheckGain:
+
+    def test_no_gain_when_pretest_was_a_tabe(self):
+        assert Clas_E(read_nrs='4').check_gain(Tabe(read_nrs='1')) is False
+
+    def test_gain_on_higher_read_nrs(self):
+        assert Clas_E(read_nrs='3').check_gain(Clas_E(read_nrs='2')) is True
+
+    def test_no_gain_when_equal(self):
+        assert Clas_E(read_nrs='2').check_gain(Clas_E(read_nrs='2')) is False
+
+
 class TestTabeNrsFormatting:
 
     def test_nrs_joins_three_subjects(self):

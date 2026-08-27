@@ -45,7 +45,7 @@ URL_KWARGS = {
         'slug': seed['students'][0].slug, 'pk': seed['prospect'].pk,
     },
     # These views declare no model, so the pk has to be named explicitly.
-    'people:signup success': lambda seed: {'pk': seed['students'][0].pk},
+    'people:signup success': lambda seed: {'pk': seed['test_event'].pk},
     'sections:drop enrollment': lambda seed: {'pk': seed['enrollments'][0].pk},
     'sections:cancel class task': lambda seed: {'pk': seed['cancellation'].pk},
     'assessments:send tabe score report': lambda seed: {
