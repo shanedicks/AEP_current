@@ -2,7 +2,6 @@ import csv
 import datetime
 import logging
 import os
-import requests
 import google_auth_httplib2
 from time import sleep
 from apiclient import discovery
@@ -280,25 +279,6 @@ def get_fiscal_year_end_date():
     else:
         year = today.year
     return datetime.date(year, 6, 30)
-
-def state_session():
-    session = requests.Session()
-
-    login = {
-        'Provider': '9',
-        'Parish': '19',
-        'Login': 'greenbean',
-        'Password': settings.LCTCS_PASS,
-        'btnLogin': 'Sign In'
-    }
-
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
-    }
-
-    session.post('https://workreadyu.lctcs.edu/UserProfile/Login', data=login, headers=headers, proxies=settings.PROXIE_DICT)
-
-    return session
 
 def directory_service():
     scopes = [

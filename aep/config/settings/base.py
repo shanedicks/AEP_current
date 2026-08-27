@@ -237,15 +237,6 @@ KEYFILE_DICT = {
 # Celery settings
 CELERY_RESULT_BACKEND = 'redis://'
 
-# WorkreadyU Settings
-LCTCS_PASS = get_env_variable('LCTCS_PASS')
-
-# Fixie Settings
-PROXIE_DICT = {
-        'http': get_env_variable('FIXIE_URL'),
-        'https': get_env_variable('FIXIE_URL')
-    }
-
 # Form field limit
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 

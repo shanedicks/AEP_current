@@ -46,12 +46,10 @@ MIDDLEWARE = [m for m in MIDDLEWARE if 'whitenoise' not in m]
 
 # Dummy credentials. Deliberately invalid: if a mock ever fails to cover a seam,
 # the call should fail against a bogus credential rather than succeed against
-# production Google Workspace / Plivo / WorkReadyU.
+# production Google Workspace or Plivo.
 ANYMAIL = {'MAILGUN_API_KEY': 'test-not-a-real-key'}
-LCTCS_PASS = 'test-not-a-real-password'
 PLIVO_AUTH_ID = 'test-not-a-real-id'
 PLIVO_AUTH_TOKEN = 'test-not-a-real-token'
-PROXIE_DICT = {'http': '', 'https': ''}
 KEYFILE_DICT = {
     **KEYFILE_DICT,
     'private_key_id': 'test-not-a-real-key-id',

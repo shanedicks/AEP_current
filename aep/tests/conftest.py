@@ -72,7 +72,6 @@ _SEAM_CONSUMERS = {
     'directory_service': ['coaching.tasks', 'sections.tasks', 'semesters.tasks'],
     'drive_service': ['people.views'],
     'classroom_service': ['sections.models', 'sections.tasks', 'sections.views'],
-    'state_session': ['people.models', 'people.tasks', 'people.admin'],
 }
 
 

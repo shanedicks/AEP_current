@@ -13,9 +13,8 @@ from .models import (
     Student, Staff, WIOA, PoP,
     CollegeInterest, Paperwork, Prospect, ProspectNote, full_merge
     )
-from .tasks import send_to_state_task, possible_duplicate_report_task
+from .tasks import possible_duplicate_report_task
 from coaching.models import ElearnRecord, AceRecord
-from core.utils import state_session
 
 
 class UserResource(resources.ModelResource):
@@ -774,13 +773,6 @@ class WIOAAdmin(ImportExportActionModelAdmin):
 
     readonly_fields = ["student"]
 
-    actions = ImportExportActionModelAdmin.actions + (
-        'check_for_state_id',
-        'send_to_state',
-        'verify',
-        'full_send'
-    )
-
     def get_AEP_ID(self, obj):
         return obj.student.AEP_ID
     get_AEP_ID.admin_order_field = "AEP_ID"
@@ -790,22 +782,6 @@ class WIOAAdmin(ImportExportActionModelAdmin):
         return obj.student.WRU_ID
     get_WRU_ID.admin_order_field = "student__WRU_ID"
     get_WRU_ID.short_description = "WRU ID"
-
-    def check_for_state_id(self, request, queryset):
-        wioa_id_list = [obj.id for obj in queryset]
-        send_to_state_task.delay(wioa_id_list, 'check_for_state_id')
-
-    def send_to_state(self, request, queryset):
-        wioa_id_list = [obj.id for obj in queryset]
-        send_to_state_task.delay(wioa_id_list, 'send_to_state')
-
-    def verify(self, request, queryset):
-        wioa_id_list = [obj.id for obj in queryset]
-        send_to_state_task.delay(wioa_id_list, 'verify')
-
-    def full_send(self, request, queryset):
-        wioa_id_list = [obj.id for obj in queryset]
-        send_to_state_task.delay(wioa_id_list, 'send')
 
 admin.site.register(WIOA, WIOAAdmin)
 

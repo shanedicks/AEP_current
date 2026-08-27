@@ -12,26 +12,11 @@ from django.utils.html import strip_tags
 from django.utils import timezone
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from core.utils import state_session, get_fiscal_year_start_date, get_fiscal_year_end_date
+from core.utils import get_fiscal_year_start_date, get_fiscal_year_end_date
 from core.tasks import send_mail_task
 from people.models import full_merge
 
 logger = get_task_logger(__name__)
-
-@shared_task
-def send_to_state_task(wioa_id_list, action):
-    records = apps.get_model('people', 'WIOA').objects.filter(id__in=wioa_id_list)
-    session = state_session()
-    for record in records:
-        match action:
-            case 'send':
-                record.send(session)
-            case 'check_for_state_id':
-                record.check_for_state_id(session)
-            case 'send_to_state':
-                record.send_to_state(session)
-            case 'verify':
-                record.verify(session)
 
 @shared_task
 def send_orientation_confirmation_task(student_id):
@@ -1076,85 +1061,6 @@ def intercession_report_task(email_address):
     email.attach_file(filename)
     email.send()
     os.remove(filename) 
-
-@shared_task
-def wru_student_intake_csv_task(email_address, id_list):
-    filename = "wru_student_intake.csv"
-    Student = apps.get_model('people', 'Student')
-    students = Student.objects.filter(id__in=id_list)
-    with open(filename, 'w', newline='') as out:
-        writer = csv.writer(out)
-        data = []
-        headers = [
-            "FirstName",
-            "MiddleInitial",
-            "LastName",
-            "DOB",
-            "SSN",
-            "Age",
-            "Gender Code",
-            "PhoneNumber",
-            "EmergencyFName",
-            "EmergencyLName",
-            "Emergency Relationship Code",
-            "USCitizen",
-            "StreetAddress",
-            "City",
-            "State",
-            "ZipCode",
-            "Hispanic/Latino",
-            "AmericanIndian",
-            "Asian",
-            "Black",
-            "Hawaiian",
-            "Foreign/Allien",
-            "HighestDegreeOrLevelCompleted Code",
-            "Location(Highest Degree Or Level Completed) Code",
-            "Employment Status Code",
-
-        ]
-        writer.writerow(headers)
-
-        for student in students:
-            data = student.get_intake_import_data()
-            row = [
-                student.first_name,
-                "",
-                student.last_name,
-                student.dob.strftime('%Y-%m-%d'),
-                student.WIOA.SID,
-                student.get_age_at_intake(),
-                student.get_gender_code(),
-                student.phone,
-                data["ec_first_name"],  
-                data["ec_last_name"],
-                data["ec_relationship"],
-                int(student.US_citizen),
-                student.street_address_1,
-                student.city,
-                student.state,
-                student.zip_code,
-                int(student.WIOA.hispanic_latino),  
-                int(student.WIOA.amer_indian),
-                int(student.WIOA.asian),
-                int(student.WIOA.black),
-                int(student.WIOA.pacific_islander),
-                data["highest_degree"],
-                data["school_location"],
-                data["employmen_status"],
-            ]
-            writer.writerow(row)
-
-    email = EmailMessage(
-        'WRU Student Intake Report',
-        "File for student intake import",
-        'reporter@dccaep.org',
-        [email_address]
-    )
-    email.attach_file(filename)
-    email.send()
-    os.remove(filename)
-    return True
 
 @shared_task
 def process_student_import_task(email, student_ids):
