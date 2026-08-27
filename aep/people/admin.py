@@ -11,7 +11,7 @@ from import_export import resources, fields, widgets
 from import_export.admin import ImportExportActionModelAdmin, ImportExportMixin
 from .models import (
     Student, Staff, WIOA, PoP,
-    CollegeInterest, Paperwork, Prospect, ProspectNote, full_merge
+    CollegeInterest, Paperwork, Prospect, ProspectNote, RecordRelease, full_merge
     )
 from .tasks import possible_duplicate_report_task
 from coaching.models import ElearnRecord, AceRecord
@@ -599,6 +599,30 @@ class StaffAdmin(ImportExportActionModelAdmin):
 admin.site.register(Staff, StaffAdmin)
 
 
+class RecordReleaseResource(resources.ModelResource):
+
+    class Meta:
+        model = RecordRelease
+        fields = (
+            'id',
+            'student',
+            'student__last_name',
+            'student__first_name',
+            'student__WRU_ID',
+            'released_to',
+            'relationship',
+            'purpose',
+            'expiration_date',
+            'signature',
+            'sig_date',
+            'guardian_signature',
+            'g_sig_date',
+            'release_file',
+            'created_by',
+            'created_at'
+        )
+
+
 class PaperworkAdmin(ImportExportActionModelAdmin):
 
     resource_class = PaperworkResource
@@ -675,6 +699,54 @@ class PaperworkAdmin(ImportExportActionModelAdmin):
     )
 
 admin.site.register(Paperwork, PaperworkAdmin)
+
+
+class RecordReleaseAdmin(ImportExportActionModelAdmin):
+
+    resource_class = RecordReleaseResource
+
+    list_display = (
+        'student',
+        'released_to',
+        'relationship',
+        'sig_date',
+        'expiration_date'
+    )
+
+    list_filter = ('relationship',)
+
+    search_fields = [
+        'student__last_name',
+        'student__first_name',
+        'student__WRU_ID',
+        'released_to'
+    ]
+
+    fields = (
+        "student",
+        "released_to",
+        "relationship",
+        "purpose",
+        "expiration_date",
+        "release_file",
+        "signature",
+        "sig_date",
+        "guardian_signature",
+        "g_sig_date",
+        "created_by",
+        "created_at"
+    )
+
+    readonly_fields = (
+        "signature",
+        "guardian_signature",
+        "sig_date",
+        "g_sig_date",
+        "created_by",
+        "created_at",
+    )
+
+admin.site.register(RecordRelease, RecordReleaseAdmin)
 
 
 class WIOAAdmin(ImportExportActionModelAdmin):

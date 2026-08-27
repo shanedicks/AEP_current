@@ -9,7 +9,7 @@ from django.utils import timezone
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, Row, Column, HTML, Div
 from crispy_forms.bootstrap import PrependedText
-from .models import Student, Staff, WIOA, CollegeInterest, Prospect, ProspectNote, Paperwork
+from .models import Student, Staff, WIOA, CollegeInterest, Prospect, ProspectNote, Paperwork, RecordRelease
 
 
 def make_username(first_name, last_name):
@@ -2766,3 +2766,82 @@ class EligibilityDocForm(ModelForm):
     class Meta:
         model = Paperwork
         fields = ('eligibility_status', 'eligibility_doc_type', 'eligibility_doc_expiration')
+
+
+class RecordReleaseSignForm(ModelForm):
+
+    def clean_signature(self):
+        data = self.cleaned_data['signature']
+        if data == '':
+            raise ValidationError(
+                _("You must type your name to sign this form electronically."),
+                code="signature"
+            )
+        return data
+
+    def __init__(self, *args, **kwargs):
+        super(RecordReleaseSignForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+
+    class Meta:
+        model = RecordRelease
+        fields = (
+            'released_to',
+            'relationship',
+            'purpose',
+            'expiration_date',
+            'signature',
+            'guardian_signature',
+        )
+        labels = {
+            'signature': 'Signature*',
+        }
+        help_texts = {
+            'guardian_signature': '(If student is under 18)'
+        }
+
+
+class RecordReleaseUploadForm(ModelForm):
+
+    release_file = FileField(required=False)
+
+    def clean_release_file(self):
+        file = self.cleaned_data['release_file']
+        if file and file.content_type not in ['image/png', 'image/jpeg', 'application/pdf']:
+            raise ValidationError(
+                _("Sorry that file type is not supported. Please upload a .jpg, .png, or .pdf file")
+            )
+        return file
+
+    def clean(self):
+        cleaned_data = super().clean()
+        signature = cleaned_data.get('signature', '')
+        release_file = cleaned_data.get('release_file')
+        existing_file = self.instance.release_file if self.instance.pk else ''
+        if signature == '' and not release_file and existing_file == '':
+            raise ValidationError(
+                _("Type a signature or upload a signed release form.")
+            )
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        super(RecordReleaseUploadForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.template_pack = 'bootstrap3'
+
+    class Meta:
+        model = RecordRelease
+        fields = (
+            'released_to',
+            'relationship',
+            'purpose',
+            'expiration_date',
+            'signature',
+            'guardian_signature',
+        )
+        help_texts = {
+            'guardian_signature': '(If student is under 18)'
+        }

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block head_title %}DCCAEP | {{release.student}} records release{% endblock head_title %}
+{% block content %}
+<h1>Records Release for <a href="{% url 'people:student detail' slug=release.student.slug %}">{{ release.student }}</a></h1>
+<a type='button' class="btn btn-default" href="{% url 'people:record release edit' pk=release.pk %}">Update</a>
+<a type='button' class="btn btn-default" href="{% url 'people:record release list' slug=release.student.slug %}">All Releases</a>
+
+{% include "people/record_release_text.html" %}
+
+<table class="table borderless">
+<tr><td>Release records to</td><td>{{ release.released_to }}</td></tr>
+<tr><td>Relationship to student</td><td>{{ release.get_relationship_display }}</td></tr>
+<tr><td>Purpose / records covered</td><td>{{ release.purpose|linebreaksbr }}</td></tr>
+{% if release.expiration_date %}
+<tr><td>Expiration Date</td><td>{{ release.expiration_date|date:"n/j/Y" }}</td></tr>
+{% endif %}
+{% if release.release_file %}
+<tr><td>Signed Form</td><td><a href="{{ release.release_file_url }}" target="blank">{{ release.release_file_url }}</a></td></tr>
+{% endif %}
+</table>
+
+{% if release.sig_date %}
+<table class='table borderless'>
+<tr><td><i>{{release.signature}}</i></td><td>{{release.sig_date}}</td></tr>
+<tr><td>Signature</td><td>Date</td></tr>
+{% if release.g_sig_date %}
+<tr><td><i>{{release.guardian_signature}}</i></td><td>{{release.g_sig_date}}</td></tr>
+<tr><td>Guardian Signature</td><td>Date</td></tr>
+{% endif %}
+</table>
+{% endif %}
+<p>{{release.student}}- {{release.student.WRU_ID}}</p>
+{% if release.created_by %}<p>Recorded by {{ release.created_by }} on {{ release.created_at|date:"n/j/Y" }}</p>{% endif %}
+{% endblock content %}

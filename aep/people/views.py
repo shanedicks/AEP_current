@@ -28,7 +28,7 @@ from core.utils import render_to_csv, drive_service, file_to_drive, DriveUploadE
 from core.tasks import send_mail_task, email_multi_alternatives_task
 from sections.forms import SectionFilterForm
 from .models import (Staff, Student, CollegeInterest, WIOA, Prospect,
-    ProspectNote, Paperwork)
+    ProspectNote, Paperwork, RecordRelease)
 from .forms import (
     StaffForm, StudentPersonalInfoForm, StudentSearchForm,
     StudentInterestForm, StudentContactForm, StudentUpdateForm, SSNForm, REForm,
@@ -36,11 +36,14 @@ from .forms import (
     UserForm, UserUpdateForm, WioaForm, CollegeInterestForm, PartnerForm,
     StudentComplianceForm, StudentNotesForm, ProspectForm, ProspectStatusForm,
     ProspectLinkStudentForm, ProspectAssignAdvisorForm, ProspectNoteForm, 
-    PaperworkForm, PhotoIdForm, EligibilityDocForm)
+    PaperworkForm, PhotoIdForm, EligibilityDocForm, RecordReleaseSignForm,
+    RecordReleaseUploadForm)
 from .tasks import (intake_retention_report_task, send_orientation_confirmation_task,
     prospect_check_task, prospect_export_task, process_student_import_task,
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
     student_check_duplicate_task, intercession_report_task, minor_student_report_task, update_eligibility_task)
+
+RECORD_RELEASE_FOLDER_ID = 'REPLACE_WITH_DRIVE_FOLDER_ID'  # TODO: create Drive folder for record releases
 
 
 # <<<<< Student Views >>>>>
@@ -1242,6 +1245,140 @@ class EligibilityDocUploadView(LoginRequiredMixin, BasePaperworkView):
 
     def get_success_url(self):
             return reverse('people:student detail', kwargs={'slug': self.object.student.slug})
+
+class SignRecordReleaseView(CreateView):
+    model = RecordRelease
+    form_class = RecordReleaseSignForm
+    template_name = 'people/sign_record_release.html'
+    success_url = reverse_lazy('people:paperwork success')
+
+    def get_student_or_redirect(self):
+        try:
+            student = Student.objects.get(slug=self.kwargs['slug'])
+
+            # Check if the student is a duplicate
+            while student.duplicate:
+                student = student.duplicate_of
+
+            if student.slug != self.kwargs['slug']:
+                # Redirect to the correct URL if the student has changed
+                view_name = f"people:{self.request.resolver_match.url_name}"
+                return redirect(reverse(view_name, kwargs={'slug': student.slug}))
+
+            return student
+        except Student.DoesNotExist:
+            return redirect('people:student not found')
+
+    def dispatch(self, request, *args, **kwargs):
+        self.student = self.get_student_or_redirect()
+        if isinstance(self.student, HttpResponseRedirect):
+            return self.student
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['student'] = self.student
+        return context
+
+    def form_valid(self, form):
+        today = timezone.localdate()
+        release = form.save(commit=False)
+        release.student = self.student
+        release.sig_date = today
+        if release.guardian_signature != '':
+            release.g_sig_date = today
+        release.save()
+        return HttpResponseRedirect(self.success_url)
+
+
+class SendRecordReleaseLinkView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        student = Student.objects.get(slug = kwargs['slug'])
+        send_paperwork_link_task.delay(student.id, 'sign record release')
+        return HttpResponseRedirect(reverse('people:link sent', kwargs={'slug': student.slug}))
+
+
+class RecordReleaseUploadMixin(object):
+
+    def save_release(self, form, release):
+        today = timezone.localdate()
+        if release.signature != '' and release.sig_date is None:
+            release.sig_date = today
+        if release.guardian_signature != '' and release.g_sig_date is None:
+            release.g_sig_date = today
+        if 'release_file' in self.request.FILES:
+            release_file = self.request.FILES['release_file']
+            name = release.student.__str__() + " record release"
+            try:
+                release.release_file = file_to_drive(
+                    name=name,
+                    file=release_file,
+                    folder_id=RECORD_RELEASE_FOLDER_ID
+                )
+            except DriveUploadError as e:
+                form.add_error(None, str(e))
+                return None
+        release.save()
+        return release
+
+
+class RecordReleaseCreateView(LoginRequiredMixin, RecordReleaseUploadMixin, CreateView):
+    model = RecordRelease
+    form_class = RecordReleaseUploadForm
+    template_name = 'people/record_release_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+        return context
+
+    def form_valid(self, form):
+        release = form.save(commit=False)
+        release.student = Student.objects.get(slug=self.kwargs['slug'])
+        release.created_by = self.request.user
+        if self.save_release(form, release) is None:
+            return self.form_invalid(form)
+        self.object = release
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class RecordReleaseUpdateView(LoginRequiredMixin, RecordReleaseUploadMixin, UpdateView):
+    model = RecordRelease
+    form_class = RecordReleaseUploadForm
+    template_name = 'people/record_release_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['student'] = self.object.student
+        return context
+
+    def form_valid(self, form):
+        release = form.save(commit=False)
+        if self.save_release(form, release) is None:
+            return self.form_invalid(form)
+        self.object = release
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class RecordReleaseDetailView(LoginRequiredMixin, DetailView):
+    model = RecordRelease
+    template_name = 'people/record_release_detail.html'
+    context_object_name = 'release'
+
+
+class RecordReleaseListView(LoginRequiredMixin, ListView):
+    model = RecordRelease
+    template_name = 'people/record_release_list.html'
+
+    def get_queryset(self):
+        return RecordRelease.objects.filter(student__slug=self.kwargs['slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['student'] = Student.objects.get(slug=self.kwargs['slug'])
+        return context
+
 
 class OrientationFinishView(View):
 

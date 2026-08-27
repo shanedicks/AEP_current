@@ -91,6 +91,11 @@ def move_appointments(orig, duplicate):
         except IntegrityError:
             a.delete()
 
+def move_record_releases(orig, duplicate):
+    for r in orig.record_releases.all():
+        r.student = duplicate
+        r.save()
+
 def move_elearn_record(orig, duplicate):
     try:
         e = duplicate.elearn_record
@@ -284,6 +289,7 @@ def full_merge(orig, duplicate):
     move_college_interest(orig, duplicate)
     copy_office_tracking(orig, duplicate)
     move_or_copy_paperwork(orig, duplicate)
+    move_record_releases(orig, duplicate)
     move_or_merge_pops(orig, duplicate)
     move_certifications(orig, duplicate)
     move_inventory_tickets(orig, duplicate)
@@ -1450,6 +1456,11 @@ class Student(Profile):
             reverse('people:upload photo id', kwargs={'slug': self.slug})
         )
 
+    def record_release_form_link(self):
+        return "https://www.dccaep.org{0}".format(
+            reverse('people:sign record release', kwargs={'slug': self.slug})
+        )
+
     def orientation_link(self):
         return "https://www.dccaep.org{0}".format(
             reverse('people:orientation start', kwargs={'slug': self.slug})
@@ -1474,6 +1485,11 @@ class Student(Profile):
             url = self.sign_paperwork_form_link()
             html_message = ''
             message = 'Hello from Delgado Adult Education. Click the link to submit the rest of your registration paperwork: {0}'.format(url)
+        if url_name == 'sign record release':
+            send = True
+            url = self.record_release_form_link()
+            html_message = ''
+            message = 'Hello from Delgado Adult Education. Click the link to complete a records release authorization: {0}'.format(url)
         recipient_list = []
         if self.email != '':
             recipient_list.append(self.email)
@@ -1509,6 +1525,10 @@ class Student(Profile):
                 send = False
             url = self.sign_paperwork_form_link()
             message = 'Hello from Delgado Adult Education. Click the link to submit the rest of your registration paperwork: {0}'.format(url)            
+        if url_name == 'sign record release':
+            send = True
+            url = self.record_release_form_link()
+            message = 'Hello from Delgado Adult Education. Click the link to complete a records release authorization: {0}'.format(url)
         if self.phone != '' and send:
             send_sms_task.delay(self.phone, message)
 
@@ -1865,6 +1885,86 @@ class Paperwork(models.Model):
             student = self.student
             student.paperwork = student.COMPLETE
             student.save()
+
+
+class RecordRelease(models.Model):
+
+    RELATIONSHIP_CHOICES = (
+        ("D", "Father"),
+        ("M", "Mother"),
+        ("S", "Spouse"),
+        ("G", "Legal Guardian"),
+        ("SCH", "School / College"),
+        ("EMP", "Employer"),
+        ("AGY", "Agency / Case Manager"),
+        ("O", "Other"),
+    )
+
+    student = models.ForeignKey(
+        Student,
+        models.CASCADE,
+        related_name='record_releases'
+    )
+    released_to = models.CharField(
+        max_length=140,
+        verbose_name=_("Release records to (person or organization)")
+    )
+    relationship = models.CharField(
+        max_length=3,
+        choices=RELATIONSHIP_CHOICES,
+        verbose_name=_("Relationship to student")
+    )
+    purpose = models.TextField(
+        verbose_name=_("Purpose / records covered")
+    )
+    expiration_date = models.DateField(
+        null=True,
+        blank=True
+    )
+    signature = models.CharField(
+        max_length=140,
+        blank=True
+    )
+    sig_date = models.DateField(
+        null=True,
+        blank=True
+    )
+    guardian_signature = models.CharField(
+        max_length=140,
+        blank=True
+    )
+    g_sig_date = models.DateField(
+        null=True,
+        blank=True
+    )
+    release_file = models.CharField(
+        max_length=50,
+        blank=True
+    )
+    created_by = models.ForeignKey(
+        'auth.User',
+        models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='record_releases_created'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return '{0} Record Release - {1}'.format(self.student, self.released_to)
+
+    def get_absolute_url(self):
+        return reverse('people:record release detail', kwargs={'pk': self.pk})
+
+    def release_file_url(self):
+        if self.release_file == '':
+            return ""
+        else:
+            return "https://drive.google.com/file/d/{0}/view".format(self.release_file)
+
 
 class WIOA(models.Model):
 

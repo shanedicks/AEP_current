@@ -84,4 +84,14 @@
           </tr>
         </table>
       {% endif %}
+      <table class="table borderless">
+        <tr>
+          <td>Records Release Authorizations ({{ student.record_releases.count }})</td>
+          <td>
+            <a type="button" class="btn btn-default" href="{% url 'people:record release list' slug=student.slug %}" role="button">View Releases</a>
+            <a type="button" class="btn btn-default" href="{% url 'people:record release create' slug=student.slug %}" role="button">Add Release</a>
+            <a type="button" class="btn btn-default" href="{% url 'people:send record release link' slug=student.slug %}" role="button">Send Release Link</a>
+          </td>
+        </tr>
+      </table>
 {%endblock content %}

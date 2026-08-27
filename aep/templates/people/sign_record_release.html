@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}DCCAEP | {{student}} records release{% endblock head_title %}
+{% block content %}
+<h1>Records Release Authorization for {{ student }}</h1>
+{% include "people/record_release_text.html" %}
+<form class="form_group" method="post">
+    {% csrf_token %}
+    {% crispy form %}
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+{% endblock content %}

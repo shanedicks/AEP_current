@@ -143,7 +143,7 @@ def seed_data(django_db_setup, django_db_blocker):
     from coaching.models import AceRecord, Coaching, ElearnRecord, MeetingNote
     from coaching.models import Profile as CoachingProfile
     from inventory.models import Category, Item, Ticket
-    from people.models import Prospect, ProspectNote, Staff, Student
+    from people.models import Prospect, ProspectNote, RecordRelease, Staff, Student
     from sections.models import (
         Attendance, Cancellation, Enrollment, Section, Site,
     )
@@ -378,6 +378,11 @@ def seed_data(django_db_setup, django_db_blocker):
             prospect=prospect,
             contact_date=datetime.date(2026, 1, 9),
             defaults={'contact_method': 'Call', 'notes': 'Seed note'},
+        )
+        RecordRelease.objects.get_or_create(
+            student=first_student,
+            released_to='Seed Release Org',
+            defaults={'relationship': 'SCH', 'purpose': 'Seed transcript release'},
         )
         cancellation, _ = Cancellation.objects.get_or_create(
             section=sections[0],

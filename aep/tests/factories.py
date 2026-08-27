@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 
 from academics.models import Course
 from assessments.models import Tabe, TestHistory
-from people.models import Staff, Student
+from people.models import RecordRelease, Staff, Student
 from sections.models import Attendance, Enrollment, Section, Site
 from semesters.models import Semester
 
@@ -173,3 +173,13 @@ class TabeFactory(factory.django.DjangoModelFactory):
     read_nrs = '2'
     math_nrs = '2'
     lang_nrs = '2'
+
+
+class RecordReleaseFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = RecordRelease
+
+    student = factory.SubFactory(StudentFactory)
+    released_to = factory.Sequence(lambda n: f'Seed Org {n}')
+    relationship = 'SCH'
+    purpose = 'Transcript'

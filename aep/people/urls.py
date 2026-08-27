@@ -63,6 +63,27 @@ single_student_paperwork_patterns = [
     path('upload-eligibility-doc/',
         views.EligibilityDocUploadView.as_view(),
         name='upload eligibility doc'),
+    path('record-releases/',
+        views.RecordReleaseListView.as_view(),
+        name='record release list'),
+    path('record-releases/new/',
+        views.RecordReleaseCreateView.as_view(),
+        name='record release create'),
+    path('record-releases/sign/',
+        views.SignRecordReleaseView.as_view(),
+        name='sign record release'),
+    path('record-releases/send-link/',
+        views.SendRecordReleaseLinkView.as_view(),
+        name='send record release link'),
+]
+
+record_release_patterns = [
+    path('<int:pk>/',
+        views.RecordReleaseDetailView.as_view(),
+        name='record release detail'),
+    path('<int:pk>/edit/',
+        views.RecordReleaseUpdateView.as_view(),
+        name='record release edit'),
 ]
 
 single_student_patterns = [
@@ -127,6 +148,7 @@ student_patterns = [
         views.StudentCreateSuccessView.as_view(),
         name='student created'
         ),
+    path('record-releases/', include(record_release_patterns)),
     re_path(r'^(?P<slug>[a-zA-Z0-9]{5})/', include(single_student_patterns)),
     path('import/',
         views.ImportWruStudentsView.as_view(),
