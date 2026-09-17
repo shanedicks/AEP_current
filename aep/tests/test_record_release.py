@@ -15,8 +15,8 @@ pytestmark = pytest.mark.django_db
 
 BASE = {
     'released_to': 'Jefferson Parish Schools',
-    'relationship': 'SCH',
-    'purpose': 'Transcript and attendance',
+    'attendance_records': True,
+    'testing_information': True,
 }
 
 
@@ -30,6 +30,20 @@ def test_upload_form_requires_signature_or_file():
     form = RecordReleaseUploadForm(data=BASE)
     assert not form.is_valid()
     assert 'Type a signature or upload' in str(form.non_field_errors())
+
+
+def test_upload_form_requires_records_scope():
+    form = RecordReleaseUploadForm(
+        data={'released_to': 'Jefferson Parish Schools', 'signature': 'Sam Student'})
+    assert not form.is_valid()
+    assert 'at least one category' in str(form.non_field_errors())
+
+
+def test_upload_form_other_text_satisfies_scope():
+    form = RecordReleaseUploadForm(
+        data={'released_to': 'Jefferson Parish Schools', 'signature': 'Sam Student',
+              'other': 'HiSET transcript'})
+    assert form.is_valid(), form.errors
 
 
 def test_upload_form_valid_with_signature_only():

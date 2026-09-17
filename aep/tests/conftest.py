@@ -382,7 +382,7 @@ def seed_data(django_db_setup, django_db_blocker):
         RecordRelease.objects.get_or_create(
             student=first_student,
             released_to='Seed Release Org',
-            defaults={'relationship': 'SCH', 'purpose': 'Seed transcript release'},
+            defaults={'attendance_records': True, 'testing_information': True},
         )
         cancellation, _ = Cancellation.objects.get_or_create(
             section=sections[0],

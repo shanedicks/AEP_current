@@ -9,11 +9,20 @@
 
 <table class="table borderless">
 <tr><td>Release records to</td><td>{{ release.released_to }}</td></tr>
-<tr><td>Relationship to student</td><td>{{ release.get_relationship_display }}</td></tr>
-<tr><td>Purpose / records covered</td><td>{{ release.purpose|linebreaksbr }}</td></tr>
-{% if release.expiration_date %}
-<tr><td>Expiration Date</td><td>{{ release.expiration_date|date:"n/j/Y" }}</td></tr>
+{% if release.released_to_email %}
+<tr><td>Email Address</td><td>{{ release.released_to_email }}</td></tr>
 {% endif %}
+{% if release.released_to_address %}
+<tr><td>Address</td><td>{{ release.released_to_address }}<br>{{ release.released_to_city }}{% if release.released_to_state %}, {{ release.released_to_state }}{% endif %} {{ release.released_to_zip }}</td></tr>
+{% endif %}
+<tr><td>Records covered</td><td>
+<ul class="list-unstyled">
+{% if release.attendance_records %}<li>Attendance records, hours, and enrollment information</li>{% endif %}
+{% if release.testing_information %}<li>Testing information and student scores</li>{% endif %}
+{% if release.all_information %}<li>All student information</li>{% endif %}
+{% if release.other %}<li>Other: {{ release.other }}</li>{% endif %}
+</ul>
+</td></tr>
 {% if release.release_file %}
 <tr><td>Signed Form</td><td><a href="{{ release.release_file_url }}" target="blank">{{ release.release_file_url }}</a></td></tr>
 {% endif %}

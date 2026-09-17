@@ -2779,6 +2779,20 @@ class RecordReleaseSignForm(ModelForm):
             )
         return data
 
+    def clean(self):
+        cleaned_data = super().clean()
+        scope = (
+            cleaned_data.get('attendance_records') or
+            cleaned_data.get('testing_information') or
+            cleaned_data.get('all_information') or
+            cleaned_data.get('other', '') != ''
+        )
+        if not scope:
+            raise ValidationError(
+                _("Select at least one category of records to release.")
+            )
+        return cleaned_data
+
     def __init__(self, *args, **kwargs):
         super(RecordReleaseSignForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -2789,9 +2803,15 @@ class RecordReleaseSignForm(ModelForm):
         model = RecordRelease
         fields = (
             'released_to',
-            'relationship',
-            'purpose',
-            'expiration_date',
+            'released_to_email',
+            'released_to_address',
+            'released_to_city',
+            'released_to_state',
+            'released_to_zip',
+            'attendance_records',
+            'testing_information',
+            'all_information',
+            'other',
             'signature',
             'guardian_signature',
         )
@@ -2824,6 +2844,16 @@ class RecordReleaseUploadForm(ModelForm):
             raise ValidationError(
                 _("Type a signature or upload a signed release form.")
             )
+        scope = (
+            cleaned_data.get('attendance_records') or
+            cleaned_data.get('testing_information') or
+            cleaned_data.get('all_information') or
+            cleaned_data.get('other', '') != ''
+        )
+        if not scope:
+            raise ValidationError(
+                _("Select at least one category of records to release.")
+            )
         return cleaned_data
 
     def __init__(self, *args, **kwargs):
@@ -2836,9 +2866,15 @@ class RecordReleaseUploadForm(ModelForm):
         model = RecordRelease
         fields = (
             'released_to',
-            'relationship',
-            'purpose',
-            'expiration_date',
+            'released_to_email',
+            'released_to_address',
+            'released_to_city',
+            'released_to_state',
+            'released_to_zip',
+            'attendance_records',
+            'testing_information',
+            'all_information',
+            'other',
             'signature',
             'guardian_signature',
         )

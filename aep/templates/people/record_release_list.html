@@ -6,14 +6,13 @@
 <a type="button" class="btn btn-default" href="{% url 'people:send record release link' slug=student.slug %}" role="button">Send Records Release Link</a>
 {% if object_list %}
 <table class="table table-striped">
-<tr><th>Released To</th><th>Relationship</th><th>Signed</th><th>Form</th><th>Expires</th><th>Recorded</th></tr>
+<tr><th>Released To</th><th>Records</th><th>Signed</th><th>Form</th><th>Recorded</th></tr>
 {% for release in object_list %}
 <tr>
   <td><a href="{{ release.get_absolute_url }}">{{ release.released_to }}</a></td>
-  <td>{{ release.get_relationship_display }}</td>
+  <td>{{ release.records_covered }}</td>
   <td>{% if release.sig_date %}{{ release.sig_date|date:"n/j/Y" }}{% endif %}</td>
   <td>{% if release.release_file %}<a href="{{ release.release_file_url }}" target="blank">View</a>{% endif %}</td>
-  <td>{% if release.expiration_date %}{{ release.expiration_date|date:"n/j/Y" }}{% endif %}</td>
   <td>{{ release.created_at|date:"n/j/Y" }}</td>
 </tr>
 {% endfor %}

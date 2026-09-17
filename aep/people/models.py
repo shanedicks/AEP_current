@@ -1889,17 +1889,6 @@ class Paperwork(models.Model):
 
 class RecordRelease(models.Model):
 
-    RELATIONSHIP_CHOICES = (
-        ("D", "Father"),
-        ("M", "Mother"),
-        ("S", "Spouse"),
-        ("G", "Legal Guardian"),
-        ("SCH", "School / College"),
-        ("EMP", "Employer"),
-        ("AGY", "Agency / Case Manager"),
-        ("O", "Other"),
-    )
-
     student = models.ForeignKey(
         Student,
         models.CASCADE,
@@ -1909,17 +1898,47 @@ class RecordRelease(models.Model):
         max_length=140,
         verbose_name=_("Release records to (person or organization)")
     )
-    relationship = models.CharField(
-        max_length=3,
-        choices=RELATIONSHIP_CHOICES,
-        verbose_name=_("Relationship to student")
+    released_to_email = models.EmailField(
+        max_length=40,
+        blank=True,
+        verbose_name=_("Email Address")
     )
-    purpose = models.TextField(
-        verbose_name=_("Purpose / records covered")
+    released_to_address = models.CharField(
+        max_length=60,
+        blank=True,
+        verbose_name=_("Address")
     )
-    expiration_date = models.DateField(
-        null=True,
-        blank=True
+    released_to_city = models.CharField(
+        max_length=30,
+        blank=True,
+        verbose_name=_("City")
+    )
+    released_to_state = models.CharField(
+        max_length=2,
+        blank=True,
+        verbose_name=_("State")
+    )
+    released_to_zip = models.CharField(
+        max_length=10,
+        blank=True,
+        verbose_name=_("Zip Code")
+    )
+    attendance_records = models.BooleanField(
+        default=False,
+        verbose_name=_("Attendance records, hours, and enrollment information")
+    )
+    testing_information = models.BooleanField(
+        default=False,
+        verbose_name=_("Testing information and student scores")
+    )
+    all_information = models.BooleanField(
+        default=False,
+        verbose_name=_("All student information")
+    )
+    other = models.CharField(
+        max_length=140,
+        blank=True,
+        verbose_name=_("Other")
     )
     signature = models.CharField(
         max_length=140,
@@ -1955,6 +1974,18 @@ class RecordRelease(models.Model):
 
     def __str__(self):
         return '{0} Record Release - {1}'.format(self.student, self.released_to)
+
+    def records_covered(self):
+        covered = []
+        if self.attendance_records:
+            covered.append('Attendance')
+        if self.testing_information:
+            covered.append('Testing')
+        if self.all_information:
+            covered.append('All information')
+        if self.other != '':
+            covered.append('Other')
+        return ', '.join(covered)
 
     def get_absolute_url(self):
         return reverse('people:record release detail', kwargs={'pk': self.pk})

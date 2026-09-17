@@ -610,9 +610,15 @@ class RecordReleaseResource(resources.ModelResource):
             'student__first_name',
             'student__WRU_ID',
             'released_to',
-            'relationship',
-            'purpose',
-            'expiration_date',
+            'released_to_email',
+            'released_to_address',
+            'released_to_city',
+            'released_to_state',
+            'released_to_zip',
+            'attendance_records',
+            'testing_information',
+            'all_information',
+            'other',
             'signature',
             'sig_date',
             'guardian_signature',
@@ -708,12 +714,17 @@ class RecordReleaseAdmin(ImportExportActionModelAdmin):
     list_display = (
         'student',
         'released_to',
-        'relationship',
         'sig_date',
-        'expiration_date'
+        'attendance_records',
+        'testing_information',
+        'all_information'
     )
 
-    list_filter = ('relationship',)
+    list_filter = (
+        'attendance_records',
+        'testing_information',
+        'all_information'
+    )
 
     search_fields = [
         'student__last_name',
@@ -725,9 +736,15 @@ class RecordReleaseAdmin(ImportExportActionModelAdmin):
     fields = (
         "student",
         "released_to",
-        "relationship",
-        "purpose",
-        "expiration_date",
+        "released_to_email",
+        "released_to_address",
+        "released_to_city",
+        "released_to_state",
+        "released_to_zip",
+        "attendance_records",
+        "testing_information",
+        "all_information",
+        "other",
         "release_file",
         "signature",
         "sig_date",

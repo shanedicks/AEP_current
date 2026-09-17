@@ -181,5 +181,4 @@ class RecordReleaseFactory(factory.django.DjangoModelFactory):
 
     student = factory.SubFactory(StudentFactory)
     released_to = factory.Sequence(lambda n: f'Seed Org {n}')
-    relationship = 'SCH'
-    purpose = 'Transcript'
+    all_information = True
