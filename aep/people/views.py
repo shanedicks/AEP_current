@@ -43,7 +43,7 @@ from .tasks import (intake_retention_report_task, send_orientation_confirmation_
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
     student_check_duplicate_task, intercession_report_task, minor_student_report_task, update_eligibility_task)
 
-RECORD_RELEASE_FOLDER_ID = 'REPLACE_WITH_DRIVE_FOLDER_ID'  # TODO: create Drive folder for record releases
+RECORD_RELEASE_FOLDER_ID = '1vbxw2KLop_hcR2KTt0TwBFptMoFUWGhI'
 
 
 # <<<<< Student Views >>>>>
