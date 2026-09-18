@@ -187,6 +187,16 @@ def test_link_methods_send_without_completion_gate(celery_calls):
     assert student.record_release_form_link() in sms[0][1][1]
 
 
+# -- revocation ---------------------------------------------------------------
+
+def test_revoking_stamps_date_on_save():
+    release = factories.RecordReleaseFactory()
+    assert release.revoked_date is None
+    release.revoked = True
+    release.save()
+    assert release.revoked_date == timezone.localdate()
+
+
 # -- merge --------------------------------------------------------------------
 
 def test_move_record_releases_repoints_to_surviving_student():

@@ -619,6 +619,8 @@ class RecordReleaseResource(resources.ModelResource):
             'testing_information',
             'all_information',
             'other',
+            'revoked',
+            'revoked_date',
             'signature',
             'sig_date',
             'guardian_signature',
@@ -717,10 +719,12 @@ class RecordReleaseAdmin(ImportExportActionModelAdmin):
         'sig_date',
         'attendance_records',
         'testing_information',
-        'all_information'
+        'all_information',
+        'revoked'
     )
 
     list_filter = (
+        'revoked',
         'attendance_records',
         'testing_information',
         'all_information'
@@ -746,6 +750,8 @@ class RecordReleaseAdmin(ImportExportActionModelAdmin):
         "all_information",
         "other",
         "release_file",
+        "revoked",
+        "revoked_date",
         "signature",
         "sig_date",
         "guardian_signature",

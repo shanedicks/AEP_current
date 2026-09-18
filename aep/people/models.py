@@ -1960,6 +1960,13 @@ class RecordRelease(models.Model):
         max_length=50,
         blank=True
     )
+    revoked = models.BooleanField(
+        default=False
+    )
+    revoked_date = models.DateField(
+        null=True,
+        blank=True
+    )
     created_by = models.ForeignKey(
         'auth.User',
         models.SET_NULL,
@@ -1971,6 +1978,11 @@ class RecordRelease(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if self.revoked and self.revoked_date is None:
+            self.revoked_date = timezone.localdate()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return '{0} Record Release - {1}'.format(self.student, self.released_to)
