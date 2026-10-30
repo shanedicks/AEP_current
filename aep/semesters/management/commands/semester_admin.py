@@ -3,7 +3,7 @@ import logging
 from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from sections.tasks import create_classroom_section_task, add_TA_task
+from sections.tasks import create_classroom_section_task, add_TA_task, remove_TA_task
 from semesters.models import Semester
 from semesters.tasks import create_missing_g_suite_task, first_class_warning_report_task
 
@@ -43,4 +43,5 @@ class Command(BaseCommand):
 		end_semester_group = Semester.objects.filter(end_date=now - timedelta(days=14))
 		for semester in end_semester_group:
 			semester.end()
+		remove_TA_task.delay()
 		logger.info(f"Semester Admin Process Complete")
