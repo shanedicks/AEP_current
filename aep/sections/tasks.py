@@ -1,6 +1,6 @@
 import csv
 import os
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from googleapiclient.errors import HttpError
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -448,6 +448,41 @@ def add_TA_task(section_id_list):
             logger.info(f"Added {ta} to {section}")
         except HttpError as error:
             logger.error(error)
+
+@shared_task
+def remove_TA_task(dry_run=False):
+    # Classroom is the source of truth: only courses each TA is still on are checked
+    Section = apps.get_model('sections', 'Section')
+    cutoff = timezone.now().date() - timedelta(days=5*365)
+    service = classroom_service()
+    counts = {}
+    for ta in program_ta.values():
+        course_ids = []
+        page_token = None
+        while True:
+            response = service.courses().list(
+                teacherId=ta, pageSize=100, pageToken=page_token
+            ).execute()
+            course_ids.extend(course['id'] for course in response.get('courses', []))
+            page_token = response.get('nextPageToken')
+            if not page_token:
+                break
+        old_sections = Section.objects.filter(
+            g_suite_id__in=course_ids,
+            semester__end_date__lt=cutoff
+        )
+        counts[ta] = {'courses': len(course_ids), 'to_remove': old_sections.count()}
+        logger.info(f"{ta}: on {len(course_ids)} courses, {counts[ta]['to_remove']} to remove")
+        if dry_run:
+            continue
+        teachers = service.courses().teachers()
+        for section in old_sections:
+            try:
+                teachers.delete(courseId=section.g_suite_id, id=ta).execute()
+                logger.info(f"Removed {ta} from {section}")
+            except HttpError as error:
+                logger.error(error)
+    return counts
 
 @shared_task
 def force_activate_task(section_id):
