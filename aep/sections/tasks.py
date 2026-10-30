@@ -17,6 +17,12 @@ from core.utils import directory_service, classroom_service
 
 logger = get_task_logger(__name__)
 
+program_ta = {
+    'ELL': 'eslta@elearnclass.org',
+    'ELRN': 'elearnta@elearnclass.org',
+    'CCR': 'onlineta@elearnclass.org'
+}
+
 def get_enrollment(enrollment_id):
     Enrollment = apps.get_model('sections', 'Enrollment')
     return Enrollment.objects.get(id=enrollment_id)
@@ -431,11 +437,6 @@ def create_classroom_section_task(section_id_list):
 def add_TA_task(section_id_list):
     sections = apps.get_model('sections', 'Section').objects.filter(id__in=section_id_list)
     service = classroom_service()
-    program_ta = {
-        'ELL': 'eslta@elearnclass.org',
-        'ELRN': 'elearnta@elearnclass.org', 
-        'CCR': 'onlineta@elearnclass.org'
-    }
     for section in sections:
         try:
             ta = program_ta[section.program]
