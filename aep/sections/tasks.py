@@ -478,7 +478,7 @@ def remove_TA_task(dry_run=False):
         teachers = service.courses().teachers()
         for section in old_sections:
             try:
-                teachers.delete(courseId=section.g_suite_id, id=ta).execute()
+                teachers.delete(courseId=section.g_suite_id, userId=ta).execute()
                 logger.info(f"Removed {ta} from {section}")
             except HttpError as error:
                 logger.error(error)
