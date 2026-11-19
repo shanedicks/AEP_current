@@ -18,6 +18,26 @@ from people.models import full_merge
 
 logger = get_task_logger(__name__)
 
+
+def students_created_between(students, from_date, to_date):
+    """Students whose record was created between from_date and to_date.
+
+    Student has no created timestamp, so pk order stands in for creation order
+    and intake_date only locates the boundaries. intake_date alone is unreliable:
+    full_merge copies the older record's intake_date onto the newer survivor, so a
+    re-registration carries a backdated intake. Backdating only ever moves
+    intake_date earlier, so the first pk with intake >= from_date and the first pk
+    with intake > to_date are both genuinely new records.
+    """
+    start = students.filter(intake_date__gte=from_date).aggregate(Min('id'))['id__min']
+    if start is None:
+        return students.none()
+    created = students.filter(id__gte=start)
+    end = students.filter(intake_date__gt=to_date).aggregate(Min('id'))['id__min']
+    if end is not None:
+        created = created.filter(id__lt=end)
+    return created
+
 @shared_task
 def send_orientation_confirmation_task(student_id):
     student = apps.get_model('people', 'Student').objects.get(pk=student_id)
@@ -41,9 +61,7 @@ def intake_retention_report_task(from_date, to_date, email_address):
     students = apps.get_model('people', 'Student').objects.filter(duplicate=False)
     from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
     to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
-    min_id = students.filter(intake_date__gte=from_date).aggregate(Min('id'))['id__min']
-    max_id = students.filter(intake_date__lte=to_date).aggregate(Max('id'))['id__max']
-    new_students = students.filter(id__gte=min_id, id__lte=max_id)
+    new_students = students_created_between(students, from_date, to_date)
     with open(filename, 'w', newline='') as out:
         writer = csv.writer(out)
         data = []
@@ -332,9 +350,7 @@ def summary_report_task(from_date, to_date, email_address):
         contact_date__lte=to_date
     ).exclude(prospect__student=None)
 
-    min_id = students.filter(intake_date=from_date).aggregate(Min('id'))['id__min']
-    max_id = students.filter(intake_date=to_date).aggregate(Max('id'))['id__max']
-    new_students = students.filter(id__gte=min_id, id__lte=max_id)
+    new_students = students_created_between(students, from_date, to_date)
 
     attended_students = students.filter(classes__attendance__in=attendance).distinct()
     
