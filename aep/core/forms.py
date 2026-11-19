@@ -35,6 +35,14 @@ class DateFilterForm(Form):
         self.helper.help_text_inline = False
         self.helper.disable_csrf = True
 
+class RequiredDateFilterForm(DateFilterForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.required = True
+
+
 def five_years_ago():
     today = date.today()
     try:
