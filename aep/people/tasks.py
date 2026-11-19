@@ -6,7 +6,8 @@ from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
-from django.db.models import Sum, Min, Max, Count, Q, Case, When, Exists, OuterRef
+from django.db.models import Sum, Min, Max, Count, Q, Case, When, Exists, OuterRef, Subquery
+from django.db.models.functions import Coalesce, TruncDate
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils import timezone
@@ -416,6 +417,118 @@ def summary_report_task(from_date, to_date, email_address):
     email.attach_file('summary_report.csv')
     email.send()
     os.remove('summary_report.csv')
+    return True
+
+@shared_task
+def student_activity_report_task(cutoff, email_address):
+    cutoff = datetime.strptime(cutoff, '%Y-%m-%d').date()
+
+    Student = apps.get_model('people', 'Student')
+    TestAppointment = apps.get_model('assessments', 'TestAppointment')
+    TestEvent = apps.get_model('assessments', 'TestEvent')
+    Enrollment = apps.get_model('sections', 'Enrollment')
+    Attendance = apps.get_model('sections', 'Attendance')
+    ProspectNote = apps.get_model('people', 'ProspectNote')
+
+    def latest(queryset, field):
+        return Subquery(
+            queryset.filter(**{f'{field}__isnull': False})
+            .order_by(f'-{field}')
+            .values(field)[:1]
+        )
+
+    appointments = TestAppointment.objects.filter(
+        student=OuterRef('pk'),
+        attendance_type='P'
+    ).annotate(
+        appt_date=Coalesce('attendance_date', TruncDate('event__start'))
+    )
+    orientation_events = [
+        TestEvent.ORIENTATION,
+        TestEvent.CLOSED_ORIENTATION,
+        TestEvent.ONLINE_ORIENTATION
+    ]
+
+    students = Student.objects.filter(duplicate=False).select_related(
+        'elearn_record',
+        'tests'
+    ).annotate(
+        last_merge=latest(Student.objects.filter(duplicate_of=OuterRef('pk')), 'dupl_date'),
+        last_orientation=latest(appointments.filter(event__test__in=orientation_events), 'appt_date'),
+        last_test_event=latest(appointments, 'appt_date'),
+        last_enrollment=latest(
+            Enrollment.objects.filter(student=OuterRef('pk')).annotate(created_date=TruncDate('created')),
+            'created_date'
+        ),
+        last_attendance=latest(
+            Attendance.objects.filter(enrollment__student=OuterRef('pk'), attendance_type='P'),
+            'attendance_date'
+        ),
+        last_contact=latest(
+            ProspectNote.objects.filter(prospect__student=OuterRef('pk'), successful=True),
+            'contact_date'
+        ),
+    ).order_by('last_name', 'first_name')
+
+    filename = 'student_activity_report.csv'
+    with open(filename, 'w', newline='') as out:
+        writer = csv.writer(out)
+        writer.writerow([
+            'WRU ID',
+            'Last Name',
+            'First Name',
+            'Email',
+            'G Suite',
+            'Orientation',
+            'Last Registration',
+            'Last Orientation',
+            'Last Test Event',
+            'Last Test',
+            'Last Enrollment',
+            'Last Attendance',
+            'Last Prospect Contact',
+            'Last Activity',
+            f'Active Since {cutoff}',
+        ])
+        for student in students.iterator(chunk_size=2000):
+            try:
+                g_suite = student.elearn_record.g_suite_email
+            except ObjectDoesNotExist:
+                g_suite = ''
+            try:
+                last_test = student.tests.last_test_date
+            except ObjectDoesNotExist:
+                last_test = None
+            registrations = [d for d in (student.intake_date, student.last_merge) if d]
+            last_registration = max(registrations) if registrations else None
+            dates = [
+                last_registration,
+                student.last_orientation,
+                student.last_test_event,
+                last_test,
+                student.last_enrollment,
+                student.last_attendance,
+                student.last_contact,
+            ]
+            known = [d for d in dates if d]
+            last_activity = max(known) if known else None
+            active = 'Y' if last_activity and last_activity >= cutoff else 'N'
+            writer.writerow(
+                [student.WRU_ID, student.last_name, student.first_name, student.email,
+                 g_suite, student.get_orientation_display()]
+                + [d or '' for d in dates]
+                + [last_activity or '', active]
+            )
+
+    email = EmailMessage(
+        'Student Activity Report',
+        f"Last activity dates for all students. Active = any activity on or after {cutoff}.",
+        'reporter@dccaep.org',
+        [email_address]
+    )
+    email.attach_file(filename)
+    email.send()
+    os.remove(filename)
     return True
 
 @shared_task

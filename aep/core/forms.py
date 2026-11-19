@@ -1,3 +1,4 @@
+from datetime import date
 from django.forms import ModelForm, Form, DateField, FileField, ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
@@ -29,6 +30,32 @@ class DateFilterForm(Form):
 
     def __init__(self, *args, **kwargs):
         super(DateFilterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.help_text_inline = False
+        self.helper.disable_csrf = True
+
+def five_years_ago():
+    today = date.today()
+    try:
+        return today.replace(year=today.year - 5)
+    except ValueError:
+        return today.replace(year=today.year - 5, day=28)
+
+
+class CutoffDateForm(Form):
+
+    cutoff = DateField(
+        input_formats=[
+            '%Y-%m-%d',
+            '%m/%d/%Y',
+            '%m/%d/%y'
+        ],
+        initial=five_years_ago
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.help_text_inline = False

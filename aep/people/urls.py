@@ -140,6 +140,9 @@ student_patterns = [
     re_path(r'^reports/intake-retention$',
         views.IntakeRetentionCSV.as_view(),
         name='intake retention csv'),
+    path('reports/student-activity/',
+        views.StudentActivityReportCSV.as_view(),
+        name='student activity csv'),
     path('new-student/',
         views.StudentCreateView.as_view(),
         name='create student'

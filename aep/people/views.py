@@ -23,7 +23,7 @@ from django.utils.html import strip_tags
 from django.views.generic.detail import SingleObjectMixin
 from formtools.wizard.views import SessionWizardView
 from assessments.forms import OrientationSignupForm
-from core.forms import DateFilterForm, CSVImportForm
+from core.forms import DateFilterForm, CutoffDateForm, CSVImportForm
 from core.utils import render_to_csv, drive_service, file_to_drive, DriveUploadError
 from core.tasks import send_mail_task, email_multi_alternatives_task
 from sections.forms import SectionFilterForm
@@ -41,7 +41,8 @@ from .forms import (
 from .tasks import (intake_retention_report_task, send_orientation_confirmation_task,
     prospect_check_task, prospect_export_task, process_student_import_task,
     send_student_schedule_task, student_link_prospect_task, send_paperwork_link_task,
-    student_check_duplicate_task, intercession_report_task, minor_student_report_task, update_eligibility_task)
+    student_check_duplicate_task, intercession_report_task, minor_student_report_task, update_eligibility_task,
+    student_activity_report_task)
 
 RECORD_RELEASE_FOLDER_ID = '1vbxw2KLop_hcR2KTt0TwBFptMoFUWGhI'
 
@@ -130,6 +131,18 @@ class IntakeRetentionCSV(LoginRequiredMixin, FormView):
         to_date = form.cleaned_data['to_date'].strftime('%Y-%m-%d')
         email = self.request.user.email
         intake_retention_report_task.delay(from_date, to_date, email)
+        return super().form_valid(form)
+
+
+class StudentActivityReportCSV(LoginRequiredMixin, FormView):
+
+    form_class = CutoffDateForm
+    template_name = "people/student_activity_report_csv.html"
+    success_url = reverse_lazy('report success')
+
+    def form_valid(self, form):
+        cutoff = form.cleaned_data['cutoff'].strftime('%Y-%m-%d')
+        student_activity_report_task.delay(cutoff, self.request.user.email)
         return super().form_valid(form)
 
 
