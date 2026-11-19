@@ -91,6 +91,14 @@
         <span class="text-muted">Students who entered in a date range, with orientation, testing, and attendance summary &mdash; how many of a cohort actually stuck around.</span>
     </p>
     <p>
+        <a href="{% url 'people:summary report csv' %}">Summary Report</a><br>
+        <span class="text-muted">Students who registered, attended class, or tested in a date range, with class, prospect, and testing hours.</span>
+    </p>
+    <p>
+        <a href="{% url 'people:student activity csv' %}">Student Activity Report</a><br>
+        <span class="text-muted">Every student with their most recent registration, orientation, testing, enrollment, attendance, and prospect contact dates, flagged active or inactive since a cutoff date.</span>
+    </p>
+    <p>
         <a href="{% url 'people:prospect export csv' %}">Prospect Report</a><br>
         <span class="text-muted">Prospects by registration date range, with contact, orientation, paperwork, and testing fields.</span>
     </p>
